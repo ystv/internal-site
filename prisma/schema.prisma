@@ -1,0 +1,365 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema", "postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [tsm_system_rows, uuid_ossp(map: "uuid-ossp")]
+  schemas    = ["creator", "event", "mail", "misc", "people", "playout", "video"]
+}
+
+model projects {
+  project_id  Int      @id @default(autoincrement())
+  name        String
+  description String
+  status      String
+  start_date  DateTime @db.Timestamptz(6)
+  end_date    DateTime @db.Timestamptz(6)
+
+  @@schema("event")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model redirects {
+  redirect_id     Int      @id @default(autoincrement())
+  source_url      String   @unique
+  destination_url String
+  external        Boolean? @default(false)
+
+  @@schema("misc")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model teaching_periods {
+  period_id Int      @id @default(autoincrement())
+  year      Int
+  name      String
+  start     DateTime @db.Timestamptz(6)
+  finish    DateTime @db.Timestamptz(6)
+
+  @@schema("misc")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model officership_members {
+  officership_member_id Int          @id @default(autoincrement())
+  user_id               Int?
+  officer_id            Int
+  start_date            DateTime?    @db.Timestamptz(6)
+  end_date              DateTime?    @db.Timestamptz(6)
+  officerships          officerships @relation(fields: [officer_id], references: [officer_id], onDelete: Cascade)
+  users                 users?       @relation(fields: [user_id], references: [user_id])
+
+  @@schema("people")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model officership_team_members {
+  team_id           Int
+  officer_id        Int
+  is_leader         Boolean
+  is_deputy         Boolean
+  officerships      officerships      @relation(fields: [officer_id], references: [officer_id], onDelete: Cascade)
+  officership_teams officership_teams @relation(fields: [team_id], references: [team_id], onDelete: Cascade)
+
+  @@id([team_id, officer_id])
+  @@schema("people")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model officership_teams {
+  team_id                  Int                        @id @default(autoincrement())
+  name                     String
+  email_alias              String                     @default("station")
+  short_description        String                     @default("")
+  full_description         String                     @default("")
+  officership_team_members officership_team_members[]
+
+  @@schema("people")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model officerships {
+  officer_id               Int                        @id @default(autoincrement())
+  name                     String
+  email_alias              String                     @default("station")
+  description              String                     @default("")
+  historywiki_url          String                     @default("")
+  role_id                  Int?
+  is_current               Boolean                    @default(true)
+  if_unfilled              Int?
+  officership_members      officership_members[]
+  officership_team_members officership_team_members[]
+  officerships             officerships?              @relation("officershipsToofficerships", fields: [if_unfilled], references: [officer_id], onDelete: NoAction, onUpdate: NoAction)
+  other_officerships       officerships[]             @relation("officershipsToofficerships")
+  roles                    roles?                     @relation(fields: [role_id], references: [role_id])
+
+  @@schema("people")
+}
+
+model permissions {
+  permission_id    Int                @id @default(autoincrement())
+  name             String             @unique
+  description      String             @default("")
+  role_permissions role_permissions[]
+
+  @@schema("people")
+}
+
+model role_members {
+  user_id Int
+  role_id Int
+  roles   roles @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  users   users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@id([user_id, role_id])
+  @@schema("people")
+}
+
+model role_permissions {
+  role_id       Int
+  permission_id Int
+  permissions   permissions @relation(fields: [permission_id], references: [permission_id], onDelete: Cascade)
+  roles         roles       @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+
+  @@id([role_id, permission_id])
+  @@schema("people")
+}
+
+model roles {
+  role_id          Int                @id @default(autoincrement())
+  name             String             @unique
+  description      String             @default("")
+  officerships     officerships[]
+  role_members     role_members[]
+  role_permissions role_permissions[]
+
+  @@schema("people")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  user_id                               Int                   @id @default(autoincrement())
+  username                              String                @unique
+  university_username                   String                @default("")
+  email                                 String                @unique
+  first_name                            String
+  last_name                             String
+  nickname                              String                @default("")
+  login_type                            String
+  password                              String
+  salt                                  String
+  avatar                                String                @default("")
+  last_login                            DateTime?             @db.Timestamptz(6)
+  reset_pw                              Boolean               @default(true)
+  enabled                               Boolean               @default(true)
+  created_at                            DateTime              @default(now()) @db.Timestamptz(6)
+  created_by                            Int?
+  updated_at                            DateTime?             @db.Timestamptz(6)
+  updated_by                            Int?
+  deleted_at                            DateTime?             @db.Timestamptz(6)
+  deleted_by                            Int?
+  officership_members                   officership_members[]
+  role_members                          role_members[]
+  users_users_created_byTousers         users?                @relation("users_created_byTousers", fields: [created_by], references: [user_id])
+  other_users_users_created_byTousers   users[]               @relation("users_created_byTousers")
+  users_users_deleted_byTousers         users?                @relation("users_deleted_byTousers", fields: [deleted_by], references: [user_id])
+  other_users_users_deleted_byTousers   users[]               @relation("users_deleted_byTousers")
+  users_users_updated_byTousers         users?                @relation("users_updated_byTousers", fields: [updated_by], references: [user_id])
+  other_users_users_updated_byTousers   users[]               @relation("users_updated_byTousers")
+  items_items_created_byTousers         items[]               @relation("items_created_byTousers")
+  items_items_deleted_byTousers         items[]               @relation("items_deleted_byTousers")
+  items_items_updated_byTousers         items[]               @relation("items_updated_byTousers")
+  playlists_playlists_created_byTousers playlists[]           @relation("playlists_created_byTousers")
+  playlists_playlists_deleted_byTousers playlists[]           @relation("playlists_deleted_byTousers")
+  playlists_playlists_updated_byTousers playlists[]           @relation("playlists_updated_byTousers")
+  series_series_created_byTousers       series[]              @relation("series_created_byTousers")
+  series_series_deleted_byTousers       series[]              @relation("series_deleted_byTousers")
+  series_series_updated_byTousers       series[]              @relation("series_updated_byTousers")
+
+  @@schema("people")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model channel {
+  channel_id      Int      @id @default(autoincrement())
+  url_name        String   @unique
+  name            String
+  description     String
+  thumbnail       String
+  output_type     String
+  output_url      String
+  visibility      String
+  status          String
+  location        String
+  scheduled_start DateTime @db.Timestamptz(6)
+  scheduled_end   DateTime @db.Timestamptz(6)
+
+  @@schema("playout")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model encode_formats {
+  format_id             Int                     @id @default(autoincrement())
+  name                  String
+  description           String                  @default("")
+  mime_type             String
+  mode                  String
+  width                 Int
+  height                Int
+  arguments             String
+  file_suffix           String
+  watermarked           Boolean
+  encode_preset_formats encode_preset_formats[]
+  files                 files[]
+
+  @@schema("video")
+}
+
+model encode_preset_formats {
+  preset_id      Int
+  format_id      Int
+  encode_formats encode_formats @relation(fields: [format_id], references: [format_id], onDelete: Cascade)
+  encode_presets encode_presets @relation(fields: [preset_id], references: [preset_id], onDelete: Cascade)
+
+  @@id([preset_id, format_id], map: "presets_encode_formats_pkey")
+  @@schema("video")
+}
+
+model encode_presets {
+  preset_id             Int                     @id @default(autoincrement())
+  name                  String
+  description           String                  @default("")
+  encode_preset_formats encode_preset_formats[]
+  items                 items[]
+
+  @@schema("video")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model files {
+  file_id        Int            @id @default(autoincrement())
+  video_id       Int
+  format_id      Int
+  uri            String
+  status         String
+  size           BigInt         @default(0)
+  is_source      Boolean        @default(false)
+  encode_formats encode_formats @relation(fields: [format_id], references: [format_id])
+  items          items          @relation(fields: [video_id], references: [video_id], onDelete: Cascade)
+
+  @@schema("video")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model hits {
+  hit_id      Int      @id @default(autoincrement())
+  start_time  DateTime @db.Timestamptz(6)
+  mode        String
+  ip_address  String   @db.Inet
+  client_info String
+  percent     Int
+  video_id    Int
+  items       items    @relation(fields: [video_id], references: [video_id], onDelete: Cascade)
+
+  @@index([start_time], map: "starttime")
+  @@schema("video")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model items {
+  video_id                      Int              @id @default(autoincrement())
+  series_id                     Int
+  name                          String
+  url                           String
+  description                   String           @default("")
+  thumbnail                     String           @default("")
+  duration                      Int              @default(0)
+  views                         Int              @default(0)
+  genre                         Int              @default(0)
+  tags                          String[]         @default([])
+  series_position               Int?             @db.SmallInt
+  status                        String           @default("internal")
+  preset_id                     Int?
+  broadcast_date                DateTime         @default(now()) @db.Timestamptz(6)
+  created_at                    DateTime         @default(now()) @db.Timestamptz(6)
+  created_by                    Int?
+  updated_at                    DateTime?        @db.Timestamptz(6)
+  updated_by                    Int?
+  deleted_at                    DateTime?        @db.Timestamptz(6)
+  deleted_by                    Int?
+  files                         files[]
+  hits                          hits[]
+  users_items_created_byTousers users?           @relation("items_created_byTousers", fields: [created_by], references: [user_id])
+  users_items_deleted_byTousers users?           @relation("items_deleted_byTousers", fields: [deleted_by], references: [user_id])
+  encode_presets                encode_presets?  @relation(fields: [preset_id], references: [preset_id])
+  series                        series           @relation(fields: [series_id], references: [series_id], onDelete: Cascade)
+  users_items_updated_byTousers users?           @relation("items_updated_byTousers", fields: [updated_by], references: [user_id])
+  playlist_items                playlist_items[]
+
+  @@schema("video")
+}
+
+model playlist_items {
+  playlist_id   Int
+  video_item_id Int
+  position      Int?      @db.SmallInt
+  playlists     playlists @relation(fields: [playlist_id], references: [playlist_id], onDelete: Cascade)
+  items         items     @relation(fields: [video_item_id], references: [video_id], onDelete: Cascade)
+
+  @@id([playlist_id, video_item_id])
+  @@schema("video")
+}
+
+model playlists {
+  playlist_id                       Int              @id @default(autoincrement())
+  name                              String
+  description                       String           @default("")
+  thumbnail                         String           @default("")
+  status                            String           @default("internal")
+  created_at                        DateTime         @default(now()) @db.Timestamptz(6)
+  created_by                        Int?
+  updated_at                        DateTime?        @db.Timestamptz(6)
+  updated_by                        Int?
+  deleted_at                        DateTime?        @db.Timestamptz(6)
+  deleted_by                        Int?
+  playlist_items                    playlist_items[]
+  users_playlists_created_byTousers users?           @relation("playlists_created_byTousers", fields: [created_by], references: [user_id])
+  users_playlists_deleted_byTousers users?           @relation("playlists_deleted_byTousers", fields: [deleted_by], references: [user_id])
+  users_playlists_updated_byTousers users?           @relation("playlists_updated_byTousers", fields: [updated_by], references: [user_id])
+
+  @@schema("video")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model series {
+  series_id                      Int       @id @default(autoincrement())
+  lft                            Int
+  rgt                            Int
+  name                           String
+  in_url                         Boolean   @default(true)
+  url                            String
+  description                    String    @default("")
+  thumbnail                      String    @default("")
+  tags                           String[]  @default([])
+  status                         String    @default("internal")
+  created_at                     DateTime  @default(now()) @db.Timestamptz(6)
+  created_by                     Int?
+  updated_at                     DateTime? @db.Timestamptz(6)
+  updated_by                     Int?
+  deleted_at                     DateTime? @db.Timestamptz(6)
+  deleted_by                     Int?
+  items                          items[]
+  users_series_created_byTousers users?    @relation("series_created_byTousers", fields: [created_by], references: [user_id])
+  users_series_deleted_byTousers users?    @relation("series_deleted_byTousers", fields: [deleted_by], references: [user_id])
+  users_series_updated_byTousers users?    @relation("series_updated_byTousers", fields: [updated_by], references: [user_id])
+
+  @@schema("video")
+}
