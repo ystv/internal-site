@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "dotenv-cli": "^7.2.1",
-    "prisma": "^4.16.2"
+    "prisma": "^4.16.2",
+    "zod-prisma": "^0.5.4"
   }
 }
