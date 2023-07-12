@@ -1,5 +1,12 @@
-import * as z from "zod"
-import { Completecrews, crewsModel, Completeposition_groups, position_groupsModel, CompletePermission, PermissionModel } from "./index"
+import * as z from "zod";
+import {
+  Completecrews,
+  crewsModel,
+  Completeposition_groups,
+  position_groupsModel,
+  CompletePermission,
+  PermissionModel,
+} from "./index";
 
 export const _positionsModel = z.object({
   position_id: z.number().int(),
@@ -11,12 +18,12 @@ export const _positionsModel = z.object({
   full_description: z.string(),
   image: z.string(),
   training_url: z.string(),
-})
+});
 
 export interface Completepositions extends z.infer<typeof _positionsModel> {
-  crews: Completecrews[]
-  position_groups: Completeposition_groups
-  permissions?: CompletePermission | null
+  crews: Completecrews[];
+  position_groups: Completeposition_groups;
+  permissions?: CompletePermission | null;
 }
 
 /**
@@ -24,8 +31,10 @@ export interface Completepositions extends z.infer<typeof _positionsModel> {
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const positionsModel: z.ZodSchema<Completepositions> = z.lazy(() => _positionsModel.extend({
-  crews: crewsModel.array(),
-  position_groups: position_groupsModel,
-  permissions: PermissionModel.nullish(),
-}))
+export const positionsModel: z.ZodSchema<Completepositions> = z.lazy(() =>
+  _positionsModel.extend({
+    crews: crewsModel.array(),
+    position_groups: position_groupsModel,
+    permissions: PermissionModel.nullish(),
+  }),
+);

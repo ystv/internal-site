@@ -19,8 +19,8 @@ export default router({
       z.array(
         _EventModel.extend({
           attendees: z.array(_AttendeeModel.extend({ users: _UserModel })),
-        })
-      )
+        }),
+      ),
     )
     .query(async ({ input }) => {
       return await Calendar.listEventsForMonth(input.year, input.month);

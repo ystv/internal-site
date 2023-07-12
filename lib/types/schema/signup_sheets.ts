@@ -1,5 +1,10 @@
-import * as z from "zod"
-import { Completecrews, crewsModel, Completeevents, eventsModel } from "./index"
+import * as z from "zod";
+import {
+  Completecrews,
+  crewsModel,
+  Completeevents,
+  eventsModel,
+} from "./index";
 
 export const _signup_sheetsModel = z.object({
   signup_id: z.number().int(),
@@ -10,11 +15,12 @@ export const _signup_sheetsModel = z.object({
   arrival_time: z.date().nullish(),
   start_time: z.date().nullish(),
   end_time: z.date().nullish(),
-})
+});
 
-export interface Completesignup_sheets extends z.infer<typeof _signup_sheetsModel> {
-  crews: Completecrews[]
-  events?: Completeevents | null
+export interface Completesignup_sheets
+  extends z.infer<typeof _signup_sheetsModel> {
+  crews: Completecrews[];
+  events?: Completeevents | null;
 }
 
 /**
@@ -22,7 +28,10 @@ export interface Completesignup_sheets extends z.infer<typeof _signup_sheetsMode
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const signup_sheetsModel: z.ZodSchema<Completesignup_sheets> = z.lazy(() => _signup_sheetsModel.extend({
-  crews: crewsModel.array(),
-  events: eventsModel.nullish(),
-}))
+export const signup_sheetsModel: z.ZodSchema<Completesignup_sheets> = z.lazy(
+  () =>
+    _signup_sheetsModel.extend({
+      crews: crewsModel.array(),
+      events: eventsModel.nullish(),
+    }),
+);

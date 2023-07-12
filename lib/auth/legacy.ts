@@ -23,7 +23,7 @@ const sessionCache = new LRUCache<string, User>({
 // TODO: even with this cache(), this still gets called multiple times per request
 // (once from the middleware, and again the first time getUser() is called from a page)
 export const _getUser = cache(async function _getUser(
-  cookieHeader: string
+  cookieHeader: string,
 ): Promise<User | null> {
   const cached = sessionCache.get(cookieHeader);
   if (cached) {
@@ -35,7 +35,7 @@ export const _getUser = cache(async function _getUser(
       Authorization:
         "Basic " +
         Buffer.from(
-          `${process.env.SSO_USERNAME}:${process.env.SSO_PASSWORD}`
+          `${process.env.SSO_USERNAME}:${process.env.SSO_PASSWORD}`,
         ).toString("base64"),
       Cookie: cookieHeader,
     },
@@ -67,7 +67,7 @@ export const _getUser = cache(async function _getUser(
     itsName: data.user["its-name"],
     email: data.user.email,
     groups: data.user.groups.group.map(
-      (g: Record<string, string>) => g["@_name"]
+      (g: Record<string, string>) => g["@_name"],
     ),
   };
   sessionCache.set(cookieHeader, user);
@@ -79,8 +79,8 @@ export async function authenticate(req: NextRequest) {
   if (!user) {
     redirect(
       `${process.env.SSO_URL}/login.php?return_url=${encodeURIComponent(
-        req.url
-      )}`
+        req.url,
+      )}`,
     );
   }
   return user;
@@ -90,7 +90,7 @@ export async function getCurrentUser() {
   const u = await _getUser(cookies().toString());
   if (!u) {
     throw new Error(
-      "Invariant violation: getCurrentUser called without a user"
+      "Invariant violation: getCurrentUser called without a user",
     );
   }
   return u;

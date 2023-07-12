@@ -1,5 +1,10 @@
-import * as z from "zod"
-import { CompleteUser, UserModel, Completepositions, positionsModel } from "./index"
+import * as z from "zod";
+import {
+  CompleteUser,
+  UserModel,
+  Completepositions,
+  positionsModel,
+} from "./index";
 
 export const _position_groupsModel = z.object({
   group_id: z.number().int(),
@@ -7,11 +12,12 @@ export const _position_groupsModel = z.object({
   description: z.string(),
   primary_colour: z.string(),
   leader: z.number().int().nullish(),
-})
+});
 
-export interface Completeposition_groups extends z.infer<typeof _position_groupsModel> {
-  users?: CompleteUser | null
-  positions: Completepositions[]
+export interface Completeposition_groups
+  extends z.infer<typeof _position_groupsModel> {
+  users?: CompleteUser | null;
+  positions: Completepositions[];
 }
 
 /**
@@ -19,7 +25,10 @@ export interface Completeposition_groups extends z.infer<typeof _position_groups
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const position_groupsModel: z.ZodSchema<Completeposition_groups> = z.lazy(() => _position_groupsModel.extend({
-  users: UserModel.nullish(),
-  positions: positionsModel.array(),
-}))
+export const position_groupsModel: z.ZodSchema<Completeposition_groups> =
+  z.lazy(() =>
+    _position_groupsModel.extend({
+      users: UserModel.nullish(),
+      positions: positionsModel.array(),
+    }),
+  );

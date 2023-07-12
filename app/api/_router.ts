@@ -1,6 +1,4 @@
-import {
-  generateOpenApiDocument,
-} from "trpc-openapi";
+import { generateOpenApiDocument } from "trpc-openapi";
 import { router } from "./_base";
 import { _VideoItemModel } from "@/lib/types/schema";
 import demo from "./_routers/demo";

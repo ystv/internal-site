@@ -65,5 +65,5 @@ export const proc = t.procedure.use(
     throw new TRPCError({
       code: "FORBIDDEN",
     });
-  })
+  }),
 );

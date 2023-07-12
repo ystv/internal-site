@@ -1,15 +1,15 @@
-import * as z from "zod"
-import { Completeevents, eventsModel, CompleteUser, UserModel } from "./index"
+import * as z from "zod";
+import { Completeevents, eventsModel, CompleteUser, UserModel } from "./index";
 
 export const _attendeesModel = z.object({
   event_id: z.number().int(),
   user_id: z.number().int(),
   attend_status: z.string(),
-})
+});
 
 export interface Completeattendees extends z.infer<typeof _attendeesModel> {
-  events: Completeevents
-  users: CompleteUser
+  events: Completeevents;
+  users: CompleteUser;
 }
 
 /**
@@ -17,7 +17,9 @@ export interface Completeattendees extends z.infer<typeof _attendeesModel> {
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const attendeesModel: z.ZodSchema<Completeattendees> = z.lazy(() => _attendeesModel.extend({
-  events: eventsModel,
-  users: UserModel,
-}))
+export const attendeesModel: z.ZodSchema<Completeattendees> = z.lazy(() =>
+  _attendeesModel.extend({
+    events: eventsModel,
+    users: UserModel,
+  }),
+);
