@@ -14,7 +14,7 @@ export default router({
       },
       auth: { perms: ["MEMBER"] },
     })
-    .input(z.object({ year: z.number(), month: z.number() }))
+    .input(z.object({ year: z.number(), month: z.number().gte(1).lte(12) }))
     .output(
       z.array(
         _EventModel.extend({
@@ -23,6 +23,7 @@ export default router({
       ),
     )
     .query(async ({ input }) => {
-      return await Calendar.listEventsForMonth(input.year, input.month);
+      // NB: JS dates (and therefore listEventsForMonth) works with 0-indexed months
+      return await Calendar.listEventsForMonth(input.year, input.month - 1);
     }),
 });

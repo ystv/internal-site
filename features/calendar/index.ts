@@ -6,8 +6,9 @@ export async function listEventsForMonth(year: number, month: number) {
     where: {
       start_date: {
         // javascript dates are 0-indexed for months, but humans are 1-indexed
-        gte: new Date(year, month - 1, 1),
-        lte: new Date(year, month, 0),
+        // (human is dealt with at the API layer to avoid confusing JS everywhere else)
+        gte: new Date(year, month, 1),
+        lte: new Date(year, month + 1, 0),
       },
       deleted_at: null,
     },
