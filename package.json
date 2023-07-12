@@ -30,5 +30,6 @@
     "dotenv-cli": "^7.2.1",
     "prisma": "5",
     "zod-prisma": "^0.5.4"
-  }
+  },
+  "packageManager": "yarn@3.6.1"
 }
