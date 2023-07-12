@@ -2,7 +2,7 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import {
   OpenApiMeta,
   generateOpenApiDocument,
-} from "@markspolakovs/trpc-openapi";
+} from "trpc-openapi";
 import { Context } from "./_context";
 import z from "zod";
 import { findVideoByID } from "@/lib/videos";

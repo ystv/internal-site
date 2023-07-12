@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import {
   createOpenApiFetchHandler
-} from '@markspolakovs/trpc-openapi';
+} from 'trpc-openapi';
 import { router } from "../../_router";
 import { createContext } from "../../_context";
 
