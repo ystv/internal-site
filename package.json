@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "dotenv -c ${NODE_ENV:-development} -- prisma generate --schema ./lib/db/schema.prisma",
-    "prisma:pull": "dotenv -c ${NODE_ENV:-development} -- prisma db pull --schema ./lib/db/schema.prisma"
+    "prisma:pull": "dotenv -c ${NODE_ENV:-development} -- prisma db pull --schema ./lib/db/schema.prisma",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
@@ -33,10 +35,19 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@storybook/addon-essentials": "^7.0.27",
+    "@storybook/addon-interactions": "^7.0.27",
+    "@storybook/addon-links": "^7.0.27",
+    "@storybook/blocks": "^7.0.27",
+    "@storybook/nextjs": "^7.0.27",
+    "@storybook/react": "^7.0.27",
+    "@storybook/testing-library": "^0.0.14-next.2",
     "dotenv-cli": "^7.2.1",
     "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-storybook": "^0.6.12",
     "prettier": "^3.0.0",
     "prisma": "^5.0.0",
+    "storybook": "^7.0.27",
     "zod-prisma": "^0.5.4"
   },
   "packageManager": "yarn@3.6.1"
