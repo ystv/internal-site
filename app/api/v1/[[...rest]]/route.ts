@@ -2,11 +2,11 @@ import { NextRequest } from "next/server";
 import {
   createOpenApiFetchHandler
 } from 'trpc-openapi';
-import { router } from "../../_router";
-import { createContext } from "../../_context";
+import { appRouter } from "../../_router";
+import { createContext } from "../../_base";
 
 const handler = createOpenApiFetchHandler({
-  router,
+  router: appRouter,
   createContext,
   endpoint: "/api/v1"
 });
