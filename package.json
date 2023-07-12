@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma": "dotenv -c $NODE_ENV -- prisma"
+    "prisma": "dotenv -c ${NODE_ENV:-development} -- prisma"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
