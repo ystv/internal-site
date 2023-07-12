@@ -5,8 +5,9 @@ export async function listEventsForMonth(year: number, month: number) {
   return await prisma.event.findMany({
     where: {
       start_date: {
-        gte: new Date(year, month, 1),
-        lte: new Date(year, month + 1, 0),
+        // javascript dates are 0-indexed for months, but humans are 1-indexed
+        gte: new Date(year, month - 1, 1),
+        lte: new Date(year, month, 0),
       },
       deleted_at: null,
     },
@@ -15,10 +16,10 @@ export async function listEventsForMonth(year: number, month: number) {
         include: {
           users: true,
           events: true,
-        }
+        },
       },
       users_events_created_byTousers: true,
       users_events_updated_byTousers: true,
-    }
+    },
   });
 }
