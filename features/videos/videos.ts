@@ -1,4 +1,4 @@
-import { prisma } from "@/prisma";
+import { prisma } from "@/lib/db";
 
 export async function findVideoByID(id: number) {
   return await prisma.videoItem.findFirst({

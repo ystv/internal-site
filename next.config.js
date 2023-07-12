@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  serverRuntimeConfig: {},
-};
+const nextConfig = {};
 
 module.exports = nextConfig;
