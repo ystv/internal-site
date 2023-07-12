@@ -2525,6 +2525,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-xml-parser@npm:^4.2.5":
+  version: 4.2.5
+  resolution: "fast-xml-parser@npm:4.2.5"
+  dependencies:
+    strnum: ^1.0.5
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: d32b22005504eeb207249bf40dc82d0994b5bb9ca9dcc731d335a1f425e47fe085b3cace3cf9d32172dd1a5544193c49e8615ca95b4bf95a4a4920a226b06d80
+  languageName: node
+  linkType: hard
+
 "fastq@npm:^1.6.0":
   version: 1.15.0
   resolution: "fastq@npm:1.15.0"
@@ -3132,10 +3143,12 @@ __metadata:
     dotenv-cli: ^7.2.1
     eslint: 8.44.0
     eslint-config-next: 13.4.8
+    fast-xml-parser: ^4.2.5
+    lru-cache: ^10.0.0
     next: ^13.4.9
     prisma: ^5.0.0
-    react: ^18.2.0
-    react-dom: ^18.2.0
+    react: 18.3.0-canary-7118f5dd7-20230705
+    react-dom: 18.3.0-canary-7118f5dd7-20230705
     swagger-ui-react: ^5.1.0
     trpc-openapi: "https://cdn.ystv.co.uk/temporary-do-not-delete/trpc-openapi-1.3.0-ystv.3.tgz"
     typescript: 5.1.6
@@ -3791,6 +3804,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lru-cache@npm:^10.0.0, lru-cache@npm:^9.1.1 || ^10.0.0":
+  version: 10.0.0
+  resolution: "lru-cache@npm:10.0.0"
+  checksum: 18f101675fe283bc09cda0ef1e3cc83781aeb8373b439f086f758d1d91b28730950db785999cd060d3c825a8571c03073e8c14512b6655af2188d623031baf50
+  languageName: node
+  linkType: hard
+
 "lru-cache@npm:^6.0.0":
   version: 6.0.0
   resolution: "lru-cache@npm:6.0.0"
@@ -3804,13 +3824,6 @@ __metadata:
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
-  languageName: node
-  linkType: hard
-
-"lru-cache@npm:^9.1.1 || ^10.0.0":
-  version: 10.0.0
-  resolution: "lru-cache@npm:10.0.0"
-  checksum: 18f101675fe283bc09cda0ef1e3cc83781aeb8373b439f086f758d1d91b28730950db785999cd060d3c825a8571c03073e8c14512b6655af2188d623031baf50
   languageName: node
   linkType: hard
 
@@ -4873,15 +4886,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.2.0":
-  version: 18.2.0
-  resolution: "react-dom@npm:18.2.0"
+"react-dom@npm:18.3.0-canary-7118f5dd7-20230705":
+  version: 18.3.0-canary-7118f5dd7-20230705
+  resolution: "react-dom@npm:18.3.0-canary-7118f5dd7-20230705"
   dependencies:
     loose-envify: ^1.1.0
-    scheduler: ^0.23.0
+    scheduler: 0.24.0-canary-7118f5dd7-20230705
   peerDependencies:
-    react: ^18.2.0
-  checksum: 7d323310bea3a91be2965f9468d552f201b1c27891e45ddc2d6b8f717680c95a75ae0bc1e3f5cf41472446a2589a75aed4483aee8169287909fcd59ad149e8cc
+    react: 18.3.0-canary-7118f5dd7-20230705
+  checksum: a33f49a92df0234358461c2c5fb1fb270267b06e7090b4a7c2c4a5082bb088496b4eec67feb2a1ddf22c797b57004b00017be402d94fcd81e7a08826d1f2155b
   languageName: node
   linkType: hard
 
@@ -4977,12 +4990,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.2.0":
-  version: 18.2.0
-  resolution: "react@npm:18.2.0"
+"react@npm:18.3.0-canary-7118f5dd7-20230705":
+  version: 18.3.0-canary-7118f5dd7-20230705
+  resolution: "react@npm:18.3.0-canary-7118f5dd7-20230705"
   dependencies:
     loose-envify: ^1.1.0
-  checksum: 88e38092da8839b830cda6feef2e8505dec8ace60579e46aa5490fc3dc9bba0bd50336507dc166f43e3afc1c42939c09fe33b25fae889d6f402721dcd78fca1b
+  checksum: f8d6c697aa57afbd28faae4c7f82a1b38180fa6e2ac9e45fdd9eedddf65753742eb744e7b9d30a1e173f45510f2b38a29e61786a1d3254a46f39f9172a85ace5
   languageName: node
   linkType: hard
 
@@ -5229,12 +5242,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.0":
-  version: 0.23.0
-  resolution: "scheduler@npm:0.23.0"
+"scheduler@npm:0.24.0-canary-7118f5dd7-20230705":
+  version: 0.24.0-canary-7118f5dd7-20230705
+  resolution: "scheduler@npm:0.24.0-canary-7118f5dd7-20230705"
   dependencies:
     loose-envify: ^1.1.0
-  checksum: d79192eeaa12abef860c195ea45d37cbf2bbf5f66e3c4dcd16f54a7da53b17788a70d109ee3d3dde1a0fd50e6a8fc171f4300356c5aee4fc0171de526bf35f8a
+  checksum: ee56c760d8ae1250d06532fa67c6a24273614924b0d3b6129bc112050b2016f96aaa439f84a4a370f39615e280e888466471eaf7624a304da42ff197d555f844
   languageName: node
   linkType: hard
 
@@ -5610,6 +5623,13 @@ __metadata:
   version: 2.0.1
   resolution: "strip-json-comments@npm:2.0.1"
   checksum: 1074ccb63270d32ca28edfb0a281c96b94dc679077828135141f27d52a5a398ef5e78bcf22809d23cadc2b81dfbe345eb5fd8699b385c8b1128907dec4a7d1e1
+  languageName: node
+  linkType: hard
+
+"strnum@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "strnum@npm:1.0.5"
+  checksum: 651b2031db5da1bf4a77fdd2f116a8ac8055157c5420f5569f64879133825915ad461513e7202a16d7fec63c54fd822410d0962f8ca12385c4334891b9ae6dd2
   languageName: node
   linkType: hard
 
