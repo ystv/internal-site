@@ -6,10 +6,10 @@ generator client {
 generator zod {
   provider              = "zod-prisma"
   output                = "../lib/types/schema"
-  relationModel         = "default"
   modelSuffix           = "Model"
-  useDecimalJs          = false
-  prismaJsonNullability = true
+  prismaJsonNullability = "true"
+  relationModel         = "default"
+  useDecimalJs          = "false"
 }
 
 datasource db {
@@ -121,6 +121,7 @@ model Permission {
   permission_id    Int              @id @default(autoincrement())
   name             String           @unique
   description      String           @default("")
+  positions        Position[]
   role_permissions RolePermission[]
 
   @@map("permissions")
@@ -184,6 +185,12 @@ model User {
   updated_by                            Int?
   deleted_at                            DateTime?           @db.Timestamptz(6)
   deleted_by                            Int?
+  attendees                             Attendee[]
+  crews                                 Crew[]
+  events_events_created_byTousers       Event[]            @relation("events_created_byTousers")
+  events_events_deleted_byTousers       Event[]            @relation("events_deleted_byTousers")
+  events_events_updated_byTousers       Event[]            @relation("events_updated_byTousers")
+  position_groups                       PositionGroup[]
   officership_members                   OfficershipMember[]
   role_members                          RoleMember[]
   users_users_created_byTousers         User?               @relation("users_created_byTousers", fields: [created_by], references: [user_id])
@@ -393,4 +400,112 @@ model Series {
 
   @@map("series")
   @@schema("video")
+}
+
+model Attendee {
+  event_id      Int
+  user_id       Int
+  attend_status String
+  events        Event @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
+  users         User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@id([event_id, user_id])
+  @@schema("event")
+	@@map("attendees")
+}
+
+model Crew {
+  crew_id       Int            @id @default(autoincrement())
+  signup_id     Int?
+  position_id   Int?
+  user_id       Int?
+  credited      Boolean        @default(true)
+  locked        Boolean        @default(false)
+  ordering      Int
+  positions     Position?     @relation(fields: [position_id], references: [position_id], onDelete: Cascade)
+  signup_sheets SignupSheet? @relation(fields: [signup_id], references: [signup_id], onDelete: Cascade)
+  users         User?          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@schema("event")
+	@@map("crews")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Event {
+  event_id                       Int             @id @default(autoincrement())
+  event_type                     String          @default("other")
+  name                           String
+  start_date                     DateTime        @db.Timestamptz(6)
+  end_date                       DateTime        @db.Timestamptz(6)
+  description                    String          @default("")
+  location                       String          @default("")
+  is_private                     Boolean         @default(false)
+  is_cancelled                   Boolean         @default(false)
+  is_tentative                   Boolean         @default(false)
+  created_at                     DateTime        @default(now()) @db.Timestamptz(6)
+  created_by                     Int?
+  updated_at                     DateTime?       @db.Timestamptz(6)
+  updated_by                     Int?
+  deleted_at                     DateTime?       @db.Timestamptz(6)
+  deleted_by                     Int?
+  attendees                      Attendee[]
+  users_events_created_byTousers User?           @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  users_events_deleted_byTousers User?           @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  users_events_updated_byTousers User?           @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  signup_sheets                  SignupSheet[]
+
+  @@schema("event")
+	@@map("events")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model PositionGroup {
+  group_id       Int         @id @default(autoincrement())
+  name           String
+  description    String
+  primary_colour String
+  leader         Int?
+  users          User?       @relation(fields: [leader], references: [user_id])
+  positions      Position[]
+
+  @@schema("event")
+	@@map("position_groups")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Position {
+  position_id       Int             @id @default(autoincrement())
+  group_id          Int
+  permission_id     Int?
+  name              String
+  admin             Boolean         @default(false)
+  brief_description String          @default("")
+  full_description  String
+  image             String
+  training_url      String
+  crews             Crew[]
+  position_groups   PositionGroup @relation(fields: [group_id], references: [group_id], onDelete: NoAction)
+  permissions       Permission?     @relation(fields: [permission_id], references: [permission_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("event")
+	@@map("positions")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model SignupSheet {
+  signup_id    Int       @id @default(autoincrement())
+  event_id     Int?
+  title        String
+  description  String    @default("")
+  unlock_date  DateTime? @db.Timestamptz(6)
+  arrival_time DateTime? @db.Timestamptz(6)
+  start_time   DateTime? @db.Timestamptz(6)
+  end_time     DateTime? @db.Timestamptz(6)
+  crews        Crew[]
+  events       Event?   @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("event")
+	@@map("signup_sheets")
 }

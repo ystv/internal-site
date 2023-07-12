@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { CompleteOfficershipMember, OfficershipMemberModel, CompleteRoleMember, RoleMemberModel, CompleteVideoItem, VideoItemModel, CompletePlaylist, PlaylistModel, CompleteSeries, SeriesModel } from "./index"
+import { CompleteAttendee, AttendeeModel, CompleteCrew, CrewModel, CompleteEvent, EventModel, CompletePositionGroup, PositionGroupModel, CompleteOfficershipMember, OfficershipMemberModel, CompleteRoleMember, RoleMemberModel, CompleteVideoItem, VideoItemModel, CompletePlaylist, PlaylistModel, CompleteSeries, SeriesModel } from "./index"
 
 export const _UserModel = z.object({
   user_id: z.number().int(),
@@ -25,6 +25,12 @@ export const _UserModel = z.object({
 })
 
 export interface CompleteUser extends z.infer<typeof _UserModel> {
+  attendees: CompleteAttendee[]
+  crews: CompleteCrew[]
+  events_events_created_byTousers: CompleteEvent[]
+  events_events_deleted_byTousers: CompleteEvent[]
+  events_events_updated_byTousers: CompleteEvent[]
+  position_groups: CompletePositionGroup[]
   officership_members: CompleteOfficershipMember[]
   role_members: CompleteRoleMember[]
   users_users_created_byTousers?: CompleteUser | null
@@ -50,6 +56,12 @@ export interface CompleteUser extends z.infer<typeof _UserModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const UserModel: z.ZodSchema<CompleteUser> = z.lazy(() => _UserModel.extend({
+  attendees: AttendeeModel.array(),
+  crews: CrewModel.array(),
+  events_events_created_byTousers: EventModel.array(),
+  events_events_deleted_byTousers: EventModel.array(),
+  events_events_updated_byTousers: EventModel.array(),
+  position_groups: PositionGroupModel.array(),
   officership_members: OfficershipMemberModel.array(),
   role_members: RoleMemberModel.array(),
   users_users_created_byTousers: UserModel.nullish(),
