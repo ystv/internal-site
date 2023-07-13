@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Event } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export async function listEventsForMonth(year: number, month: number) {
   return await prisma.event.findMany({
@@ -40,5 +40,11 @@ export async function getEvent(id: number) {
       users_events_created_byTousers: true,
       users_events_updated_byTousers: true,
     },
+  });
+}
+
+export async function createEvent(event: Prisma.EventUncheckedCreateInput) {
+  return await prisma.event.create({
+    data: event,
   });
 }

@@ -12,7 +12,18 @@ import { Forbidden } from "@/lib/auth/errors";
  * * PUBLIC - open to the world with no authentication
  * * SuperUser - can do anything (don't use this unless you know what you're doing)
  */
-export type Permission = "PUBLIC" | "MEMBER" | "SuperUser" | "Watch.Admin";
+export type Permission =
+  | "PUBLIC"
+  | "MEMBER"
+  | "SuperUser"
+  | "Watch.Admin"
+  | "Calendar.Admin"
+  | "Calendar.Show.Admin"
+  | "Calendar.Show.Creator"
+  | "Calendar.Meeting.Admin"
+  | "Calendar.Meeting.Creator"
+  | "Calendar.Social.Admin"
+  | "Calendar.Social.Creator";
 
 /**
  * Builds the cache of officership IDs to permissions.
@@ -135,12 +146,20 @@ export async function getUserPermissions(id: number): Promise<Permission[]> {
  * @param perms
  */
 export async function requirePermission(...perms: Permission[]) {
+  if (!(await hasPermission(...perms))) throw new Forbidden(perms);
+}
+
+export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   const user = await getCurrentUser();
   const userPerms = await getUserPermissions(user.id);
   for (const perm of perms) {
     if (userPerms.includes(perm)) {
-      return;
+      return true;
     }
   }
-  throw new Forbidden(perms);
+  // noinspection RedundantIfStatementJS
+  if (userPerms.includes("SuperUser")) {
+    return true;
+  }
+  return false;
 }
