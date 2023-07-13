@@ -1,10 +1,10 @@
-// TODO: this should be server-only but that breaks middleware
+import "server-only";
 import { NextRequest } from "next/server";
 import { XMLParser } from "fast-xml-parser";
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { cookies } from "next/headers";
 import { LRUCache } from "lru-cache";
+import { getUserPermissions, NotLoggedIn, Permission } from "@/lib/auth/server";
 
 export interface User {
   id: number;
@@ -14,6 +14,7 @@ export interface User {
   itsName: string;
   email: string;
   groups: string[];
+  permissions: Permission[];
 }
 
 const sessionCache = new LRUCache<string, User>({
@@ -30,7 +31,7 @@ export const _getUser = cache(async function _getUser(
   if (cached) {
     return cached;
   }
-  const url = `${process.env.SSO_URL}/REST.php?api-version=latest&api-name=usermanagement&resource-name=currentuser`;
+  const url = `${process.env.NEXT_PUBLIC_SSO_URL}/REST.php?api-version=latest&api-name=usermanagement&resource-name=currentuser`;
   const res = await fetch(url, {
     headers: {
       Authorization:
@@ -70,6 +71,7 @@ export const _getUser = cache(async function _getUser(
     groups: data.user.groups.group.map(
       (g: Record<string, string>) => g["@_name"],
     ),
+    permissions: await getUserPermissions(data.user.id),
   };
   sessionCache.set(cookieHeader, user);
   return user;
@@ -78,21 +80,15 @@ export const _getUser = cache(async function _getUser(
 export async function authenticate(req: NextRequest) {
   const user = await _getUser(req.headers.get("Cookie") ?? "");
   if (!user) {
-    redirect(
-      `${process.env.SSO_URL}/login.php?return_url=${encodeURIComponent(
-        req.url,
-      )}`,
-    );
+    throw new NotLoggedIn();
   }
   return user;
 }
 
 export async function getCurrentUser() {
-  const u = await _getUser(cookies().toString());
+  const u = await _getUser((await import("next/headers")).cookies().toString());
   if (!u) {
-    throw new Error(
-      "Invariant violation: getCurrentUser called without a user",
-    );
+    throw new NotLoggedIn();
   }
   return u;
 }

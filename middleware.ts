@@ -1,10 +1,9 @@
-import { authenticate } from "@/lib/auth/legacy";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   try {
-    await authenticate(request);
+    // await authenticate(request);
   } catch (e) {
     if (isRedirectError(e)) {
       const [errorCode, _, destination] = e.digest.split(";", 3);

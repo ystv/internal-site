@@ -1,9 +1,11 @@
-import Image from "next/image";
+"use server";
+import { getCurrentUser } from "@/lib/auth/server";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
   return (
     <main>
-      hello boss
+      hello boss <pre>{JSON.stringify(user, null, 2)}</pre>
     </main>
   );
 }

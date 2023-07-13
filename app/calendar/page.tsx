@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth/legacy";
+import { getCurrentUser } from "@/lib/auth/server";
 import YSTVCalendar from "@/components/YSTVCalendar";
 import Link from "next/link";
 import { listEventsForMonth } from "@/features/calendar";
