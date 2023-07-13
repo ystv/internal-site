@@ -55,25 +55,24 @@ export default function Form<
       } finally {
         setIsSubmitting(false);
       }
-      if ("ok" in res) {
-        if (res.ok) {
-          form.clearErrors();
-          onSuccess?.(res);
-        } else {
-          form.clearErrors();
-          for (const [k, err] of Object.entries(
-            (res as FormErrorResponse).errors,
-          )) {
-            form.setError(k as FieldPath<Fields>, {
-              type: "custom",
-              message: err,
-            });
-          }
-        }
-      } else {
+      if (!("ok" in res)) {
         throw new Error(
           "<Form> action did not conform to FormResponse interface.",
         );
+      }
+      if (res.ok) {
+        form.clearErrors();
+        onSuccess?.(res);
+        return;
+      }
+      form.clearErrors();
+      for (const [k, err] of Object.entries(
+        (res as FormErrorResponse).errors,
+      )) {
+        form.setError(k as FieldPath<Fields>, {
+          type: "custom",
+          message: err,
+        });
       }
     }
   }, [form, action, onSuccess]);
