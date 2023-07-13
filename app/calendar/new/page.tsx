@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth/legacy";
+import { getCurrentUser } from "@/lib/auth/server";
 import { schema } from "./schema";
 import { CreateEventForm } from "@/app/calendar/new/form";
 import {

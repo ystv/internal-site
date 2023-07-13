@@ -1,7 +1,7 @@
 import { inferAsyncReturnType, initTRPC, TRPCError } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { OpenApiMeta } from "trpc-openapi";
-import { Permission } from "@/lib/auth/common";
+import { Permission } from "@/lib/auth/server";
 
 export function createContext({
   req,
@@ -15,7 +15,7 @@ export function createContext({
       user: {
         id: 1,
         name: "TEST",
-        permissions: ["SUDO"] satisfies Permission[] as Permission[],
+        permissions: ["SuperUser"] satisfies Permission[] as Permission[],
       },
     };
   }
@@ -49,7 +49,7 @@ export const proc = t.procedure.use(
         code: "UNAUTHORIZED",
       });
     }
-    if (ctx.user.permissions.includes("SUDO")) {
+    if (ctx.user.permissions.includes("SuperUser")) {
       return next();
     }
     if (meta.auth.perms.some((x) => ctx.user.permissions.includes(x))) {

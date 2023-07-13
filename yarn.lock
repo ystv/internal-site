@@ -4359,6 +4359,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/async@npm:^3.2.20":
+  version: 3.2.20
+  resolution: "@types/async@npm:3.2.20"
+  checksum: 880ac312f097d3ef98da175b23dc6d29dd0014af55789b3f534dacd0fcd0fb202fdefc732d9b10e4bc93e40823cfe279bb19033cb863f4e27c032e50cd7d9a8e
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7.0.0":
   version: 7.20.1
   resolution: "@types/babel__core@npm:7.20.1"
@@ -4621,7 +4628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.167":
+"@types/lodash@npm:^4.14.167, @types/lodash@npm:^4.14.195":
   version: 4.14.195
   resolution: "@types/lodash@npm:4.14.195"
   checksum: 39b75ca635b3fa943d17d3d3aabc750babe4c8212485a4df166fe0516e39288e14b0c60afc6e21913cc0e5a84734633c71e617e2bd14eaa1cf51b8d7799c432e
@@ -5660,7 +5667,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:^3.2.3":
+"async@npm:^3.2.3, async@npm:^3.2.4":
   version: 3.2.4
   resolution: "async@npm:3.2.4"
   checksum: 43d07459a4e1d09b84a20772414aa684ff4de085cbcaec6eea3c7a8f8150e8c62aa6cd4e699fe8ee93c3a5b324e777d34642531875a0817a35697522c1b02e89
@@ -9474,10 +9481,13 @@ __metadata:
     "@storybook/testing-library": ^0.0.14-next.2
     "@tailwindcss/forms": ^0.5.3
     "@trpc/server": ^10.33.1
+    "@types/async": ^3.2.20
+    "@types/lodash": ^4.14.195
     "@types/node": 20.3.3
     "@types/react": 18.2.14
     "@types/react-dom": 18.2.6
     "@types/swagger-ui-react": ^4.18.0
+    async: ^3.2.4
     autoprefixer: ^10.4.14
     classnames: ^2.3.2
     dotenv-cli: ^7.2.1
@@ -9486,6 +9496,7 @@ __metadata:
     eslint-config-prettier: ^8.8.0
     eslint-plugin-storybook: ^0.6.12
     fast-xml-parser: ^4.2.5
+    lodash: ^4.17.21
     lru-cache: ^10.0.0
     next: ^13.4.9
     postcss: ^8.4.25
