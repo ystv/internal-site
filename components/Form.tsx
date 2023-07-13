@@ -48,10 +48,6 @@ export default function Form<
         //  Instead, we should probably use the FormData object React gives us (though we'll have to figure out how
         //  to make it play nice with hook-form).
         res = await action(form.getValues());
-        if ("ok" in res && res.ok) {
-          form.clearErrors();
-          onSuccess?.(res);
-        }
       } catch (e) {
         console.error(e);
         form.setError("root", { type: "custom", message: String(e) });
@@ -59,17 +55,25 @@ export default function Form<
       } finally {
         setIsSubmitting(false);
       }
-      // Handle server-side error responses
-      if ("ok" in res && !res.ok) {
-        form.clearErrors();
-        for (const [k, err] of Object.entries(
-          (res as FormErrorResponse).errors,
-        )) {
-          form.setError(k as FieldPath<Fields>, {
-            type: "custom",
-            message: err,
-          });
+      if ("ok" in res) {
+        if (res.ok) {
+          form.clearErrors();
+          onSuccess?.(res);
+        } else {
+          form.clearErrors();
+          for (const [k, err] of Object.entries(
+            (res as FormErrorResponse).errors,
+          )) {
+            form.setError(k as FieldPath<Fields>, {
+              type: "custom",
+              message: err,
+            });
+          }
         }
+      } else {
+        throw new Error(
+          "<Form> action did not conform to FormResponse interface.",
+        );
       }
     }
   }, [form, action, onSuccess]);
