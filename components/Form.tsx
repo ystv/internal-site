@@ -90,7 +90,6 @@ export default function Form<
         let res;
         try {
           res = await action(data);
-          console.log("about to throw!");
         } catch (e) {
           console.error(e);
           form.setError("root", { type: "custom", message: String(e) });
