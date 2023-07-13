@@ -7,7 +7,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { HTMLInputTypeAttribute } from "react";
+import { HTMLInputTypeAttribute, useCallback, useState } from "react";
 import classNames from "classnames";
 import { FieldPath } from "react-hook-form/dist/types/path";
 
@@ -75,39 +75,65 @@ export default function Form<
   schema: Schema;
   children: React.ReactNode;
   className?: string;
+  submitLabel?: string;
 }) {
   const form = useForm<Fields>({
     resolver: zodResolver(props.schema),
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { action } = props;
+  const submitHandler = useCallback(
+    async (data: FormData) => {
+      const valid = await form.trigger();
+      if (valid) {
+        setIsSubmitting(true);
+        let res;
+        try {
+          res = await action(data);
+          console.log("about to throw!");
+        } catch (e) {
+          console.error(e);
+          form.setError("root", { type: "custom", message: String(e) });
+          return;
+        } finally {
+          setIsSubmitting(false);
+        }
+        // Handle server-side error responses
+        if ("ok" in res && !res.ok) {
+          form.clearErrors();
+          for (const [k, err] of Object.entries(
+            (res as FormErrorResponse).errors,
+          )) {
+            form.setError(k as FieldPath<Fields>, {
+              type: "custom",
+              message: err,
+            });
+          }
+        }
+      }
+    },
+    [form, action],
+  );
   return (
     <FormProvider {...form}>
-      <form
-        action={async (data) => {
-          const valid = await form.trigger();
-          if (valid) {
-            const res = await props.action(data);
-            // Handle server-side error responses
-            if ("ok" in res && !res.ok) {
-              form.clearErrors();
-              for (const [k, err] of Object.entries(
-                (res as FormErrorResponse).errors,
-              )) {
-                form.setError(k as FieldPath<Fields>, {
-                  type: "custom",
-                  message: err,
-                });
-              }
-            }
-          }
-        }}
-        className={props.className}
-      >
+      <form action={submitHandler} className={props.className}>
         {form.formState.errors.root && (
           <span className="text-red-500 font-semibold block">
             {(form.formState.errors.root?.message as string) ?? ""}
           </span>
         )}
         {props.children}
+        <button
+          type="submit"
+          disabled={isSubmitting || !form.formState.isValid}
+          className={classNames(
+            "mt-4 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700",
+            (isSubmitting || !form.formState.isValid) &&
+              "opacity-50 cursor-not-allowed",
+          )}
+        >
+          {props.submitLabel ?? "Create"}
+        </button>
       </form>
     </FormProvider>
   );
