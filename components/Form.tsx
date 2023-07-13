@@ -1,5 +1,5 @@
 "use client";
-import { ZodEffects, ZodObject } from "zod";
+import { ZodEffects, ZodError, ZodObject } from "zod";
 import {
   FieldValues,
   FormProvider,
@@ -56,6 +56,16 @@ export type FormAction<
   OK extends Record<string, unknown> = {},
   Fields extends FieldValues = any,
 > = (data: FormData) => Promise<FormResponse<OK, Fields>>;
+
+export function zodErrorResponse(err: ZodError): FormErrorResponse {
+  return {
+    ok: false,
+    errors: err.issues.reduce(
+      (acc, issue) => ({ ...acc, [issue.path[0]]: issue.message }),
+      {},
+    ),
+  };
+}
 
 export default function Form<
   Fields extends FieldValues,

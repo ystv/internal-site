@@ -1,7 +1,11 @@
 import { getCurrentUser } from "@/lib/auth/legacy";
 import { schema } from "./schema";
 import { CreateEventForm } from "@/app/calendar/new/form";
-import { FormErrorResponse, FormResponse } from "@/components/Form";
+import {
+  FormErrorResponse,
+  FormResponse,
+  zodErrorResponse,
+} from "@/components/Form";
 
 async function createEvent(data: FormData): Promise<FormResponse> {
   "use server";
@@ -10,13 +14,7 @@ async function createEvent(data: FormData): Promise<FormResponse> {
   //   (Calendar.Admin, Calendar.{Show,Meeting,Social}.Admin). Check those.
   const payload = schema.safeParse(data);
   if (!payload.success) {
-    return {
-      ok: false,
-      errors: payload.error.issues.reduce(
-        (acc, issue) => ({ ...acc, [issue.path[0]]: issue.message }),
-        {},
-      ),
-    } satisfies FormErrorResponse<any>;
+    return zodErrorResponse(payload.error);
   }
   console.log(payload.data);
   return {
