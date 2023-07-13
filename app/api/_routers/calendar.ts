@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { proc, router } from "../_base";
-import { _AttendeeModel, _EventModel, _UserModel } from "@/lib/types/schema";
+import { _AttendeeModel, _EventModel } from "@/lib/types/schema";
 import * as Calendar from "@/features/calendar";
 
 export default router({
@@ -18,7 +18,15 @@ export default router({
     .output(
       z.array(
         _EventModel.extend({
-          attendees: z.array(_AttendeeModel.extend({ users: _UserModel })),
+          attendees: z.array(
+            _AttendeeModel.extend({
+              users: z.object({
+                user_id: z.number(),
+                first_name: z.string(),
+                last_name: z.string(),
+              }),
+            }),
+          ),
         }),
       ),
     )

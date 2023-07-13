@@ -1,6 +1,8 @@
-import { TRPCError, inferAsyncReturnType, initTRPC } from "@trpc/server";
+import { inferAsyncReturnType, initTRPC, TRPCError } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { OpenApiMeta } from "trpc-openapi";
+import { Permission } from "@/lib/auth/common";
+
 export function createContext({
   req,
   resHeaders,
@@ -22,15 +24,6 @@ export function createContext({
   };
 }
 export type Context = inferAsyncReturnType<typeof createContext>;
-
-/**
- * Available permissions. Should contain all the ones that users are expected
- * to have, along with some special ones:
- * * MEMBER - any logged in user
- * * PUBLIC - open to the world with no authentication
- * * SUDO - superuser, can do anything (don't use this unless you know what you're doing)
- */
-export type Permission = "PUBLIC" | "MEMBER" | "SUDO" | "Watch.Admin";
 
 interface AuthMeta {
   perms: [Permission, ...Permission[]];
