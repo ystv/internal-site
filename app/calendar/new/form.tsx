@@ -1,8 +1,9 @@
 "use client";
 import Form, { FormAction } from "@/components/Form";
-import { EventType, schema } from "./schema";
+import { schema } from "./schema";
 import { DatePickerField, Field } from "@/components/FormFields";
 import { useRouter } from "next/navigation";
+import { EventType } from "@/features/calendar/types";
 
 export function CreateEventForm(props: {
   action: FormAction<{ id: number }>;

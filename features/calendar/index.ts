@@ -1,5 +1,22 @@
 import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import { AttendStatus } from "@/features/calendar/statuses";
+
+const EventSelectors = {
+  attendees: {
+    include: {
+      users: true,
+      events: true,
+    },
+    where: {
+      attend_status: {
+        not: "unknown",
+      },
+    },
+  },
+  users_events_created_byTousers: true,
+  users_events_updated_byTousers: true,
+};
 
 export async function listEventsForMonth(year: number, month: number) {
   return await prisma.event.findMany({
@@ -12,16 +29,7 @@ export async function listEventsForMonth(year: number, month: number) {
       },
       deleted_at: null,
     },
-    include: {
-      attendees: {
-        include: {
-          users: true,
-          events: true,
-        },
-      },
-      users_events_created_byTousers: true,
-      users_events_updated_byTousers: true,
-    },
+    include: EventSelectors,
   });
 }
 
@@ -30,21 +38,14 @@ export async function getEvent(id: number) {
     where: {
       event_id: id,
     },
-    include: {
-      attendees: {
-        include: {
-          users: true,
-          events: true,
-        },
-      },
-      users_events_created_byTousers: true,
-      users_events_updated_byTousers: true,
-    },
+    include: EventSelectors,
   });
 }
+export type EventType = NonNullable<Awaited<ReturnType<typeof getEvent>>>;
 
 export async function createEvent(event: Prisma.EventUncheckedCreateInput) {
   return await prisma.event.create({
     data: event,
+    include: EventSelectors,
   });
 }
