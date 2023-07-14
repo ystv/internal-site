@@ -1,46 +1,52 @@
 "use server";
 import { getCurrentUser } from "@/lib/auth/legacy";
-import { AttendStatusLabels } from "@/app/calendar/[eventID]/common";
+import { AttendStatuses } from "@/app/calendar/[eventID]/common";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { zfd } from "zod-form-data";
+import { zodErrorResponse } from "@/components/FormServerHelpers";
+
+const updateAttendeeStatusSchema = zfd.formData({
+  event_id: z.coerce.number(),
+  status: z.enum(AttendStatuses),
+});
 
 export async function updateAttendeeStatus(data: FormData) {
   const me = await getCurrentUser();
-  const status = data.get("status");
-  if (typeof status !== "string" || !(status in AttendStatusLabels)) {
-    return {
-      ok: false,
-      errors: {
-        status: "Invalid status",
-      },
-    };
-  }
-  const eventID = data.get("event_id");
-  if (typeof eventID !== "string") {
-    return {
-      ok: false,
-      errors: {
-        event_id: "Invalid event ID",
-      },
-    };
+  const payload = updateAttendeeStatusSchema.safeParse(data);
+  if (!payload.success) {
+    return zodErrorResponse(payload.error);
   }
 
-  await prisma.attendee.upsert({
-    where: {
-      event_id_user_id: {
-        event_id: parseInt(eventID, 10),
-        user_id: me.id,
+  if (payload.data.status === "unknown") {
+    await prisma.attendee.delete({
+      where: {
+        event_id_user_id: {
+          event_id: payload.data.event_id,
+          user_id: me.id,
+        },
       },
-    },
-    update: {
-      attend_status: status,
-    },
-    create: {
-      event_id: parseInt(eventID, 10),
-      user_id: me.id,
-      attend_status: status,
-    },
-  });
+    });
+  } else {
+    await prisma.attendee.upsert({
+      where: {
+        event_id_user_id: {
+          event_id: payload.data.event_id,
+          user_id: me.id,
+        },
+      },
+      update: {
+        attend_status: payload.data.status,
+      },
+      create: {
+        event_id: payload.data.event_id,
+        user_id: me.id,
+        attend_status: payload.data.status,
+      },
+    });
+  }
+
   revalidatePath("/calendar/[eventID]");
   return { ok: true };
 }
