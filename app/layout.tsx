@@ -1,6 +1,8 @@
 import "./globals.css";
-import { getCurrentUser } from "@/lib/auth/legacy";
+import { getCurrentUserOrNull } from "@/lib/auth/legacy";
 import { UserProvider } from "@/components/UserContext";
+import { redirect } from "next/navigation";
+import { getSignInURL } from "@/lib/auth/common-client";
 
 export const metadata = {
   title: "Create Next App",
@@ -12,7 +14,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
+  // TODO: This should get caught by global-error, but for some reason isn't
+  const user = await getCurrentUserOrNull();
+  if (!user) {
+    redirect(getSignInURL(process.env.NEXT_PUBLIC_URL!));
+  }
   return (
     <html lang="en">
       <body>
