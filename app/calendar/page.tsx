@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/auth/server";
 import YSTVCalendar from "@/components/YSTVCalendar";
 import Link from "next/link";
 import { listEventsForMonth } from "@/features/calendar";
-import { PermissionGate } from "@/components/PermissionsContext";
+import { PermissionGate } from "@/components/UserContext";
 
 export default async function CalendarPage({
   searchParams,

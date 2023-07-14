@@ -2,28 +2,28 @@
 
 import { createContext, useContext, useMemo } from "react";
 import { Permission } from "@/lib/auth/common";
+import { User } from "@/lib/auth/legacy";
 
-const PermissionsContext = createContext<Permission[]>([]);
+const UserContext = createContext<User>(
+  null as unknown as User /* Bit naughty, but getCurrentUser ensures there's a user signed in */,
+);
 
-export function PermissionsProvider(props: {
-  children: React.ReactNode;
-  permissions: Permission[];
-}) {
+export function UserProvider(props: { children: React.ReactNode; user: User }) {
   return (
-    <PermissionsContext.Provider value={props.permissions}>
+    <UserContext.Provider value={props.user}>
       {props.children}
-    </PermissionsContext.Provider>
+    </UserContext.Provider>
   );
 }
 
-export const useUserPermissions = () => useContext(PermissionsContext);
+export const useCurrentUser = () => useContext(UserContext);
 
 export function PermissionGate(props: {
   children: React.ReactNode;
   required: Permission | Permission[];
   fallback?: React.ReactNode;
 }) {
-  const userPermissions = useUserPermissions();
+  const userPermissions = useCurrentUser().permissions;
   const ok = useMemo(
     () =>
       (Array.isArray(props.required)

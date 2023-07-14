@@ -1,6 +1,6 @@
 import "./globals.css";
 import { getCurrentUser } from "@/lib/auth/legacy";
-import { PermissionsProvider } from "@/components/PermissionsContext";
+import { UserProvider } from "@/components/UserContext";
 
 export const metadata = {
   title: "Create Next App",
@@ -16,9 +16,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <PermissionsProvider permissions={user.permissions}>
-          {children}
-        </PermissionsProvider>
+        <UserProvider user={user}>{children}</UserProvider>
       </body>
     </html>
   );
