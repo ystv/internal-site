@@ -12,6 +12,9 @@ import { Forbidden } from "@/lib/auth/errors";
  * * PUBLIC - open to the world with no authentication
  * * SuperUser - can do anything (don't use this unless you know what you're doing)
  */
+// TODO: This is duplicated between here and the DB. In theory we could just use `string` as the type, but that
+//  loses auto-complete. We could also auto-generate it from the DB, but my preference would be to remove the
+//  DB permissions table entirely and have the codebase be the source of truth.
 export type Permission =
   | "PUBLIC"
   | "MEMBER"
