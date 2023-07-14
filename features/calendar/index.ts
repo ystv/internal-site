@@ -24,3 +24,21 @@ export async function listEventsForMonth(year: number, month: number) {
     },
   });
 }
+
+export async function getEvent(id: number) {
+  return await prisma.event.findFirst({
+    where: {
+      event_id: id,
+    },
+    include: {
+      attendees: {
+        include: {
+          users: true,
+          events: true,
+        },
+      },
+      users_events_created_byTousers: true,
+      users_events_updated_byTousers: true,
+    },
+  });
+}
