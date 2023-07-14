@@ -74,7 +74,6 @@ export function DatePickerField(
     () => (controller.field.value ? new Date(controller.field.value) : null),
     [controller.field.value],
   );
-  console.log(controller.field);
   return (
     <label className="block">
       <span className="text-gray-700 font-bold block">{props.label}</span>
