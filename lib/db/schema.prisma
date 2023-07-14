@@ -5,7 +5,7 @@ generator client {
 
 generator zod {
   provider              = "zod-prisma"
-  output                = "../lib/types/schema"
+  output                = "./types"
   modelSuffix           = "Model"
   prismaJsonNullability = "true"
   relationModel         = "default"

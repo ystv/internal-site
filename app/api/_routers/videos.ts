@@ -1,4 +1,4 @@
-import { _VideoItemModel } from "@/lib/types/schema";
+import { _VideoItemModel } from "@/lib/db/types";
 import { findVideoByID } from "@/features/videos";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
