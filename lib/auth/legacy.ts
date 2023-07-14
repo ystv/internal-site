@@ -86,9 +86,13 @@ export async function authenticate(req: NextRequest) {
 }
 
 export async function getCurrentUser() {
-  const u = await _getUser((await import("next/headers")).cookies().toString());
+  const u = await getCurrentUserOrNull();
   if (!u) {
     throw new NotLoggedIn();
   }
   return u;
+}
+
+export async function getCurrentUserOrNull() {
+  return await _getUser((await import("next/headers")).cookies().toString());
 }

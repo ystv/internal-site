@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { getSignInURL } from "@/lib/auth/common-client";
 import { isNotLoggedIn, NotLoggedIn } from "@/lib/auth/errors";
 
-export default function Error({
+export default function GlobalError({
   error,
   reset,
 }: {
@@ -23,16 +23,20 @@ export default function Error({
   }, [error, pathName]);
 
   return (
-    <div>
-      <h2>Something went wrong!</h2>
-      <button
-        onClick={
-          // Attempt to recover by trying to re-render the segment
-          () => reset()
-        }
-      >
-        Try again
-      </button>
-    </div>
+    <html>
+      <body>
+        <div>
+          <h2>Something went wrong!</h2>
+          <button
+            onClick={
+              // Attempt to recover by trying to re-render the segment
+              () => reset()
+            }
+          >
+            Try again
+          </button>
+        </div>
+      </body>
+    </html>
   );
 }
