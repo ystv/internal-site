@@ -49,3 +49,37 @@ export async function createEvent(event: Prisma.EventUncheckedCreateInput) {
     include: EventSelectors,
   });
 }
+
+export async function updateEventAttendeeStatus(
+  eventID: number,
+  userID: number,
+  status: AttendStatus,
+) {
+  if (status === "unknown") {
+    await prisma.attendee.delete({
+      where: {
+        event_id_user_id: {
+          event_id: eventID,
+          user_id: userID,
+        },
+      },
+    });
+  } else {
+    await prisma.attendee.upsert({
+      where: {
+        event_id_user_id: {
+          event_id: eventID,
+          user_id: userID,
+        },
+      },
+      update: {
+        attend_status: status,
+      },
+      create: {
+        event_id: eventID,
+        user_id: userID,
+        attend_status: status,
+      },
+    });
+  }
+}

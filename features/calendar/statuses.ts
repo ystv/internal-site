@@ -5,9 +5,10 @@ export const AttendStatuses = [
   "invited",
   "unknown",
 ] as const;
+export type AttendStatus = (typeof AttendStatuses)[number];
 
 export const AttendStatusLabels: {
-  [K in (typeof AttendStatuses)[number]]: string;
+  [K in AttendStatus]: string;
 } = {
   attending: "Attending",
   not_attending: "Not Attending",
