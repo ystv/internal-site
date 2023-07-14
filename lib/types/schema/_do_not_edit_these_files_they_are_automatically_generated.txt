@@ -1,1 +1,0 @@
-To regenerate these, just run `yarn prisma generate`.

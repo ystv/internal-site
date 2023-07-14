@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { proc, router } from "../_base";
-import { _AttendeeModel, _EventModel } from "@/lib/types/schema";
+import { _AttendeeModel, _EventModel } from "@/lib/db/types";
 import * as Calendar from "@/features/calendar";
 
 export default router({
