@@ -1,16 +1,16 @@
 "use client";
-import { EventType } from "@/features/calendar";
+import { EventObjectType } from "@/features/calendar";
 import { getCurrentUser, User } from "@/lib/auth/legacy";
 import { useRef } from "react";
 import { getUserName } from "@/components/UserCommon";
-import { AttendStatusLabels } from "@/app/calendar/[eventID]/common";
 import { updateAttendeeStatus } from "@/app/calendar/[eventID]/actions";
+import { AttendStatusLabels } from "@/features/calendar/statuses";
 
 export function CurrentUserAttendeeRow({
   event,
   me,
 }: {
-  event: EventType;
+  event: EventObjectType;
   me: User;
 }) {
   const myAttendee = event.attendees.find((att) => att.user_id === me.id);

@@ -1,11 +1,11 @@
-import { EventType, getEvent } from "@/features/calendar";
+import { EventObjectType, getEvent } from "@/features/calendar";
 import { notFound } from "next/navigation";
 import { getUserName } from "@/components/UserCommon";
 import { getCurrentUser } from "@/lib/auth/legacy";
 import { CurrentUserAttendeeRow } from "@/app/calendar/[eventID]/AttendeeStatus";
-import { AttendStatusLabels } from "@/app/calendar/[eventID]/common";
+import { AttendStatusLabels } from "@/features/calendar/statuses";
 
-async function AttendeesView({ event }: { event: EventType }) {
+async function AttendeesView({ event }: { event: EventObjectType }) {
   const me = await getCurrentUser();
   const isCurrentUserAttending = event.attendees.some(
     (att) => att.user_id === me.id,
