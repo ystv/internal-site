@@ -77,7 +77,7 @@ export function DatePickerField(
   console.log(controller.field);
   return (
     <label className="block">
-      <span className="text-gray-700 font-bold">{props.label}</span>
+      <span className="text-gray-700 font-bold block">{props.label}</span>
       {controller.fieldState.error && (
         <span className="text-red-500 font-semibold block">
           {(controller.fieldState.error.message as string) ?? ""}
@@ -88,6 +88,12 @@ export function DatePickerField(
         onChange={(v) => controller.field.onChange(v?.toISOString())}
         onBlur={controller.field.onBlur}
         ref={controller.field.ref}
+        className={classNames(
+          "mt-1 block w-full rounded-md shadow-sm",
+          controller.fieldState.error ? "border-red-500" : "border-gray-300",
+          props.className,
+        )}
+        wrapperClassName="block"
         {...rest}
         selectsRange={false}
       />
