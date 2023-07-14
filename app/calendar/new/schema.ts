@@ -1,7 +1,8 @@
 import { zfd } from "zod-form-data";
 import { z } from "zod";
 
-export type EventType = "show" | "meeting" | "social" | "other";
+const EventTypes = ["show", "meeting", "social", "other"] as const;
+export type EventType = (typeof EventTypes)[number];
 
 export const schema = zfd.formData({
   name: z.string().nonempty(),
@@ -11,5 +12,5 @@ export const schema = zfd.formData({
   location: z.string().default(""),
   private: z.boolean().optional().default(false),
   tentative: z.boolean().optional().default(false),
-  type: z.enum(["show", "meeting", "social", "other"]),
+  type: z.enum(EventTypes),
 });
