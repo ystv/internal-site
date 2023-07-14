@@ -46,7 +46,7 @@ export default function YSTVCalendar({
           title: evt.name,
           start: evt.start_date,
           end: evt.end_date,
-          url: `/event/${evt.event_id}`,
+          url: `/calendar/${evt.event_id}`,
         };
         if (evt.is_tentative) {
           eventObject.color = "#8b8b8b";
