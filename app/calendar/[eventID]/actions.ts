@@ -1,11 +1,13 @@
 "use server";
 import { getCurrentUser } from "@/lib/auth/legacy";
-import { AttendStatuses } from "@/app/calendar/[eventID]/common";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
+import { AttendStatuses } from "@/features/calendar/statuses";
+import * as Calendar from "@/features/calendar";
+import { EventType, hasRSVP } from "@/features/calendar/types";
 
 const updateAttendeeStatusSchema = zfd.formData({
   event_id: z.coerce.number(),
@@ -19,33 +21,29 @@ export async function updateAttendeeStatus(data: FormData) {
     return zodErrorResponse(payload.error);
   }
 
-  if (payload.data.status === "unknown") {
-    await prisma.attendee.delete({
-      where: {
-        event_id_user_id: {
-          event_id: payload.data.event_id,
-          user_id: me.id,
-        },
+  const evt = await Calendar.getEvent(payload.data.event_id);
+  if (!evt) {
+    return {
+      ok: false,
+      errors: {
+        root: "Event not found",
       },
-    });
-  } else {
-    await prisma.attendee.upsert({
-      where: {
-        event_id_user_id: {
-          event_id: payload.data.event_id,
-          user_id: me.id,
-        },
-      },
-      update: {
-        attend_status: payload.data.status,
-      },
-      create: {
-        event_id: payload.data.event_id,
-        user_id: me.id,
-        attend_status: payload.data.status,
-      },
-    });
+    };
   }
+  if (!hasRSVP(evt.event_type as unknown as EventType)) {
+    return {
+      ok: false,
+      errors: {
+        root: "This event cannot be RSVP'd to",
+      },
+    };
+  }
+
+  await Calendar.updateEventAttendeeStatus(
+    evt.event_id,
+    me.id,
+    payload.data.status,
+  );
 
   revalidatePath("/calendar/[eventID]");
   return { ok: true };

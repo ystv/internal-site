@@ -6,6 +6,9 @@ import { TRPCError } from "@trpc/server";
 import { schema as createEventSchema } from "@/app/calendar/new/schema";
 import { canManage } from "@/features/calendar/permissions";
 import { getCurrentUser } from "@/lib/auth/legacy";
+import { AttendStatuses } from "@/features/calendar/statuses";
+import { EventType, hasRSVP } from "@/features/calendar/types";
+import { EventObjectType } from "@/features/calendar";
 
 const ExposedEventModel = _EventModel.extend({
   attendees: z.array(
@@ -91,6 +94,40 @@ export default router({
           is_cancelled: false,
           is_tentative: input.tentative,
         });
+      }),
+    rsvp: proc
+      .meta({
+        openapi: {
+          path: "/calendar/event/[id]/rsvp",
+          method: "POST",
+          tags: ["calendar"],
+          protect: true,
+        },
+        auth: { perms: ["MEMBER"] },
+      })
+      .input(z.object({ id: z.number(), status: z.enum(AttendStatuses) }))
+      .output(ExposedEventModel)
+      .mutation(async ({ input, ctx }) => {
+        const evt = await Calendar.getEvent(input.id);
+        if (!evt) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Event not found",
+          });
+        }
+        if (!hasRSVP(evt.event_type as unknown as EventType)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "This event type does not support RSVPs",
+          });
+        }
+
+        await Calendar.updateEventAttendeeStatus(
+          input.id,
+          ctx.user!.id,
+          input.status,
+        );
+        return (await Calendar.getEvent(input.id))!;
       }),
   }),
 });

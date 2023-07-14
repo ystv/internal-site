@@ -41,7 +41,7 @@ export async function getEvent(id: number) {
     include: EventSelectors,
   });
 }
-export type EventType = NonNullable<Awaited<ReturnType<typeof getEvent>>>;
+export type EventObjectType = NonNullable<Awaited<ReturnType<typeof getEvent>>>;
 
 export async function createEvent(event: Prisma.EventUncheckedCreateInput) {
   return await prisma.event.create({
