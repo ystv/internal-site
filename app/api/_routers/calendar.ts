@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { proc, router } from "../_base";
-import { _AttendeeModel, _EventModel } from "@/lib/db/types";
+import {
+  _AttendeeModel,
+  _CrewModel,
+  _EventModel,
+  _SignupSheetModel,
+} from "@/lib/db/types";
 import * as Calendar from "@/features/calendar";
 import { TRPCError } from "@trpc/server";
 import { schema as createEventSchema } from "@/app/calendar/new/schema";
@@ -9,16 +14,34 @@ import { AttendStatuses } from "@/features/calendar/statuses";
 import { EventType, hasRSVP } from "@/features/calendar/types";
 
 const ExposedEventModel = _EventModel.extend({
-  attendees: z.array(
-    _AttendeeModel.extend({
-      users: z.object({
-        user_id: z.number(),
-        first_name: z.string(),
-        last_name: z.string(),
-        nickname: z.string().optional(),
+  attendees: z
+    .array(
+      _AttendeeModel.extend({
+        users: z.object({
+          user_id: z.number(),
+          first_name: z.string(),
+          last_name: z.string(),
+          nickname: z.string().optional(),
+        }),
       }),
-    }),
-  ),
+    )
+    .optional(),
+  signup_sheets: z
+    .array(
+      _SignupSheetModel.extend({
+        crews: z.array(
+          _CrewModel.extend({
+            users: z.object({
+              user_id: z.number(),
+              first_name: z.string(),
+              last_name: z.string(),
+              nickname: z.string().optional(),
+            }),
+          }),
+        ),
+      }),
+    )
+    .optional(),
 });
 
 export default router({

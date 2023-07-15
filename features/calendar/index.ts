@@ -16,7 +16,17 @@ const EventSelectors = {
   },
   users_events_created_byTousers: true,
   users_events_updated_byTousers: true,
-};
+  signup_sheets: {
+    include: {
+      crews: {
+        include: {
+          users: true,
+          positions: true,
+        },
+      },
+    },
+  },
+} satisfies Prisma.EventInclude;
 
 export async function listEventsForMonth(year: number, month: number) {
   return await prisma.event.findMany({
@@ -43,7 +53,9 @@ export async function getEvent(id: number) {
 }
 export type EventObjectType = NonNullable<Awaited<ReturnType<typeof getEvent>>>;
 
-export async function createEvent(event: Prisma.EventUncheckedCreateInput) {
+export async function createEvent(
+  event: Prisma.EventUncheckedCreateInput,
+): Promise<EventObjectType> {
   return await prisma.event.create({
     data: event,
     include: EventSelectors,

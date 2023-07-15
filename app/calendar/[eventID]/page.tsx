@@ -1,11 +1,14 @@
 import { EventObjectType, getEvent } from "@/features/calendar";
 import { notFound } from "next/navigation";
+import invariant from "tiny-invariant";
 import { getUserName } from "@/components/UserCommon";
 import { getCurrentUser } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
+import SignupSheet from "@/app/calendar/[eventID]/SignupSheet";
 
 async function AttendeesView({ event }: { event: EventObjectType }) {
+  invariant(event.attendees, "no attendees for AttendeesView");
   const me = await getCurrentUser();
   const isCurrentUserAttending = event.attendees.some(
     (att) => att.user_id === me.user_id,
@@ -19,7 +22,7 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
         </tr>
       </thead>
       <tbody>
-        {event.attendees.map((att) => (
+        {event.attendees!.map((att) => (
           <tr key={att.user_id}>
             {att.user_id === me.user_id ? (
               <CurrentUserAttendeeRow event={event} me={me} />
@@ -47,6 +50,18 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
   );
 }
 
+async function SignupSheetsView({ event }: { event: EventObjectType }) {
+  const me = await getCurrentUser();
+  invariant(event.signup_sheets, "no signup_sheets for SignupSheetsView");
+  return (
+    <div className="flex flex-row flex-wrap space-x-4">
+      {event.signup_sheets.map((ss) => (
+        <SignupSheet key={ss.signup_id} event={event} sheet={ss} me={me} />
+      ))}
+    </div>
+  );
+}
+
 export default async function EventPage({
   params,
 }: {
@@ -65,12 +80,12 @@ export default async function EventPage({
         {event.end_date.toLocaleTimeString()}
       </p>
       <p>{event.description}</p>
-      {event.users_events_created_byTousers && (
+      {event.users_events_created_byTousers && event.event_type !== "show" && (
         <p>Host: {getUserName(event.users_events_created_byTousers)}</p>
       )}
       {event.location && <p>Location: {event.location}</p>}
       {event.event_type === "show" ? (
-        <b>Shows TODO</b>
+        <SignupSheetsView event={event} />
       ) : (
         <AttendeesView event={event} />
       )}
