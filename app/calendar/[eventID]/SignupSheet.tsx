@@ -1,9 +1,9 @@
 "use client";
 
 import { EventObjectType, SignUpSheetType } from "@/features/calendar";
-import { isBefore } from "date-fns";
+import { isBefore, isSameDay } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { getUserName } from "@/components/UserCommon";
+import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "tiny-invariant";
 import Form, { FormResponse } from "@/components/Form";
@@ -24,6 +24,7 @@ import {
   canManageSignUpSheet,
 } from "@/features/calendar/permissions";
 import { z } from "zod";
+import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
 
 function SignupSheet({
   event,
@@ -44,19 +45,17 @@ function SignupSheet({
       <div className="m-4 flex-grow-0 border-2 border-gray-900 p-4">
         <h2 className="text-lg font-bold">{sheet.title}</h2>
         <p>{sheet.description}</p>
-        {sheet.arrival_time && (
-          <p>Arrive at {sheet.arrival_time.toLocaleTimeString()}</p>
-        )}
-        {sheet.start_time && (
-          <p>
-            Broadcast at {sheet.start_time.toLocaleTimeString()}
-            {sheet.end_time && ` - ${sheet.end_time.toLocaleTimeString()}`}
-          </p>
-        )}
+        <p>Arrive at {formatTime(sheet.arrival_time)}</p>
+        <p>
+          Broadcast at {formatTime(sheet.start_time)} -{" "}
+          {isSameDay(sheet.start_time, sheet.end_time)
+            ? formatTime(sheet.end_time)
+            : formatDateTime(sheet.end_time)}
+        </p>
         {locked && (
           <p>
             <strong>
-              Sign-ups unlock on {sheet.unlock_date!.toLocaleString()}
+              Sign-ups unlock on {formatDateTime(sheet.unlock_date!)}
             </strong>
           </p>
         )}

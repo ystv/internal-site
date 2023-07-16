@@ -1,7 +1,7 @@
 "use client";
 import { EventObjectType } from "@/features/calendar";
 import { useTransition } from "react";
-import { getUserName } from "@/components/UserCommon";
+import { getUserName } from "@/components/UserHelpers";
 import { updateAttendeeStatus } from "@/app/calendar/[eventID]/actions";
 import { AttendStatus, AttendStatusLabels } from "@/features/calendar/statuses";
 import Spinner from "@/components/Spinner";

@@ -114,7 +114,7 @@ export function NullableCheckboxField(props: {
     if (!isChecked) {
       controller.field.onChange(null);
     }
-  }, [isChecked]);
+  }, [isChecked, controller.field]);
   return (
     <>
       <label className="block">

@@ -1,11 +1,13 @@
 import { EventObjectType, getEvent } from "@/features/calendar";
 import { notFound } from "next/navigation";
 import invariant from "tiny-invariant";
-import { getUserName } from "@/components/UserCommon";
+import { getUserName } from "@/components/UserHelpers";
 import { getCurrentUser } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { SignupSheetsView } from "@/app/calendar/[eventID]/SignupSheet";
+import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
+import { isSameDay } from "date-fns";
 
 async function AttendeesView({ event }: { event: EventObjectType }) {
   invariant(event.attendees, "no attendees for AttendeesView");
@@ -64,9 +66,10 @@ export default async function EventPage({
     <div>
       <h1 className="text-2xl font-bold">{event.name}</h1>
       <p>
-        {event.start_date.toLocaleDateString()}{" "}
-        {event.start_date.toLocaleTimeString()} -{" "}
-        {event.end_date.toLocaleTimeString()}
+        {formatDateTime(event.start_date)} -{" "}
+        {isSameDay(event.start_date, event.end_date)
+          ? formatTime(event.end_date)
+          : formatDateTime(event.end_date)}
       </p>
       <p>{event.description}</p>
       {event.users_events_created_byTousers && event.event_type !== "show" && (
