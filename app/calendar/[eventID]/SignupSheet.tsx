@@ -36,7 +36,7 @@ function SignupSheet({
   me: UserType;
 }) {
   const locked = useMemo(
-    () => sheet.unlock_date && isBefore(sheet.unlock_date, new Date()),
+    () => sheet.unlock_date && isBefore(new Date(), sheet.unlock_date),
     [sheet.unlock_date],
   );
   const [isEditOpen, setEditOpen] = useState(false);
