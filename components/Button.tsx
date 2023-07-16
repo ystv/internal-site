@@ -10,7 +10,7 @@ const normalColors: { [K: string]: string } = {
   success: `text-success hover:bg-success-4 hover:text-light`,
   warning: `text-warning hover:bg-warning-4 hover:text-light`,
   danger: `text-danger hover:bg-danger-4 hover:text-light`,
-  light: `text-dark hover:bg-light-4 hover:text-dark`,
+  light: `text-dark hover:bg-dark hover:text-light`,
   dark: `bg-dark text-light hover:bg-dark-4`,
 };
 const invertedColors: { [K: string]: string } = {

@@ -3,8 +3,8 @@ import { CompletePosition, PositionModel, CompleteSignupSheet, SignupSheetModel,
 
 export const _CrewModel = z.object({
   crew_id: z.number().int(),
-  signup_id: z.number().int().nullish(),
-  position_id: z.number().int().nullish(),
+  signup_id: z.number().int(),
+  position_id: z.number().int(),
   user_id: z.number().int().nullish(),
   credited: z.boolean(),
   locked: z.boolean(),
@@ -12,8 +12,8 @@ export const _CrewModel = z.object({
 })
 
 export interface CompleteCrew extends z.infer<typeof _CrewModel> {
-  positions?: CompletePosition | null
-  signup_sheets?: CompleteSignupSheet | null
+  positions: CompletePosition
+  signup_sheets: CompleteSignupSheet
   users?: CompleteUser | null
 }
 
@@ -23,7 +23,7 @@ export interface CompleteCrew extends z.infer<typeof _CrewModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const CrewModel: z.ZodSchema<CompleteCrew> = z.lazy(() => _CrewModel.extend({
-  positions: PositionModel.nullish(),
-  signup_sheets: SignupSheetModel.nullish(),
+  positions: PositionModel,
+  signup_sheets: SignupSheetModel,
   users: UserModel.nullish(),
 }))

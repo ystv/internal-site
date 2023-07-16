@@ -1,9 +1,8 @@
 import { EventType } from "@/features/calendar/types";
 import { Permission } from "@/lib/auth/common";
 import { UserType } from "@/lib/auth/server";
-import { SignupSheet } from "@prisma/client";
-import { EventObjectType } from "@/features/calendar/index";
-import { SignupSheetObjectType } from "@/features/calendar/signup_sheets";
+import { Event } from "@prisma/client";
+import { EventObjectType, SignUpSheetType } from "@/features/calendar/index";
 
 /**
  * Which event types can a user with the given permissions administer,
@@ -65,7 +64,7 @@ export function canCreate(type: EventType, user: UserType): boolean {
  * @param event
  * @param user
  */
-export function canManage(event: EventObjectType, user: UserType) {
+export function canManage(event: EventObjectType | Event, user: UserType) {
   if (event.created_by === user.user_id) {
     return true;
   }
@@ -81,8 +80,8 @@ export function canManage(event: EventObjectType, user: UserType) {
  * @param user
  */
 export function canManageSignUpSheet(
-  event: EventObjectType,
-  sheet: SignupSheetObjectType,
+  event: EventObjectType | Event,
+  sheet: SignUpSheetType,
   user: UserType,
 ) {
   for (const pos of sheet.crews) {

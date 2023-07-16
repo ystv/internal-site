@@ -416,14 +416,14 @@ model Attendee {
 
 model Crew {
   crew_id       Int            @id @default(autoincrement())
-  signup_id     Int?
-  position_id   Int?
+  signup_id     Int
+  position_id   Int
   user_id       Int?
   credited      Boolean        @default(true)
   locked        Boolean        @default(false)
   ordering      Int
-  positions     Position?     @relation(fields: [position_id], references: [position_id], onDelete: Cascade)
-  signup_sheets SignupSheet? @relation(fields: [signup_id], references: [signup_id], onDelete: Cascade)
+  positions     Position     @relation(fields: [position_id], references: [position_id], onDelete: Cascade)
+  signup_sheets SignupSheet @relation(fields: [signup_id], references: [signup_id], onDelete: Cascade)
   users         User?          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@schema("event")
@@ -487,7 +487,7 @@ model Position {
   training_url      String
   crews             Crew[]
   position_groups   PositionGroup @relation(fields: [group_id], references: [group_id], onDelete: NoAction)
-  permissions       Permission?     @relation(fields: [permission_id], references: [permission_id], onDelete: NoAction, onUpdate: NoAction)
+  permissions       Permission?     @relation(fields: [permission_id], references: [permission_id], onDelete: NoAction, onUpdate: NoAction) // TODO singular
 
   @@schema("event")
 	@@map("positions")
@@ -496,15 +496,15 @@ model Position {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model SignupSheet {
   signup_id    Int       @id @default(autoincrement())
-  event_id     Int?
+  event_id     Int
   title        String
   description  String    @default("")
   unlock_date  DateTime? @db.Timestamptz(6)
-  arrival_time DateTime? @db.Timestamptz(6)
-  start_time   DateTime? @db.Timestamptz(6)
-  end_time     DateTime? @db.Timestamptz(6)
+  arrival_time DateTime @db.Timestamptz(6)
+  start_time   DateTime @db.Timestamptz(6)
+  end_time     DateTime @db.Timestamptz(6)
   crews        Crew[]
-  events       Event?   @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction)
+  events       Event   @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction) // TODO singular
 
   @@schema("event")
 	@@map("signup_sheets")

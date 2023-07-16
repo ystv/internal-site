@@ -1,6 +1,11 @@
 "use client";
-import { ZodEffects, ZodObject } from "zod";
-import { FieldValues, FormProvider, useForm } from "react-hook-form";
+import { z, ZodEffects, ZodObject, ZodTypeAny } from "zod";
+import {
+  DeepPartial,
+  FieldValues,
+  FormProvider,
+  useForm,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import classNames from "classnames";
@@ -21,19 +26,20 @@ export type FormAction<
 > = (data: Fields) => Promise<FormResponse<OK, Fields>>;
 
 export default function Form<
-  Fields extends FieldValues,
-  Schema extends ZodObject<Fields> | ZodEffects<ZodObject<Fields>>,
+  Schema extends ZodTypeAny | ZodEffects<ZodTypeAny>,
   SuccessfulResponse extends Record<string, unknown> = {},
 >(props: {
-  action: FormAction<SuccessfulResponse, Fields>;
+  action: FormAction<SuccessfulResponse, z.infer<Schema>>;
   schema: Schema;
+  initialValues?: DeepPartial<z.infer<Schema>>;
   children: React.ReactNode;
   className?: string;
   submitLabel?: string;
   onSuccess?: (res: SuccessfulResponse) => void;
 }) {
-  const form = useForm<Fields>({
+  const form = useForm<z.infer<Schema>>({
     resolver: zodResolver(props.schema),
+    defaultValues: props.initialValues,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { action, onSuccess } = props;
@@ -69,7 +75,7 @@ export default function Form<
       for (const [k, err] of Object.entries(
         (res as FormErrorResponse).errors,
       )) {
-        form.setError(k as FieldPath<Fields>, {
+        form.setError(k as FieldPath<z.infer<Schema>>, {
           type: "custom",
           message: err,
         });

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
+import { Position, Prisma, User, Event } from "@prisma/client";
 import { AttendStatus } from "@/features/calendar/statuses";
+import SignupSheetUpdateInput = Prisma.SignupSheetUpdateInput;
 
 const EventSelectors = {
   attendees: {
@@ -96,6 +97,28 @@ export async function updateEventAttendeeStatus(
   }
 }
 
+export interface SignUpSheetType {
+  signup_id: number;
+  title: string;
+  description: string;
+  start_time: Date;
+  end_time: Date;
+  arrival_time: Date;
+  unlock_date: Date | null;
+  crews: Array<{
+    crew_id: number;
+    positions: Position;
+    ordering: number;
+    locked: boolean;
+    user_id: number | null;
+    users: User | null;
+  }>;
+}
+
+export interface SignUpSheetWithEvent extends SignUpSheetType {
+  events: Event;
+}
+
 export async function createSignupSheet(
   eventID: number,
   sheet: Omit<Prisma.SignupSheetCreateInput, "crews" | "events">,
@@ -110,5 +133,36 @@ export async function createSignupSheet(
       arrival_time: sheet.arrival_time,
       unlock_date: sheet.unlock_date,
     },
+  });
+}
+
+export async function getSignUpSheet(
+  sheetID: number,
+): Promise<SignUpSheetWithEvent | null> {
+  return prisma.signupSheet.findFirst({
+    where: {
+      signup_id: sheetID,
+    },
+    include: {
+      crews: {
+        include: {
+          users: true,
+          positions: true,
+        },
+      },
+      events: true,
+    },
+  });
+}
+
+export async function updateSignUpSheet(
+  sheetID: number,
+  data: Omit<SignupSheetUpdateInput, "crews" | "events">,
+) {
+  return prisma.signupSheet.update({
+    where: {
+      signup_id: sheetID,
+    },
+    data,
   });
 }

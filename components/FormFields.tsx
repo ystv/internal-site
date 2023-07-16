@@ -34,9 +34,9 @@ export function Field<
   const El = props.as ?? "input";
   return (
     <label className="block">
-      <span className="text-gray-700 font-bold">{label}</span>
+      <span className="font-bold text-gray-700">{label}</span>
       {ctx.formState.errors[props.name] && (
-        <span className="text-red-500 font-semibold block">
+        <span className="block font-semibold text-red-500">
           {(ctx.formState.errors[props.name]?.message as string) ?? ""}
         </span>
       )}
@@ -45,7 +45,7 @@ export function Field<
         {...ctx.register(props.name)}
         className={classNames(
           props.className ??
-            "mt-1 block w-full rounded-md shadow-sm border-2 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ",
+            "mt-1 block w-full rounded-md border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ",
           ctx.formState.errors[props.name]
             ? "border-red-500"
             : "border-gray-300",
@@ -76,9 +76,9 @@ export function DatePickerField(
   );
   return (
     <label className="block">
-      <span className="text-gray-700 font-bold block">{props.label}</span>
+      <span className="block font-bold text-gray-700">{props.label}</span>
       {controller.fieldState.error && (
-        <span className="text-red-500 font-semibold block">
+        <span className="block font-semibold text-red-500">
           {(controller.fieldState.error.message as string) ?? ""}
         </span>
       )}
@@ -109,7 +109,7 @@ export function NullableCheckboxField(props: {
     name: props.name,
     defaultValue: null,
   });
-  const [isChecked, setChecked] = useState(false);
+  const [isChecked, setChecked] = useState(controller.field.value !== null);
   useEffect(() => {
     if (!isChecked) {
       controller.field.onChange(null);
@@ -125,7 +125,7 @@ export function NullableCheckboxField(props: {
             setChecked(e.target.checked);
           }}
         />
-        <span className="text-gray-700 font-bold inline ml-1">
+        <span className="ml-1 inline font-bold text-gray-700">
           {props.checkboxLabel}
         </span>
       </label>
