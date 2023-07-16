@@ -38,11 +38,7 @@ export async function updateAttendeeStatus(
     };
   }
 
-  await Calendar.updateEventAttendeeStatus(
-    evt.event_id,
-    me.user_id,
-    payload.data.status,
-  );
+  await Calendar.updateEventAttendeeStatus(evt.event_id, me.user_id, status);
 
   revalidatePath("/calendar/[eventID]");
   return { ok: true };

@@ -44,7 +44,7 @@ export default async function RootLayout({
               />
             </Link>
             <div className="ml-auto space-x-1">
-              <span>Hello {user.firstName}</span>
+              <span>Hello {user.first_name}</span>
             </div>
           </nav>
           <Breadcrumbs />
