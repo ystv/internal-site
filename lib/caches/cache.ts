@@ -1,10 +1,5 @@
 import { LRUCache } from "lru-cache";
 
-interface Obj {
-  val: any;
-  expires: number;
-}
-
 export default class Cache {
   private singletons = new LRUCache<string, any>({
     max: 1000,
