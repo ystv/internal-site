@@ -1,11 +1,11 @@
 import "server-only";
-import { memoize } from "lodash";
 import { prisma } from "@/lib/db";
 import { LRUCache } from "lru-cache";
 import { Forbidden, NotLoggedIn } from "./errors";
 import { LegacyAuthServer } from "./legacy/legacy-server";
 import { Permission } from "./common";
 import { User } from "@prisma/client";
+import { SERVER_GLOBAL } from "@/lib/caches";
 
 export * from "./common";
 
@@ -18,9 +18,8 @@ const activeProvider = LegacyAuthServer;
 /**
  * Builds the cache of officership IDs to permissions.
  */
-const fetchOfficerPermissionsMap = memoize(
+const fetchOfficerPermissionsMap = SERVER_GLOBAL.singletonAsync(
   async function _fetchOfficerPermissionsMap() {
-    console.log("Fetching officer-permission map");
     const officershipMap = await prisma.permission.findMany({
       include: {
         role_permissions: {
@@ -52,20 +51,21 @@ const fetchOfficerPermissionsMap = memoize(
 /**
  * Builds the cache of permission IDs to names.
  */
-const fetchPermissionNames = memoize(async function _fetchPermissionNames() {
-  console.log("Fetching permission names");
-  const data = await prisma.permission.findMany({
-    select: {
-      permission_id: true,
-      name: true,
-    },
-  });
-  const result = new Map<number, Permission>();
-  for (const permission of data) {
-    result.set(permission.permission_id, permission.name as Permission);
-  }
-  return result;
-});
+const fetchPermissionNames = SERVER_GLOBAL.singletonAsync(
+  async function _fetchPermissionNames() {
+    const data = await prisma.permission.findMany({
+      select: {
+        permission_id: true,
+        name: true,
+      },
+    });
+    const result = new Map<number, Permission>();
+    for (const permission of data) {
+      result.set(permission.permission_id, permission.name as Permission);
+    }
+    return result;
+  },
+);
 
 /**
  * Resolves the permissions for a given user.
@@ -167,6 +167,10 @@ export async function getCurrentUser(): Promise<UserType> {
   return user;
 }
 
+/**
+ * Checks if the currently signed-in user has at least one of the given permissions.
+ * @param perms
+ */
 export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   const user = await getCurrentUser();
   const userPerms = await getUserPermissions(user.user_id);
