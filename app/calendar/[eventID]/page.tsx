@@ -5,7 +5,7 @@ import { getUserName } from "@/components/UserCommon";
 import { getCurrentUser } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
-import SignupSheet from "@/app/calendar/[eventID]/SignupSheet";
+import { SignupSheetsView } from "@/app/calendar/[eventID]/SignupSheet";
 
 async function AttendeesView({ event }: { event: EventObjectType }) {
   invariant(event.attendees, "no attendees for AttendeesView");
@@ -50,30 +50,19 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
   );
 }
 
-async function SignupSheetsView({ event }: { event: EventObjectType }) {
-  const me = await getCurrentUser();
-  invariant(event.signup_sheets, "no signup_sheets for SignupSheetsView");
-  return (
-    <div className="flex flex-row flex-wrap space-x-4">
-      {event.signup_sheets.map((ss) => (
-        <SignupSheet key={ss.signup_id} event={event} sheet={ss} me={me} />
-      ))}
-    </div>
-  );
-}
-
 export default async function EventPage({
   params,
 }: {
   params: { eventID: string };
 }) {
+  const me = await getCurrentUser();
   const event = await getEvent(parseInt(params.eventID, 10));
   if (!event) {
     notFound();
   }
   return (
     <div>
-      <h1>{event.name}</h1>
+      <h1 className="text-2xl font-bold">{event.name}</h1>
       <p>
         {event.start_date.toLocaleDateString()}{" "}
         {event.start_date.toLocaleTimeString()} -{" "}
@@ -85,7 +74,7 @@ export default async function EventPage({
       )}
       {event.location && <p>Location: {event.location}</p>}
       {event.event_type === "show" ? (
-        <SignupSheetsView event={event} />
+        <SignupSheetsView event={event} me={me} />
       ) : (
         <AttendeesView event={event} />
       )}

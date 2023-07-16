@@ -2,16 +2,12 @@
 import { getCurrentUser } from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { zfd } from "zod-form-data";
-import { zodErrorResponse } from "@/components/FormServerHelpers";
-import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
+import { AttendStatus } from "@/features/calendar/statuses";
 import * as Calendar from "@/features/calendar";
 import { EventType, hasRSVP } from "@/features/calendar/types";
-
-const updateAttendeeStatusSchema = zfd.formData({
-  event_id: z.coerce.number(),
-  status: z.enum(AttendStatuses),
-});
+import { canManage } from "@/features/calendar/permissions";
+import { zodErrorResponse } from "@/components/FormServerHelpers";
+import { SignupSheetSchema } from "@/app/calendar/[eventID]/schema";
 
 export async function updateAttendeeStatus(
   eventID: number,
@@ -41,4 +37,38 @@ export async function updateAttendeeStatus(
 
   revalidatePath("/calendar/[eventID]");
   return { ok: true };
+}
+
+export async function createSignUpSheet(
+  eventID: number,
+  sheet: z.infer<typeof SignupSheetSchema>,
+) {
+  const me = await getCurrentUser();
+
+  const event = await Calendar.getEvent(eventID);
+  if (!event) {
+    return {
+      ok: false,
+      errors: {
+        root: "Event not found",
+      },
+    };
+  }
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to manage this event",
+      },
+    };
+  }
+
+  const payload = SignupSheetSchema.safeParse(sheet);
+  if (!payload.success) {
+    return zodErrorResponse(payload.error);
+  }
+
+  await Calendar.createSignupSheet(eventID, payload.data);
+  revalidatePath("/calendar/[eventID]");
+  return { ok: true } as const;
 }

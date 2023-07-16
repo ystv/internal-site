@@ -95,3 +95,20 @@ export async function updateEventAttendeeStatus(
     });
   }
 }
+
+export async function createSignupSheet(
+  eventID: number,
+  sheet: Omit<Prisma.SignupSheetCreateInput, "crews" | "events">,
+) {
+  await prisma.signupSheet.create({
+    data: {
+      event_id: eventID,
+      title: sheet.title,
+      description: sheet.description,
+      start_time: sheet.start_time,
+      end_time: sheet.end_time,
+      arrival_time: sheet.arrival_time,
+      unlock_date: sheet.unlock_date,
+    },
+  });
+}

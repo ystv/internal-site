@@ -3,7 +3,7 @@ import { FieldPath } from "react-hook-form/dist/types/path";
 import DatePicker, { ReactDatePickerProps } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import classNames from "classnames";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface FieldBaseProps<
   TFields,
@@ -45,7 +45,7 @@ export function Field<
         {...ctx.register(props.name)}
         className={classNames(
           props.className ??
-            " mt-1 block w-full rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ",
+            "mt-1 block w-full rounded-md shadow-sm border-2 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ",
           ctx.formState.errors[props.name]
             ? "border-red-500"
             : "border-gray-300",
@@ -97,5 +97,39 @@ export function DatePickerField(
         selectsRange={false}
       />
     </label>
+  );
+}
+
+export function NullableCheckboxField(props: {
+  name: string;
+  checkboxLabel: string;
+  children: React.ReactNode;
+}) {
+  const controller = useController({
+    name: props.name,
+    defaultValue: null,
+  });
+  const [isChecked, setChecked] = useState(false);
+  useEffect(() => {
+    if (!isChecked) {
+      controller.field.onChange(null);
+    }
+  }, [isChecked]);
+  return (
+    <>
+      <label className="block">
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={(e) => {
+            setChecked(e.target.checked);
+          }}
+        />
+        <span className="text-gray-700 font-bold inline ml-1">
+          {props.checkboxLabel}
+        </span>
+      </label>
+      {isChecked && props.children}
+    </>
   );
 }

@@ -9,7 +9,7 @@ import {
 import * as Calendar from "@/features/calendar";
 import { TRPCError } from "@trpc/server";
 import { schema as createEventSchema } from "@/app/calendar/new/schema";
-import { canManage } from "@/features/calendar/permissions";
+import { canCreate } from "@/features/calendar/permissions";
 import { AttendStatuses } from "@/features/calendar/statuses";
 import { EventType, hasRSVP } from "@/features/calendar/types";
 
@@ -97,7 +97,7 @@ export default router({
       .input(createEventSchema.innerType())
       .output(ExposedEventModel)
       .mutation(async ({ input, ctx }) => {
-        if (!canManage(input.type, ctx.user!.permissions)) {
+        if (!canCreate(input.type, ctx.user!.permissions)) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have permission to create this type of event",
