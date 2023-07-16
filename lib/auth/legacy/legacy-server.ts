@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { LRUCache } from "lru-cache";
 import { getUserPermissions, NotLoggedIn, Permission } from "@/lib/auth/server";
+import { AuthProviderServer } from "@/lib/auth/providers";
 
-export interface User {
+interface User {
   id: number;
   firstName: string;
   lastName: string;
@@ -24,7 +25,7 @@ const sessionCache = new LRUCache<string, User>({
 
 // TODO: even with this cache(), this still gets called multiple times per request
 // (once from the middleware, and again the first time getUser() is called from a page)
-export const _getUser = cache(async function _getUser(
+const _getUser = cache(async function _getUser(
   cookieHeader: string,
 ): Promise<User | null> {
   const cached = sessionCache.get(cookieHeader);
@@ -77,22 +78,12 @@ export const _getUser = cache(async function _getUser(
   return user;
 });
 
-export async function authenticate(req: NextRequest) {
-  const user = await _getUser(req.headers.get("Cookie") ?? "");
-  if (!user) {
-    throw new NotLoggedIn();
-  }
-  return user;
-}
-
-export async function getCurrentUser() {
-  const u = await getCurrentUserOrNull();
-  if (!u) {
-    throw new NotLoggedIn();
-  }
-  return u;
-}
-
-export async function getCurrentUserOrNull() {
+async function getCurrentUserOrNull() {
   return await _getUser((await import("next/headers")).cookies().toString());
 }
+
+export const LegacyAuthServer: AuthProviderServer = {
+  async getCurrentUserID() {
+    return (await getCurrentUserOrNull())?.id ?? null;
+  },
+};

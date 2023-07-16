@@ -1,4 +1,5 @@
 import { EventType } from "@/features/calendar/types";
+
 import { Permission } from "@/lib/auth/common";
 
 export function manageable(userPermissions: Permission[]): EventType[] {

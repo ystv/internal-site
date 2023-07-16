@@ -1,6 +1,5 @@
 "use server";
-import { getCurrentUser } from "@/lib/auth/legacy";
-import { prisma } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -41,7 +40,7 @@ export async function updateAttendeeStatus(data: FormData) {
 
   await Calendar.updateEventAttendeeStatus(
     evt.event_id,
-    me.id,
+    me.user_id,
     payload.data.status,
   );
 

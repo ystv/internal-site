@@ -2,13 +2,16 @@
 
 import { createContext, useContext, useMemo } from "react";
 import { Permission } from "@/lib/auth/common";
-import { User } from "@/lib/auth/legacy";
+import { UserType } from "@/lib/auth/server";
 
-const UserContext = createContext<User>(
-  null as unknown as User /* Bit naughty, but getCurrentUser ensures there's a user signed in */,
+const UserContext = createContext<UserType>(
+  null as unknown as UserType /* Bit naughty, but getCurrentUser ensures there's a user signed in */,
 );
 
-export function UserProvider(props: { children: React.ReactNode; user: User }) {
+export function UserProvider(props: {
+  children: React.ReactNode;
+  user: UserType;
+}) {
   return (
     <UserContext.Provider value={props.user}>
       {props.children}
