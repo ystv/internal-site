@@ -4,7 +4,10 @@ import { Permission } from "@/lib/auth/common";
 
 export function manageable(userPermissions: Permission[]): EventType[] {
   const permittedEventTypes: EventType[] = [];
-  if (userPermissions.includes("Calendar.Admin")) {
+  if (
+    userPermissions.includes("Calendar.Admin") ||
+    userPermissions.includes("SuperUser")
+  ) {
     permittedEventTypes.push("show", "meeting", "social", "other");
   } else {
     if (
