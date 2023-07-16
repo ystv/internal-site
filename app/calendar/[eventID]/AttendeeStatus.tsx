@@ -1,10 +1,11 @@
 "use client";
 import { EventObjectType } from "@/features/calendar";
-import { getCurrentUser, User } from "@/lib/auth/legacy";
-import { useRef } from "react";
+import { User } from "@/lib/auth/legacy";
+import { useTransition } from "react";
 import { getUserName } from "@/components/UserCommon";
 import { updateAttendeeStatus } from "@/app/calendar/[eventID]/actions";
-import { AttendStatusLabels } from "@/features/calendar/statuses";
+import { AttendStatus, AttendStatusLabels } from "@/features/calendar/statuses";
+import Spinner from "@/components/Spinner";
 
 export function CurrentUserAttendeeRow({
   event,
@@ -14,32 +15,35 @@ export function CurrentUserAttendeeRow({
   me: User;
 }) {
   const myAttendee = event.attendees.find((att) => att.user_id === me.id);
-  const formRef = useRef<HTMLFormElement>(null);
+  const [isPending, startTransition] = useTransition();
 
   return (
     <>
       <td>{getUserName(me)}</td>
       <td>
-        <form action={updateAttendeeStatus} ref={formRef}>
-          <input
-            type="hidden"
-            name="event_id"
-            value={event.event_id.toString(10)}
-          />
-          <select
-            name="status"
-            defaultValue={myAttendee?.attend_status ?? "unknown"}
-            onChange={() => formRef.current?.submit()}
-          >
-            {Object.entries(AttendStatusLabels)
-              .filter(([k]) => k !== "invited")
-              .map(([key, label]) => (
-                <option key={key} value={key}>
-                  {label}
-                </option>
-              ))}
-          </select>
-        </form>
+        <select
+          name="status"
+          defaultValue={myAttendee?.attend_status ?? "unknown"}
+          onChange={(e) => {
+            startTransition(async () => {
+              await updateAttendeeStatus(
+                event.event_id,
+                e.target.value as AttendStatus,
+              );
+            });
+          }}
+          disabled={isPending}
+          className="disabled:border-gray-400 disabled:text-gray-400"
+        >
+          {Object.entries(AttendStatusLabels)
+            .filter(([k]) => k !== "invited")
+            .map(([key, label]) => (
+              <option key={key} value={key}>
+                {label}
+              </option>
+            ))}
+        </select>
+        {isPending && <Spinner />}
       </td>
     </>
   );
