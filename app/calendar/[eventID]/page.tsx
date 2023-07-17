@@ -64,7 +64,7 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
 async function ShowView(props: { event: EventObjectType }) {
   const me = await getCurrentUser();
   if (canManageAnySignupSheet(props.event, me)) {
-    // TODO: this pre-loads quite a bit of information (~56k gzipped, 4MB uncompressed)
+    // TODO(WEB-40): this pre-loads quite a bit of information (~56k gzipped, 4MB uncompressed)
     //  that we don't actually need until you go to edit a sheet.
     //  Would be better to either load it on-demand dynamically, or move the edit view to a sub-page.
     const [positions, members] = await Promise.all([

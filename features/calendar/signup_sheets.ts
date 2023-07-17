@@ -5,6 +5,16 @@ import { CrewPositionType } from "@/features/calendar/crew_positions";
 import { omit } from "lodash";
 import { ExposedUser } from "@/features/people";
 
+export interface CrewType {
+  crew_id: number;
+  position_id: number;
+  positions: CrewPositionType;
+  ordering: number;
+  locked: boolean;
+  user_id: number | null;
+  users: ExposedUser | null;
+}
+
 export interface SignUpSheetType {
   signup_id: number;
   title: string;
@@ -13,15 +23,7 @@ export interface SignUpSheetType {
   end_time: Date;
   arrival_time: Date;
   unlock_date: Date | null;
-  crews: Array<{
-    crew_id: number;
-    position_id: number;
-    positions: CrewPositionType;
-    ordering: number;
-    locked: boolean;
-    user_id: number | null;
-    users: ExposedUser | null;
-  }>;
+  crews: CrewType[];
 }
 
 export interface SignUpSheetWithEvent extends SignUpSheetType {
@@ -147,4 +149,68 @@ export async function deleteSignUpSheet(sheetID: number) {
       signup_id: sheetID,
     },
   });
+}
+
+export async function signUpToRole(
+  sheetID: number,
+  crewID: number,
+  user_id: number,
+) {
+  try {
+    await prisma.crew.update({
+      where: {
+        signup_id: sheetID,
+        crew_id: crewID,
+        // Ensure we don't clobber existing signups
+        user_id: null,
+      },
+      data: {
+        user_id,
+      },
+    });
+    return { ok: true };
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2025"
+    ) {
+      return {
+        ok: false,
+        reason:
+          "Either the role doesn't exist or someone else is already signed up",
+      };
+    }
+    throw e;
+  }
+}
+
+export async function removeUserFromRole(
+  sheetID: number,
+  crewID: number,
+  user_id: number,
+) {
+  try {
+    await prisma.crew.update({
+      where: {
+        signup_id: sheetID,
+        crew_id: crewID,
+        user_id,
+      },
+      data: {
+        user_id: null,
+      },
+    });
+    return { ok: true };
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2025"
+    ) {
+      return {
+        ok: false,
+        reason: "Either the role doesn't exist or someone else is signed up",
+      };
+    }
+    throw e;
+  }
 }

@@ -46,6 +46,8 @@ export default function Button<T extends "button" | "a">(
   return (
     <Type
       ref={ref as any}
+      {...rest}
+      {...btn.buttonProps}
       className={classNames(
         `inline-flex items-center 
                   rounded-md
@@ -61,9 +63,8 @@ export default function Button<T extends "button" | "a">(
           ? invertedColors[props.color ?? "primary"]
           : normalColors[props.color ?? "primary"],
         sizeClasses[props.size ?? "medium"],
+        props.className,
       )}
-      {...rest}
-      {...btn.buttonProps}
     >
       {props.children}
     </Type>

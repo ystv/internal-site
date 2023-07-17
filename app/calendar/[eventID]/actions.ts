@@ -14,6 +14,7 @@ import { SignupSheetSchema } from "@/app/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
 import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
+import { isBefore } from "date-fns";
 
 export async function updateAttendeeStatus(
   eventID: number,
@@ -135,4 +136,102 @@ export async function deleteSignUpSheet(sheetID: number) {
   await Calendar.deleteSignUpSheet(sheetID);
   revalidatePath("/calendar/[eventID]");
   return { ok: true } as const;
+}
+
+export async function signUpToRole(sheetID: number, crewID: number) {
+  const me = await getCurrentUser();
+  const sheet = await Calendar.getSignUpSheet(sheetID);
+  if (!sheet) {
+    return {
+      ok: false,
+      errors: {
+        root: "Signup sheet not found",
+      },
+    };
+  }
+  if (sheet.unlock_date && isBefore(new Date(), sheet.unlock_date)) {
+    return {
+      ok: false,
+      errors: {
+        root: "Signup sheet is locked",
+      },
+    };
+  }
+  const crew = sheet.crews.find((crew) => crew.crew_id === crewID);
+  if (!crew) {
+    return {
+      ok: false,
+      errors: {
+        root: "Role not found",
+      },
+    };
+  }
+  if (crew.user_id !== null) {
+    return {
+      ok: false,
+      errors: {
+        root: "Role is already filled",
+      },
+    };
+  }
+  const res = await Calendar.signUpToRole(sheetID, crewID, me.user_id);
+  if (!res.ok) {
+    return {
+      ok: false,
+      errors: {
+        root: res.reason,
+      },
+    };
+  }
+  revalidatePath("/calendar/[eventID]");
+  return { ok: true };
+}
+
+export async function removeSelfFromRole(sheetID: number, crewID: number) {
+  const me = await getCurrentUser();
+  const sheet = await Calendar.getSignUpSheet(sheetID);
+  if (!sheet) {
+    return {
+      ok: false,
+      errors: {
+        root: "Signup sheet not found",
+      },
+    };
+  }
+  if (sheet.unlock_date && isBefore(new Date(), sheet.unlock_date)) {
+    return {
+      ok: false,
+      errors: {
+        root: "Signup sheet is locked",
+      },
+    };
+  }
+  const crew = sheet.crews.find((crew) => crew.crew_id === crewID);
+  if (!crew) {
+    return {
+      ok: false,
+      errors: {
+        root: "Role not found",
+      },
+    };
+  }
+  if (crew.user_id !== me.user_id) {
+    return {
+      ok: false,
+      errors: {
+        root: "You are not signed up for this role",
+      },
+    };
+  }
+  const res = await Calendar.removeUserFromRole(sheetID, crewID, me.user_id);
+  if (!res.ok) {
+    return {
+      ok: false,
+      errors: {
+        root: res.reason,
+      },
+    };
+  }
+  revalidatePath("/calendar/[eventID]");
+  return { ok: true };
 }
