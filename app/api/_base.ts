@@ -2,25 +2,11 @@ import { inferAsyncReturnType, initTRPC, TRPCError } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { OpenApiMeta } from "trpc-openapi";
 import { Permission } from "@/lib/auth/common";
+import { getCurrentUserOrNull } from "@/lib/auth/server";
 
-export function createContext({
-  req,
-  resHeaders,
-}: FetchCreateContextFnOptions) {
-  if (
-    req.url.includes("TEST_AUTH=true") ||
-    req.headers.get("Authorization")?.includes("TEST_AUTH")
-  ) {
-    return {
-      user: {
-        id: 1,
-        name: "TEST",
-        permissions: ["SuperUser"] satisfies Permission[] as Permission[],
-      },
-    };
-  }
+export async function createContext({ req }: FetchCreateContextFnOptions) {
   return {
-    user: null,
+    user: await getCurrentUserOrNull(req),
   };
 }
 export type Context = inferAsyncReturnType<typeof createContext>;
@@ -52,7 +38,7 @@ export const proc = t.procedure.use(
     if (ctx.user.permissions.includes("SuperUser")) {
       return next();
     }
-    if (meta.auth.perms.some((x) => ctx.user.permissions.includes(x))) {
+    if (meta.auth.perms.some((x) => ctx.user!.permissions.includes(x))) {
       return next();
     }
     throw new TRPCError({

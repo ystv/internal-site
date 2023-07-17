@@ -2,7 +2,8 @@ import { EventType } from "@/features/calendar/types";
 import { Permission } from "@/lib/auth/common";
 import { UserType } from "@/lib/auth/server";
 import { Event } from "@prisma/client";
-import { EventObjectType, SignUpSheetType } from "@/features/calendar/index";
+import { SignUpSheetType } from "@/features/calendar/signup_sheets";
+import { EventObjectType } from "@/features/calendar/events";
 
 /**
  * Which event types can a user with the given permissions administer,
@@ -90,4 +91,14 @@ export function canManageSignUpSheet(
     }
   }
   return canManage(event, user);
+}
+
+export function canManageAnySignupSheet(
+  event: EventObjectType,
+  user: UserType,
+) {
+  return (
+    canManage(event, user) ||
+    event.signup_sheets.some((x) => canManageSignUpSheet(event, x, user))
+  );
 }

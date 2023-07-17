@@ -1,0 +1,173 @@
+import "server-only";
+import { produce } from "immer";
+import { prisma } from "@/lib/db";
+import {
+  Attendee,
+  Crew,
+  Prisma,
+  Event,
+  User,
+  SignupSheet,
+  Position,
+} from "@prisma/client";
+import { AttendStatus } from "@/features/calendar/statuses";
+import { ExposedUser, ExposedUserModel } from "@/features/people";
+import { SignUpSheetType } from "@/features/calendar/signup_sheets";
+import { EventType } from "@/features/calendar/types";
+
+export interface EventAttendee {
+  event_id: number;
+  user_id: number;
+  attend_status: AttendStatus;
+  users: ExposedUser;
+}
+
+export interface EventObjectType {
+  event_id: number;
+  event_type: EventType;
+  name: string;
+  description: string;
+  start_date: Date;
+  end_date: Date;
+  location: string;
+  is_private: boolean;
+  is_tentative: boolean;
+  is_cancelled: boolean;
+  signup_sheets: SignUpSheetType[];
+  attendees: EventAttendee[];
+  users_events_created_byTousers: ExposedUser;
+}
+
+function sanitize(
+  input: Event & {
+    event_type: any; // the type coming from the DB is `string`;
+    users_events_created_byTousers: User;
+    signup_sheets: Array<
+      SignupSheet & {
+        crews: Array<Crew & { users: User | null; positions: Position }>;
+      }
+    >;
+    attendees: Array<Attendee & { users: User; attend_status: any }>;
+  },
+): EventObjectType {
+  return produce(input, (draft) => {
+    draft.event_type = draft.event_type as EventType;
+    // @ts-expect-error
+    draft.users_events_created_byTousers = ExposedUserModel.parse(
+      draft.users_events_created_byTousers,
+    );
+    for (const sheet of draft.signup_sheets) {
+      for (const crew of sheet.crews) {
+        if (crew.users) {
+          // @ts-expect-error
+          crew.users = ExposedUserModel.parse(crew.users);
+        }
+      }
+    }
+    if (draft.attendees) {
+      for (const attendee of draft.attendees) {
+        // @ts-expect-error
+        attendee.users = ExposedUserModel.parse(attendee.users);
+      }
+    }
+  });
+}
+
+const EventSelectors = {
+  attendees: {
+    include: {
+      users: true,
+      events: true,
+    },
+    where: {
+      attend_status: {
+        not: "unknown",
+      },
+    },
+  },
+  users_events_created_byTousers: true,
+  users_events_updated_byTousers: true,
+  signup_sheets: {
+    include: {
+      crews: {
+        include: {
+          users: true,
+          positions: true,
+        },
+      },
+    },
+  },
+} satisfies Prisma.EventInclude;
+
+export async function listEventsForMonth(year: number, month: number) {
+  return await prisma.event.findMany({
+    where: {
+      start_date: {
+        // javascript dates are 0-indexed for months, but humans are 1-indexed
+        // (human is dealt with at the API layer to avoid confusing JS everywhere else)
+        gte: new Date(year, month, 1),
+        lte: new Date(year, month + 1, 0),
+      },
+      deleted_at: null,
+    },
+    include: EventSelectors,
+  });
+}
+
+export async function getEvent(id: number): Promise<EventObjectType | null> {
+  const res = await prisma.event.findFirst({
+    where: {
+      event_id: id,
+    },
+    include: EventSelectors,
+  });
+  if (!res) {
+    return null;
+  }
+  return sanitize(res);
+}
+
+export async function createEvent(
+  event: Prisma.EventUncheckedCreateInput,
+): Promise<EventObjectType> {
+  return sanitize(
+    await prisma.event.create({
+      data: event,
+      include: EventSelectors,
+    }),
+  );
+}
+
+export async function updateEventAttendeeStatus(
+  eventID: number,
+  userID: number,
+  status: AttendStatus,
+) {
+  if (status === "unknown") {
+    await prisma.attendee.delete({
+      where: {
+        event_id_user_id: {
+          event_id: eventID,
+          user_id: userID,
+        },
+      },
+    });
+  } else {
+    await prisma.attendee.upsert({
+      where: {
+        event_id_user_id: {
+          event_id: eventID,
+          user_id: userID,
+        },
+      },
+      update: {
+        attend_status: status,
+      },
+      create: {
+        event_id: eventID,
+        user_id: userID,
+        attend_status: status,
+      },
+    });
+  }
+}

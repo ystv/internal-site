@@ -1,5 +1,6 @@
 export interface AuthProviderServer {
-  getCurrentUserID(): Promise<number | null>;
+  getCurrentUserIDFromHeaders(): Promise<number | null>;
+  getCurrentUserIDFromRequest(req: Request): Promise<number | null>;
 }
 
 export interface AuthProviderCommon {

@@ -1,30 +1,25 @@
 "use client";
 
-import { EventObjectType, SignUpSheetType } from "@/features/calendar";
 import { isBefore, isSameDay } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "tiny-invariant";
-import Form, { FormResponse } from "@/components/Form";
 import {
   createSignUpSheet,
+  deleteSignUpSheet,
   editSignUpSheet,
 } from "@/app/calendar/[eventID]/actions";
-import {
-  DatePickerField,
-  Field,
-  NullableCheckboxField,
-} from "@/components/FormFields";
 import Modal from "react-modal";
-import { SignupSheetSchema } from "@/app/calendar/[eventID]/schema";
 import Button from "@/components/Button";
 import {
   canManage,
   canManageSignUpSheet,
 } from "@/features/calendar/permissions";
-import { z } from "zod";
 import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
+import { AddEditSignUpSheetForm } from "@/app/calendar/[eventID]/AddEditSignUpSheetForm";
+import { SignUpSheetType } from "@/features/calendar/signup_sheets";
+import { EventObjectType } from "@/features/calendar/events";
 
 function SignupSheet({
   event,
@@ -95,7 +90,15 @@ function SignupSheet({
             >
               Edit
             </Button>
-            <Button color="danger" size="small">
+            <Button
+              color="danger"
+              size="small"
+              onClick={async () => {
+                if (confirm("You sure?")) {
+                  await deleteSignUpSheet(sheet.signup_id);
+                }
+              }}
+            >
               Remove
             </Button>
           </div>
@@ -110,50 +113,6 @@ function SignupSheet({
         />
       </Modal>
     </>
-  );
-}
-
-function AddEditSignUpSheetForm(props: {
-  action: (data: z.infer<typeof SignupSheetSchema>) => Promise<FormResponse>;
-  initialValues?: z.infer<typeof SignupSheetSchema>;
-  onSuccess: () => void;
-  submitLabel?: string;
-}) {
-  return (
-    <Form
-      action={props.action}
-      onSuccess={props.onSuccess}
-      schema={SignupSheetSchema}
-      initialValues={props.initialValues}
-      submitLabel={props.submitLabel}
-    >
-      <Field name="title" label="Title" />
-      <Field name="description" label="Description" as="textarea" />
-      <DatePickerField
-        name="arrival_time"
-        label="Arrival Time"
-        showTimeSelect
-        dateFormat="MM/dd/yyyy h:mm aa"
-      />
-      <DatePickerField
-        name="start_time"
-        label="Broadcast Start"
-        showTimeSelect
-        dateFormat="MM/dd/yyyy h:mm aa"
-      />
-      <DatePickerField
-        name="end_time"
-        label="Broadcast End"
-        showTimeSelect
-        dateFormat="MM/dd/yyyy h:mm aa"
-      />
-      <NullableCheckboxField
-        name="unlock_date"
-        checkboxLabel="Lock signups until a certain date?"
-      >
-        <DatePickerField name="unlock_date" label="Unlock Date" />
-      </NullableCheckboxField>
-    </Form>
   );
 }
 

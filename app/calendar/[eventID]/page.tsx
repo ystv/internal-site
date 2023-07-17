@@ -1,4 +1,3 @@
-import { EventObjectType, getEvent } from "@/features/calendar";
 import { notFound } from "next/navigation";
 import invariant from "tiny-invariant";
 import { getUserName } from "@/components/UserHelpers";
@@ -8,6 +7,16 @@ import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { SignupSheetsView } from "@/app/calendar/[eventID]/SignupSheet";
 import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
 import { isSameDay } from "date-fns";
+import { EventObjectType, getEvent } from "@/features/calendar/events";
+import {
+  canManageAnySignupSheet,
+  getAllCrewPositions,
+} from "@/features/calendar";
+import {
+  CrewPositionsProvider,
+  MembersProvider,
+} from "@/components/FormFieldPreloadedData";
+import { getAllUsers } from "@/features/people";
 
 async function AttendeesView({ event }: { event: EventObjectType }) {
   invariant(event.attendees, "no attendees for AttendeesView");
@@ -52,12 +61,32 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
   );
 }
 
+async function ShowView(props: { event: EventObjectType }) {
+  const me = await getCurrentUser();
+  if (canManageAnySignupSheet(props.event, me)) {
+    // TODO: this pre-loads quite a bit of information (~56k gzipped, 4MB uncompressed)
+    //  that we don't actually need until you go to edit a sheet.
+    //  Would be better to either load it on-demand dynamically, or move the edit view to a sub-page.
+    const [positions, members] = await Promise.all([
+      getAllCrewPositions(),
+      getAllUsers(),
+    ]);
+    return (
+      <CrewPositionsProvider positions={positions}>
+        <MembersProvider members={members}>
+          <SignupSheetsView event={props.event} me={me} />
+        </MembersProvider>
+      </CrewPositionsProvider>
+    );
+  }
+  return <SignupSheetsView event={props.event} me={me} />;
+}
+
 export default async function EventPage({
   params,
 }: {
   params: { eventID: string };
 }) {
-  const me = await getCurrentUser();
   const event = await getEvent(parseInt(params.eventID, 10));
   if (!event) {
     notFound();
@@ -77,7 +106,7 @@ export default async function EventPage({
       )}
       {event.location && <p>Location: {event.location}</p>}
       {event.event_type === "show" ? (
-        <SignupSheetsView event={event} me={me} />
+        <ShowView event={event} />
       ) : (
         <AttendeesView event={event} />
       )}

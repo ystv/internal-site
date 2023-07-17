@@ -8,6 +8,9 @@ import Image from "next/image";
 import Logo from "@/app/_assets/logo.png";
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { cookies } from "next/headers";
+import { DebugIndicator, DebugModeProvider } from "@/components/DebugMode";
+import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/route";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,27 +32,31 @@ export default async function RootLayout({
   if (!user) {
     redirect(getSignInURL(process.env.NEXT_PUBLIC_URL!));
   }
+  const debugMode = cookies().get(DEBUG_MODE_COOKIE)?.value === "true";
   return (
     <html lang="en">
       <body className={inter.className}>
-        <UserProvider user={user}>
-          <nav className="mb-4 flex h-[4.5rem] flex-row flex-nowrap items-center bg-dark px-2 text-light shadow-black/5">
-            <Link href="/" className="inline-block">
-              <Image
-                src={Logo}
-                alt=""
-                placeholder="blur"
-                height={96}
-                className="max-h-[4.5rem] w-auto py-2"
-              />
-            </Link>
-            <div className="ml-auto space-x-1">
-              <span>Hello {user.first_name}</span>
-            </div>
-          </nav>
-          <Breadcrumbs />
-          <main className="mx-2 max-w-3xl lg:mx-auto">{children}</main>
-        </UserProvider>
+        <DebugModeProvider value={debugMode}>
+          <UserProvider user={user}>
+            <nav className="mb-4 flex h-[4.5rem] flex-row flex-nowrap items-center bg-dark px-2 text-light shadow-black/5">
+              <Link href="/" className="inline-block">
+                <Image
+                  src={Logo}
+                  alt=""
+                  placeholder="blur"
+                  height={96}
+                  className="max-h-[4.5rem] w-auto py-2"
+                />
+              </Link>
+              <div className="ml-auto space-x-1">
+                <span>Hello {user.first_name}</span>
+              </div>
+            </nav>
+            <Breadcrumbs />
+            <main className="mx-2 max-w-3xl lg:mx-auto">{children}</main>
+            <DebugIndicator />
+          </UserProvider>
+        </DebugModeProvider>
       </body>
     </html>
   );

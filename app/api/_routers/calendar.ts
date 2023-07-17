@@ -12,6 +12,8 @@ import { schema as createEventSchema } from "@/app/calendar/new/schema";
 import { canCreate } from "@/features/calendar/permissions";
 import { AttendStatuses } from "@/features/calendar/statuses";
 import { EventType, hasRSVP } from "@/features/calendar/types";
+import { updateEventAttendeeStatus } from "@/features/calendar/events";
+import { ExposedUserModel } from "@/app/features/people";
 
 const ExposedEventModel = _EventModel.extend({
   attendees: z
@@ -31,12 +33,7 @@ const ExposedEventModel = _EventModel.extend({
       _SignupSheetModel.extend({
         crews: z.array(
           _CrewModel.extend({
-            users: z.object({
-              user_id: z.number(),
-              first_name: z.string(),
-              last_name: z.string(),
-              nickname: z.string().optional(),
-            }),
+            users: ExposedUserModel.nullable(),
           }),
         ),
       }),
@@ -97,7 +94,7 @@ export default router({
       .input(createEventSchema.innerType())
       .output(ExposedEventModel)
       .mutation(async ({ input, ctx }) => {
-        if (!canCreate(input.type, ctx.user!.permissions)) {
+        if (!canCreate(input.type, ctx.user!)) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "You do not have permission to create this type of event",
@@ -110,7 +107,7 @@ export default router({
           start_date: input.startDate,
           end_date: input.endDate,
           location: input.location,
-          created_by: ctx.user!.id,
+          created_by: ctx.user!.user_id,
           is_private: input.private,
           is_cancelled: false,
           is_tentative: input.tentative,
@@ -143,9 +140,9 @@ export default router({
           });
         }
 
-        await Calendar.updateEventAttendeeStatus(
+        await updateEventAttendeeStatus(
           input.id,
-          ctx.user!.id,
+          ctx.user!.user_id,
           input.status,
         );
         return (await Calendar.getEvent(input.id))!;

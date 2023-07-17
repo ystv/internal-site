@@ -67,7 +67,10 @@ async function getCurrentUserOrNull() {
 }
 
 export const LegacyAuthServer: AuthProviderServer = {
-  async getCurrentUserID() {
+  async getCurrentUserIDFromHeaders() {
     return (await getCurrentUserOrNull())?.id ?? null;
+  },
+  async getCurrentUserIDFromRequest(req) {
+    return (await _getUser(req.headers.get("cookie")))?.id ?? null;
   },
 };

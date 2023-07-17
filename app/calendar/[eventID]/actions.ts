@@ -12,6 +12,8 @@ import {
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { SignupSheetSchema } from "@/app/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
+import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
+import { updateEventAttendeeStatus } from "@/features/calendar/events";
 
 export async function updateAttendeeStatus(
   eventID: number,
@@ -37,7 +39,7 @@ export async function updateAttendeeStatus(
     };
   }
 
-  await Calendar.updateEventAttendeeStatus(evt.event_id, me.user_id, status);
+  await updateEventAttendeeStatus(evt.event_id, me.user_id, status);
 
   revalidatePath("/calendar/[eventID]");
   return { ok: true };
@@ -105,7 +107,32 @@ export async function editSignUpSheet(
     return zodErrorResponse(payload.error);
   }
 
-  await Calendar.updateSignUpSheet(sheetID, payload.data);
+  await updateSignUpSheet(sheetID, payload.data);
+  revalidatePath("/calendar/[eventID]");
+  return { ok: true } as const;
+}
+
+export async function deleteSignUpSheet(sheetID: number) {
+  const me = await getCurrentUser();
+  const sheet = await Calendar.getSignUpSheet(sheetID);
+  if (!sheet) {
+    return {
+      ok: false,
+      errors: {
+        root: "Signup sheet not found",
+      },
+    };
+  }
+  if (!canManageSignUpSheet(sheet.events, sheet, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to manage this signup sheet",
+      },
+    };
+  }
+
+  await Calendar.deleteSignUpSheet(sheetID);
   revalidatePath("/calendar/[eventID]");
   return { ok: true } as const;
 }

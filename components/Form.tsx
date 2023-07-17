@@ -1,5 +1,5 @@
 "use client";
-import { z, ZodEffects, ZodObject, ZodTypeAny } from "zod";
+import { z, ZodEffects, ZodTypeAny } from "zod";
 import {
   DeepPartial,
   FieldValues,
@@ -10,6 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import classNames from "classnames";
 import { FieldPath } from "react-hook-form/dist/types/path";
+import { DebugOnly } from "@/components/DebugMode";
+import Button from "@/components/Button";
 
 export interface FormErrorResponse<Fields extends FieldValues = any> {
   ok: false;
@@ -24,6 +26,13 @@ export type FormAction<
   OK extends Record<string, unknown> = {},
   Fields extends FieldValues = any,
 > = (data: Fields) => Promise<FormResponse<OK, Fields>>;
+
+const useForceUpdate = () => {
+  const [, setState] = useState(true);
+  return useCallback(() => {
+    setState((s) => !s);
+  }, []);
+};
 
 export default function Form<
   Schema extends ZodTypeAny | ZodEffects<ZodTypeAny>,
@@ -43,6 +52,7 @@ export default function Form<
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { action, onSuccess } = props;
+  const forceUpdate = useForceUpdate();
   const submitHandler = useCallback(async () => {
     const valid = await form.trigger();
     if (valid) {
@@ -103,6 +113,30 @@ export default function Form<
           {props.submitLabel ?? "Create"}
         </button>
       </form>
+      <DebugOnly>
+        <pre className="mt-4 text-xs text-gray-500">
+          Debug: form state: {JSON.stringify(form.formState, null, 2)}
+          <br />
+          isValid: {JSON.stringify(form.formState.isValid)}
+          <br />
+          isDirty: {JSON.stringify(form.formState.isDirty)}
+          <br />
+          values: {JSON.stringify(form.getValues(), null, 2)}
+          <br />
+          errors: {JSON.stringify(form.formState.errors, null, 2)}
+          <br />
+          validated:{" "}
+          {JSON.stringify(
+            props.schema.safeParse(form.getValues()),
+            null,
+            2,
+          )}{" "}
+          <br />
+          <Button size="small" color="light" onClick={forceUpdate}>
+            Force update
+          </Button>
+        </pre>
+      </DebugOnly>
     </FormProvider>
   );
 }
