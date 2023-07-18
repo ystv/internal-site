@@ -45,21 +45,18 @@ export async function createSignupSheet(
       end_time: sheet.end_time,
       arrival_time: sheet.arrival_time,
       unlock_date: sheet.unlock_date,
+      crews: {
+        createMany: {
+          data: sheet.crews.map((c) => ({
+            position_id: c.position_id,
+            ordering: c.ordering,
+            locked: c.locked,
+            user_id: c.user_id,
+          })),
+        },
+      },
     },
   });
-  await Promise.all(
-    sheet.crews.map((c) =>
-      prisma.crew.create({
-        data: {
-          signup_id: newSheet.signup_id,
-          position_id: c.position_id,
-          ordering: c.ordering,
-          locked: c.locked,
-          user_id: c.user_id,
-        },
-      }),
-    ),
-  );
   return newSheet.signup_id;
 }
 

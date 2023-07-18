@@ -123,8 +123,6 @@ export default function Form<
           <br />
           values: {JSON.stringify(form.getValues(), null, 2)}
           <br />
-          errors: {JSON.stringify(form.formState.errors, null, 2)}
-          <br />
           validated:{" "}
           {JSON.stringify(
             props.schema.safeParse(form.getValues()),
