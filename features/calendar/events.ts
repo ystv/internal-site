@@ -38,6 +38,11 @@ export interface EventObjectType {
   users_events_created_byTousers: ExposedUser;
 }
 
+/**
+ * Takes in an event object and replaces all user fields with ExposedUserModel equivalents, stripping
+ * out all sensitive fields.
+ * @param input an event or event-like object
+ */
 function sanitize(
   input: Event & {
     event_type: any; // the type coming from the DB is `string`;
@@ -100,18 +105,20 @@ const EventSelectors = {
 } satisfies Prisma.EventInclude;
 
 export async function listEventsForMonth(year: number, month: number) {
-  return await prisma.event.findMany({
-    where: {
-      start_date: {
-        // javascript dates are 0-indexed for months, but humans are 1-indexed
-        // (human is dealt with at the API layer to avoid confusing JS everywhere else)
-        gte: new Date(year, month, 1),
-        lte: new Date(year, month + 1, 0),
+  return (
+    await prisma.event.findMany({
+      where: {
+        start_date: {
+          // javascript dates are 0-indexed for months, but humans are 1-indexed
+          // (human is dealt with at the API layer to avoid confusing JS everywhere else)
+          gte: new Date(year, month, 1),
+          lte: new Date(year, month + 1, 0),
+        },
+        deleted_at: null,
       },
-      deleted_at: null,
-    },
-    include: EventSelectors,
-  });
+      include: EventSelectors,
+    })
+  ).map((e) => sanitize(e));
 }
 
 export async function getEvent(id: number): Promise<EventObjectType | null> {
