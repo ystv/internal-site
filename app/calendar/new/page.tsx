@@ -35,7 +35,7 @@ async function createEvent(
     start_date: payload.data.startDate,
     end_date: payload.data.endDate,
     location: payload.data.location,
-    created_by: (await getCurrentUser()).id,
+    created_by: (await getCurrentUser()).user_id,
     is_private: payload.data.private,
     is_cancelled: false,
     is_tentative: payload.data.tentative,
@@ -54,7 +54,7 @@ export default async function NewEventPage() {
     ]);
   }
   return (
-    <div className="max-w-xl mx-auto">
+    <div className="mx-auto max-w-xl">
       <h1 className="text-4xl">New Event</h1>
       <CreateEventForm
         action={createEvent}

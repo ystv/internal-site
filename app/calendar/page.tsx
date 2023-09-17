@@ -1,4 +1,3 @@
-import { getCurrentUser } from "@/lib/auth/server";
 import YSTVCalendar from "@/components/YSTVCalendar";
 import Link from "next/link";
 import { listEventsForMonth } from "@/features/calendar";
@@ -36,7 +35,7 @@ export default async function CalendarPage({
       >
         <Link
           href="/calendar/new"
-          className="mt-4 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          className="mt-4 rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
         >
           Add Event
         </Link>
