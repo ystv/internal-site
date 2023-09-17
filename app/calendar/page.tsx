@@ -1,7 +1,7 @@
 import YSTVCalendar from "@/components/YSTVCalendar";
 import Link from "next/link";
-import { listEventsForMonth } from "@/features/calendar";
 import { PermissionGate } from "@/components/UserContext";
+import { listEventsForMonth } from "@/features/calendar/events";
 
 export default async function CalendarPage({
   searchParams,

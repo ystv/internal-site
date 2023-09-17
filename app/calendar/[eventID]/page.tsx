@@ -1,11 +1,25 @@
-import { EventObjectType, getEvent } from "@/features/calendar";
 import { notFound } from "next/navigation";
-import { getUserName } from "@/components/UserCommon";
+import invariant from "tiny-invariant";
+import { getUserName } from "@/components/UserHelpers";
 import { getCurrentUser } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
+import { SignupSheetsView } from "@/app/calendar/[eventID]/SignupSheet";
+import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
+import { isSameDay } from "date-fns";
+import { EventObjectType, getEvent } from "@/features/calendar/events";
+import {
+  canManageAnySignupSheet,
+  getAllCrewPositions,
+} from "@/features/calendar";
+import {
+  CrewPositionsProvider,
+  MembersProvider,
+} from "@/components/FormFieldPreloadedData";
+import { getAllUsers } from "@/features/people";
 
 async function AttendeesView({ event }: { event: EventObjectType }) {
+  invariant(event.attendees, "no attendees for AttendeesView");
   const me = await getCurrentUser();
   const isCurrentUserAttending = event.attendees.some(
     (att) => att.user_id === me.user_id,
@@ -19,7 +33,7 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
         </tr>
       </thead>
       <tbody>
-        {event.attendees.map((att) => (
+        {event.attendees!.map((att) => (
           <tr key={att.user_id}>
             {att.user_id === me.user_id ? (
               <CurrentUserAttendeeRow event={event} me={me} />
@@ -47,6 +61,27 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
   );
 }
 
+async function ShowView(props: { event: EventObjectType }) {
+  const me = await getCurrentUser();
+  if (canManageAnySignupSheet(props.event, me)) {
+    // TODO(WEB-40): this pre-loads quite a bit of information (~56k gzipped, 4MB uncompressed)
+    //  that we don't actually need until you go to edit a sheet.
+    //  Would be better to either load it on-demand dynamically, or move the edit view to a sub-page.
+    const [positions, members] = await Promise.all([
+      getAllCrewPositions(),
+      getAllUsers(),
+    ]);
+    return (
+      <CrewPositionsProvider positions={positions}>
+        <MembersProvider members={members}>
+          <SignupSheetsView event={props.event} me={me} />
+        </MembersProvider>
+      </CrewPositionsProvider>
+    );
+  }
+  return <SignupSheetsView event={props.event} me={me} />;
+}
+
 export default async function EventPage({
   params,
 }: {
@@ -58,19 +93,20 @@ export default async function EventPage({
   }
   return (
     <div>
-      <h1>{event.name}</h1>
+      <h1 className="text-2xl font-bold">{event.name}</h1>
       <p>
-        {event.start_date.toLocaleDateString()}{" "}
-        {event.start_date.toLocaleTimeString()} -{" "}
-        {event.end_date.toLocaleTimeString()}
+        {formatDateTime(event.start_date)} -{" "}
+        {isSameDay(event.start_date, event.end_date)
+          ? formatTime(event.end_date)
+          : formatDateTime(event.end_date)}
       </p>
       <p>{event.description}</p>
-      {event.users_events_created_byTousers && (
+      {event.users_events_created_byTousers && event.event_type !== "show" && (
         <p>Host: {getUserName(event.users_events_created_byTousers)}</p>
       )}
       {event.location && <p>Location: {event.location}</p>}
       {event.event_type === "show" ? (
-        <b>Shows TODO</b>
+        <ShowView event={event} />
       ) : (
         <AttendeesView event={event} />
       )}

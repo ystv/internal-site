@@ -1,10 +1,17 @@
 "use client";
-import { ZodEffects, ZodObject } from "zod";
-import { FieldValues, FormProvider, useForm } from "react-hook-form";
+import { z, ZodEffects, ZodTypeAny } from "zod";
+import {
+  DeepPartial,
+  FieldValues,
+  FormProvider,
+  useForm,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import classNames from "classnames";
 import { FieldPath } from "react-hook-form/dist/types/path";
+import { DebugOnly } from "@/components/DebugMode";
+import Button from "@/components/Button";
 
 export interface FormErrorResponse<Fields extends FieldValues = any> {
   ok: false;
@@ -20,23 +27,32 @@ export type FormAction<
   Fields extends FieldValues = any,
 > = (data: Fields) => Promise<FormResponse<OK, Fields>>;
 
+const useForceUpdate = () => {
+  const [, setState] = useState(true);
+  return useCallback(() => {
+    setState((s) => !s);
+  }, []);
+};
+
 export default function Form<
-  Fields extends FieldValues,
-  Schema extends ZodObject<Fields> | ZodEffects<ZodObject<Fields>>,
+  Schema extends ZodTypeAny | ZodEffects<ZodTypeAny>,
   SuccessfulResponse extends Record<string, unknown> = {},
 >(props: {
-  action: FormAction<SuccessfulResponse, Fields>;
+  action: FormAction<SuccessfulResponse, z.infer<Schema>>;
   schema: Schema;
+  initialValues?: DeepPartial<z.infer<Schema>>;
   children: React.ReactNode;
   className?: string;
   submitLabel?: string;
   onSuccess?: (res: SuccessfulResponse) => void;
 }) {
-  const form = useForm<Fields>({
+  const form = useForm<z.infer<Schema>>({
     resolver: zodResolver(props.schema),
+    defaultValues: props.initialValues,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { action, onSuccess } = props;
+  const forceUpdate = useForceUpdate();
   const submitHandler = useCallback(async () => {
     const valid = await form.trigger();
     if (valid) {
@@ -69,7 +85,7 @@ export default function Form<
       for (const [k, err] of Object.entries(
         (res as FormErrorResponse).errors,
       )) {
-        form.setError(k as FieldPath<Fields>, {
+        form.setError(k as FieldPath<z.infer<Schema>>, {
           type: "custom",
           message: err,
         });
@@ -97,6 +113,28 @@ export default function Form<
           {props.submitLabel ?? "Create"}
         </button>
       </form>
+      <DebugOnly>
+        <pre className="mt-4 text-xs text-gray-500">
+          Debug: form state: {JSON.stringify(form.formState, null, 2)}
+          <br />
+          isValid: {JSON.stringify(form.formState.isValid)}
+          <br />
+          isDirty: {JSON.stringify(form.formState.isDirty)}
+          <br />
+          values: {JSON.stringify(form.getValues(), null, 2)}
+          <br />
+          validated:{" "}
+          {JSON.stringify(
+            props.schema.safeParse(form.getValues()),
+            null,
+            2,
+          )}{" "}
+          <br />
+          <Button size="small" color="light" onClick={forceUpdate}>
+            Force update
+          </Button>
+        </pre>
+      </DebugOnly>
     </FormProvider>
   );
 }

@@ -139,8 +139,12 @@ export async function requirePermission(...perms: Permission[]) {
   if (!(await hasPermission(...perms))) throw new Forbidden(perms);
 }
 
-export async function getCurrentUserOrNull(): Promise<UserType | null> {
-  const uid = await activeProvider.getCurrentUserID();
+export async function getCurrentUserOrNull(
+  req?: Request,
+): Promise<UserType | null> {
+  const uid = req
+    ? await activeProvider.getCurrentUserIDFromRequest(req)
+    : await activeProvider.getCurrentUserIDFromHeaders();
   if (!uid) {
     return null;
   }
@@ -159,8 +163,8 @@ export async function getCurrentUserOrNull(): Promise<UserType | null> {
   } satisfies UserType;
 }
 
-export async function getCurrentUser(): Promise<UserType> {
-  const user = await getCurrentUserOrNull();
+export async function getCurrentUser(req?: Request): Promise<UserType> {
+  const user = await getCurrentUserOrNull(req);
   if (!user) {
     throw new NotLoggedIn();
   }

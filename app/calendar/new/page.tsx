@@ -1,16 +1,13 @@
-import {
-  Forbidden,
-  getCurrentUser,
-  hasPermission,
-  Permission,
-} from "@/lib/auth/server";
+import { Forbidden, getCurrentUser, Permission } from "@/lib/auth/server";
 import { schema } from "./schema";
 import { CreateEventForm } from "@/app/calendar/new/form";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
-import { createEvent as doCreateEvent } from "@/features/calendar";
-import { EventType } from "@/features/calendar/types";
-import { canManage, manageable } from "@/features/calendar/permissions";
+import {
+  canCreate,
+  creatableEventTypes,
+} from "@/features/calendar/permissions";
+import { createEvent as doCreateEvent } from "@/features/calendar/events";
 
 async function createEvent(
   data: unknown,
@@ -21,7 +18,7 @@ async function createEvent(
   if (!payload.success) {
     return zodErrorResponse(payload.error);
   }
-  if (!canManage(payload.data.type, user.permissions)) {
+  if (!canCreate(payload.data.type, user)) {
     throw new Forbidden([
       "Calendar.Admin",
       `Calendar.${payload.data.type}.Creator` as Permission,
@@ -47,7 +44,9 @@ async function createEvent(
 }
 
 export default async function NewEventPage() {
-  const permittedEventTypes = manageable((await getCurrentUser()).permissions);
+  const permittedEventTypes = creatableEventTypes(
+    (await getCurrentUser()).permissions,
+  );
   if (permittedEventTypes.length === 0) {
     throw new Forbidden([
       "Calendar.Admin or Calendar.{Show,Meeting,Social}.{Creator,Admin}" as any,

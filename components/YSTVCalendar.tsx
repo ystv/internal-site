@@ -52,6 +52,7 @@ export default function YSTVCalendar({
           eventObject.color = "#8b8b8b";
         }
         if (evt.is_cancelled) {
+          eventObject.title = `CANCELLED: ${eventObject.title}`;
           eventObject.url = "";
           eventObject.color = "#B00020";
         }

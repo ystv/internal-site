@@ -10,6 +10,8 @@ export const appRouter = router({
   calendar,
 });
 
+export type AppRouter = typeof appRouter;
+
 export const openapiSpec = generateOpenApiDocument(appRouter as any, {
   title: "YSTV Internal API",
   baseUrl: "/api/v1",

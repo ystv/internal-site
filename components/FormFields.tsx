@@ -1,19 +1,36 @@
-import { FieldValues, useController, useFormContext } from "react-hook-form";
+import {
+  ArrayPath,
+  FieldArray,
+  FieldValues,
+  Path,
+  RegisterOptions,
+  useController,
+  useFieldArray,
+  useFormContext,
+} from "react-hook-form";
 import { FieldPath } from "react-hook-form/dist/types/path";
 import DatePicker, { ReactDatePickerProps } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import classNames from "classnames";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Button from "@/components/Button";
+import {
+  useCrewPositions,
+  useMembers,
+} from "@/components/FormFieldPreloadedData";
+import { getUserName } from "@/components/UserHelpers";
+import { identity } from "lodash";
 
 interface FieldBaseProps<
-  TFields,
-  TFieldName,
+  TFields extends FieldValues,
+  TFieldName extends Path<TFields>,
   TEl extends React.ElementType = "input",
 > {
   name: TFieldName;
-  label: string;
+  label?: string;
   className?: string;
   as?: TEl;
+  registerParams?: RegisterOptions<TFields, TFieldName>;
 }
 
 /**
@@ -29,28 +46,32 @@ export function Field<
   props: FieldBaseProps<TFields, TFieldName, TEl> &
     React.ComponentPropsWithoutRef<TEl>,
 ) {
-  const { label, ...rest } = props;
+  const { label, registerParams, ...rest } = props;
   const ctx = useFormContext<TFields>();
   const El = props.as ?? "input";
+  const field = (
+    <El
+      {...rest}
+      {...ctx.register(props.name, registerParams)}
+      className={classNames(
+        props.className ??
+          "mt-1 block w-full rounded-md border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ",
+        ctx.formState.errors[props.name] ? "border-red-500" : "border-gray-300",
+      )}
+    />
+  );
+  if (!props.label) {
+    return field;
+  }
   return (
     <label className="block">
-      <span className="text-gray-700 font-bold">{label}</span>
+      <span className="font-bold text-gray-700">{label}</span>
       {ctx.formState.errors[props.name] && (
-        <span className="text-red-500 font-semibold block">
+        <span className="block font-semibold text-red-500">
           {(ctx.formState.errors[props.name]?.message as string) ?? ""}
         </span>
       )}
-      <El
-        {...rest}
-        {...ctx.register(props.name)}
-        className={classNames(
-          props.className ??
-            " mt-1 block w-full rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ",
-          ctx.formState.errors[props.name]
-            ? "border-red-500"
-            : "border-gray-300",
-        )}
-      />
+      {field}
     </label>
   );
 }
@@ -76,9 +97,9 @@ export function DatePickerField(
   );
   return (
     <label className="block">
-      <span className="text-gray-700 font-bold block">{props.label}</span>
+      <span className="block font-bold text-gray-700">{props.label}</span>
       {controller.fieldState.error && (
-        <span className="text-red-500 font-semibold block">
+        <span className="block font-semibold text-red-500">
           {(controller.fieldState.error.message as string) ?? ""}
         </span>
       )}
@@ -97,5 +118,171 @@ export function DatePickerField(
         selectsRange={false}
       />
     </label>
+  );
+}
+
+export function CheckBoxField(props: { name: string; label?: string }) {
+  const ctx = useFormContext();
+  if (!props.label) {
+    return <input type="checkbox" {...ctx.register(props.name)} />;
+  }
+  return (
+    <label className="block">
+      <span className="font-bold text-gray-700">{props.label}</span>
+      <input type="checkbox" {...ctx.register(props.name)} />
+    </label>
+  );
+}
+
+export function NullableCheckboxField(props: {
+  name: string;
+  checkboxLabel: string;
+  children: React.ReactNode;
+}) {
+  const controller = useController({
+    name: props.name,
+    defaultValue: null,
+  });
+  const [isChecked, setChecked] = useState(controller.field.value !== null);
+  useEffect(() => {
+    if (!isChecked) {
+      controller.field.onChange(null);
+    }
+  }, [isChecked, controller.field]);
+  return (
+    <>
+      <label className="block">
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={(e) => {
+            setChecked(e.target.checked);
+          }}
+        />
+        <span className="ml-1 inline font-bold text-gray-700">
+          {props.checkboxLabel}
+        </span>
+      </label>
+      {isChecked && props.children}
+    </>
+  );
+}
+
+export function ArrayField<
+  TFieldValues extends FieldValues,
+  TFieldName extends ArrayPath<TFieldValues> = ArrayPath<TFieldValues>,
+>(props: {
+  name: string;
+  children: (
+    // The unknown here is to remind you that, because of coercion, some of the types may not be what you expect
+    // (e.g. you have a field that's defined as `z.coerce.number()` - the final value will actually be a number,
+    // but the value you'll get passed here may be a string
+    field: Record<string, unknown> & { id: string },
+    index: number,
+    els: { remove: React.ReactNode },
+  ) => React.ReactNode;
+  newElement: (value: FieldArray<TFieldValues, TFieldName>[]) => TFieldValues;
+  header?: React.ReactNode;
+}) {
+  const { fields, append, remove } = useFieldArray<TFieldValues, TFieldName>({
+    name: props.name as any /* TODO: the typings here are absolutely insane */,
+  });
+  return (
+    <>
+      {fields.length > 0 && props.header}
+      {fields.map((field, idx) =>
+        props.children(field as any, idx, {
+          remove: (
+            <Button
+              className="h-full min-w-[2rem] align-middle font-black"
+              onClick={() => remove(idx)}
+              color="danger"
+              size="small"
+            >
+              -
+            </Button>
+          ),
+        }),
+      )}
+      <Button
+        className="mt-1 font-black"
+        onClick={() => append(props.newElement(fields) as any)}
+        color="primary"
+        size="small"
+      >
+        +
+      </Button>
+    </>
+  );
+}
+
+export function SelectField<TObj extends {}>(props: {
+  name: string;
+  options: TObj[];
+  label?: string;
+  renderOption: (obj: TObj) => string;
+  getOptionValue: (obj: TObj) => string | number;
+  filter: (obj: TObj, filter: string) => boolean;
+  nullable?: boolean;
+}) {
+  const { name, label, options, getOptionValue, renderOption, nullable } =
+    props;
+  return (
+    <Field
+      name={name}
+      label={label}
+      as="select"
+      registerParams={{
+        setValueAs: props.nullable ? (v) => (v === "" ? null : v) : identity,
+      }}
+    >
+      {nullable && <option value="">None</option>}
+      {options.map((opt) => (
+        <option key={getOptionValue(opt)} value={getOptionValue(opt)}>
+          {renderOption(opt)}
+        </option>
+      ))}
+    </Field>
+  );
+}
+
+export function CrewPositionSelect(props: { name: string; label?: string }) {
+  const vals = useCrewPositions();
+  return (
+    <SelectField
+      name={props.name}
+      options={vals}
+      label={props.label}
+      renderOption={(pos) => pos.name}
+      getOptionValue={(pos) => pos.position_id}
+      filter={(pos, q) => pos.name.includes(q)}
+    />
+  );
+}
+
+export function MemberSelect(props: {
+  name: string;
+  label?: string;
+  nullable?: boolean;
+}) {
+  const vals = useMembers();
+  return (
+    <SelectField
+      name={props.name}
+      options={vals}
+      label={props.label}
+      renderOption={(user) => getUserName(user)}
+      getOptionValue={(user) => user.user_id}
+      nullable={props.nullable}
+      filter={(user, q) =>
+        user.first_name.toLocaleLowerCase().includes(q) ||
+        user.last_name.toLocaleLowerCase().includes(q) ||
+        (user.nickname?.toLocaleLowerCase().includes(q) ?? false) ||
+        `${user.first_name} ${user.last_name}`
+          .toLocaleLowerCase()
+          .includes(q) ||
+        getUserName(user).toLocaleLowerCase().includes(q)
+      }
+    />
   );
 }
