@@ -1,14 +1,14 @@
 import { EventObjectType, getEvent } from "@/features/calendar";
 import { notFound } from "next/navigation";
 import { getUserName } from "@/components/UserCommon";
-import { getCurrentUser } from "@/lib/auth/legacy";
+import { getCurrentUser } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
 
 async function AttendeesView({ event }: { event: EventObjectType }) {
   const me = await getCurrentUser();
   const isCurrentUserAttending = event.attendees.some(
-    (att) => att.user_id === me.id,
+    (att) => att.user_id === me.user_id,
   );
   return (
     <table>
@@ -21,7 +21,7 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
       <tbody>
         {event.attendees.map((att) => (
           <tr key={att.user_id}>
-            {att.user_id === me.id ? (
+            {att.user_id === me.user_id ? (
               <CurrentUserAttendeeRow event={event} me={me} />
             ) : (
               <>

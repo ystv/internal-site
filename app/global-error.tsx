@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { getSignInURL } from "@/lib/auth/common-client";
+import { getSignInURL } from "@/lib/auth/client";
 import { isNotLoggedIn, NotLoggedIn } from "@/lib/auth/errors";
 
 export default function GlobalError({

@@ -1,7 +1,8 @@
 "use client";
 import { EventObjectType } from "@/features/calendar";
-import { User } from "@/lib/auth/legacy";
-import { useTransition } from "react";
+
+import type { UserType } from "@/lib/auth/server";
+import { useTransition, useRef } from "react";
 import { getUserName } from "@/components/UserCommon";
 import { updateAttendeeStatus } from "@/app/calendar/[eventID]/actions";
 import { AttendStatus, AttendStatusLabels } from "@/features/calendar/statuses";
@@ -12,7 +13,7 @@ export function CurrentUserAttendeeRow({
   me,
 }: {
   event: EventObjectType;
-  me: User;
+  me: UserType;
 }) {
   const myAttendee = event.attendees.find((att) => att.user_id === me.id);
   const [isPending, startTransition] = useTransition();

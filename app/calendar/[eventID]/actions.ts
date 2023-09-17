@@ -1,5 +1,5 @@
 "use server";
-import { getCurrentUser } from "@/lib/auth/legacy";
+import { getCurrentUser } from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
 import * as Calendar from "@/features/calendar";
@@ -38,7 +38,11 @@ export async function updateAttendeeStatus(
     };
   }
 
-  await Calendar.updateEventAttendeeStatus(evt.event_id, me.id, status);
+  await Calendar.updateEventAttendeeStatus(
+    evt.event_id,
+    me.user_id,
+    payload.data.status,
+  );
 
   revalidatePath("/calendar/[eventID]");
   return { ok: true };

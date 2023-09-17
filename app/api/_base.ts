@@ -1,7 +1,7 @@
 import { inferAsyncReturnType, initTRPC, TRPCError } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { OpenApiMeta } from "trpc-openapi";
-import { Permission } from "@/lib/auth/server";
+import { Permission } from "@/lib/auth/common";
 
 export function createContext({
   req,

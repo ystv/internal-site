@@ -4,7 +4,7 @@ import { appRouter } from "../../_router";
 import { createContext } from "../../_base";
 
 const handler = createOpenApiFetchHandler({
-  router: appRouter,
+  router: appRouter as any,
   createContext,
   endpoint: "/api/v1",
 });

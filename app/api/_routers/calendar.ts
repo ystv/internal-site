@@ -5,10 +5,8 @@ import * as Calendar from "@/features/calendar";
 import { TRPCError } from "@trpc/server";
 import { schema as createEventSchema } from "@/app/calendar/new/schema";
 import { canManage } from "@/features/calendar/permissions";
-import { getCurrentUser } from "@/lib/auth/legacy";
 import { AttendStatuses } from "@/features/calendar/statuses";
 import { EventType, hasRSVP } from "@/features/calendar/types";
-import { EventObjectType } from "@/features/calendar";
 
 const ExposedEventModel = _EventModel.extend({
   attendees: z.array(

@@ -1,8 +1,8 @@
 import "./globals.css";
-import { getCurrentUserOrNull } from "@/lib/auth/legacy";
+import { getCurrentUserOrNull } from "@/lib/auth/server";
 import { UserProvider } from "@/components/UserContext";
 import { redirect } from "next/navigation";
-import { getSignInURL } from "@/lib/auth/common-client";
+import { getSignInURL } from "@/lib/auth/client";
 import { Inter } from "next/font/google";
 import Image from "next/image";
 import Logo from "@/app/_assets/logo.png";
