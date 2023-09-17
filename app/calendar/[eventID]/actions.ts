@@ -2,7 +2,7 @@
 import { getCurrentUser } from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { AttendStatus } from "@/features/calendar/statuses";
+import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
 import * as Calendar from "@/features/calendar";
 import { EventType, hasRSVP } from "@/features/calendar/types";
 import {
@@ -21,6 +21,15 @@ export async function updateAttendeeStatus(
   status: AttendStatus,
 ) {
   const me = await getCurrentUser();
+  // NB: this is an action, so we can't trust the status
+  if (!AttendStatuses.includes(status)) {
+    return {
+      ok: false,
+      errors: {
+        root: "Invalid status",
+      },
+    };
+  }
 
   const evt = await Calendar.getEvent(eventID);
   if (!evt) {
