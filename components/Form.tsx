@@ -80,7 +80,7 @@ export default function Form<
     <FormProvider {...form}>
       <form action={submitHandler} className={props.className}>
         {form.formState.errors.root && (
-          <span className="text-red-500 font-semibold block">
+          <span className="block font-semibold text-red-500">
             {(form.formState.errors.root?.message as string) ?? ""}
           </span>
         )}
@@ -89,9 +89,9 @@ export default function Form<
           type="submit"
           // disabled={isSubmitting || !form.formState.isValid}
           className={classNames(
-            "mt-4 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700",
+            "mt-4 rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-4",
             (isSubmitting || !form.formState.isValid) &&
-              "opacity-50 cursor-not-allowed",
+              "cursor-not-allowed opacity-50",
           )}
         >
           {props.submitLabel ?? "Create"}
