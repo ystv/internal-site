@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
-if (process.env.NEXT_RUNTIME) {
-  throw new Error("Can only run as a standalone script");
+if (process.env.SCRIPT !== "true") {
+  throw new Error("This script must be run using `yarn do`.");
 }
 
 const email = process.argv[3];
