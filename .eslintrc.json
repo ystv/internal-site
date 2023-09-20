@@ -4,9 +4,7 @@
     "prettier",
     "plugin:storybook/recommended"
   ],
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "@next/next/no-async-client-component": "error"
   }
