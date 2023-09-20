@@ -25,8 +25,8 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <DebugModeProvider value={debugMode}>
-        <main className="mx-2 max-w-3xl lg:mx-auto">{children}</main>
-        <DebugIndicator />
+          {children}
+          <DebugIndicator />
         </DebugModeProvider>
       </body>
     </html>

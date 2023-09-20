@@ -15,7 +15,7 @@ export default function GlobalError({
   useEffect(() => {
     // If it's a sign-in error, redirect to sign in
     if (isNotLoggedIn(error)) {
-      // window.location.assign(getSignInURL(window.location.origin + pathName));
+      window.location.assign(window.location.origin + "/login");
     }
     // Log the error to an error reporting service
     console.error(error);

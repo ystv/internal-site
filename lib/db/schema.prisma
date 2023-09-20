@@ -50,20 +50,19 @@ model Role {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model User {
-  user_id                         Int             @id @default(autoincrement())
-  username                        String          @unique
-  email                           String          @unique
+  user_id                         Int          @id @default(autoincrement())
+  username                        String       @unique
+  email                           String       @unique
   first_name                      String
   last_name                       String
-  nickname                        String          @default("")
-  avatar                          String          @default("")
+  nickname                        String       @default("")
+  avatar                          String       @default("")
   identities                      Identity[]
   attendees                       Attendee[]
   crews                           Crew[]
-  events_events_created_byTousers Event[]         @relation("events_created_byTousers")
-  events_events_deleted_byTousers Event[]         @relation("events_deleted_byTousers")
-  events_events_updated_byTousers Event[]         @relation("events_updated_byTousers")
-  position_groups                 PositionGroup[]
+  events_events_created_byTousers Event[]      @relation("events_created_byTousers")
+  events_events_deleted_byTousers Event[]      @relation("events_deleted_byTousers")
+  events_events_updated_byTousers Event[]      @relation("events_updated_byTousers")
   role_members                    RoleMember[]
 
   @@map("users")
@@ -134,31 +133,16 @@ model Event {
   @@map("events")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model PositionGroup {
-  group_id       Int        @id @default(autoincrement())
-  name           String
-  description    String
-  primary_colour String
-  leader         Int?
-  users          User?      @relation(fields: [leader], references: [user_id])
-  positions      Position[]
-
-  @@map("position_groups")
-}
-
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Position {
-  position_id       Int           @id @default(autoincrement())
-  group_id          Int
+  position_id       Int     @id @default(autoincrement())
   permission_id     Int?
   name              String
-  admin             Boolean       @default(false)
-  brief_description String        @default("")
+  admin             Boolean @default(false)
+  brief_description String  @default("")
   full_description  String
   crews             Crew[]
-  position_groups   PositionGroup @relation(fields: [group_id], references: [group_id], onDelete: NoAction)
 
   @@map("positions")
 }

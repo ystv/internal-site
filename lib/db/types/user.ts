@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { CompleteIdentity, IdentityModel, CompleteAttendee, AttendeeModel, CompleteCrew, CrewModel, CompleteEvent, EventModel, CompletePositionGroup, PositionGroupModel, CompleteRoleMember, RoleMemberModel } from "./index"
+import { CompleteIdentity, IdentityModel, CompleteAttendee, AttendeeModel, CompleteCrew, CrewModel, CompleteEvent, EventModel, CompleteRoleMember, RoleMemberModel } from "./index"
 
 export const _UserModel = z.object({
   user_id: z.number().int(),
@@ -18,7 +18,6 @@ export interface CompleteUser extends z.infer<typeof _UserModel> {
   events_events_created_byTousers: CompleteEvent[]
   events_events_deleted_byTousers: CompleteEvent[]
   events_events_updated_byTousers: CompleteEvent[]
-  position_groups: CompletePositionGroup[]
   role_members: CompleteRoleMember[]
 }
 
@@ -34,6 +33,5 @@ export const UserModel: z.ZodSchema<CompleteUser> = z.lazy(() => _UserModel.exte
   events_events_created_byTousers: EventModel.array(),
   events_events_deleted_byTousers: EventModel.array(),
   events_events_updated_byTousers: EventModel.array(),
-  position_groups: PositionGroupModel.array(),
   role_members: RoleMemberModel.array(),
 }))

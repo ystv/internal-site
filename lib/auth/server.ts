@@ -5,7 +5,10 @@ import { Forbidden, NotLoggedIn } from "./errors";
 import { Permission } from "./common";
 import { User } from "@prisma/client";
 import { NextRequest } from "next/server";
-import { findOrCreateUserFromGoogleToken, mustFindUserFromGoogleToken } from "./google";
+import {
+  findOrCreateUserFromGoogleToken,
+  mustFindUserFromGoogleToken,
+} from "./google";
 import { redirect } from "next/navigation";
 
 export type UserType = User & {
@@ -19,12 +22,15 @@ async function resolvePermissionsForUser(userID: number) {
         role_members: {
           some: {
             user_id: userID,
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
+    select: {
+      permission: true,
+    },
   });
-  return result.map(r => r.permission as Permission);
+  return result.map((r) => r.permission as Permission);
 }
 
 /**
