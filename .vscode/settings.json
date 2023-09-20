@@ -1,3 +1,15 @@
 {
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "Local",
+      "database": "calendar_2023",
+      "username": "marks",
+      "password": ""
+    }
+  ]
 }

@@ -11,7 +11,7 @@ import {
   editSignUpSheet,
   removeSelfFromRole,
   signUpToRole,
-} from "@/app/calendar/[eventID]/actions";
+} from "@/app/(authenticated)/calendar/[eventID]/actions";
 import Modal from "react-modal";
 import Button from "@/components/Button";
 import {
@@ -19,7 +19,7 @@ import {
   canManageSignUpSheet,
 } from "@/features/calendar/permissions";
 import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
-import { AddEditSignUpSheetForm } from "@/app/calendar/[eventID]/AddEditSignUpSheetForm";
+import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]/AddEditSignUpSheetForm";
 import { CrewType, SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventObjectType } from "@/features/calendar/events";
 import { ExposedUser } from "@/features/people";

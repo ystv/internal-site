@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { getSignInURL } from "@/lib/auth/client";
 import { isNotLoggedIn, NotLoggedIn } from "@/lib/auth/errors";
 
 export default function GlobalError({
@@ -16,7 +15,7 @@ export default function GlobalError({
   useEffect(() => {
     // If it's a sign-in error, redirect to sign in
     if (isNotLoggedIn(error)) {
-      window.location.assign(getSignInURL(window.location.origin + pathName));
+      // window.location.assign(getSignInURL(window.location.origin + pathName));
     }
     // Log the error to an error reporting service
     console.error(error);

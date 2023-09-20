@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 import invariant from "tiny-invariant";
 import { getUserName } from "@/components/UserHelpers";
 import { getCurrentUser } from "@/lib/auth/server";
-import { CurrentUserAttendeeRow } from "@/app/calendar/[eventID]/AttendeeStatus";
+import { CurrentUserAttendeeRow } from "@/app/(authenticated)/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
-import { SignupSheetsView } from "@/app/calendar/[eventID]/SignupSheet";
+import { SignupSheetsView } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
 import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
 import { isSameDay } from "date-fns";
 import { EventObjectType, getEvent } from "@/features/calendar/events";
@@ -101,8 +101,8 @@ export default async function EventPage({
           : formatDateTime(event.end_date)}
       </p>
       <p>{event.description}</p>
-      {event.users_events_created_byTousers && event.event_type !== "show" && (
-        <p>Host: {getUserName(event.users_events_created_byTousers)}</p>
+      {event.updated_by_user && event.event_type !== "show" && (
+        <p>Host: {getUserName(event.updated_by_user)}</p>
       )}
       {event.location && <p>Location: {event.location}</p>}
       {event.event_type === "show" ? (

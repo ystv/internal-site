@@ -1,6 +1,6 @@
 import { Forbidden, getCurrentUser, Permission } from "@/lib/auth/server";
 import { schema } from "./schema";
-import { CreateEventForm } from "@/app/calendar/new/form";
+import { CreateEventForm } from "@/app/(authenticated)/calendar/new/form";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import {

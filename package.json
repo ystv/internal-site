@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -H internal.local.ystv.co.uk",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "dotenv -c ${NODE_ENV:-development} -- prisma generate --schema ./lib/db/schema.prisma",
     "prisma:pull": "dotenv -c ${NODE_ENV:-development} -- prisma db pull --schema ./lib/db/schema.prisma",
+    "prisma:migrateDev": "dotenv -c ${NODE_ENV:-development} -- prisma migrate dev --schema ./lib/db/schema.prisma",
+    "prisma:migrateProd": "dotenv -c ${NODE_ENV:-development} -- prisma migrate deploy --schema ./lib/db/schema.prisma",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -36,6 +38,7 @@
     "eslint": "8.44.0",
     "eslint-config-next": "^13.4.19",
     "fast-xml-parser": "^4.2.5",
+    "google-auth-library": "^9.0.0",
     "immer": "^10.0.2",
     "lodash": "^4.17.21",
     "lru-cache": "^10.0.0",

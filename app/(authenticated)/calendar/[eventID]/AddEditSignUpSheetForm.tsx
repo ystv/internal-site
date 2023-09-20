@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CrewSchema, SignupSheetSchema } from "@/app/calendar/[eventID]/schema";
+import { CrewSchema, SignupSheetSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
 import Form, { FormResponse } from "@/components/Form";
 import {
   ArrayField,
