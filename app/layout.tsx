@@ -3,7 +3,7 @@ import { UserProvider } from "@/components/UserContext";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { DebugIndicator, DebugModeProvider } from "@/components/DebugMode";
-import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/route";
+import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/common";
 
 const inter = Inter({
   subsets: ["latin"],

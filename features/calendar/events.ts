@@ -35,7 +35,10 @@ export interface EventObjectType {
   is_cancelled: boolean;
   signup_sheets: SignUpSheetType[];
   attendees: EventAttendee[];
+  created_by: number;
+  updated_by: number | null;
   updated_by_user: ExposedUser | null;
+  deleted_by: number | null;
 }
 
 /**
