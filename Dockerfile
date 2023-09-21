@@ -19,6 +19,8 @@ COPY --from=build /app/.next/static /app/.next/static
 # Copy these in so that we can still run Prisma migrations in prod
 COPY --from=build /app/lib/db/schema.prisma /app/lib/db/schema.prisma
 COPY --from=build /app/lib/db/migrations /app/lib/db/migrations
+# And so we can run the scripts
+COPY --from=build /app/scripts /app/scripts
 WORKDIR /app
 ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
