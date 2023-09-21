@@ -1,4 +1,4 @@
-import { Forbidden, getCurrentUser, Permission } from "@/lib/auth/server";
+import { getCurrentUser } from "@/lib/auth/server";
 import { schema } from "./schema";
 import { CreateEventForm } from "@/app/(authenticated)/calendar/new/form";
 import { FormResponse } from "@/components/Form";
@@ -8,6 +8,7 @@ import {
   creatableEventTypes,
 } from "@/features/calendar/permissions";
 import { createEvent as doCreateEvent } from "@/features/calendar/events";
+import { Forbidden, Permission } from "@/lib/auth/common";
 
 async function createEvent(
   data: unknown,
