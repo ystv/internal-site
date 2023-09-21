@@ -73,27 +73,3 @@ interface Event {
   is_cancelled: boolean;
   is_tentative: boolean;
 }
-
-// Event {
-//   event_id                       Int             @id @default(autoincrement())
-//   event_type                     String          @default("other")
-//   name                           String
-//   start_date                     DateTime        @db.Timestamptz(6)
-//   end_date                       DateTime        @db.Timestamptz(6)
-//   description                    String          @default("")
-//   location                       String          @default("")
-//   is_private                     Boolean         @default(false)
-//   is_cancelled                   Boolean         @default(false)
-//   is_tentative                   Boolean         @default(false)
-//   created_at                     DateTime        @default(now()) @db.Timestamptz(6)
-//   created_by                     Int?
-//       updated_at                     DateTime?       @db.Timestamptz(6)
-//           updated_by                     Int?
-//       deleted_at                     DateTime?       @db.Timestamptz(6)
-//           deleted_by                     Int?
-//       attendees                      Attendee[]
-//   users_events_created_byTousers User?           @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-//   users_events_deleted_byTousers User?           @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-//   users_events_updated_byTousers User?           @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-//   signup_sheets                  SignupSheet[]
-//   }

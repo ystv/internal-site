@@ -22,9 +22,9 @@ export const _EventModel = z.object({
 
 export interface CompleteEvent extends z.infer<typeof _EventModel> {
   attendees: CompleteAttendee[]
-  users_events_created_byTousers: CompleteUser
-  users_events_deleted_byTousers?: CompleteUser | null
-  users_events_updated_byTousers?: CompleteUser | null
+  created_by_user: CompleteUser
+  deleted_by_user?: CompleteUser | null
+  updated_by_user?: CompleteUser | null
   signup_sheets: CompleteSignupSheet[]
 }
 
@@ -35,8 +35,8 @@ export interface CompleteEvent extends z.infer<typeof _EventModel> {
  */
 export const EventModel: z.ZodSchema<CompleteEvent> = z.lazy(() => _EventModel.extend({
   attendees: AttendeeModel.array(),
-  users_events_created_byTousers: UserModel,
-  users_events_deleted_byTousers: UserModel.nullish(),
-  users_events_updated_byTousers: UserModel.nullish(),
+  created_by_user: UserModel,
+  deleted_by_user: UserModel.nullish(),
+  updated_by_user: UserModel.nullish(),
   signup_sheets: SignupSheetModel.array(),
 }))

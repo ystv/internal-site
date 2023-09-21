@@ -16,116 +16,6 @@ datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
   extensions = [tsm_system_rows, uuid_ossp(map: "uuid-ossp")]
-  schemas    = ["creator", "event", "mail", "misc", "people", "playout", "video"]
-}
-
-model Project {
-  project_id  Int      @id @default(autoincrement())
-  name        String
-  description String
-  status      String
-  start_date  DateTime @db.Timestamptz(6)
-  end_date    DateTime @db.Timestamptz(6)
-
-  @@map("projects")
-  @@schema("event")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Redirect {
-  redirect_id     Int      @id @default(autoincrement())
-  source_url      String   @unique
-  destination_url String
-  external        Boolean? @default(false)
-
-  @@map("redirects")
-  @@schema("misc")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model TeachingPeriod {
-  period_id Int      @id @default(autoincrement())
-  year      Int
-  name      String
-  start     DateTime @db.Timestamptz(6)
-  finish    DateTime @db.Timestamptz(6)
-
-  @@map("teaching_periods")
-  @@schema("misc")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model OfficershipMember {
-  officership_member_id Int         @id @default(autoincrement())
-  user_id               Int?
-  officer_id            Int
-  start_date            DateTime?   @db.Timestamptz(6)
-  end_date              DateTime?   @db.Timestamptz(6)
-  officerships          Officership @relation(fields: [officer_id], references: [officer_id], onDelete: Cascade)
-  users                 User?       @relation(fields: [user_id], references: [user_id])
-
-  @@map("officership_members")
-  @@schema("people")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model OfficershipTeamMember {
-  team_id           Int
-  officer_id        Int
-  is_leader         Boolean
-  is_deputy         Boolean
-  officerships      Officership     @relation(fields: [officer_id], references: [officer_id], onDelete: Cascade)
-  officership_teams OfficershipTeam @relation(fields: [team_id], references: [team_id], onDelete: Cascade)
-
-  @@id([team_id, officer_id])
-  @@map("officership_team_members")
-  @@schema("people")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model OfficershipTeam {
-  team_id                  Int                     @id @default(autoincrement())
-  name                     String
-  email_alias              String                  @default("station")
-  short_description        String                  @default("")
-  full_description         String                  @default("")
-  officership_team_members OfficershipTeamMember[]
-
-  @@map("officership_teams")
-  @@schema("people")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Officership {
-  officer_id               Int                     @id @default(autoincrement())
-  name                     String
-  email_alias              String                  @default("station")
-  description              String                  @default("")
-  historywiki_url          String                  @default("")
-  role_id                  Int?
-  is_current               Boolean                 @default(true)
-  if_unfilled              Int?
-  officership_members      OfficershipMember[]
-  officership_team_members OfficershipTeamMember[]
-  officerships             Officership?            @relation("officershipsToofficerships", fields: [if_unfilled], references: [officer_id], onDelete: NoAction, onUpdate: NoAction)
-  other_officerships       Officership[]           @relation("officershipsToofficerships")
-  roles                    Role?                   @relation(fields: [role_id], references: [role_id])
-
-  @@map("officerships")
-  @@schema("people")
-}
-
-model Permission {
-  permission_id    Int              @id @default(autoincrement())
-  name             String           @unique
-  description      String           @default("")
-  positions        Position[]
-  role_permissions RolePermission[]
-
-  @@map("permissions")
-  @@schema("people")
 }
 
 model RoleMember {
@@ -136,361 +26,125 @@ model RoleMember {
 
   @@id([user_id, role_id])
   @@map("role_members")
-  @@schema("people")
 }
 
 model RolePermission {
-  role_id       Int
-  permission_id Int
-  permissions   Permission @relation(fields: [permission_id], references: [permission_id], onDelete: Cascade)
-  roles         Role       @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  role_id    Int
+  permission String
+  roles      Role   @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
 
-  @@id([role_id, permission_id])
+  @@id([role_id, permission])
   @@map("role_permissions")
-  @@schema("people")
 }
 
 model Role {
   role_id          Int              @id @default(autoincrement())
   name             String           @unique
   description      String           @default("")
-  officerships     Officership[]
   role_members     RoleMember[]
   role_permissions RolePermission[]
 
   @@map("roles")
-  @@schema("people")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model User {
-  user_id                               Int                 @id @default(autoincrement())
-  username                              String              @unique
-  university_username                   String              @default("")
-  email                                 String              @unique
-  first_name                            String
-  last_name                             String
-  nickname                              String              @default("")
-  login_type                            String
-  password                              String
-  salt                                  String
-  avatar                                String              @default("")
-  last_login                            DateTime?           @db.Timestamptz(6)
-  reset_pw                              Boolean             @default(true)
-  enabled                               Boolean             @default(true)
-  created_at                            DateTime            @default(now()) @db.Timestamptz(6)
-  created_by                            Int?
-  updated_at                            DateTime?           @db.Timestamptz(6)
-  updated_by                            Int?
-  deleted_at                            DateTime?           @db.Timestamptz(6)
-  deleted_by                            Int?
-  attendees                             Attendee[]
-  crews                                 Crew[]
-  events_events_created_byTousers       Event[]            @relation("events_created_byTousers")
-  events_events_deleted_byTousers       Event[]            @relation("events_deleted_byTousers")
-  events_events_updated_byTousers       Event[]            @relation("events_updated_byTousers")
-  position_groups                       PositionGroup[]
-  officership_members                   OfficershipMember[]
-  role_members                          RoleMember[]
-  users_users_created_byTousers         User?               @relation("users_created_byTousers", fields: [created_by], references: [user_id])
-  other_users_users_created_byTousers   User[]              @relation("users_created_byTousers")
-  users_users_deleted_byTousers         User?               @relation("users_deleted_byTousers", fields: [deleted_by], references: [user_id])
-  other_users_users_deleted_byTousers   User[]              @relation("users_deleted_byTousers")
-  users_users_updated_byTousers         User?               @relation("users_updated_byTousers", fields: [updated_by], references: [user_id])
-  other_users_users_updated_byTousers   User[]              @relation("users_updated_byTousers")
-  items_items_created_byTousers         VideoItem[]         @relation("items_created_byTousers")
-  items_items_deleted_byTousers         VideoItem[]         @relation("items_deleted_byTousers")
-  items_items_updated_byTousers         VideoItem[]         @relation("items_updated_byTousers")
-  playlists_playlists_created_byTousers Playlist[]          @relation("playlists_created_byTousers")
-  playlists_playlists_deleted_byTousers Playlist[]          @relation("playlists_deleted_byTousers")
-  playlists_playlists_updated_byTousers Playlist[]          @relation("playlists_updated_byTousers")
-  series_series_created_byTousers       Series[]            @relation("series_created_byTousers")
-  series_series_deleted_byTousers       Series[]            @relation("series_deleted_byTousers")
-  series_series_updated_byTousers       Series[]            @relation("series_updated_byTousers")
+  user_id                         Int          @id @default(autoincrement())
+  username                        String       @unique
+  email                           String       @unique
+  first_name                      String
+  last_name                       String
+  nickname                        String       @default("")
+  avatar                          String       @default("")
+  identities                      Identity[]
+  attendees                       Attendee[]
+  crews                           Crew[]
+  events_events_created_byTousers Event[]      @relation("events_created_byTousers")
+  events_events_deleted_byTousers Event[]      @relation("events_deleted_byTousers")
+  events_events_updated_byTousers Event[]      @relation("events_updated_byTousers")
+  role_members                    RoleMember[]
 
   @@map("users")
-  @@schema("people")
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model LiveChannel {
-  channel_id      Int      @id @default(autoincrement())
-  url_name        String   @unique
-  name            String
-  description     String
-  thumbnail       String
-  output_type     String
-  output_url      String
-  visibility      String
-  status          String
-  location        String
-  scheduled_start DateTime @db.Timestamptz(6)
-  scheduled_end   DateTime @db.Timestamptz(6)
+model Identity {
+  identity_id  Int    @id @default(autoincrement())
+  user_id      Int
+  user         User   @relation(fields: [user_id], references: [user_id])
+  provider     String
+  provider_key String
 
-  @@map("channel")
-  @@schema("playout")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model EncodeFormat {
-  format_id             Int                  @id @default(autoincrement())
-  name                  String
-  description           String               @default("")
-  mime_type             String
-  mode                  String
-  width                 Int
-  height                Int
-  arguments             String
-  file_suffix           String
-  watermarked           Boolean
-  encode_preset_formats EncodePresetFormat[]
-  files                 VideoFile[]
-
-  @@map("encode_formats")
-  @@schema("video")
-}
-
-model EncodePresetFormat {
-  preset_id      Int
-  format_id      Int
-  encode_formats EncodeFormat @relation(fields: [format_id], references: [format_id], onDelete: Cascade)
-  encode_presets EncodePreset @relation(fields: [preset_id], references: [preset_id], onDelete: Cascade)
-
-  @@id([preset_id, format_id], map: "presets_encode_formats_pkey")
-  @@map("encode_preset_formats")
-  @@schema("video")
-}
-
-model EncodePreset {
-  preset_id             Int                  @id @default(autoincrement())
-  name                  String
-  description           String               @default("")
-  encode_preset_formats EncodePresetFormat[]
-  items                 VideoItem[]
-
-  @@map("encode_presets")
-  @@schema("video")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model VideoFile {
-  file_id        Int          @id @default(autoincrement())
-  video_id       Int
-  format_id      Int
-  uri            String
-  status         String
-  size           BigInt       @default(0)
-  is_source      Boolean      @default(false)
-  encode_formats EncodeFormat @relation(fields: [format_id], references: [format_id])
-  items          VideoItem    @relation(fields: [video_id], references: [video_id], onDelete: Cascade)
-
-  @@map("files")
-  @@schema("video")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model VideoHit {
-  hit_id      Int       @id @default(autoincrement())
-  start_time  DateTime  @db.Timestamptz(6)
-  mode        String
-  ip_address  String    @db.Inet
-  client_info String
-  percent     Int
-  video_id    Int
-  items       VideoItem @relation(fields: [video_id], references: [video_id], onDelete: Cascade)
-
-  @@index([start_time], map: "starttime")
-  @@map("hits")
-  @@schema("video")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model VideoItem {
-  video_id                      Int            @id @default(autoincrement())
-  series_id                     Int
-  name                          String
-  url                           String
-  description                   String         @default("")
-  thumbnail                     String         @default("")
-  duration                      Int            @default(0)
-  views                         Int            @default(0)
-  genre                         Int            @default(0)
-  tags                          String[]       @default([])
-  series_position               Int?           @db.SmallInt
-  status                        String         @default("internal")
-  preset_id                     Int?
-  broadcast_date                DateTime       @default(now()) @db.Timestamptz(6)
-  created_at                    DateTime       @default(now()) @db.Timestamptz(6)
-  created_by                    Int?
-  updated_at                    DateTime?      @db.Timestamptz(6)
-  updated_by                    Int?
-  deleted_at                    DateTime?      @db.Timestamptz(6)
-  deleted_by                    Int?
-  files                         VideoFile[]
-  hits                          VideoHit[]
-  users_items_created_byTousers User?          @relation("items_created_byTousers", fields: [created_by], references: [user_id])
-  users_items_deleted_byTousers User?          @relation("items_deleted_byTousers", fields: [deleted_by], references: [user_id])
-  encode_presets                EncodePreset?  @relation(fields: [preset_id], references: [preset_id])
-  series                        Series         @relation(fields: [series_id], references: [series_id], onDelete: Cascade)
-  users_items_updated_byTousers User?          @relation("items_updated_byTousers", fields: [updated_by], references: [user_id])
-  playlist_items                PlaylistItem[]
-
-  @@map("items")
-  @@schema("video")
-}
-
-model PlaylistItem {
-  playlist_id   Int
-  video_item_id Int
-  position      Int?      @db.SmallInt
-  playlists     Playlist  @relation(fields: [playlist_id], references: [playlist_id], onDelete: Cascade)
-  items         VideoItem @relation(fields: [video_item_id], references: [video_id], onDelete: Cascade)
-
-  @@id([playlist_id, video_item_id])
-  @@map("playlist_items")
-  @@schema("video")
-}
-
-model Playlist {
-  playlist_id                       Int            @id @default(autoincrement())
-  name                              String
-  description                       String         @default("")
-  thumbnail                         String         @default("")
-  status                            String         @default("internal")
-  created_at                        DateTime       @default(now()) @db.Timestamptz(6)
-  created_by                        Int?
-  updated_at                        DateTime?      @db.Timestamptz(6)
-  updated_by                        Int?
-  deleted_at                        DateTime?      @db.Timestamptz(6)
-  deleted_by                        Int?
-  playlist_items                    PlaylistItem[]
-  users_playlists_created_byTousers User?          @relation("playlists_created_byTousers", fields: [created_by], references: [user_id])
-  users_playlists_deleted_byTousers User?          @relation("playlists_deleted_byTousers", fields: [deleted_by], references: [user_id])
-  users_playlists_updated_byTousers User?          @relation("playlists_updated_byTousers", fields: [updated_by], references: [user_id])
-
-  @@map("playlists")
-  @@schema("video")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model Series {
-  series_id                      Int         @id @default(autoincrement())
-  lft                            Int
-  rgt                            Int
-  name                           String
-  in_url                         Boolean     @default(true)
-  url                            String
-  description                    String      @default("")
-  thumbnail                      String      @default("")
-  tags                           String[]    @default([])
-  status                         String      @default("internal")
-  created_at                     DateTime    @default(now()) @db.Timestamptz(6)
-  created_by                     Int?
-  updated_at                     DateTime?   @db.Timestamptz(6)
-  updated_by                     Int?
-  deleted_at                     DateTime?   @db.Timestamptz(6)
-  deleted_by                     Int?
-  items                          VideoItem[]
-  users_series_created_byTousers User?       @relation("series_created_byTousers", fields: [created_by], references: [user_id])
-  users_series_deleted_byTousers User?       @relation("series_deleted_byTousers", fields: [deleted_by], references: [user_id])
-  users_series_updated_byTousers User?       @relation("series_updated_byTousers", fields: [updated_by], references: [user_id])
-
-  @@map("series")
-  @@schema("video")
+  @@unique([provider, provider_key])
+  @@map("identities")
 }
 
 model Attendee {
   event_id      Int
   user_id       Int
   attend_status String
-  events        Event @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
+  events        Event  @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
   users         User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@id([event_id, user_id])
-  @@schema("event")
-	@@map("attendees")
+  @@map("attendees")
 }
 
 model Crew {
-  crew_id       Int            @id @default(autoincrement())
+  crew_id       Int         @id @default(autoincrement())
   signup_id     Int
   position_id   Int
   user_id       Int?
-  credited      Boolean        @default(true)
-  locked        Boolean        @default(false)
+  credited      Boolean     @default(true)
+  locked        Boolean     @default(false)
   ordering      Int
-  positions     Position     @relation(fields: [position_id], references: [position_id], onDelete: Cascade)
+  positions     Position    @relation(fields: [position_id], references: [position_id], onDelete: Cascade)
   signup_sheets SignupSheet @relation(fields: [signup_id], references: [signup_id], onDelete: Cascade)
-  users         User?          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  users         User?       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
-  @@schema("event")
-	@@map("crews")
+  @@map("crews")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Event {
-  event_id                       Int             @id @default(autoincrement())
-  event_type                     String          @default("other")
-  name                           String
-  start_date                     DateTime        @db.Timestamptz(6)
-  end_date                       DateTime        @db.Timestamptz(6)
-  description                    String          @default("")
-  location                       String          @default("")
-  is_private                     Boolean         @default(false)
-  is_cancelled                   Boolean         @default(false)
-  is_tentative                   Boolean         @default(false)
-  created_at                     DateTime        @default(now()) @db.Timestamptz(6)
-  created_by                     Int
-  updated_at                     DateTime?       @db.Timestamptz(6)
-  updated_by                     Int?
-  deleted_at                     DateTime?       @db.Timestamptz(6)
-  deleted_by                     Int?
-  attendees                      Attendee[]
-  users_events_created_byTousers User           @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  users_events_deleted_byTousers User?           @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  users_events_updated_byTousers User?           @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  signup_sheets                  SignupSheet[]
+  event_id        Int           @id @default(autoincrement())
+  event_type      String        @default("other")
+  name            String
+  start_date      DateTime      @db.Timestamptz(6)
+  end_date        DateTime      @db.Timestamptz(6)
+  description     String        @default("")
+  location        String        @default("")
+  is_private      Boolean       @default(false)
+  is_cancelled    Boolean       @default(false)
+  is_tentative    Boolean       @default(false)
+  created_at      DateTime      @default(now()) @db.Timestamptz(6)
+  created_by      Int
+  updated_at      DateTime?     @db.Timestamptz(6)
+  updated_by      Int?
+  deleted_at      DateTime?     @db.Timestamptz(6)
+  deleted_by      Int?
+  attendees       Attendee[]
+  created_by_user User          @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  deleted_by_user User?         @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  updated_by_user User?         @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  signup_sheets   SignupSheet[]
 
-  @@schema("event")
-	@@map("events")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model PositionGroup {
-  group_id       Int         @id @default(autoincrement())
-  name           String
-  description    String
-  primary_colour String
-  leader         Int?
-  users          User?       @relation(fields: [leader], references: [user_id])
-  positions      Position[]
-
-  @@schema("event")
-	@@map("position_groups")
+  @@map("events")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Position {
-  position_id       Int             @id @default(autoincrement())
-  group_id          Int
+  position_id       Int     @id @default(autoincrement())
   permission_id     Int?
   name              String
-  admin             Boolean         @default(false)
-  brief_description String          @default("")
+  admin             Boolean @default(false)
+  brief_description String  @default("")
   full_description  String
-  image             String
-  training_url      String
   crews             Crew[]
-  position_groups   PositionGroup @relation(fields: [group_id], references: [group_id], onDelete: NoAction)
-  permissions       Permission?     @relation(fields: [permission_id], references: [permission_id], onDelete: NoAction, onUpdate: NoAction) // TODO singular
 
-  @@schema("event")
-	@@map("positions")
+  @@map("positions")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -500,12 +154,11 @@ model SignupSheet {
   title        String
   description  String    @default("")
   unlock_date  DateTime? @db.Timestamptz(6)
-  arrival_time DateTime @db.Timestamptz(6)
-  start_time   DateTime @db.Timestamptz(6)
-  end_time     DateTime @db.Timestamptz(6)
+  arrival_time DateTime  @db.Timestamptz(6)
+  start_time   DateTime  @db.Timestamptz(6)
+  end_time     DateTime  @db.Timestamptz(6)
   crews        Crew[]
-  events       Event   @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction) // TODO singular
+  events       Event     @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction) // TODO singular
 
-  @@schema("event")
-	@@map("signup_sheets")
+  @@map("signup_sheets")
 }

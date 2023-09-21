@@ -8,7 +8,7 @@ import {
 } from "@/lib/db/types";
 import * as Calendar from "@/features/calendar";
 import { TRPCError } from "@trpc/server";
-import { schema as createEventSchema } from "@/app/calendar/new/schema";
+import { schema as createEventSchema } from "@/app/(authenticated)/calendar/new/schema";
 import { canCreate } from "@/features/calendar/permissions";
 import { AttendStatuses } from "@/features/calendar/statuses";
 import { EventType, hasRSVP } from "@/features/calendar/types";
