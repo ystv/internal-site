@@ -10,9 +10,9 @@ const nextConfig = {
       {
         hostname: "*.googleusercontent.com",
         protocol: "https",
-      }
-    ]
-  }
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;
