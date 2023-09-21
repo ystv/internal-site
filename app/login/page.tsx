@@ -21,7 +21,7 @@ export default function GoogleSignInPage() {
           data-login_uri={`${process.env.NEXT_PUBLIC_URL}/login/google/callback`}
           data-itp_support="true"
           data-prompt-parent="signInWrapper"
-          data-hd="*"
+          data-hd="york.ac.uk"
         ></div>
 
         <div
