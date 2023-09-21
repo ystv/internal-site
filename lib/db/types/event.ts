@@ -18,6 +18,7 @@ export const _EventModel = z.object({
   updated_by: z.number().int().nullish(),
   deleted_at: z.date().nullish(),
   deleted_by: z.number().int().nullish(),
+  adam_rms_project_id: z.number().int().nullish(),
 })
 
 export interface CompleteEvent extends z.infer<typeof _EventModel> {

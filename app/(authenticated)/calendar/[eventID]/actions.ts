@@ -1,5 +1,5 @@
 "use server";
-import { getCurrentUser } from "@/lib/auth/server";
+import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
@@ -15,6 +15,8 @@ import { FormResponse } from "@/components/Form";
 import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import { isBefore } from "date-fns";
+import { changeProjectDates, createProject } from "@/lib/adamrms";
+import invariant from "tiny-invariant";
 
 export async function updateAttendeeStatus(
   eventID: number,
@@ -242,5 +244,19 @@ export async function removeSelfFromRole(sheetID: number, crewID: number) {
     };
   }
   revalidatePath("/calendar/[eventID]");
+  return { ok: true };
+}
+
+export async function createAdamRMSProject(eventID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  const projectId = await createProject(event.name, me.email);
+  await changeProjectDates(projectId, event.start_date, event.end_date, "dates");
+  await changeProjectDates(projectId, event.start_date, event.end_date, "deliver_dates");
+
+  await Calendar.setAdamRMSID(event.event_id, projectId);
+  revalidatePath(`/calendar/${event.event_id}`);
   return { ok: true };
 }

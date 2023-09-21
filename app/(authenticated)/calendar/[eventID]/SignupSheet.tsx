@@ -1,11 +1,12 @@
 "use client";
 
 import { isBefore, isSameDay } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "tiny-invariant";
 import {
+  createAdamRMSProject,
   createSignUpSheet,
   deleteSignUpSheet,
   editSignUpSheet,
@@ -23,6 +24,8 @@ import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]
 import { CrewType, SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventObjectType } from "@/features/calendar/events";
 import { ExposedUser } from "@/features/people";
+import Image from "next/image";
+import AdamRMSLogo from "@/app/_assets/adamrms-logo.png";
 
 function SignupSheet({
   event,
@@ -235,6 +238,7 @@ export function SignupSheetsView({
   me: UserType;
 }) {
   invariant(event.signup_sheets, "no signup_sheets for SignupSheetsView");
+  const [isPending, startTransition] = useTransition();
   const [isCreateOpen, setCreateOpen] = useState(false);
   useEffect(() => {
     Modal.setAppElement(document.querySelector("main")!);
@@ -260,8 +264,29 @@ export function SignupSheetsView({
       {canManage(event, me) && (
         <div className="flex flex-col items-start space-y-2">
           <h3 className="text-lg font-bold">Actions</h3>
-          <Button>Edit Event</Button>
+          <Button>Edit Event&nbsp;<small>(doesn&apos;t work yet, soz)</small></Button>
           <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
+          {event.adam_rms_project_id ? (
+            <Button
+              as="a"
+              href={`https://dash.adam-rms.com/project/?id=${event.adam_rms_project_id}`}
+            >
+              <Image src={AdamRMSLogo} className="h-4 w-4 mr-1" alt="" />
+              View on AdamRMS
+            </Button>
+          ) : (
+            <Button
+              disabled={isPending}
+              onClick={() =>
+                startTransition(async () => {
+                  createAdamRMSProject(event.event_id)},
+                )
+              }
+            >
+              <Image src={AdamRMSLogo} className="h-4 w-4 mr-1" alt="" />
+              Create AdamRMS Project
+            </Button>
+          )}
           <Button color="warning">
             Cancel Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
           </Button>

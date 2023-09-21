@@ -39,6 +39,7 @@ export interface EventObjectType {
   updated_by: number | null;
   updated_by_user: ExposedUser | null;
   deleted_by: number | null;
+  adam_rms_project_id: number | null;
 }
 
 /**
@@ -179,4 +180,15 @@ export async function updateEventAttendeeStatus(
       },
     });
   }
+}
+
+export async function setAdamRMSID(eventID: number, projectID: number) {
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      adam_rms_project_id: projectID
+    }
+  });
 }
