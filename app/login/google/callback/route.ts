@@ -37,6 +37,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   await loginOrCreateUser(idToken);
 
   const url = req.nextUrl.clone();
+  url.hostname = process.env.PUBLIC_URL!;
   url.pathname = "/calendar";
   return NextResponse.redirect(url, {
     status: 303,
