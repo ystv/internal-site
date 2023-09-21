@@ -3,7 +3,8 @@ import { UserProvider } from "@/components/UserContext";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { DebugIndicator, DebugModeProvider } from "@/components/DebugMode";
-import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/route";
+import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/common";
+import { PublicURLProvider } from "@/components/PublicURLContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,10 +25,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <DebugModeProvider value={debugMode}>
-          {children}
-          <DebugIndicator />
-        </DebugModeProvider>
+        <PublicURLProvider value={process.env.PUBLIC_URL!}>
+          <DebugModeProvider value={debugMode}>
+            {children}
+            <DebugIndicator />
+          </DebugModeProvider>
+        </PublicURLProvider>
       </body>
     </html>
   );

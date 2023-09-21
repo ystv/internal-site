@@ -10,17 +10,17 @@ if (!email) {
 }
 const roleName = process.argv[4] ?? "SuperUser";
 
-(async function(){
+(async function () {
   const prisma = new PrismaClient();
   const role = await prisma.role.findFirstOrThrow({
     where: {
       name: roleName,
-    }
+    },
   });
   const user = await prisma.user.findFirstOrThrow({
     where: {
       email: email,
-    }
+    },
   });
   await prisma.user.update({
     where: {
@@ -28,19 +28,21 @@ const roleName = process.argv[4] ?? "SuperUser";
     },
     data: {
       role_members: {
-        connectOrCreate: [{
-          where: {
-            user_id_role_id: {
-              user_id: user.user_id,
+        connectOrCreate: [
+          {
+            where: {
+              user_id_role_id: {
+                user_id: user.user_id,
+                role_id: role.role_id,
+              },
+            },
+            create: {
               role_id: role.role_id,
             },
           },
-          create: {
-            role_id: role.role_id,
-          }
-        }]
-      }
-    }
+        ],
+      },
+    },
   });
   console.log(`Promoted ${email} to ${roleName}`);
 })();

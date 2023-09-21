@@ -15,7 +15,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prettify": "prettier --write .",
-    "do": "SCRIPT=true dotenv -c ${NODE_ENV:-development} -- tsx scripts/$0.mts $*"
+    "do": "SCRIPT=true dotenv -c ${NODE_ENV:-development} -- tsx scripts/$0.mts $*",
+    "postinstall": "yarn prisma:generate"
   },
   "prisma": {
     "seed": "tsx scripts/seed.mts"

@@ -245,7 +245,12 @@ export function SignupSheetsView({
         {event.signup_sheets.length === 0 && (
           <div className="my-8">
             <p>No sign-up sheets yet.</p>
-            <button onClick={() => setCreateOpen(true)} className="font-bold my-1 rounded-md shadow-md px-4 py-2">Create one</button>
+            <button
+              onClick={() => setCreateOpen(true)}
+              className="my-1 rounded-md px-4 py-2 font-bold shadow-md"
+            >
+              Create one
+            </button>
           </div>
         )}
         {event.signup_sheets.map((ss) => (
@@ -257,8 +262,12 @@ export function SignupSheetsView({
           <h3 className="text-lg font-bold">Actions</h3>
           <Button>Edit Event</Button>
           <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
-          <Button color="warning">Cancel Event&nbsp;<small>(doesn&apos;t work yet, soz)</small></Button>
-          <Button color="danger">Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small></Button>
+          <Button color="warning">
+            Cancel Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
+          </Button>
+          <Button color="danger">
+            Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
+          </Button>
         </div>
       )}
       <Modal isOpen={isCreateOpen} onRequestClose={() => setCreateOpen(false)}>

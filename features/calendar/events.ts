@@ -35,7 +35,10 @@ export interface EventObjectType {
   is_cancelled: boolean;
   signup_sheets: SignUpSheetType[];
   attendees: EventAttendee[];
+  created_by: number;
+  updated_by: number | null;
   updated_by_user: ExposedUser | null;
+  deleted_by: number | null;
 }
 
 /**
@@ -58,7 +61,8 @@ function sanitize(
   return produce(input, (draft) => {
     draft.event_type = draft.event_type as EventType;
     // @ts-expect-error
-    draft.updated_by_user = draft.updated_by_user && ExposedUserModel.parse(draft.updated_by_user);
+    draft.updated_by_user =
+      draft.updated_by_user && ExposedUserModel.parse(draft.updated_by_user);
     for (const sheet of draft.signup_sheets) {
       for (const crew of sheet.crews) {
         if (crew.users) {
