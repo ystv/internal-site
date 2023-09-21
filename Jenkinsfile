@@ -25,14 +25,12 @@ pipeline {
     }
     stage('Build Images') {
       steps {
-        sh ""
-        "docker build \\ -
+        sh """docker build \\ -
         t registry.comp.ystv.co.uk / ystv / calendar2023: $ {
             imageTag
           }\\
           .
-        ""
-        "
+        """
       }
     }
 
