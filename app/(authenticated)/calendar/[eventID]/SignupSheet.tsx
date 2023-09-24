@@ -258,17 +258,7 @@ export function SignupSheetsView({
         ))}
       </div>
       {canManage(event, me) && (
-        <div className="flex flex-col items-start space-y-2">
-          <h3 className="text-lg font-bold">Actions</h3>
-          <Button>Edit Event</Button>
-          <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
-          <Button color="warning">
-            Cancel Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
-          </Button>
-          <Button color="danger">
-            Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
-          </Button>
-        </div>
+        <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
       )}
       <Modal isOpen={isCreateOpen} onRequestClose={() => setCreateOpen(false)}>
         <Button

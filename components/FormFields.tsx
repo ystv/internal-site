@@ -88,7 +88,7 @@ export function DatePickerField(
     name: props.name,
     defaultValue:
       props.defaultValue instanceof Date
-        ? props.defaultValue.toISOString
+        ? props.defaultValue.toISOString()
         : props.defaultValue,
   });
   const v = useMemo(
