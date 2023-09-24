@@ -9,7 +9,7 @@ import { CheckBoxField, DatePickerField, Field } from "@/components/FormFields";
 import { useState, useTransition } from "react";
 import ReactModal from "react-modal";
 import Image from "next/image";
-import AdamRMSLogo from "../../_assets/adamrms-logo.png";
+import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
 
 function EditModal(props: { event: EventObjectType, close: () => void }) {
   return (
@@ -51,7 +51,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
       </Button>
     ) : (
       <Button
-        disabled={isPending}
+        isDisabled={isPending}
         onClick={() =>
           startTransition(async () => {
             createAdamRMSProject(props.event.event_id)},

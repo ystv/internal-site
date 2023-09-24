@@ -2,6 +2,13 @@ import makeFetchCookie from "fetch-cookie";
 
 const fetchCookie = makeFetchCookie(fetch);
 
+export class AdamRMSError extends Error {
+  constructor(message: string, public readonly fullPayload: unknown) {
+    super(message);
+    this.name = "AdamRMSError";
+  }
+}
+
 export async function makeRequest(
   endpoint: string,
   method: "GET" | "POST",
@@ -29,7 +36,7 @@ export async function makeRequest(
         return await makeRequest(endpoint, method, params, false);
       }
     }
-    throw new Error(data.error.message);
+    throw new AdamRMSError(data.error.message, data);
   }
   return data.response;
 }

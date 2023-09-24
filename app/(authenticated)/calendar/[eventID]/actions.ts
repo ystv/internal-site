@@ -24,7 +24,25 @@ export async function editEvent(eventID: number, payload: z.infer<typeof EditEve
   if (!data.success) {
     return zodErrorResponse(data.error);
   }
-  await Calendar.updateEvent(eventID, data.data, me.user_id);
+  const result = await Calendar.updateEvent(eventID, data.data, me.user_id);
+  if (!result.ok) {
+    switch (result.reason) {
+      case "kit_clash":
+        return {
+          ok: false,
+          errors: {
+            root: "The changed dates would result in a kit clash. Please contact the Tech Team.",
+          },
+        };
+      default:
+        return {
+          ok: false,
+          errors: {
+            root: "An unknown error occurred (" + result.reason + ")",
+          },
+        };
+    }
+  }
   revalidatePath(`/calendar/${eventID}`);
   return { ok: true };
 }

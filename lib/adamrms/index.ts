@@ -24,7 +24,7 @@ async function findIDOfUser(email: string): Promise<number | null> {
 export async function createProject(
   name: string,
   projectManagerEmail: string,
-  projectTypeID = 18 /* TODO */,
+  projectTypeID = parseInt(process.env.ADAMRMS_PROJECT_TYPE_ID!),
 ) {
   // Find the project manager by searching the list of users
   // It's not guaranteed to exist, so fall back to our login email (which is guaranteed to exist)
@@ -43,6 +43,8 @@ export async function createProject(
   return res.projects_id;
 }
 
+export async function changeProjectDates(projectID: number, startDate: Date, endDate: Date, type: "dates"): Promise<{}>;
+export async function changeProjectDates(projectID: number, startDate: Date, endDate: Date, type: "deliver_dates"): Promise<{ changed: boolean }>;
 export async function changeProjectDates(projectID: number, startDate: Date, endDate: Date, type: "dates" | "deliver_dates") {
   switch (type) {
     case "dates":
@@ -50,13 +52,13 @@ export async function changeProjectDates(projectID: number, startDate: Date, end
         "projects_id": projectID.toString(10),
         "projects_dates_use_start": startDate.toUTCString(),
         "projects_dates_use_end": endDate.toUTCString(),
-      });
+      }) as {};
     case "deliver_dates":
       return await makeRequest("/projects/changeProjectDeliverDates.php", "POST", {
         "projects_id": projectID.toString(10),
         "projects_dates_deliver_start": startDate.toUTCString(),
         "projects_dates_deliver_end": endDate.toUTCString(),
-      });
+      }) as { changed: boolean };
     default:
       invariant(false, type);
   }

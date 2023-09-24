@@ -14,6 +14,8 @@ import { AttendStatus } from "@/features/calendar/statuses";
 import { ExposedUser, ExposedUserModel } from "@/features/people";
 import { SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventType } from "@/features/calendar/types";
+import { changeProjectDates } from "@/lib/adamrms";
+import { AdamRMSError } from "@/lib/adamrms/client";
 
 export interface EventAttendee {
   event_id: number;
@@ -166,9 +168,31 @@ export async function createEvent(
   );
 }
 
-export async function updateEvent(eventID: number, data: EventCreateUpdateFields, currentUserID: number) {
-  return sanitize(
-    await prisma.event.update({
+export async function updateEvent(eventID: number, data: EventCreateUpdateFields, currentUserID: number): Promise<{ ok: true, result: EventObjectType} | { ok: false, reason: string }> {
+  const result = await prisma.$transaction(async $db => {
+    // We use a raw query to get the event info so that we can SELECT FOR UPDATE,
+    // otherwise this risks a race condition.
+    const events = await $db.$queryRaw<{ adam_rms_project_id: number, start_date: Date, end_date: Date }[]>`
+      SELECT adam_rms_project_id, start_date, end_date FROM events WHERE event_id = ${eventID} FOR UPDATE`;
+    if (events.length === 0) {
+      throw new Error("Event not found");
+    }
+    const event = events[0];
+    
+    // If the dates have changed, we need to try moving it on AdamRMS first.
+    // This is because AdamRMS will reject the request if the dates would cause a kit clash.
+    // We change the "deliver dates" first, because this actually triggers the kit clash check.
+    // Then if it succeeds we update it locally and update the event dates to match.
+    if (event.adam_rms_project_id && (
+      event.start_date.getTime() !== data.start_date.getTime() ||
+      event.end_date.getTime() !== data.end_date.getTime()
+    )) {
+      const result = await changeProjectDates(event.adam_rms_project_id, data.start_date, data.end_date, "deliver_dates");
+      if (!result.changed) {
+        return { ok: false, error: "kit_clash" };
+      }
+    }
+    const result = await $db.event.update({
       where: {
         event_id: eventID,
       },
@@ -178,8 +202,14 @@ export async function updateEvent(eventID: number, data: EventCreateUpdateFields
         updated_at: new Date(),
       },
       include: EventSelectors
-    })
-  );
+    });
+    await changeProjectDates(event.adam_rms_project_id, data.start_date, data.end_date, "dates");
+    return { ok: true, result };
+  });
+  if (!result.ok) {
+    return { ok: false, reason: result.error! };
+  }
+  return { ok: true, result: sanitize(result.result!) };
 }
 
 export async function updateEventAttendeeStatus(
