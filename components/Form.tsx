@@ -7,7 +7,7 @@ import {
   useForm,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useTransition } from "react";
 import classNames from "classnames";
 import { FieldPath } from "react-hook-form/dist/types/path";
 import { DebugOnly } from "@/components/DebugMode";
@@ -50,46 +50,45 @@ export default function Form<
     resolver: zodResolver(props.schema),
     defaultValues: props.initialValues,
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, startTransition] = useTransition();
   const { action, onSuccess } = props;
   const forceUpdate = useForceUpdate();
   const submitHandler = useCallback(async () => {
     const valid = await form.trigger();
     if (valid) {
-      setIsSubmitting(true);
-      let res;
-      try {
-        // TODO: This submits the form values as JSON, effectively ignoring the FormData parameter. This works, but
-        //  may run into issues down the line, especially when (if?) we upload files directly from the form.
-        //  Instead, we should probably use the FormData object React gives us (though we'll have to figure out how
-        //  to make it play nice with hook-form).
-        res = await action(form.getValues());
-      } catch (e) {
-        console.error(e);
-        form.setError("root", { type: "custom", message: String(e) });
-        return;
-      } finally {
-        setIsSubmitting(false);
-      }
-      if (!("ok" in res)) {
-        throw new Error(
-          "<Form> action did not conform to FormResponse interface.",
-        );
-      }
-      if (res.ok) {
+      startTransition(async () => {
+        let res;
+        try {
+          // TODO: This submits the form values as JSON, effectively ignoring the FormData parameter. This works, but
+          //  may run into issues down the line, especially when (if?) we upload files directly from the form.
+          //  Instead, we should probably use the FormData object React gives us (though we'll have to figure out how
+          //  to make it play nice with hook-form).
+          res = await action(form.getValues());
+        } catch (e) {
+          console.error(e);
+          form.setError("root", { type: "custom", message: String(e) });
+          return;
+        }
+        if (!("ok" in res)) {
+          throw new Error(
+            "<Form> action did not conform to FormResponse interface.",
+          );
+        }
+        if (res.ok) {
+          form.clearErrors();
+          onSuccess?.(res);
+          return;
+        }
         form.clearErrors();
-        onSuccess?.(res);
-        return;
-      }
-      form.clearErrors();
-      for (const [k, err] of Object.entries(
-        (res as FormErrorResponse).errors,
-      )) {
-        form.setError(k as FieldPath<z.infer<Schema>>, {
-          type: "custom",
-          message: err,
-        });
-      }
+        for (const [k, err] of Object.entries(
+          (res as FormErrorResponse).errors,
+        )) {
+          form.setError(k as FieldPath<z.infer<Schema>>, {
+            type: "custom",
+            message: err,
+          });
+        }
+      })
     }
   }, [form, action, onSuccess]);
   return (
@@ -101,17 +100,13 @@ export default function Form<
           </span>
         )}
         {props.children}
-        <button
+        <Button
           type="submit"
-          // disabled={isSubmitting || !form.formState.isValid}
-          className={classNames(
-            "mt-4 rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-4",
-            (isSubmitting || !form.formState.isValid) &&
-              "cursor-not-allowed opacity-50",
-          )}
+          isDisabled={!form.formState.isValid}
+          isLoading={isSubmitting}
         >
           {props.submitLabel ?? "Create"}
-        </button>
+        </Button>
       </form>
       <DebugOnly>
         <pre className="mt-4 text-xs text-gray-500">

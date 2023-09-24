@@ -34,5 +34,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/forms"), mantineVariantsPlugin],
+  plugins: [require("@tailwindcss/forms"), require("tailwindcss-animate"), mantineVariantsPlugin],
 };
