@@ -58,7 +58,10 @@ export function DatePickerField(
 ) {
   const controller = useController({
     name: props.name,
-    defaultValue: props.defaultValue
+    defaultValue:
+      props.defaultValue instanceof Date
+        ? props.defaultValue.toISOString()
+        : props.defaultValue,
   });
   const dv = useMemo(() => {
     if (!controller.field.value) {
