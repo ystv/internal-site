@@ -42,6 +42,17 @@ export interface EventObjectType {
   adam_rms_project_id: number | null;
 }
 
+export interface EventCreateUpdateFields {
+  name: string;
+  description: string;
+  start_date: Date;
+  end_date: Date;
+  event_type?: EventType;
+  location: string;
+  is_private: boolean;
+  is_tentative: boolean;
+}
+
 /**
  * Takes in an event object and replaces all user fields with ExposedUserModel equivalents, stripping
  * out all sensitive fields.
@@ -138,13 +149,36 @@ export async function getEvent(id: number): Promise<EventObjectType | null> {
 }
 
 export async function createEvent(
-  event: Prisma.EventUncheckedCreateInput,
+  event: EventCreateUpdateFields,
+  currentUserID: number,
 ): Promise<EventObjectType> {
   return sanitize(
     await prisma.event.create({
-      data: event,
+      data: {
+        ...event,
+        created_by: currentUserID,
+        created_at: new Date(),
+        updated_by: currentUserID,
+        updated_at: new Date(),
+      },
       include: EventSelectors,
     }),
+  );
+}
+
+export async function updateEvent(eventID: number, data: EventCreateUpdateFields, currentUserID: number) {
+  return sanitize(
+    await prisma.event.update({
+      where: {
+        event_id: eventID,
+      },
+      data: {
+        ...data,
+        updated_by: currentUserID,
+        updated_at: new Date(),
+      },
+      include: EventSelectors
+    })
   );
 }
 

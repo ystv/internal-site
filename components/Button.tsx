@@ -2,7 +2,7 @@
 
 import { useButton } from "react-aria";
 import { useRef } from "react";
-import classNames from "classnames";
+import {twMerge} from "tailwind-merge";
 
 // Mapping of "primary" colour to classes
 const normalColors: { [K: string]: string } = {
@@ -48,7 +48,7 @@ export default function Button<T extends "button" | "a">(
       ref={ref as any}
       {...rest}
       {...btn.buttonProps}
-      className={classNames(
+      className={twMerge(
         `inline-flex items-center 
                   rounded-md
                   border border-transparent
