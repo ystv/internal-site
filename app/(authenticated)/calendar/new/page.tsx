@@ -7,7 +7,7 @@ import {
   canCreate,
   creatableEventTypes,
 } from "@/features/calendar/permissions";
-import { createEvent as doCreateEvent } from "@/features/calendar/events";
+import * as Calendar from "@/features/calendar/events";
 import { Forbidden, Permission } from "@/lib/auth/common";
 
 async function createEvent(
@@ -26,18 +26,16 @@ async function createEvent(
       `Calendar.${payload.data.type}.Admin` as Permission,
     ]);
   }
-  const evt = await doCreateEvent({
+  const evt = await Calendar.createEvent({
     name: payload.data.name,
     description: payload.data.description,
     event_type: payload.data.type,
     start_date: payload.data.startDate,
     end_date: payload.data.endDate,
     location: payload.data.location,
-    created_by: (await getCurrentUser()).user_id,
     is_private: payload.data.private,
-    is_cancelled: false,
     is_tentative: payload.data.tentative,
-  });
+  }, user.user_id);
   return {
     ok: true,
     id: evt.event_id,

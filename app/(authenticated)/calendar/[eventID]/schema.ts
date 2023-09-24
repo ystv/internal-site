@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+export const EditEventSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  start_date: z.coerce.date(),
+  end_date: z.coerce.date(),
+  location: z.string(),
+  is_private: z.boolean(),
+  is_tentative: z.boolean(),
+});
+
 export const CrewSchema = z.object({
   crew_id: z.number().optional(),
   position_id: z.coerce.number(),

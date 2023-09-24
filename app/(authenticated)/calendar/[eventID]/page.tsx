@@ -17,6 +17,7 @@ import {
   MembersProvider,
 } from "@/components/FormFieldPreloadedData";
 import { getAllUsers } from "@/features/people";
+import { EventActionsUI } from "./EventActionsUI";
 
 async function AttendeesView({ event }: { event: EventObjectType }) {
   invariant(event.attendees, "no attendees for AttendeesView");
@@ -110,6 +111,7 @@ export default async function EventPage({
       ) : (
         <AttendeesView event={event} />
       )}
+      <EventActionsUI event={event} />
     </div>
   );
 }
