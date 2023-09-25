@@ -5,6 +5,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import { EventInput } from "@fullcalendar/core";
 import { useRouter } from "next/navigation";
+import { useMediaQuery } from "@mantine/hooks";
+import "./YSTVCalendar.css";
 
 export default function YSTVCalendar({
   events,
@@ -14,11 +16,11 @@ export default function YSTVCalendar({
   selectedMonth: Date;
 }) {
   const router = useRouter();
-  const isMobile = false;
+  const isMobileView = useMediaQuery("(max-width: 650px)");
   return (
     <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin, listPlugin]}
-      initialView={isMobile ? "listMonth" : "dayGridMonth"}
+      initialView={"dayGridMonth"}
       headerToolbar={{
         right: "today prev,next dayGridMonth,listMonth,timeGridDay",
       }}
@@ -30,8 +32,39 @@ export default function YSTVCalendar({
           }`,
         )
       }
-      titleFormat={{ year: "numeric", month: isMobile ? "short" : "long" }}
+      titleFormat={{ year: "numeric", month: isMobileView ? "short" : "long" }}
       firstDay={1}
+      //////
+      dayHeaders={!isMobileView}
+      dayHeaderDidMount={({ dow, el }) => {
+        if (dow === 1) {
+          const header = document.createElement("th");
+          header.style.width = "1.6em";
+          el.parentElement?.prepend(header);
+        }
+      }}
+      dayCellContent={
+        isMobileView
+          ? (day) =>
+              day.date.toLocaleDateString(undefined, {
+                weekday: "short",
+                day: "2-digit",
+                month: "short",
+              })
+          : undefined
+      }
+      viewClassNames={
+        isMobileView ? "fc-daygrid-day-events-mobile-shrink" : undefined
+      }
+      fixedWeekCount={!isMobileView}
+      eventDisplay={"block"}
+      weekNumbers={true}
+      weekNumberContent={(week) => {
+        return `Revision ${week.num}`;
+      }}
+      weekNumberFormat={{ week: "long" }} //Do not delete this line, it is used to format the week number or it kicks up a fuss
+      height={"auto"}
+      //////
       initialDate={selectedMonth}
       eventClick={(info) => {
         // don't let the browser navigate

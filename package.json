@@ -28,6 +28,8 @@
     "@fullcalendar/react": "^6.1.8",
     "@fullcalendar/timegrid": "^6.1.8",
     "@hookform/resolvers": "^3.1.1",
+    "@mantine/core": "^7.0.0",
+    "@mantine/hooks": "^7.0.0",
     "@prisma/client": "^5.3.1",
     "@trpc/server": "^10.33.1",
     "@types/async": "^3.2.20",
@@ -89,5 +91,9 @@
     "tsx": "^3.12.10",
     "zod-prisma": "^0.5.4"
   },
-  "packageManager": "yarn@3.6.1"
+  "packageManager": "yarn@3.6.1",
+  "resolutions": {
+    "@fullcalendar/daygrid@^6.1.8": "patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch",
+    "@fullcalendar/daygrid@~6.1.8": "patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch"
+  }
 }
