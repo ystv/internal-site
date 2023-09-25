@@ -2445,12 +2445,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/daygrid@npm:^6.1.8, @fullcalendar/daygrid@npm:~6.1.8":
+"@fullcalendar/daygrid@npm:6.1.8":
   version: 6.1.8
   resolution: "@fullcalendar/daygrid@npm:6.1.8"
   peerDependencies:
     "@fullcalendar/core": ~6.1.8
   checksum: a99441c81d8b2054cb03945a2cd4907ef569c759b68238d953d86fc96f739c75305219de182a61d82c77d54893041657bb4bc3f8a5a0779e57e294a614ae9677
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/daygrid@patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch::locator=hypothetical-new-internal-site%40workspace%3A.":
+  version: 6.1.8
+  resolution: "@fullcalendar/daygrid@patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch::version=6.1.8&hash=eeec5d&locator=hypothetical-new-internal-site%40workspace%3A."
+  peerDependencies:
+    "@fullcalendar/core": ~6.1.8
+  checksum: 9b70e76b0ec96ef66daf3a6af1add86bf08ecc63fd70c4a2749af56aeb34539e325b5d48f8c3e3a3b737b571247ba252206ef1b364339290ebb6bd800ac4520e
   languageName: node
   linkType: hard
 
