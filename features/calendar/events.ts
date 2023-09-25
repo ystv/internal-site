@@ -14,8 +14,7 @@ import { AttendStatus } from "@/features/calendar/statuses";
 import { ExposedUser, ExposedUserModel } from "@/features/people";
 import { SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventType } from "@/features/calendar/types";
-import { changeProjectDates } from "@/lib/adamrms";
-import { AdamRMSError } from "@/lib/adamrms/client";
+import * as AdamRMS from "@/lib/adamrms";
 
 export interface EventAttendee {
   event_id: number;
@@ -187,7 +186,7 @@ export async function updateEvent(eventID: number, data: EventCreateUpdateFields
       event.start_date.getTime() !== data.start_date.getTime() ||
       event.end_date.getTime() !== data.end_date.getTime()
     )) {
-      const result = await changeProjectDates(event.adam_rms_project_id, data.start_date, data.end_date, "deliver_dates");
+      const result = await AdamRMS.changeProjectDates(event.adam_rms_project_id, data.start_date, data.end_date, "deliver_dates");
       if (!result.changed) {
         return { ok: false, error: "kit_clash" };
       }
@@ -203,7 +202,7 @@ export async function updateEvent(eventID: number, data: EventCreateUpdateFields
       },
       include: EventSelectors
     });
-    await changeProjectDates(event.adam_rms_project_id, data.start_date, data.end_date, "dates");
+    await AdamRMS.changeProjectDates(event.adam_rms_project_id, data.start_date, data.end_date, "dates");
     return { ok: true, result };
   });
   if (!result.ok) {
@@ -246,13 +245,29 @@ export async function updateEventAttendeeStatus(
   }
 }
 
-export async function setAdamRMSID(eventID: number, projectID: number) {
+export async function addProjectToAdamRMS(eventID: number, currentUserID: number) {
+  const me = await prisma.user.findFirstOrThrow({
+    where: {
+      user_id: currentUserID,
+    },
+    select: {
+      email: true,
+    }
+  });
+  const event = await prisma.event.findFirstOrThrow({
+    where: {
+      event_id: eventID,
+    }
+  });
+  const projectId = await AdamRMS.createProject(event.name, me.email);
+  await AdamRMS.changeProjectDates(projectId, event.start_date, event.end_date, "dates");
+  await AdamRMS.changeProjectDates(projectId, event.start_date, event.end_date, "deliver_dates");
   await prisma.event.update({
     where: {
       event_id: eventID,
     },
     data: {
-      adam_rms_project_id: projectID
+      adam_rms_project_id: projectId,
     }
   });
 }

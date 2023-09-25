@@ -15,7 +15,7 @@ import { FormResponse } from "@/components/Form";
 import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import { isBefore } from "date-fns";
-import { changeProjectDates, createProject } from "@/lib/adamrms";
+import * as AdamRMS from "@/lib/adamrms";
 import invariant from "tiny-invariant";
 
 export async function editEvent(eventID: number, payload: z.infer<typeof EditEventSchema>): Promise<FormResponse> {
@@ -281,11 +281,7 @@ export async function createAdamRMSProject(eventID: number) {
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 
-  const projectId = await createProject(event.name, me.email);
-  await changeProjectDates(projectId, event.start_date, event.end_date, "dates");
-  await changeProjectDates(projectId, event.start_date, event.end_date, "deliver_dates");
-
-  await Calendar.setAdamRMSID(event.event_id, projectId);
+  await Calendar.addProjectToAdamRMS(eventID, me.user_id);
   revalidatePath(`/calendar/${event.event_id}`);
   return { ok: true };
 }
