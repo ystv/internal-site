@@ -1,0 +1,35 @@
+.fc-day-today{
+    /*opacity: .5;*/
+    animation: fadeInFromNone 1.5s ease-in-out infinite alternate;
+}
+
+.fc-daygrid-day-events-mobile-shrink .fc-daygrid-day-events {
+    min-height: 0 !important;
+}
+
+.fc-daygrid-day-events-mobile-shrink .fc-day-disabled {
+    display: none;
+}
+
+.fc-header-toolbar .fc-toolbar-chunk:last-of-type {
+    text-align: right;
+}
+
+.fc-header-toolbar .fc-toolbar-chunk:last-of-type > * {
+    margin-top: .25em;
+}
+
+@keyframes fadeInFromNone {
+    0% {
+        background-color: var(--fc-today-bg-color);
+    }
+
+    100% {
+        background-color: #3788d830;
+    }
+}
+
+
+.fc-view{
+    --fc-today-bg-color: #3788d845;
+}

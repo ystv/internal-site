@@ -5,6 +5,8 @@ import { cookies } from "next/headers";
 import { DebugIndicator, DebugModeProvider } from "@/components/DebugMode";
 import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/common";
 import { PublicURLProvider } from "@/components/PublicURLContext";
+import "@mantine/core/styles.css";
+import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,10 +26,13 @@ export default async function RootLayout({
   const debugMode = cookies().get(DEBUG_MODE_COOKIE)?.value === "true";
   return (
     <html lang="en">
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body className={inter.className}>
         <PublicURLProvider value={process.env.PUBLIC_URL!}>
           <DebugModeProvider value={debugMode}>
-            {children}
+            <MantineProvider>{children}</MantineProvider>
             <DebugIndicator />
           </DebugModeProvider>
         </PublicURLProvider>
