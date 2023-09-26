@@ -1,5 +1,13 @@
 "use client";
 
-import { createTheme } from "@mantine/core";
+import { Button, createTheme } from "@mantine/core";
 
-export const theme = createTheme({});
+export const theme = createTheme({
+  components: {
+    Button: Button.extend({
+      classNames: {
+        root: `danger:bg-red-600 warning:bg-orange-600`,
+      }
+    })
+  }
+});
