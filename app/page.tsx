@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 export default async function Home() {
   try {
     await getCurrentUser();
-    redirect("/calendar")
+    redirect("/calendar");
   } catch (e) {
     if (e instanceof NotLoggedIn) {
       redirect("/login");

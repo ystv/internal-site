@@ -178,26 +178,40 @@ export async function createEvent(
   );
 }
 
-export async function updateEvent(eventID: number, data: EventCreateUpdateFields, currentUserID: number): Promise<{ ok: true, result: EventObjectType} | { ok: false, reason: string }> {
-  const result = await prisma.$transaction(async $db => {
+export async function updateEvent(
+  eventID: number,
+  data: EventCreateUpdateFields,
+  currentUserID: number,
+): Promise<
+  { ok: true; result: EventObjectType } | { ok: false; reason: string }
+> {
+  const result = await prisma.$transaction(async ($db) => {
     // We use a raw query to get the event info so that we can SELECT FOR UPDATE,
     // otherwise this risks a race condition.
-    const events = await $db.$queryRaw<{ adam_rms_project_id: number, start_date: Date, end_date: Date }[]>`
+    const events = await $db.$queryRaw<
+      { adam_rms_project_id: number; start_date: Date; end_date: Date }[]
+    >`
       SELECT adam_rms_project_id, start_date, end_date FROM events WHERE event_id = ${eventID} FOR UPDATE`;
     if (events.length === 0) {
       throw new Error("Event not found");
     }
     const event = events[0];
-    
+
     // If the dates have changed, we need to try moving it on AdamRMS first.
     // This is because AdamRMS will reject the request if the dates would cause a kit clash.
     // We change the "deliver dates" first, because this actually triggers the kit clash check.
     // Then if it succeeds we update it locally and update the event dates to match.
-    if (event.adam_rms_project_id && (
-      event.start_date.getTime() !== data.start_date.getTime() ||
-      event.end_date.getTime() !== data.end_date.getTime()
-    )) {
-      const result = await AdamRMS.changeProjectDates(event.adam_rms_project_id, data.start_date, data.end_date, "deliver_dates");
+    if (
+      event.adam_rms_project_id &&
+      (event.start_date.getTime() !== data.start_date.getTime() ||
+        event.end_date.getTime() !== data.end_date.getTime())
+    ) {
+      const result = await AdamRMS.changeProjectDates(
+        event.adam_rms_project_id,
+        data.start_date,
+        data.end_date,
+        "deliver_dates",
+      );
       if (!result.changed) {
         return { ok: false, error: "kit_clash" };
       }
@@ -211,9 +225,14 @@ export async function updateEvent(eventID: number, data: EventCreateUpdateFields
         updated_by: currentUserID,
         updated_at: new Date(),
       },
-      include: EventSelectors
+      include: EventSelectors,
     });
-    await AdamRMS.changeProjectDates(event.adam_rms_project_id, data.start_date, data.end_date, "dates");
+    await AdamRMS.changeProjectDates(
+      event.adam_rms_project_id,
+      data.start_date,
+      data.end_date,
+      "dates",
+    );
     return { ok: true, result };
   });
   if (!result.ok) {
@@ -256,29 +275,42 @@ export async function updateEventAttendeeStatus(
   }
 }
 
-export async function addProjectToAdamRMS(eventID: number, currentUserID: number) {
+export async function addProjectToAdamRMS(
+  eventID: number,
+  currentUserID: number,
+) {
   const me = await prisma.user.findFirstOrThrow({
     where: {
       user_id: currentUserID,
     },
     select: {
       email: true,
-    }
+    },
   });
   const event = await prisma.event.findFirstOrThrow({
     where: {
       event_id: eventID,
-    }
+    },
   });
   const projectId = await AdamRMS.createProject(event.name, me.email);
-  await AdamRMS.changeProjectDates(projectId, event.start_date, event.end_date, "dates");
-  await AdamRMS.changeProjectDates(projectId, event.start_date, event.end_date, "deliver_dates");
+  await AdamRMS.changeProjectDates(
+    projectId,
+    event.start_date,
+    event.end_date,
+    "dates",
+  );
+  await AdamRMS.changeProjectDates(
+    projectId,
+    event.start_date,
+    event.end_date,
+    "deliver_dates",
+  );
   await prisma.event.update({
     where: {
       event_id: eventID,
     },
     data: {
       adam_rms_project_id: projectId,
-    }
+    },
   });
 }

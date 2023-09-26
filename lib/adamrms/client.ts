@@ -3,7 +3,10 @@ import makeFetchCookie from "fetch-cookie";
 const fetchCookie = makeFetchCookie(fetch);
 
 export class AdamRMSError extends Error {
-  constructor(message: string, public readonly fullPayload: unknown) {
+  constructor(
+    message: string,
+    public readonly fullPayload: unknown,
+  ) {
     super(message);
     this.name = "AdamRMSError";
   }

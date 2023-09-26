@@ -43,22 +43,41 @@ export async function createProject(
   return res.projects_id;
 }
 
-export async function changeProjectDates(projectID: number, startDate: Date, endDate: Date, type: "dates"): Promise<{}>;
-export async function changeProjectDates(projectID: number, startDate: Date, endDate: Date, type: "deliver_dates"): Promise<{ changed: boolean }>;
-export async function changeProjectDates(projectID: number, startDate: Date, endDate: Date, type: "dates" | "deliver_dates") {
+export async function changeProjectDates(
+  projectID: number,
+  startDate: Date,
+  endDate: Date,
+  type: "dates",
+): Promise<{}>;
+export async function changeProjectDates(
+  projectID: number,
+  startDate: Date,
+  endDate: Date,
+  type: "deliver_dates",
+): Promise<{ changed: boolean }>;
+export async function changeProjectDates(
+  projectID: number,
+  startDate: Date,
+  endDate: Date,
+  type: "dates" | "deliver_dates",
+) {
   switch (type) {
     case "dates":
-      return await makeRequest("/projects/changeProjectDates.php", "POST", {
-        "projects_id": projectID.toString(10),
-        "projects_dates_use_start": startDate.toUTCString(),
-        "projects_dates_use_end": endDate.toUTCString(),
-      }) as {};
+      return (await makeRequest("/projects/changeProjectDates.php", "POST", {
+        projects_id: projectID.toString(10),
+        projects_dates_use_start: startDate.toUTCString(),
+        projects_dates_use_end: endDate.toUTCString(),
+      })) as {};
     case "deliver_dates":
-      return await makeRequest("/projects/changeProjectDeliverDates.php", "POST", {
-        "projects_id": projectID.toString(10),
-        "projects_dates_deliver_start": startDate.toUTCString(),
-        "projects_dates_deliver_end": endDate.toUTCString(),
-      }) as { changed: boolean };
+      return (await makeRequest(
+        "/projects/changeProjectDeliverDates.php",
+        "POST",
+        {
+          projects_id: projectID.toString(10),
+          projects_dates_deliver_start: startDate.toUTCString(),
+          projects_dates_deliver_end: endDate.toUTCString(),
+        },
+      )) as { changed: boolean };
     default:
       invariant(false, type);
   }

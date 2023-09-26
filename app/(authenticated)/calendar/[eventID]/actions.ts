@@ -21,7 +21,10 @@ import { isBefore } from "date-fns";
 import * as AdamRMS from "@/lib/adamrms";
 import invariant from "tiny-invariant";
 
-export async function editEvent(eventID: number, payload: z.infer<typeof EditEventSchema>): Promise<FormResponse> {
+export async function editEvent(
+  eventID: number,
+  payload: z.infer<typeof EditEventSchema>,
+): Promise<FormResponse> {
   const me = await getCurrentUser();
   const data = await EditEventSchema.safeParseAsync(payload);
   if (!data.success) {
