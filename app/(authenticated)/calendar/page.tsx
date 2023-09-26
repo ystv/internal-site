@@ -19,26 +19,29 @@ export default async function CalendarPage({
   const date = new Date(year, month, 1);
   const events = await listEventsForMonth(year, month);
   return (
-    <div>
-      <h1 className={"text-4xl"}>Calendar</h1>
-      <PermissionGate
-        required={[
-          "Calendar.Admin",
-          "Calendar.Show.Admin",
-          "Calendar.Show.Creator",
-          "Calendar.Meeting.Admin",
-          "Calendar.Meeting.Creator",
-          "Calendar.Social.Admin",
-          "Calendar.Social.Creator",
-          "Calendar.Show.Admin",
-          "Calendar.Social.Creator",
-        ]}
-      >
-        <Button component={Link} href="/calendar/new">
-          Add Event
-        </Button>
-      </PermissionGate>
+    <>
+      <div className={"flex items-end justify-between"}>
+        <h1 className={"text-4xl font-bold"}>YSTV Calendar</h1>
+        <PermissionGate
+          required={[
+            "Calendar.Admin",
+            "Calendar.Show.Admin",
+            "Calendar.Show.Creator",
+            "Calendar.Meeting.Admin",
+            "Calendar.Meeting.Creator",
+            "Calendar.Social.Admin",
+            "Calendar.Social.Creator",
+            "Calendar.Show.Admin",
+            "Calendar.Social.Creator",
+          ]}
+        >
+          <Button component={Link} href="/calendar/new" fz="md">
+            Add Event
+          </Button>
+        </PermissionGate>
+      </div>
+      <br />
       <YSTVCalendar events={events} selectedMonth={date} />
-    </div>
+    </>
   );
 }
