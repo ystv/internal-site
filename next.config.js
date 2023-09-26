@@ -13,6 +13,22 @@ const nextConfig = {
       },
     ],
   },
+  //// This stuff is useful for developing the yarn patch to FullCalendar
+  // webpack: (
+  //   config,
+  //   { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack },
+  // ) => {
+  //   if (dev) {
+  //     config.watchOptions = {
+  //       followSymlinks: true,
+  //     };
+  //
+  //     config.snapshot.managedPaths = [
+  //       /^(.+?[\\/]node_modules[\\/])(?!@fullcalendar)/,
+  //     ];
+  //   }
+  //   return config;
+  // },
 };
 
 module.exports = nextConfig;
