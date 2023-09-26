@@ -65,16 +65,15 @@ export function EventActionsUI(props: { event: EventObjectType }) {
           Create AdamRMS Project
         </Button>
       )}
-      <Button color="warning" className="block">
+      <Button variant="warning" className="block">
         Cancel Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
       </Button>
-      <Button color="danger" className="block">
+      <Button variant="danger" className="block">
         Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
       </Button>
       <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
         <Button
           className="absolute right-4 top-4"
-          color="light"
           onClick={() => setEditOpen(false)}
         >
           &times;
