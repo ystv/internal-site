@@ -54,7 +54,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         </Button>
       ) : (
         <Button
-          isDisabled={isPending}
+          loading={isPending}
           onClick={() =>
             startTransition(async () => {
               createAdamRMSProject(props.event.event_id);
