@@ -24,6 +24,13 @@ export default function YSTVCalendar({
       headerToolbar={{
         right: "today prev,next dayGridMonth,listMonth,timeGridDay",
       }}
+      buttonText={{
+        today: "Today",
+        month: "Month",
+        week: "Week",
+        day: "Day",
+        list: "List",
+      }}
       showNonCurrentDates={false}
       datesSet={(n) =>
         router.push(
