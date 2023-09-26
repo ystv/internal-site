@@ -26,7 +26,10 @@ function CrewPositionField(props: { parentName: string }) {
     name: `${props.parentName}.position_id`,
   });
   return isCustom ? (
-    <TextField name={`${props.parentName}.custom_position_name`} placeholder="Enter crew position name" />
+    <TextField
+      name={`${props.parentName}.custom_position_name`}
+      placeholder="Enter crew position name"
+    />
   ) : (
     <Select
       data={[

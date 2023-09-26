@@ -26,7 +26,11 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
 
-export function TextField(props: { name: string; label?: string; placeholder?: string }) {
+export function TextField(props: {
+  name: string;
+  label?: string;
+  placeholder?: string;
+}) {
   const ctx = useFormContext();
   return (
     <TextInput

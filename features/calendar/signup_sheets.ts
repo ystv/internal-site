@@ -95,18 +95,29 @@ interface CrewCreateUpdateInput {
  * it with the position ID.
  */
 async function ensurePositionsForCrews(crews: CrewCreateUpdateInput[]) {
-  const newPosNames = crews.filter(x => x.custom_position_name).map(x => x.custom_position_name!);
-  const newPositions = await prisma.$transaction(newPosNames.map(name => prisma.position.create({
-    data: {
-      name,
-      full_description: "",
-    }
-  })));
+  const newPosNames = crews
+    .filter((x) => x.custom_position_name)
+    .map((x) => x.custom_position_name!);
+  const newPositions = await prisma.$transaction(
+    newPosNames.map((name) =>
+      prisma.position.create({
+        data: {
+          name,
+          full_description: "",
+        },
+      }),
+    ),
+  );
   console.log(`Created ${newPositions.length} new positions.`);
   for (let i = 0; i < crews.length; i++) {
     if (crews[i].custom_position_name) {
-      const newPos = newPositions.find(x => x.name === crews[i].custom_position_name);
-      invariant(newPos, "couldn't find newly created position " + crews[i].custom_position_name);
+      const newPos = newPositions.find(
+        (x) => x.name === crews[i].custom_position_name,
+      );
+      invariant(
+        newPos,
+        "couldn't find newly created position " + crews[i].custom_position_name,
+      );
       crews[i].position_id = newPos.position_id;
       delete crews[i].custom_position_name;
     }
