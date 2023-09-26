@@ -7,15 +7,47 @@ import Form, { FormResponse } from "@/components/Form";
 import {
   ArrayField,
   CheckBoxField,
-  CrewPositionSelect,
   DatePickerField,
   MemberSelect,
   NullableCheckboxField,
+  SelectField,
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
 import { useCrewPositions } from "@/components/FormFieldPreloadedData";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
+import { useController } from "react-hook-form";
+import { Select } from "@mantine/core";
+
+function CrewPositionField(props: { parentName: string }) {
+  const [isCustom, setIsCustom] = useState(false);
+  const vals = useCrewPositions();
+  const selectController = useController({
+    name: `${props.parentName}.position_id`,
+  });
+  return isCustom ? (
+    <TextField name={`${props.parentName}.custom_position_name`} placeholder="Enter crew position name" />
+  ) : (
+    <Select
+      data={[
+        ...vals.map((val) => ({
+          label: val.name,
+          value: val.position_id.toString(10),
+        })),
+        { label: "Custom", value: "$custom" },
+      ]}
+      value={selectController.field.value}
+      onChange={(newValue) => {
+        if (newValue === "$custom") {
+          selectController.field.onChange("");
+          setIsCustom(true);
+          return;
+        }
+        selectController.field.onChange(newValue);
+      }}
+    />
+  );
+}
 
 export function AddEditSignUpSheetForm(props: {
   action: (data: z.infer<typeof SignupSheetSchema>) => Promise<FormResponse>;
@@ -73,7 +105,7 @@ export function AddEditSignUpSheetForm(props: {
                   value={row.crew_id as string}
                 />
               ) : null}
-              <CrewPositionSelect name={`crews.${idx}.position_id`} />
+              <CrewPositionField parentName={`crews.${idx}`} />
               <div className="flex items-center justify-center">
                 <CheckBoxField name={`crews.${idx}.locked`} />
               </div>

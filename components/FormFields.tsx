@@ -26,13 +26,14 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
 
-export function TextField(props: { name: string; label: string }) {
+export function TextField(props: { name: string; label?: string; placeholder?: string }) {
   const ctx = useFormContext();
   return (
     <TextInput
       {...ctx.register(props.name)}
       label={props.label}
       error={ctx.formState.errors[props.name]?.message as string}
+      placeholder={props.placeholder}
     />
   );
 }
@@ -182,20 +183,6 @@ export function SelectField<TObj extends {}>(props: {
           value: getOptionValue(obj),
         })),
       ]}
-    />
-  );
-}
-
-export function CrewPositionSelect(props: { name: string; label?: string }) {
-  const vals = useCrewPositions();
-  return (
-    <SelectField
-      name={props.name}
-      options={vals}
-      label={props.label}
-      renderOption={(pos) => pos.name}
-      getOptionValue={(pos) => pos.position_id.toString(10)}
-      filter={(pos, q) => pos.name.includes(q)}
     />
   );
 }
