@@ -6,7 +6,12 @@ import listPlugin from "@fullcalendar/list";
 import { EventInput } from "@fullcalendar/core";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@mantine/hooks";
-import { CalendarType, academicYears, getNextPeriod, Holiday } from "uoy-week-calendar/dist/calendar";
+import {
+  CalendarType,
+  academicYears,
+  getNextPeriod,
+  Holiday,
+} from "uoy-week-calendar/dist/calendar";
 import "./YSTVCalendar.css";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
@@ -14,7 +19,9 @@ import weekOfYear from "dayjs/plugin/weekOfYear";
 dayjs.extend(weekOfYear);
 
 function getUoYWeekName(date: Date) {
-  const academicYear = academicYears.findLast(x => x.periods[0].startDate.getTime() <= date.getTime());
+  const academicYear = academicYears.findLast(
+    (x) => x.periods[0].startDate.getTime() <= date.getTime(),
+  );
   if (!academicYear) {
     return "Week " + dayjs(date).week();
   }
@@ -29,7 +36,9 @@ function getUoYWeekName(date: Date) {
     return period.name + " Vacation";
   }
 
-  const name = period.getWeekName(date, CalendarType.UNDERGRADUATE).replace("Teaching", "");
+  const name = period
+    .getWeekName(date, CalendarType.UNDERGRADUATE)
+    .replace("Teaching", "");
   // HACK pending upstream changes
   if (name.includes("(")) {
     return name.replace(/^.*\((.+)\)$/, "$1");

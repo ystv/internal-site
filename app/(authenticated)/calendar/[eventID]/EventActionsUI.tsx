@@ -24,14 +24,8 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
     >
       <TextField name="name" label="Name" />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField
-        name="start_date"
-        label="Start"
-      />
-      <DatePickerField
-        name="end_date"
-        label="End"
-      />
+      <DatePickerField name="start_date" label="Start" />
+      <DatePickerField name="end_date" label="End" />
       <TextField name="location" label="Location" />
       <CheckBoxField name="is_private" label="Private" />
       <CheckBoxField name="is_tentative" label="Tentative" />

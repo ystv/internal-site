@@ -106,10 +106,7 @@ function SignupSheet({
 
         {canManageSignUpSheet(event, sheet, me) && (
           <div>
-            <Button
-              size="small"
-              onClick={() => setEditOpen(true)}
-            >
+            <Button size="small" onClick={() => setEditOpen(true)}>
               Edit
             </Button>
             <Button
@@ -134,10 +131,7 @@ function SignupSheet({
           submitLabel="Save"
         />
       </Modal>
-      <Modal
-        opened={signUpCrew !== null}
-        onClose={() => setSignUpCrew(null)}
-      >
+      <Modal opened={signUpCrew !== null} onClose={() => setSignUpCrew(null)}>
         {signUpCrew !== null && (
           <MyRoleSignUpModal
             sheet={sheet}
