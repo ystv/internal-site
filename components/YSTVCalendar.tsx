@@ -105,7 +105,7 @@ export default function YSTVCalendar({
       viewClassNames={
         isMobileView ? "fc-daygrid-day-events-mobile-shrink" : undefined
       }
-      fixedWeekCount={!isMobileView}
+      fixedWeekCount={false}
       eventDisplay={"block"}
       weekNumbers={true}
       weekNumberContent={(week) => {
