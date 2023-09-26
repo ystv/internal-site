@@ -1,6 +1,5 @@
 "use client";
 
-import Button from "@/components/Button";
 import Form from "@/components/Form";
 import { EventObjectType, EventType } from "@/features/calendar";
 import { createAdamRMSProject, editEvent } from "./actions";
@@ -14,7 +13,7 @@ import {
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
-import { Modal } from "@mantine/core";
+import { Button, Modal } from "@mantine/core";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -46,8 +45,9 @@ export function EventActionsUI(props: { event: EventObjectType }) {
       </Button>
       {props.event.adam_rms_project_id ? (
         <Button
-          as="a"
+          component="a"
           href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
+          target="_blank"
         >
           <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
           View on AdamRMS
