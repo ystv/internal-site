@@ -95,6 +95,10 @@
     "zod-prisma": "^0.5.4"
   },
   "packageManager": "yarn@3.6.1",
+  "resolutions": {
+    "@fullcalendar/daygrid@^6.1.8": "patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch",
+    "@fullcalendar/daygrid@~6.1.8": "patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch"
+  },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write"
   }
