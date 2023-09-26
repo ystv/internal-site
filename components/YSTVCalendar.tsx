@@ -41,6 +41,10 @@ export default function YSTVCalendar({
       }
       titleFormat={{ year: "numeric", month: isMobileView ? "short" : "long" }}
       firstDay={1}
+      eventTimeFormat={{
+        hour: "numeric",
+        meridiem: "short",
+      }}
       //////
       dayHeaders={!isMobileView}
       dayHeaderDidMount={({ dow, el }) => {
