@@ -9,71 +9,44 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { FieldPath } from "react-hook-form/dist/types/path";
-import DatePicker, { ReactDatePickerProps } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import classNames from "classnames";
 import { useEffect, useMemo, useState } from "react";
-import { Button } from "@mantine/core";
+import { Button, Checkbox, NativeSelect, TextInput, Textarea } from "@mantine/core";
+import { DateTimePicker } from "@mantine/dates";
 import {
   useCrewPositions,
   useMembers,
 } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
-import { identity } from "lodash";
 
-interface FieldBaseProps<
-  TFields extends FieldValues,
-  TFieldName extends Path<TFields>,
-  TEl extends React.ElementType = "input",
-> {
-  name: TFieldName;
-  label?: string;
-  className?: string;
-  as?: TEl;
-  registerParams?: RegisterOptions<TFields, TFieldName>;
+
+export function TextField(props: {
+  name: string,
+  label: string,
+}) {
+  const ctx = useFormContext();
+  return (
+    <TextInput
+      {...ctx.register(props.name)}
+      label={props.label}
+      error={ctx.formState.errors[props.name]?.message as string}
+    />
+  )
 }
 
-/**
- * A generic form field, tied into the validation system and with some basic styling.
- * Pass the `as` prop to render a different element type (e.g. `as="textarea"`), otherwise it will be an input.
- * `label` is rendered outside the element, all other props are passed to the element as if it were a normal <input>.
- */
-export function Field<
-  TFields extends FieldValues,
-  TFieldName extends FieldPath<TFields> = FieldPath<TFields>,
-  TEl extends React.ElementType = "input",
->(
-  props: FieldBaseProps<TFields, TFieldName, TEl> &
-    React.ComponentPropsWithoutRef<TEl>,
-) {
-  const { label, registerParams, ...rest } = props;
-  const ctx = useFormContext<TFields>();
-  const El = props.as ?? "input";
-  const field = (
-    <El
-      {...rest}
-      {...ctx.register(props.name, registerParams)}
-      className={classNames(
-        props.className ??
-          "mt-1 block w-full rounded-md border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ",
-        ctx.formState.errors[props.name] ? "border-red-500" : "border-gray-300",
-      )}
-    />
-  );
-  if (!props.label) {
-    return field;
-  }
+export function TextAreaField(props: {
+  name: string,
+  label: string,
+}) {
+  const ctx = useFormContext();
   return (
-    <label className="block">
-      <span className="font-bold text-gray-700">{label}</span>
-      {ctx.formState.errors[props.name] && (
-        <span className="block font-semibold text-red-500">
-          {(ctx.formState.errors[props.name]?.message as string) ?? ""}
-        </span>
-      )}
-      {field}
-    </label>
-  );
+    <Textarea
+      {...ctx.register(props.name)}
+      label={props.label}
+      error={ctx.formState.errors[props.name]?.message as string}
+    />
+  )
 }
 
 export function DatePickerField(
@@ -81,9 +54,8 @@ export function DatePickerField(
     name: string;
     defaultValue?: Date | string;
     label: string;
-  } & Omit<ReactDatePickerProps, "value" | "onChange">,
+  },
 ) {
-  const { name, defaultValue, label, ...rest } = props;
   const controller = useController({
     name: props.name,
     defaultValue:
@@ -91,46 +63,32 @@ export function DatePickerField(
         ? props.defaultValue.toISOString()
         : props.defaultValue,
   });
-  const v = useMemo(
-    () => (controller.field.value ? new Date(controller.field.value) : null),
-    [controller.field.value],
-  );
+  const dv = useMemo(() => {
+    if (!controller.field.value) {
+      return null;
+    }
+    try {
+      return new Date(controller.field.value);
+    } catch (e) {
+      return null;
+    }
+  }, [controller.field.value]);
   return (
-    <label className="block">
-      <span className="block font-bold text-gray-700">{props.label}</span>
-      {controller.fieldState.error && (
-        <span className="block font-semibold text-red-500">
-          {(controller.fieldState.error.message as string) ?? ""}
-        </span>
-      )}
-      <DatePicker
-        selected={v}
-        onChange={(v) => controller.field.onChange(v?.toISOString())}
-        onBlur={controller.field.onBlur}
-        ref={controller.field.ref}
-        className={classNames(
-          "mt-1 block w-full rounded-md shadow-sm",
-          controller.fieldState.error ? "border-red-500" : "border-gray-300",
-          props.className,
-        )}
-        wrapperClassName="block"
-        {...rest}
-        selectsRange={false}
-      />
-    </label>
+    <DateTimePicker
+      label={props.label}
+      value={dv}
+      onChange={v => controller.field.onChange(v?.toISOString())}
+    />
   );
 }
 
-export function CheckBoxField(props: { name: string; label?: string }) {
+export function CheckBoxField(props: { name: string; label?: string; }) {
   const ctx = useFormContext();
-  if (!props.label) {
-    return <input type="checkbox" {...ctx.register(props.name)} />;
-  }
   return (
-    <label className="block">
-      <span className="font-bold text-gray-700">{props.label}</span>
-      <input type="checkbox" {...ctx.register(props.name)} />
-    </label>
+    <Checkbox
+      {...ctx.register(props.name)}
+      label={props.label}
+    />
   );
 }
 
@@ -151,18 +109,11 @@ export function NullableCheckboxField(props: {
   }, [isChecked, controller.field]);
   return (
     <>
-      <label className="block">
-        <input
-          type="checkbox"
-          checked={isChecked}
-          onChange={(e) => {
-            setChecked(e.target.checked);
-          }}
-        />
-        <span className="ml-1 inline font-bold text-gray-700">
-          {props.checkboxLabel}
-        </span>
-      </label>
+      <Checkbox
+        checked={isChecked}
+        onChange={v => setChecked(v.target.checked)}
+        label={props.checkboxLabel}
+      />
       {isChecked && props.children}
     </>
   );
@@ -196,8 +147,8 @@ export function ArrayField<
             <Button
               className="h-full min-w-[2rem] align-middle font-black"
               onClick={() => remove(idx)}
-              color="danger"
-              size="small"
+              variant="danger"
+              size="sm"
             >
               -
             </Button>
@@ -207,8 +158,8 @@ export function ArrayField<
       <Button
         className="mt-1 font-black"
         onClick={() => append(props.newElement(fields) as any)}
-        color="primary"
-        size="small"
+        variant="outline"
+        size="sm"
       >
         +
       </Button>
@@ -221,28 +172,25 @@ export function SelectField<TObj extends {}>(props: {
   options: TObj[];
   label?: string;
   renderOption: (obj: TObj) => string;
-  getOptionValue: (obj: TObj) => string | number;
+  getOptionValue: (obj: TObj) => string;
   filter: (obj: TObj, filter: string) => boolean;
   nullable?: boolean;
 }) {
+  const ctx = useFormContext();
   const { name, label, options, getOptionValue, renderOption, nullable } =
     props;
   return (
-    <Field
-      name={name}
+    <NativeSelect
+      {...ctx.register(name)}
       label={label}
-      as="select"
-      registerParams={{
-        setValueAs: props.nullable ? (v) => (v === "" ? null : v) : identity,
-      }}
-    >
-      {nullable && <option value="">None</option>}
-      {options.map((opt) => (
-        <option key={getOptionValue(opt)} value={getOptionValue(opt)}>
-          {renderOption(opt)}
-        </option>
-      ))}
-    </Field>
+      data={[
+        ...(nullable ? [{ label: "None", value: "" }] : []),
+        ...options.map((obj) => ({
+          label: renderOption(obj),
+          value: getOptionValue(obj),
+        })),
+      ]}
+    />
   );
 }
 
@@ -254,7 +202,7 @@ export function CrewPositionSelect(props: { name: string; label?: string }) {
       options={vals}
       label={props.label}
       renderOption={(pos) => pos.name}
-      getOptionValue={(pos) => pos.position_id}
+      getOptionValue={(pos) => pos.position_id.toString(10)}
       filter={(pos, q) => pos.name.includes(q)}
     />
   );
@@ -272,7 +220,7 @@ export function MemberSelect(props: {
       options={vals}
       label={props.label}
       renderOption={(user) => getUserName(user)}
-      getOptionValue={(user) => user.user_id}
+      getOptionValue={(user) => user.user_id.toString(10)}
       nullable={props.nullable}
       filter={(user, q) =>
         user.first_name.toLocaleLowerCase().includes(q) ||
