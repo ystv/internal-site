@@ -39,7 +39,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
   const [isEditOpen, setEditOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   return (
-    <>
+    <div className="flex gap-1">
       <Button onClick={() => setEditOpen(true)} className="block">
         Edit Event
       </Button>
@@ -66,10 +66,10 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         </Button>
       )}
       <Button variant="warning" className="block">
-        Cancel Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
+        Cancel Event
       </Button>
       <Button variant="danger" className="block">
-        Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
+        Delete Event
       </Button>
       <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
         <Button
@@ -80,6 +80,6 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         </Button>
         <EditModal event={props.event} close={() => setEditOpen(false)} />
       </Modal>
-    </>
+    </div>
   );
 }

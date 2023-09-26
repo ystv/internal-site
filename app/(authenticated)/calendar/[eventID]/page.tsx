@@ -94,13 +94,16 @@ export default async function EventPage({
   }
   return (
     <div>
-      <h1 className="text-2xl font-bold">{event.name}</h1>
-      <p>
+      <div className={"flex justify-between"}>
+        <h1 className="font-bold">{event.name}</h1>
+        <EventActionsUI event={event} />
+      </div>
+      <strong>
         {formatDateTime(event.start_date)} -{" "}
         {isSameDay(event.start_date, event.end_date)
           ? formatTime(event.end_date)
           : formatDateTime(event.end_date)}
-      </p>
+      </strong>
       <p>{event.description}</p>
       {event.updated_by_user && event.event_type !== "show" && (
         <p>Host: {getUserName(event.updated_by_user)}</p>
@@ -111,7 +114,6 @@ export default async function EventPage({
       ) : (
         <AttendeesView event={event} />
       )}
-      <EventActionsUI event={event} />
     </div>
   );
 }
