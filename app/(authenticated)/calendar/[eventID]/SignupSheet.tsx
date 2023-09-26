@@ -107,14 +107,13 @@ function SignupSheet({
         {canManageSignUpSheet(event, sheet, me) && (
           <div>
             <Button
-              color="light"
               size="small"
               onClick={() => setEditOpen(true)}
             >
               Edit
             </Button>
             <Button
-              color="danger"
+              variant="danger"
               size="small"
               onClick={async () => {
                 if (confirm("You sure?")) {
@@ -176,7 +175,7 @@ function MyRoleSignUpModal({
         {crew.user_id === me.user_id ? (
           <Button
             size="large"
-            color="danger"
+            variant="danger"
             onClick={async () => {
               const res = await removeSelfFromRole(
                 sheet.signup_id,
@@ -194,7 +193,6 @@ function MyRoleSignUpModal({
         ) : (
           <Button
             size="large"
-            color="primary"
             onClick={async () => {
               const res = await signUpToRole(sheet.signup_id, crew.crew_id);
               if (!res.ok) {
