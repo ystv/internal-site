@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Logo from "@/app/_assets/logo.png";
 import Link from "next/link";
-import Breadcrumbs from "@/components/Breadcrumbs";
 import { UserProvider } from "@/components/UserContext";
 import { mustGetCurrentUser } from "@/lib/auth/server";
+import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 
 export default async function AuthenticatedLayout({
   children,
@@ -33,7 +33,9 @@ export default async function AuthenticatedLayout({
           />
         </div>
       </nav>
-      <Breadcrumbs />
+      <div className="mx-2 lg:mx-4">
+        <YSTVBreadcrumbs />
+      </div>
       <main className="mx-2 max-w-6xl lg:mx-auto">{children}</main>
     </UserProvider>
   );
