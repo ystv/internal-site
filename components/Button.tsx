@@ -3,6 +3,8 @@
 import { useButton } from "react-aria";
 import { useRef } from "react";
 import classNames from "classnames";
+import { LuLoader2 } from "react-icons/lu";
+import {twMerge} from "tailwind-merge";
 
 // Mapping of "primary" colour to classes
 const normalColors: { [K: string]: string } = {
@@ -33,12 +35,13 @@ export default function Button<T extends "button" | "a">(
     children: React.ReactNode;
     color?: "primary" | "success" | "warning" | "danger" | "light" | "dark";
     isDisabled?: boolean;
+    isLoading?: boolean;
     as?: T;
     inverted?: boolean;
     size?: "small" | "large";
   } & React.ComponentPropsWithoutRef<T>,
 ) {
-  const { children, color, as, inverted, ...rest } = props;
+  const { children, color, as, inverted, isDisabled, isLoading, ...rest } = props;
   const ref = useRef<HTMLButtonElement | HTMLAnchorElement | null>(null);
   // @ts-ignore
   const btn = useButton(props, ref);
@@ -48,7 +51,7 @@ export default function Button<T extends "button" | "a">(
       ref={ref as any}
       {...rest}
       {...btn.buttonProps}
-      className={classNames(
+      className={twMerge(
         `inline-flex items-center 
                   rounded-md
                   border border-transparent
@@ -57,15 +60,20 @@ export default function Button<T extends "button" | "a">(
                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${
                     props.color
                   }
-                  ${props.isDisabled ? "cursor-not-allowed opacity-50" : ""}
+                  ${(isDisabled || isLoading) ? "cursor-not-allowed opacity-50" : ""}
                   active:opacity-85 active:shadow-lg`,
-        props.inverted
+        inverted
           ? invertedColors[props.color ?? "primary"]
           : normalColors[props.color ?? "primary"],
         sizeClasses[props.size ?? "medium"],
         props.className,
       )}
     >
+      {isLoading && (
+        <span className="w-4 h-4 animate-in slide-in-from-left mr-2">
+          <LuLoader2 className="animate-spin w-4 h-4" />
+        </span>
+      )}
       {props.children}
     </Type>
   );
