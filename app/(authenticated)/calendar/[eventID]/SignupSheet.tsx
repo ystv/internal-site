@@ -43,16 +43,17 @@ function SignupSheet({
   const [signUpCrew, setSignUpCrew] = useState<CrewType | null>(null);
   return (
     <>
-      <div className="flex-grow-1 m-4 w-full border-2 border-gray-900 p-4 lg:w-auto lg:flex-grow-0">
-        <h2 className="text-lg font-bold">{sheet.title}</h2>
-        <p>{sheet.description}</p>
-        <p>Arrive at {formatTime(sheet.arrival_time)}</p>
-        <p>
+      <div className="flex-grow-1 m-4 w-full rounded-xl border-2 border-solid border-gray-900 p-4 lg:w-auto lg:flex-grow-0">
+        <h2>{sheet.title}</h2>
+        <strong>Arrive at {formatTime(sheet.arrival_time)}</strong>
+        <br />
+        <strong>
           Broadcast at {formatTime(sheet.start_time)} -{" "}
           {isSameDay(sheet.start_time, sheet.end_time)
             ? formatTime(sheet.end_time)
             : formatDateTime(sheet.end_time)}
-        </p>
+        </strong>
+        <p>{sheet.description}</p>
         {locked && (
           <p>
             <strong>
@@ -79,7 +80,7 @@ function SignupSheet({
                     <td>
                       {crew.user_id === me.user_id ? (
                         <button
-                          className="rounded-md bg-gray-100 px-2 py-0.5 italic hover:bg-blue-400"
+                          className="rounded-md border-none bg-gray-100 px-2 py-0.5 italic hover:bg-blue-400"
                           onClick={() => setSignUpCrew(crew)}
                         >
                           <strong>{getUserName(crew.users)}</strong>
@@ -95,7 +96,7 @@ function SignupSheet({
                   ) : (
                     <td>
                       <button
-                        className="rounded-md bg-gray-100 px-2 py-0.5 italic hover:bg-blue-400"
+                        className="rounded-md border-none bg-gray-100 px-2 py-0.5 italic hover:bg-blue-400"
                         onClick={() => setSignUpCrew(crew)}
                       >
                         Vacant
@@ -108,22 +109,25 @@ function SignupSheet({
         </table>
 
         {canManageSignUpSheet(event, sheet, me) && (
-          <div>
-            <Button size="small" onClick={() => setEditOpen(true)}>
-              Edit
-            </Button>
-            <Button
-              variant="danger"
-              size="small"
-              onClick={async () => {
-                if (confirm("You sure?")) {
-                  await deleteSignUpSheet(sheet.signup_id);
-                }
-              }}
-            >
-              Remove
-            </Button>
-          </div>
+          <>
+            <br />
+            <div className={"flex gap-1"}>
+              <Button size="small" onClick={() => setEditOpen(true)}>
+                Edit
+              </Button>
+              <Button
+                variant="danger"
+                size="small"
+                onClick={async () => {
+                  if (confirm("You sure?")) {
+                    await deleteSignUpSheet(sheet.signup_id);
+                  }
+                }}
+              >
+                Remove
+              </Button>
+            </div>
+          </>
         )}
       </div>
       <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
