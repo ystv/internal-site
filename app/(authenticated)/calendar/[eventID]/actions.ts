@@ -18,7 +18,6 @@ import { FormResponse } from "@/components/Form";
 import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import { isBefore } from "date-fns";
-import * as AdamRMS from "@/lib/adamrms";
 import invariant from "tiny-invariant";
 
 export async function editEvent(
