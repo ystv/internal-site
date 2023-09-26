@@ -189,7 +189,7 @@ export async function updateEvent(
     // We use a raw query to get the event info so that we can SELECT FOR UPDATE,
     // otherwise this risks a race condition.
     const events = await $db.$queryRaw<
-      { adam_rms_project_id: number; start_date: Date; end_date: Date }[]
+      { adam_rms_project_id: number|null; start_date: Date; end_date: Date }[]
     >`
       SELECT adam_rms_project_id, start_date, end_date FROM events WHERE event_id = ${eventID} FOR UPDATE`;
     if (events.length === 0) {
@@ -227,12 +227,16 @@ export async function updateEvent(
       },
       include: EventSelectors,
     });
-    await AdamRMS.changeProjectDates(
-      event.adam_rms_project_id,
-      data.start_date,
-      data.end_date,
-      "dates",
-    );
+    if (event.adam_rms_project_id &&
+      (event.start_date.getTime() !== data.start_date.getTime() ||
+        event.end_date.getTime() !== data.end_date.getTime())) {
+      await AdamRMS.changeProjectDates(
+        event.adam_rms_project_id,
+        data.start_date,
+        data.end_date,
+        "dates",
+      );
+    }
     return { ok: true, result };
   });
   if (!result.ok) {
