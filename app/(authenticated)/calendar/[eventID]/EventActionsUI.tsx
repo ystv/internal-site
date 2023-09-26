@@ -4,7 +4,12 @@ import Form from "@/components/Form";
 import { EventObjectType } from "@/features/calendar";
 import { editEvent } from "./actions";
 import { EditEventSchema } from "./schema";
-import { CheckBoxField, DatePickerField, TextAreaField, TextField } from "@/components/FormFields";
+import {
+  CheckBoxField,
+  DatePickerField,
+  TextAreaField,
+  TextField,
+} from "@/components/FormFields";
 import { useState } from "react";
 import { Button, Modal, Stack } from "@mantine/core";
 

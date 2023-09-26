@@ -12,7 +12,8 @@ export const EditEventSchema = z.object({
 
 export const CrewSchema = z.object({
   crew_id: z.number().optional(),
-  position_id: z.coerce.number(),
+  position_id: z.coerce.number().optional(),
+  custom_position_name: z.string().optional(),
   ordering: z.number(),
   locked: z.boolean().default(false),
   user_id: z.coerce.number().nullable().default(null),
