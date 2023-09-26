@@ -6,7 +6,7 @@ import { editEvent } from "./actions";
 import { EditEventSchema } from "./schema";
 import { CheckBoxField, DatePickerField, TextAreaField, TextField } from "@/components/FormFields";
 import { useState } from "react";
-import { Button, ButtonGroup, CloseButton, Modal, Stack } from "@mantine/core";
+import { Button, Modal, Stack } from "@mantine/core";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -48,7 +48,6 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
       </Button>
       <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
-        <CloseButton onClick={() => setEditOpen(false)} />
         <EditModal event={props.event} close={() => setEditOpen(false)} />
       </Modal>
     </Stack>
