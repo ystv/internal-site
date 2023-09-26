@@ -26,16 +26,19 @@ async function createEvent(
       `Calendar.${payload.data.type}.Admin` as Permission,
     ]);
   }
-  const evt = await Calendar.createEvent({
-    name: payload.data.name,
-    description: payload.data.description,
-    event_type: payload.data.type,
-    start_date: payload.data.startDate,
-    end_date: payload.data.endDate,
-    location: payload.data.location,
-    is_private: payload.data.private,
-    is_tentative: payload.data.tentative,
-  }, user.user_id);
+  const evt = await Calendar.createEvent(
+    {
+      name: payload.data.name,
+      description: payload.data.description,
+      event_type: payload.data.type,
+      start_date: payload.data.startDate,
+      end_date: payload.data.endDate,
+      location: payload.data.location,
+      is_private: payload.data.private,
+      is_tentative: payload.data.tentative,
+    },
+    user.user_id,
+  );
   return {
     ok: true,
     id: evt.event_id,

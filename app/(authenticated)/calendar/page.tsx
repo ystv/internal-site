@@ -2,6 +2,7 @@ import YSTVCalendar from "@/components/YSTVCalendar";
 import Link from "next/link";
 import { PermissionGate } from "@/components/UserContext";
 import { listEventsForMonth } from "@/features/calendar/events";
+import { Button } from "@mantine/core";
 
 export default async function CalendarPage({
   searchParams,
@@ -33,12 +34,9 @@ export default async function CalendarPage({
           "Calendar.Social.Creator",
         ]}
       >
-        <Link
-          href="/calendar/new"
-          className="mt-4 rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
-        >
+        <Button component={Link} href="/calendar/new">
           Add Event
-        </Link>
+        </Button>
       </PermissionGate>
       <YSTVCalendar events={events} selectedMonth={date} />
     </div>

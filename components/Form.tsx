@@ -11,7 +11,7 @@ import { useCallback, useState, useTransition } from "react";
 import classNames from "classnames";
 import { FieldPath } from "react-hook-form/dist/types/path";
 import { DebugOnly } from "@/components/DebugMode";
-import Button from "@/components/Button";
+import { Button } from "@mantine/core";
 
 export interface FormErrorResponse<Fields extends FieldValues = any> {
   ok: false;
@@ -88,7 +88,7 @@ export default function Form<
             message: err,
           });
         }
-      })
+      });
     }
   }, [form, action, onSuccess]);
   return (

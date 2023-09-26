@@ -1,10 +1,17 @@
+const plugin = require("tailwindcss/plugin");
+
+const mantineVariantsPlugin = plugin(function ({ addVariant }) {
+  addVariant("success", `&[data-variant="success"]`);
+  addVariant("danger", `&[data-variant="danger"]`);
+  addVariant("warning", `&[data-variant="warning"]`);
+});
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./stories/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/react-tailwindcss-datepicker/dist/index.esm.js",
   ],
   theme: {
     extend: {
@@ -26,5 +33,9 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/forms"), require("tailwindcss-animate")],
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("tailwindcss-animate"),
+    mantineVariantsPlugin,
+  ],
 };

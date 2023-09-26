@@ -1,9 +1,15 @@
 "use client";
 import Form, { FormAction } from "@/components/Form";
 import { schema } from "./schema";
-import { DatePickerField, Field } from "@/components/FormFields";
+import {
+  DatePickerField,
+  SelectField,
+  TextAreaField,
+  TextField,
+} from "@/components/FormFields";
 import { useRouter } from "next/navigation";
 import { EventType } from "@/features/calendar/types";
+import { identity } from "lodash";
 
 export function CreateEventForm(props: {
   action: FormAction<{ id: number }>;
@@ -16,32 +22,19 @@ export function CreateEventForm(props: {
       schema={schema}
       onSuccess={(res) => router.push(`/calendar/${res.id}`)}
     >
-      <Field name="name" label="Name" type="text" />
-      <Field name="description" label="Description" as="textarea" />
-      <DatePickerField
-        name="startDate"
-        label="Start"
-        dateFormat="yyyy-MM-dd HH:mm"
-        showTimeSelect
-      />
-      <DatePickerField
-        name="endDate"
-        label="End"
-        dateFormat="yyyy-MM-dd HH:mm"
-        showTimeSelect
-      />
-      <Field
+      <TextField name="name" label="Name" />
+      <TextAreaField name="description" label="Description" />
+      <DatePickerField name="startDate" label="Start" />
+      <DatePickerField name="endDate" label="End" />
+      <TextField name="location" label="Location" />
+      <SelectField
         name="type"
         label="Type"
-        as="select"
-        defaultValue={props.permittedEventTypes[0]}
-      >
-        {props.permittedEventTypes.map((type) => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </Field>
+        options={props.permittedEventTypes}
+        getOptionValue={identity}
+        renderOption={(v) => v[0].toUpperCase() + v.slice(1)}
+        filter={(v, q) => v.includes(q)}
+      />
     </Form>
   );
 }

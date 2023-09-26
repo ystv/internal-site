@@ -12,8 +12,7 @@ import {
   removeSelfFromRole,
   signUpToRole,
 } from "@/app/(authenticated)/calendar/[eventID]/actions";
-import Modal from "react-modal";
-import Button from "@/components/Button";
+import { Button, Modal } from "@mantine/core";
 import {
   canManage,
   canManageSignUpSheet,
@@ -108,14 +107,13 @@ function SignupSheet({
         {canManageSignUpSheet(event, sheet, me) && (
           <div>
             <Button
-              color="light"
               size="small"
               onClick={() => setEditOpen(true)}
             >
               Edit
             </Button>
             <Button
-              color="danger"
+              variant="danger"
               size="small"
               onClick={async () => {
                 if (confirm("You sure?")) {
@@ -128,14 +126,7 @@ function SignupSheet({
           </div>
         )}
       </div>
-      <Modal isOpen={isEditOpen} onRequestClose={() => setEditOpen(false)}>
-        <Button
-          className="absolute right-4 top-4"
-          color="light"
-          onClick={() => setEditOpen(false)}
-        >
-          &times;
-        </Button>
+      <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
         <AddEditSignUpSheetForm
           action={async (data) => editSignUpSheet(sheet.signup_id, data)}
           onSuccess={() => setEditOpen(false)}
@@ -144,16 +135,9 @@ function SignupSheet({
         />
       </Modal>
       <Modal
-        isOpen={signUpCrew !== null}
-        onRequestClose={() => setSignUpCrew(null)}
+        opened={signUpCrew !== null}
+        onClose={() => setSignUpCrew(null)}
       >
-        <Button
-          className="absolute right-4 top-4"
-          color="light"
-          onClick={() => setSignUpCrew(null)}
-        >
-          &times;
-        </Button>
         {signUpCrew !== null && (
           <MyRoleSignUpModal
             sheet={sheet}
@@ -191,7 +175,7 @@ function MyRoleSignUpModal({
         {crew.user_id === me.user_id ? (
           <Button
             size="large"
-            color="danger"
+            variant="danger"
             onClick={async () => {
               const res = await removeSelfFromRole(
                 sheet.signup_id,
@@ -209,7 +193,6 @@ function MyRoleSignUpModal({
         ) : (
           <Button
             size="large"
-            color="primary"
             onClick={async () => {
               const res = await signUpToRole(sheet.signup_id, crew.crew_id);
               if (!res.ok) {
@@ -236,9 +219,6 @@ export function SignupSheetsView({
 }) {
   invariant(event.signup_sheets, "no signup_sheets for SignupSheetsView");
   const [isCreateOpen, setCreateOpen] = useState(false);
-  useEffect(() => {
-    Modal.setAppElement(document.querySelector("main")!);
-  }, []);
   return (
     <>
       <div className="flex flex-row flex-wrap space-x-4">
@@ -260,14 +240,7 @@ export function SignupSheetsView({
       {canManage(event, me) && (
         <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
       )}
-      <Modal isOpen={isCreateOpen} onRequestClose={() => setCreateOpen(false)}>
-        <Button
-          className="absolute right-4 top-4"
-          color="light"
-          onClick={() => setCreateOpen(false)}
-        >
-          &times;
-        </Button>
+      <Modal opened={isCreateOpen} onClose={() => setCreateOpen(false)}>
         <AddEditSignUpSheetForm
           action={async (sheet) => createSignUpSheet(event.event_id, sheet)}
           onSuccess={() => setCreateOpen(false)}
