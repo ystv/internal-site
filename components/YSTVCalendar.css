@@ -11,6 +11,14 @@
     display: none;
 }
 
+.fc-header-toolbar .fc-toolbar-chunk:last-of-type {
+    text-align: right;
+}
+
+.fc-header-toolbar .fc-toolbar-chunk:last-of-type > * {
+    margin-top: .25em;
+}
+
 @keyframes fadeInFromNone {
     0% {
         background-color: var(--fc-today-bg-color);
