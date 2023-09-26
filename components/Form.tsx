@@ -102,8 +102,8 @@ export default function Form<
         {props.children}
         <Button
           type="submit"
-          isDisabled={!form.formState.isValid}
-          isLoading={isSubmitting}
+          disabled={!form.formState.isValid}
+          loading={isSubmitting}
         >
           {props.submitLabel ?? "Create"}
         </Button>
