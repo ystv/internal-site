@@ -9696,7 +9696,7 @@ __metadata:
     ts-node: ^10.9.1
     tsx: ^3.12.10
     typescript: 5.1.6
-    uoy-week-calendar: "https://github.com/markspolakovs/uoy-week-calendar"
+    uoy-week-calendar: "https://github.com/chriscn/uoy-week-calendar"
     zod: ^3.21.4
     zod-form-data: ^2.0.1
     zod-prisma: ^0.5.4
@@ -15490,9 +15490,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uoy-week-calendar@https://github.com/markspolakovs/uoy-week-calendar":
+"uoy-week-calendar@https://github.com/chriscn/uoy-week-calendar":
   version: 0.1.0
-  resolution: "uoy-week-calendar@https://github.com/markspolakovs/uoy-week-calendar.git#commit=255b13ad0746b2f6b1f34fbf08c2bb460e7d1c58"
+  resolution: "uoy-week-calendar@https://github.com/chriscn/uoy-week-calendar.git#commit=8eb4a5e455840bb8c8312e416f41cccbd5aa18e2"
   dependencies:
     dayjs: ^1.11.7
     hash.js: ^1.1.7
