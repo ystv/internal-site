@@ -9,9 +9,10 @@ import {
   CheckBoxField,
   CrewPositionSelect,
   DatePickerField,
-  Field,
   MemberSelect,
   NullableCheckboxField,
+  TextAreaField,
+  TextField,
 } from "@/components/FormFields";
 import { useCrewPositions } from "@/components/FormFieldPreloadedData";
 import { Fragment } from "react";
@@ -31,25 +32,19 @@ export function AddEditSignUpSheetForm(props: {
       initialValues={props.initialValues}
       submitLabel={props.submitLabel}
     >
-      <Field name="title" label="Title" />
-      <Field name="description" label="Description" as="textarea" />
+      <TextField name="title" label="Title" />
+      <TextAreaField name="description" label="Description" />
       <DatePickerField
         name="arrival_time"
         label="Arrival Time"
-        showTimeSelect
-        dateFormat="MM/dd/yyyy h:mm aa"
       />
       <DatePickerField
         name="start_time"
         label="Broadcast Start"
-        showTimeSelect
-        dateFormat="MM/dd/yyyy h:mm aa"
       />
       <DatePickerField
         name="end_time"
         label="Broadcast End"
-        showTimeSelect
-        dateFormat="MM/dd/yyyy h:mm aa"
       />
       <NullableCheckboxField
         name="unlock_date"

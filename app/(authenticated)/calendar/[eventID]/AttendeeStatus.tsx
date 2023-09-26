@@ -6,6 +6,7 @@ import { AttendStatus, AttendStatusLabels } from "@/features/calendar/statuses";
 import Spinner from "@/components/Spinner";
 import type { UserType } from "@/lib/auth/server";
 import { EventObjectType } from "@/features/calendar/events";
+import { NativeSelect } from "@mantine/core";
 
 export function CurrentUserAttendeeRow({
   event,
@@ -21,7 +22,7 @@ export function CurrentUserAttendeeRow({
     <>
       <td>{getUserName(me)}</td>
       <td>
-        <select
+        <NativeSelect
           name="status"
           defaultValue={myAttendee?.attend_status ?? "unknown"}
           onChange={(e) => {
@@ -33,7 +34,7 @@ export function CurrentUserAttendeeRow({
             });
           }}
           disabled={isPending}
-          className="disabled:border-gray-400 disabled:text-gray-400"
+          className="inline-block"
         >
           {Object.entries(AttendStatusLabels)
             .filter(([k]) => k !== "invited")
@@ -42,7 +43,7 @@ export function CurrentUserAttendeeRow({
                 {label}
               </option>
             ))}
-        </select>
+        </NativeSelect>
         {isPending && <Spinner />}
       </td>
     </>
