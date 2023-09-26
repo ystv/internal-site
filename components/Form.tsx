@@ -88,7 +88,7 @@ export default function Form<
             message: err,
           });
         }
-      })
+      });
     }
   }, [form, action, onSuccess]);
   return (

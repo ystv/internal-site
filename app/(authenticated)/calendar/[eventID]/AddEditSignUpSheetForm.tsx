@@ -34,18 +34,9 @@ export function AddEditSignUpSheetForm(props: {
     >
       <TextField name="title" label="Title" />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField
-        name="arrival_time"
-        label="Arrival Time"
-      />
-      <DatePickerField
-        name="start_time"
-        label="Broadcast Start"
-      />
-      <DatePickerField
-        name="end_time"
-        label="Broadcast End"
-      />
+      <DatePickerField name="arrival_time" label="Arrival Time" />
+      <DatePickerField name="start_time" label="Broadcast Start" />
+      <DatePickerField name="end_time" label="Broadcast End" />
       <NullableCheckboxField
         name="unlock_date"
         checkboxLabel="Lock signups until a certain date?"

@@ -12,7 +12,13 @@ import { FieldPath } from "react-hook-form/dist/types/path";
 import "react-datepicker/dist/react-datepicker.css";
 import classNames from "classnames";
 import { useEffect, useMemo, useState } from "react";
-import { Button, Checkbox, NativeSelect, TextInput, Textarea } from "@mantine/core";
+import {
+  Button,
+  Checkbox,
+  NativeSelect,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import {
   useCrewPositions,
@@ -20,11 +26,7 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
 
-
-export function TextField(props: {
-  name: string,
-  label: string,
-}) {
+export function TextField(props: { name: string; label: string }) {
   const ctx = useFormContext();
   return (
     <TextInput
@@ -32,13 +34,10 @@ export function TextField(props: {
       label={props.label}
       error={ctx.formState.errors[props.name]?.message as string}
     />
-  )
+  );
 }
 
-export function TextAreaField(props: {
-  name: string,
-  label: string,
-}) {
+export function TextAreaField(props: { name: string; label: string }) {
   const ctx = useFormContext();
   return (
     <Textarea
@@ -46,16 +45,14 @@ export function TextAreaField(props: {
       label={props.label}
       error={ctx.formState.errors[props.name]?.message as string}
     />
-  )
+  );
 }
 
-export function DatePickerField(
-  props: {
-    name: string;
-    defaultValue?: Date | string;
-    label: string;
-  },
-) {
+export function DatePickerField(props: {
+  name: string;
+  defaultValue?: Date | string;
+  label: string;
+}) {
   const controller = useController({
     name: props.name,
     defaultValue:
@@ -77,19 +74,14 @@ export function DatePickerField(
     <DateTimePicker
       label={props.label}
       value={dv}
-      onChange={v => controller.field.onChange(v?.toISOString())}
+      onChange={(v) => controller.field.onChange(v?.toISOString())}
     />
   );
 }
 
-export function CheckBoxField(props: { name: string; label?: string; }) {
+export function CheckBoxField(props: { name: string; label?: string }) {
   const ctx = useFormContext();
-  return (
-    <Checkbox
-      {...ctx.register(props.name)}
-      label={props.label}
-    />
-  );
+  return <Checkbox {...ctx.register(props.name)} label={props.label} />;
 }
 
 export function NullableCheckboxField(props: {
@@ -111,7 +103,7 @@ export function NullableCheckboxField(props: {
     <>
       <Checkbox
         checked={isChecked}
-        onChange={v => setChecked(v.target.checked)}
+        onChange={(v) => setChecked(v.target.checked)}
         label={props.checkboxLabel}
       />
       {isChecked && props.children}

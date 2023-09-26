@@ -30,9 +30,7 @@ export default function GlobalError({
           <div>
             <pre>{String(error)}</pre>
           </div>
-          <div>
-            Digest: {error.digest ?? "none"}
-          </div>
+          <div>Digest: {error.digest ?? "none"}</div>
           <button
             onClick={
               // Attempt to recover by trying to re-render the segment
