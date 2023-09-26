@@ -12,8 +12,7 @@ import {
   removeSelfFromRole,
   signUpToRole,
 } from "@/app/(authenticated)/calendar/[eventID]/actions";
-import Modal from "react-modal";
-import { Button } from "@mantine/core";
+import { Button, Modal } from "@mantine/core";
 import {
   canManage,
   canManageSignUpSheet,
@@ -128,14 +127,7 @@ function SignupSheet({
           </div>
         )}
       </div>
-      <Modal isOpen={isEditOpen} onRequestClose={() => setEditOpen(false)}>
-        <Button
-          className="absolute right-4 top-4"
-          color="light"
-          onClick={() => setEditOpen(false)}
-        >
-          &times;
-        </Button>
+      <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
         <AddEditSignUpSheetForm
           action={async (data) => editSignUpSheet(sheet.signup_id, data)}
           onSuccess={() => setEditOpen(false)}
@@ -144,16 +136,9 @@ function SignupSheet({
         />
       </Modal>
       <Modal
-        isOpen={signUpCrew !== null}
-        onRequestClose={() => setSignUpCrew(null)}
+        opened={signUpCrew !== null}
+        onClose={() => setSignUpCrew(null)}
       >
-        <Button
-          className="absolute right-4 top-4"
-          color="light"
-          onClick={() => setSignUpCrew(null)}
-        >
-          &times;
-        </Button>
         {signUpCrew !== null && (
           <MyRoleSignUpModal
             sheet={sheet}
@@ -236,9 +221,6 @@ export function SignupSheetsView({
 }) {
   invariant(event.signup_sheets, "no signup_sheets for SignupSheetsView");
   const [isCreateOpen, setCreateOpen] = useState(false);
-  useEffect(() => {
-    Modal.setAppElement(document.querySelector("main")!);
-  }, []);
   return (
     <>
       <div className="flex flex-row flex-wrap space-x-4">
@@ -260,14 +242,7 @@ export function SignupSheetsView({
       {canManage(event, me) && (
         <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
       )}
-      <Modal isOpen={isCreateOpen} onRequestClose={() => setCreateOpen(false)}>
-        <Button
-          className="absolute right-4 top-4"
-          color="light"
-          onClick={() => setCreateOpen(false)}
-        >
-          &times;
-        </Button>
+      <Modal opened={isCreateOpen} onClose={() => setCreateOpen(false)}>
         <AddEditSignUpSheetForm
           action={async (sheet) => createSignUpSheet(event.event_id, sheet)}
           onSuccess={() => setCreateOpen(false)}

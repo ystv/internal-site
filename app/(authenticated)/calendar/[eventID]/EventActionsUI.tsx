@@ -1,13 +1,12 @@
 "use client";
 
 import Form from "@/components/Form";
-import { EventObjectType, EventType } from "@/features/calendar";
+import { EventObjectType } from "@/features/calendar";
 import { editEvent } from "./actions";
 import { EditEventSchema } from "./schema";
 import { CheckBoxField, DatePickerField, TextAreaField, TextField } from "@/components/FormFields";
 import { useState } from "react";
-import ReactModal from "react-modal";
-import { Button, CloseButton } from "@mantine/core";
+import { Button, CloseButton, Modal } from "@mantine/core";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -48,10 +47,10 @@ export function EventActionsUI(props: { event: EventObjectType }) {
       <Button color="danger" className="block">
         Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
       </Button>
-      <ReactModal isOpen={isEditOpen} onRequestClose={() => setEditOpen(false)}>
+      <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
         <CloseButton onClick={() => setEditOpen(false)} />
         <EditModal event={props.event} close={() => setEditOpen(false)} />
-      </ReactModal>
+      </Modal>
     </>
   );
 }
