@@ -6,7 +6,45 @@ import listPlugin from "@fullcalendar/list";
 import { EventInput } from "@fullcalendar/core";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@mantine/hooks";
+import {
+  CalendarType,
+  academicYears,
+  getNextPeriod,
+  Holiday,
+} from "uoy-week-calendar/dist/calendar";
 import "./YSTVCalendar.css";
+import dayjs from "dayjs";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+
+dayjs.extend(weekOfYear);
+
+function getUoYWeekName(date: Date) {
+  const academicYear = academicYears.findLast(
+    (x) => x.periods[0].startDate.getTime() <= date.getTime(),
+  );
+  if (!academicYear) {
+    return "Week " + dayjs(date).week();
+  }
+  let period = academicYear.periods[0];
+  let nextPeriod = getNextPeriod(period, academicYear);
+  while (nextPeriod.startDate.getTime() <= date.getTime()) {
+    period = nextPeriod;
+    nextPeriod = getNextPeriod(period, academicYear);
+  }
+
+  if (period instanceof Holiday) {
+    return period.name + " Vacation";
+  }
+
+  const name = period
+    .getWeekName(date, CalendarType.UNDERGRADUATE)
+    .replace("Teaching", "");
+  // HACK pending upstream changes
+  if (name.includes("(")) {
+    return name.replace(/^.*\((.+)\)$/, "$1");
+  }
+  return name;
+}
 
 export default function YSTVCalendar({
   events,
@@ -71,7 +109,7 @@ export default function YSTVCalendar({
       eventDisplay={"block"}
       weekNumbers={true}
       weekNumberContent={(week) => {
-        return `Revision ${week.num}`;
+        return getUoYWeekName(week.date);
       }}
       weekNumberFormat={{ week: "long" }} //Do not delete this line, it is used to format the week number or it kicks up a fuss
       height={"auto"}
