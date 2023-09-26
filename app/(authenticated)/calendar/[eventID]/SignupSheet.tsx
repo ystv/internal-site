@@ -13,7 +13,7 @@ import {
   signUpToRole,
 } from "@/app/(authenticated)/calendar/[eventID]/actions";
 import Modal from "react-modal";
-import Button from "@/components/Button";
+import { Button } from "@mantine/core";
 import {
   canManage,
   canManageSignUpSheet,
