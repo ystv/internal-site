@@ -1,8 +1,8 @@
 "use client";
 
 import Form from "@/components/Form";
-import { EventObjectType } from "@/features/calendar";
-import { editEvent } from "./actions";
+import { EventObjectType, EventType } from "@/features/calendar";
+import { createAdamRMSProject, editEvent } from "./actions";
 import { EditEventSchema } from "./schema";
 import {
   CheckBoxField,
@@ -10,8 +10,10 @@ import {
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
-import { useState } from "react";
-import { Button, Modal, Stack } from "@mantine/core";
+import { useState, useTransition } from "react";
+import Image from "next/image";
+import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
+import { Button, Modal } from "@mantine/core";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -35,11 +37,34 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
 
 export function EventActionsUI(props: { event: EventObjectType }) {
   const [isEditOpen, setEditOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   return (
-    <Stack className="mt-4">
+    <>
       <Button onClick={() => setEditOpen(true)} className="block">
         Edit Event
       </Button>
+      {props.event.adam_rms_project_id ? (
+        <Button
+          component="a"
+          href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
+          target="_blank"
+        >
+          <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
+          View on AdamRMS
+        </Button>
+      ) : (
+        <Button
+          loading={isPending}
+          onClick={() =>
+            startTransition(async () => {
+              createAdamRMSProject(props.event.event_id);
+            })
+          }
+        >
+          <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
+          Create AdamRMS Project
+        </Button>
+      )}
       <Button variant="warning" className="block">
         Cancel Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
       </Button>
@@ -47,8 +72,14 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
       </Button>
       <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
+        <Button
+          className="absolute right-4 top-4"
+          onClick={() => setEditOpen(false)}
+        >
+          &times;
+        </Button>
         <EditModal event={props.event} close={() => setEditOpen(false)} />
       </Modal>
-    </Stack>
+    </>
   );
 }

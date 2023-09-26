@@ -1,11 +1,12 @@
 "use client";
 
 import { isBefore, isSameDay } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "tiny-invariant";
 import {
+  createAdamRMSProject,
   createSignUpSheet,
   deleteSignUpSheet,
   editSignUpSheet,
@@ -22,6 +23,8 @@ import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]
 import { CrewType, SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventObjectType } from "@/features/calendar/events";
 import { ExposedUser } from "@/features/people";
+import Image from "next/image";
+import AdamRMSLogo from "@/app/_assets/adamrms-logo.png";
 
 function SignupSheet({
   event,
@@ -212,6 +215,7 @@ export function SignupSheetsView({
   me: UserType;
 }) {
   invariant(event.signup_sheets, "no signup_sheets for SignupSheetsView");
+  const [isPending, startTransition] = useTransition();
   const [isCreateOpen, setCreateOpen] = useState(false);
   return (
     <>

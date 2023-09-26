@@ -4,9 +4,13 @@ module.exports = {
     "@typescript-eslint/no-restricted-imports": [
       "error",
       {
-        name: "@/lib/db",
-        message: "Please use @/features instead",
-        allowTypeImports: false,
+        patterns: [
+          {
+            group: ["@/lib/db", "@/lib/adamrms*"],
+            message: "Please use @/features instead",
+            allowTypeImports: false,
+          },
+        ],
       },
     ],
   },

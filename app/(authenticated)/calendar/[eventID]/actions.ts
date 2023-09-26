@@ -1,5 +1,5 @@
 "use server";
-import { getCurrentUser } from "@/lib/auth/server";
+import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
@@ -18,6 +18,7 @@ import { FormResponse } from "@/components/Form";
 import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import { isBefore } from "date-fns";
+import invariant from "tiny-invariant";
 
 export async function editEvent(
   eventID: number,
@@ -28,7 +29,25 @@ export async function editEvent(
   if (!data.success) {
     return zodErrorResponse(data.error);
   }
-  await Calendar.updateEvent(eventID, data.data, me.user_id);
+  const result = await Calendar.updateEvent(eventID, data.data, me.user_id);
+  if (!result.ok) {
+    switch (result.reason) {
+      case "kit_clash":
+        return {
+          ok: false,
+          errors: {
+            root: "The changed dates would result in a kit clash. Please contact the Tech Team.",
+          },
+        };
+      default:
+        return {
+          ok: false,
+          errors: {
+            root: "An unknown error occurred (" + result.reason + ")",
+          },
+        };
+    }
+  }
   revalidatePath(`/calendar/${eventID}`);
   return { ok: true };
 }
@@ -259,5 +278,15 @@ export async function removeSelfFromRole(sheetID: number, crewID: number) {
     };
   }
   revalidatePath("/calendar/[eventID]");
+  return { ok: true };
+}
+
+export async function createAdamRMSProject(eventID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  await Calendar.addProjectToAdamRMS(eventID, me.user_id);
+  revalidatePath(`/calendar/${event.event_id}`);
   return { ok: true };
 }
