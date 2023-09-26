@@ -1,7 +1,7 @@
 "use client";
 
 import Form from "@/components/Form";
-import { EventObjectType, EventType } from "@/features/calendar";
+import { EventObjectType } from "@/features/calendar";
 import { editEvent } from "./actions";
 import { EditEventSchema } from "./schema";
 import {
@@ -11,8 +11,7 @@ import {
   TextField,
 } from "@/components/FormFields";
 import { useState } from "react";
-import ReactModal from "react-modal";
-import { Button } from "@mantine/core";
+import { Button, Modal, Stack } from "@mantine/core";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -25,8 +24,14 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
     >
       <TextField name="name" label="Name" />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField name="start_date" label="Start" />
-      <DatePickerField name="end_date" label="End" />
+      <DatePickerField
+        name="start_date"
+        label="Start"
+      />
+      <DatePickerField
+        name="end_date"
+        label="End"
+      />
       <TextField name="location" label="Location" />
       <CheckBoxField name="is_private" label="Private" />
       <CheckBoxField name="is_tentative" label="Tentative" />
@@ -37,7 +42,7 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
 export function EventActionsUI(props: { event: EventObjectType }) {
   const [isEditOpen, setEditOpen] = useState(false);
   return (
-    <>
+    <Stack className="mt-4">
       <Button onClick={() => setEditOpen(true)} className="block">
         Edit Event
       </Button>
@@ -47,15 +52,9 @@ export function EventActionsUI(props: { event: EventObjectType }) {
       <Button variant="danger" className="block">
         Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
       </Button>
-      <ReactModal isOpen={isEditOpen} onRequestClose={() => setEditOpen(false)}>
-        <Button
-          className="absolute right-4 top-4"
-          onClick={() => setEditOpen(false)}
-        >
-          &times;
-        </Button>
+      <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
         <EditModal event={props.event} close={() => setEditOpen(false)} />
-      </ReactModal>
-    </>
+      </Modal>
+    </Stack>
   );
 }

@@ -26,6 +26,7 @@ export function CreateEventForm(props: {
       <TextAreaField name="description" label="Description" />
       <DatePickerField name="startDate" label="Start" />
       <DatePickerField name="endDate" label="End" />
+      <TextField name="location" label="Location" />
       <SelectField
         name="type"
         label="Type"
