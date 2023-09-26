@@ -34,7 +34,7 @@ export default async function AuthenticatedLayout({
         </div>
       </nav>
       <Breadcrumbs />
-      <main className="mx-2 max-w-3xl lg:mx-auto">{children}</main>
+      <main className="mx-2 max-w-6xl lg:mx-auto">{children}</main>
     </UserProvider>
   );
 }

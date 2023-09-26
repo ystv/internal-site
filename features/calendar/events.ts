@@ -54,6 +54,17 @@ export interface EventCreateUpdateFields {
   is_tentative: boolean;
 }
 
+export interface EventCreateUpdateFields {
+  name: string;
+  description: string;
+  start_date: Date;
+  end_date: Date;
+  event_type?: EventType;
+  location: string;
+  is_private: boolean;
+  is_tentative: boolean;
+}
+
 /**
  * Takes in an event object and replaces all user fields with ExposedUserModel equivalents, stripping
  * out all sensitive fields.

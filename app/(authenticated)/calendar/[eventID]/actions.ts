@@ -10,7 +10,10 @@ import {
   canManageSignUpSheet,
 } from "@/features/calendar/permissions";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
-import { EditEventSchema, SignupSheetSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
+import {
+  EditEventSchema,
+  SignupSheetSchema,
+} from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
 import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";

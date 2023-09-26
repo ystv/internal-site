@@ -7,14 +7,49 @@ import Form, { FormResponse } from "@/components/Form";
 import {
   ArrayField,
   CheckBoxField,
-  CrewPositionSelect,
   DatePickerField,
-  Field,
   MemberSelect,
   NullableCheckboxField,
+  TextAreaField,
+  TextField,
 } from "@/components/FormFields";
 import { useCrewPositions } from "@/components/FormFieldPreloadedData";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
+import { useController } from "react-hook-form";
+import { Select } from "@mantine/core";
+
+function CrewPositionField(props: { parentName: string }) {
+  const [isCustom, setIsCustom] = useState(false);
+  const vals = useCrewPositions();
+  const selectController = useController({
+    name: `${props.parentName}.position_id`,
+  });
+  return isCustom ? (
+    <TextField
+      name={`${props.parentName}.custom_position_name`}
+      placeholder="Enter crew position name"
+    />
+  ) : (
+    <Select
+      data={[
+        ...vals.map((val) => ({
+          label: val.name,
+          value: val.position_id.toString(10),
+        })),
+        { label: "Custom", value: "$custom" },
+      ]}
+      value={selectController.field.value}
+      onChange={(newValue) => {
+        if (newValue === "$custom") {
+          selectController.field.onChange("");
+          setIsCustom(true);
+          return;
+        }
+        selectController.field.onChange(newValue);
+      }}
+    />
+  );
+}
 
 export function AddEditSignUpSheetForm(props: {
   action: (data: z.infer<typeof SignupSheetSchema>) => Promise<FormResponse>;
@@ -31,26 +66,11 @@ export function AddEditSignUpSheetForm(props: {
       initialValues={props.initialValues}
       submitLabel={props.submitLabel}
     >
-      <Field name="title" label="Title" />
-      <Field name="description" label="Description" as="textarea" />
-      <DatePickerField
-        name="arrival_time"
-        label="Arrival Time"
-        showTimeSelect
-        dateFormat="MM/dd/yyyy h:mm aa"
-      />
-      <DatePickerField
-        name="start_time"
-        label="Broadcast Start"
-        showTimeSelect
-        dateFormat="MM/dd/yyyy h:mm aa"
-      />
-      <DatePickerField
-        name="end_time"
-        label="Broadcast End"
-        showTimeSelect
-        dateFormat="MM/dd/yyyy h:mm aa"
-      />
+      <TextField name="title" label="Title" />
+      <TextAreaField name="description" label="Description" />
+      <DatePickerField name="arrival_time" label="Arrival Time" />
+      <DatePickerField name="start_time" label="Broadcast Start" />
+      <DatePickerField name="end_time" label="Broadcast End" />
       <NullableCheckboxField
         name="unlock_date"
         checkboxLabel="Lock signups until a certain date?"
@@ -87,7 +107,7 @@ export function AddEditSignUpSheetForm(props: {
                   value={row.crew_id as string}
                 />
               ) : null}
-              <CrewPositionSelect name={`crews.${idx}.position_id`} />
+              <CrewPositionField parentName={`crews.${idx}`} />
               <div className="flex items-center justify-center">
                 <CheckBoxField name={`crews.${idx}.locked`} />
               </div>

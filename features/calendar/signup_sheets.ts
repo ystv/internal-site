@@ -4,6 +4,7 @@ import { Event, Prisma } from "@prisma/client";
 import { CrewPositionType } from "@/features/calendar/crew_positions";
 import { omit } from "lodash";
 import { ExposedUser } from "@/features/people";
+import invariant from "tiny-invariant";
 
 export interface CrewType {
   crew_id: number;
@@ -36,6 +37,7 @@ export async function createSignupSheet(
     crews: CrewCreateUpdateInput[];
   },
 ) {
+  await ensurePositionsForCrews(sheet.crews);
   const newSheet = await prisma.signupSheet.create({
     data: {
       event_id: eventID,
@@ -48,7 +50,7 @@ export async function createSignupSheet(
       crews: {
         createMany: {
           data: sheet.crews.map((c) => ({
-            position_id: c.position_id,
+            position_id: c.position_id!,
             ordering: c.ordering,
             locked: c.locked,
             user_id: c.user_id,
@@ -83,8 +85,43 @@ interface CrewCreateUpdateInput {
   crew_id?: number;
   locked: boolean;
   ordering: number;
-  position_id: number;
+  position_id?: number;
+  custom_position_name?: string;
   user_id: number | null;
+}
+
+/**
+ * If any of the given crews has a custom position, create a position in the database and replace
+ * it with the position ID.
+ */
+async function ensurePositionsForCrews(crews: CrewCreateUpdateInput[]) {
+  const newPosNames = crews
+    .filter((x) => x.custom_position_name)
+    .map((x) => x.custom_position_name!);
+  const newPositions = await prisma.$transaction(
+    newPosNames.map((name) =>
+      prisma.position.create({
+        data: {
+          name,
+          full_description: "",
+        },
+      }),
+    ),
+  );
+  console.log(`Created ${newPositions.length} new positions.`);
+  for (let i = 0; i < crews.length; i++) {
+    if (crews[i].custom_position_name) {
+      const newPos = newPositions.find(
+        (x) => x.name === crews[i].custom_position_name,
+      );
+      invariant(
+        newPos,
+        "couldn't find newly created position " + crews[i].custom_position_name,
+      );
+      crews[i].position_id = newPos.position_id;
+      delete crews[i].custom_position_name;
+    }
+  }
 }
 
 export async function updateSignUpSheet(
@@ -93,6 +130,7 @@ export async function updateSignUpSheet(
     crews: CrewCreateUpdateInput[];
   },
 ) {
+  await ensurePositionsForCrews(data.crews);
   await prisma.$transaction([
     prisma.signupSheet.update({
       where: {
@@ -130,7 +168,7 @@ export async function updateSignUpSheet(
         prisma.crew.create({
           data: {
             signup_id: sheetID,
-            position_id: c.position_id,
+            position_id: c.position_id!,
             user_id: c.user_id,
             locked: c.locked,
             ordering: c.ordering,
