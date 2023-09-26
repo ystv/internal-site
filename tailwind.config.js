@@ -13,6 +13,9 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./stories/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  corePlugins: {
+    preflight: false,
+  },
   theme: {
     extend: {
       colors: {
