@@ -4,12 +4,12 @@ import { cookies } from "next/headers";
 import { DebugIndicator, DebugModeProvider } from "@/components/DebugMode";
 import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/common";
 import { PublicURLProvider } from "@/components/PublicURLContext";
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { theme } from "./theme";
 
-import '@mantine/core/styles.css';
-import '@mantine/dates/styles.css';
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 
 const inter = Inter({
   subsets: ["latin"],

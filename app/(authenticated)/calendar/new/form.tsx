@@ -1,7 +1,12 @@
 "use client";
 import Form, { FormAction } from "@/components/Form";
 import { schema } from "./schema";
-import { DatePickerField, SelectField, TextAreaField, TextField } from "@/components/FormFields";
+import {
+  DatePickerField,
+  SelectField,
+  TextAreaField,
+  TextField,
+} from "@/components/FormFields";
 import { useRouter } from "next/navigation";
 import { EventType } from "@/features/calendar/types";
 import { identity } from "lodash";
@@ -19,20 +24,14 @@ export function CreateEventForm(props: {
     >
       <TextField name="name" label="Name" />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField
-        name="startDate"
-        label="Start"
-      />
-      <DatePickerField
-        name="endDate"
-        label="End"
-      />
+      <DatePickerField name="startDate" label="Start" />
+      <DatePickerField name="endDate" label="End" />
       <SelectField
         name="type"
         label="Type"
         options={props.permittedEventTypes}
         getOptionValue={identity}
-        renderOption={v => v[0].toUpperCase() + v.slice(1)}
+        renderOption={(v) => v[0].toUpperCase() + v.slice(1)}
         filter={(v, q) => v.includes(q)}
       />
     </Form>

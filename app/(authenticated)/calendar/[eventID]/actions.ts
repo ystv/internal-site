@@ -10,13 +10,19 @@ import {
   canManageSignUpSheet,
 } from "@/features/calendar/permissions";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
-import { EditEventSchema, SignupSheetSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
+import {
+  EditEventSchema,
+  SignupSheetSchema,
+} from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
 import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import { isBefore } from "date-fns";
 
-export async function editEvent(eventID: number, payload: z.infer<typeof EditEventSchema>): Promise<FormResponse> {
+export async function editEvent(
+  eventID: number,
+  payload: z.infer<typeof EditEventSchema>,
+): Promise<FormResponse> {
   const me = await getCurrentUser();
   const data = await EditEventSchema.safeParseAsync(payload);
   if (!data.success) {

@@ -7,13 +7,13 @@ export const theme = createTheme({
     Button: Button.extend({
       classNames: {
         root: `danger:bg-danger warning:bg-warning`,
-      }
+      },
     }),
     NativeSelect: NativeSelect.extend({
       classNames: {
         // Remove Tailwind's drop-down style
-        input: "bg-none"
-      }
-    })
-  }
+        input: "bg-none",
+      },
+    }),
+  },
 });

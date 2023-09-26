@@ -34,9 +34,7 @@ export default async function CalendarPage({
           "Calendar.Social.Creator",
         ]}
       >
-        <Button component={Link}
-          href="/calendar/new"
-        >
+        <Button component={Link} href="/calendar/new">
           Add Event
         </Button>
       </PermissionGate>

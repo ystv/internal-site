@@ -165,7 +165,11 @@ export async function createEvent(
   );
 }
 
-export async function updateEvent(eventID: number, data: EventCreateUpdateFields, currentUserID: number) {
+export async function updateEvent(
+  eventID: number,
+  data: EventCreateUpdateFields,
+  currentUserID: number,
+) {
   return sanitize(
     await prisma.event.update({
       where: {
@@ -176,8 +180,8 @@ export async function updateEvent(eventID: number, data: EventCreateUpdateFields
         updated_by: currentUserID,
         updated_at: new Date(),
       },
-      include: EventSelectors
-    })
+      include: EventSelectors,
+    }),
   );
 }
 
