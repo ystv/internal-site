@@ -96,20 +96,23 @@ export default async function EventPage({
     <>
       <div
         className={
-          "flex w-full flex-col items-center justify-between pb-4 sm:flex-row sm:pb-0"
+          "flex w-full flex-col items-center justify-between sm:flex-row"
         }
       >
         <div className="w-fit grow font-bold">
           <h1>{event.name}</h1>
         </div>
-        <EventActionsUI event={event} />
+        {/*  TODO wrap this in a permission gate  */}
+        {/*<EventActionsUI event={event} />*/}
       </div>
-      <strong>
-        {formatDateTime(event.start_date)} -{" "}
-        {isSameDay(event.start_date, event.end_date)
-          ? formatTime(event.end_date)
-          : formatDateTime(event.end_date)}
-      </strong>
+      <div className={"text-center sm:text-left"}>
+        <strong>
+          {formatDateTime(event.start_date)} -{" "}
+          {isSameDay(event.start_date, event.end_date)
+            ? formatTime(event.end_date)
+            : formatDateTime(event.end_date)}
+        </strong>
+      </div>
       <p>{event.description}</p>
       {event.updated_by_user && event.event_type !== "show" && (
         <p>Host: {getUserName(event.updated_by_user)}</p>

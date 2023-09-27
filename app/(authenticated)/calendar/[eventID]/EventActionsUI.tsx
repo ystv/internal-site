@@ -39,7 +39,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
   const [isEditOpen, setEditOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   return (
-    <div className="flex h-min w-auto flex-shrink flex-wrap justify-end gap-1 sm:max-md:w-1/3">
+    <div className="mb-4 flex h-min w-auto flex-shrink flex-wrap justify-end gap-1 sm:mb-0 sm:max-md:w-1/3">
       <Button variant="danger" className="block">
         Delete Event
       </Button>
