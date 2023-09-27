@@ -93,9 +93,15 @@ export default async function EventPage({
     notFound();
   }
   return (
-    <div>
-      <div className={"flex justify-between"}>
-        <h1 className="font-bold">{event.name}</h1>
+    <>
+      <div
+        className={
+          "flex w-full flex-col items-center justify-between pb-4 sm:flex-row sm:pb-0"
+        }
+      >
+        <div className="w-fit grow font-bold">
+          <h1>{event.name}</h1>
+        </div>
         <EventActionsUI event={event} />
       </div>
       <strong>
@@ -114,6 +120,6 @@ export default async function EventPage({
       ) : (
         <AttendeesView event={event} />
       )}
-    </div>
+    </>
   );
 }

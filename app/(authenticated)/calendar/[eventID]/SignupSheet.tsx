@@ -44,11 +44,10 @@ function SignupSheet({
   return (
     <>
       <Paper
-        shadow="xs"
+        shadow="sm"
         radius="md"
         withBorder
-        p="xl"
-        className="flex-grow-1 w-full lg:w-[calc(50%-theme(gap.4)/2)] lg:flex-grow-0"
+        className="flex-grow-1 w-full p-[var(--mantine-spacing-md)] md:w-[calc(50%-theme(gap.4)/2)] lg:flex-grow-0 lg:p-[var(--mantine-spacing-xl)]"
       >
         <h2 className={"m-0"}>{sheet.title}</h2>
         <strong className={"text-sm font-extrabold"}>
@@ -91,7 +90,11 @@ function SignupSheet({
                       crew.positions?.name ?? <em>Unknown Role</em>
                     )}
                   </td>
-                  <td className={"px-3 py-1"}>
+                  <td
+                    className={
+                      "px-3 py-1 [&_.mantine-Button-label]:whitespace-normal [&_button]:text-left"
+                    }
+                  >
                     {locked || crew.locked ? (
                       <em>Locked</em>
                     ) : (
