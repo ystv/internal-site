@@ -96,7 +96,17 @@ function SignupSheet({
                     }
                   >
                     {locked || crew.locked ? (
-                      <em>Locked</em>
+                      <Button
+                        variant={"transparent"}
+                        fullWidth
+                        className={
+                          "!cursor-default !select-text active:!transform-none"
+                        }
+                        justify={"left"}
+                        color={"grey"}
+                      >
+                        Locked
+                      </Button>
                     ) : (
                       <>
                         {crew.user_id === me.user_id ? (
