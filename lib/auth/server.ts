@@ -76,31 +76,37 @@ async function setSession(user: UserType) {
 
 export async function getCurrentUserOrNull(
   req?: NextRequest,
-): Promise<UserType | null> {
+): Promise<UserType | string> {
   const session = await getRawSessionValue(req);
   if (!session) {
-    return null;
+    return "No session";
   }
-  const userInfo = await decode(session);
+  let userInfo;
+  try {
+    userInfo = await decode(session);
+  } catch (e) {
+    console.warn(e);
+    return String(e);
+  }
   // Doesn't handle the case where a user is deleted while signed in,
   // but that's rare enough that it's not worth worrying.
   return userTypeSchema.parse(userInfo);
 }
 
 export async function getCurrentUser(req?: NextRequest): Promise<UserType> {
-  const user = await getCurrentUserOrNull(req);
-  if (!user) {
-    throw new NotLoggedIn();
+  const userOrError = await getCurrentUserOrNull(req);
+  if (typeof userOrError === "string") {
+    throw new NotLoggedIn(userOrError);
   }
-  return user;
+  return userOrError;
 }
 
 export async function mustGetCurrentUser(req?: NextRequest): Promise<UserType> {
-  const user = await getCurrentUserOrNull(req);
-  if (!user) {
-    redirect("/login");
+  const userOrError = await getCurrentUserOrNull(req);
+  if (typeof userOrError === "string") {
+    redirect("/login?error=" + encodeURIComponent(userOrError));
   }
-  return user;
+  return userOrError;
 }
 
 /**
