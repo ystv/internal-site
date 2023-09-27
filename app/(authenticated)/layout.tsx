@@ -33,7 +33,7 @@ export default async function AuthenticatedLayout({
           />
         </div>
       </nav>
-      <div className="mx-2 lg:mx-4">
+      <div className="mx-2 md:mx-6">
         <YSTVBreadcrumbs />
       </div>
       <br />
