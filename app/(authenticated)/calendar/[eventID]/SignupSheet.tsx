@@ -155,20 +155,24 @@ function SignupSheet({
         {canManageSignUpSheet(event, sheet, me) && (
           <>
             <br />
-            <div className={"flex gap-1"}>
-              <Button size="small" onClick={() => setEditOpen(true)}>
-                Edit
-              </Button>
+            <div className={"flex justify-end gap-1"}>
               <Button
                 variant="danger"
                 size="small"
                 onClick={async () => {
-                  if (confirm("You sure?")) {
+                  if (
+                    confirm(
+                      `Are you sure you want to delete the list "${sheet.title}"? This action cannot be undone.`,
+                    )
+                  ) {
                     await deleteSignUpSheet(sheet.signup_id);
                   }
                 }}
               >
-                Remove
+                Delete List
+              </Button>
+              <Button size="small" onClick={() => setEditOpen(true)}>
+                Edit List
               </Button>
             </div>
           </>
@@ -210,7 +214,7 @@ function MyRoleSignUpModal({
   const [error, setError] = useState<string | null>(null);
   return (
     <div>
-      <h1 className="text-4xl">{crew.positions.name}</h1>
+      <h1 className="mt-0">{crew.positions.name}</h1>
       <p>
         {crew.positions.full_description ||
           "If this role had a description, it'd go here."}
