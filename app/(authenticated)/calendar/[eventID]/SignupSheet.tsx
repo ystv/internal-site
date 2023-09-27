@@ -243,15 +243,7 @@ export function SignupSheetsView({
     <>
       <div className="flex flex-row flex-wrap gap-4">
         {event.signup_sheets.length === 0 && (
-          <div className="my-8">
-            <p>No sign-up sheets yet.</p>
-            <button
-              onClick={() => setCreateOpen(true)}
-              className="my-1 rounded-md px-4 py-2 font-bold shadow-md"
-            >
-              Create one
-            </button>
-          </div>
+          <p>No sign-up sheets have been added yet.</p>
         )}
         {event.signup_sheets.map((ss) => (
           <SignupSheet key={ss.signup_id} event={event} sheet={ss} me={me} />
