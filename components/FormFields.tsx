@@ -15,6 +15,7 @@ import {
   NativeSelect,
   TextInput,
   Textarea,
+  Box,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import {
@@ -22,11 +23,13 @@ import {
   useMembers,
 } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
+import dayjs from "dayjs";
 
 export function TextField(props: {
   name: string;
   label?: string;
   placeholder?: string;
+  required?: boolean;
 }) {
   const ctx = useFormContext();
   return (
@@ -35,6 +38,7 @@ export function TextField(props: {
       label={props.label}
       error={ctx.formState.errors[props.name]?.message as string}
       placeholder={props.placeholder}
+      withAsterisk={props.required}
     />
   );
 }
@@ -54,6 +58,8 @@ export function DatePickerField(props: {
   name: string;
   defaultValue?: Date | string;
   label: string;
+  required?: boolean;
+  modal?: boolean;
 }) {
   const controller = useController({
     name: props.name,
@@ -77,6 +83,20 @@ export function DatePickerField(props: {
       label={props.label}
       value={dv}
       onChange={(v) => controller.field.onChange(v?.toISOString())}
+      withAsterisk={props.required}
+      dropdownType={props.modal ? "modal" : "popover"}
+      renderDay={(date) => {
+        const today = dayjs(date).isSame(dayjs(), "day");
+        return (
+          <Box
+            className={`flex h-full w-full items-center justify-center rounded-sm text-center ${
+              dayjs(date).isSame(dayjs(), "day") && "bg-blue-100"
+            }`}
+          >
+            <div>{date.getDate()}</div>
+          </Box>
+        );
+      }}
     />
   );
 }
