@@ -96,6 +96,8 @@ function SignupSheet({
                           onClick={() => setSignUpCrew(crew)}
                           variant={"light"}
                           fullWidth
+                          className={"!select-text"}
+                          justify={"left"}
                         >
                           <strong>
                             {getUserName(crew.users!) ?? "Unknown Member"}
@@ -105,8 +107,10 @@ function SignupSheet({
                         <Button
                           variant={"transparent"}
                           fullWidth
-                          className={"!cursor-default active:!transform-none"}
-                          ta={"left"}
+                          className={
+                            "!cursor-default !select-text active:!transform-none"
+                          }
+                          justify={"left"}
                         >
                           {getUserName(crew.users)}
                         </Button>
@@ -115,6 +119,8 @@ function SignupSheet({
                           onClick={() => setSignUpCrew(crew)}
                           variant={"outline"}
                           fullWidth
+                          className={"!select-text"}
+                          justify={"left"}
                         >
                           Vacant
                         </Button>
