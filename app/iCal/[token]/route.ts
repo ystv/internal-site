@@ -7,7 +7,7 @@ export async function GET(
 ): Promise<NextResponse> {
   let user;
   try {
-    user = await Calendar.getUserFromICalToken(params.token);
+    user = await Calendar.decodeUserID(params.token);
   } catch (e) {
     return new NextResponse(JSON.stringify({ error: String(e) }), {
       status: 403,

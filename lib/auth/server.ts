@@ -1,19 +1,24 @@
 import "server-only";
 import { prisma } from "@/lib/db";
-import { LRUCache } from "lru-cache";
 import { Forbidden, NotLoggedIn } from "./errors";
-import { Permission } from "./common";
+import { Permission, PermissionEnum } from "./common";
 import { User } from "@prisma/client";
 import { NextRequest } from "next/server";
 import {
   findOrCreateUserFromGoogleToken,
-  mustFindUserFromGoogleToken,
 } from "./google";
 import { redirect } from "next/navigation";
+import { z } from "zod";
+import { _UserModel } from "../db/types";
+import { decode, encode } from "../sessionSecrets";
 
 export type UserType = User & {
   permissions: Permission[];
 };
+
+const userTypeSchema: z.ZodSchema<UserType> = _UserModel.extend({
+  permissions: z.array(PermissionEnum),
+});
 
 async function resolvePermissionsForUser(userID: number) {
   const result = await prisma.rolePermission.findMany({
@@ -45,7 +50,7 @@ export async function requirePermission(...perms: Permission[]) {
 
 const cookieName = "ystv-calendar-session";
 
-async function getIdTokenFromCookie(req?: NextRequest) {
+async function getRawSessionValue(req?: NextRequest) {
   if (req) {
     const sessionID = req.cookies.get(cookieName);
     if (!sessionID) return null;
@@ -57,22 +62,29 @@ async function getIdTokenFromCookie(req?: NextRequest) {
   return sessionID.value;
 }
 
+async function setSession(user: UserType) {
+  const payload = await encode(user);
+  const { cookies } = await import("next/headers");
+  cookies().set(cookieName, payload, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+  });
+}
+
 export async function getCurrentUserOrNull(
   req?: NextRequest,
 ): Promise<UserType | null> {
-  const idToken = await getIdTokenFromCookie(req);
-  if (!idToken) {
+  const session = await getRawSessionValue(req);
+  if (!session) {
     return null;
   }
-  const u = await mustFindUserFromGoogleToken(idToken);
-  if (u === null) {
-    return null;
-  }
-  const permissions = await resolvePermissionsForUser(u.user_id);
-  return {
-    ...u,
-    permissions,
-  } satisfies UserType;
+  const userInfo = await decode(session);
+  // Doesn't handle the case where a user is deleted while signed in,
+  // but that's rare enough that it's not worth worrying.
+  return userTypeSchema.parse(userInfo);
 }
 
 export async function getCurrentUser(req?: NextRequest): Promise<UserType> {
@@ -110,19 +122,13 @@ export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   return false;
 }
 
-export async function loginOrCreateUser(rawToken: string) {
-  const user = await findOrCreateUserFromGoogleToken(rawToken);
+export async function loginOrCreateUser(rawGoogleToken: string) {
+  const user = await findOrCreateUserFromGoogleToken(rawGoogleToken);
   const permissions = await resolvePermissionsForUser(user.user_id);
-  const { cookies } = await import("next/headers");
-  cookies().set(cookieName, rawToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-  });
-  return {
+  const userType = {
     ...user,
     permissions,
   } satisfies UserType;
+  await setSession(userType);
+  return userType;
 }

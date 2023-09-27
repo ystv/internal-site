@@ -1,70 +1,16 @@
-import { getUserName } from "@/components/UserHelpers";
-import { prisma } from "@/lib/db";
-import ical from "ical-generator";
-import invariant from "tiny-invariant";
+import { getUserName } from '@/components/UserHelpers';
+import { prisma } from '@/lib/db';
+import { decode, encode } from '@/lib/sessionSecrets';
+import ical from 'ical-generator';
+import invariant from 'tiny-invariant';
 
-let key: CryptoKey | null = null;
-
-async function getKey() {
-  if (!key) {
-    key = await crypto.subtle.importKey(
-      "raw",
-      new TextEncoder().encode(process.env.SESSION_SECRET),
-      {
-        name: "HMAC",
-        hash: "SHA-256",
-      },
-      false,
-      ["sign", "verify"],
-    );
-  }
-  return key!;
+export function encodeUserID(userID: number) {
+  return encode({ userID });
 }
 
-function hexEncode(buf: ArrayBuffer): string {
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-function hexDecode(str: string): ArrayBuffer {
-  return new Uint8Array(str.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)))
-    .buffer;
-}
-
-export async function createICalTokenForUser(userID: number) {
-  const payload = JSON.stringify({ userID });
-  const signature = await crypto.subtle.sign(
-    {
-      name: "HMAC",
-      hash: "SHA-256",
-    },
-    await getKey(),
-    new TextEncoder().encode(payload),
-  );
-  return (
-    hexEncode(signature) + "." + hexEncode(new TextEncoder().encode(payload))
-  );
-}
-
-export async function getUserFromICalToken(tok: string): Promise<number> {
-  const [signature, encodedPayload] = tok.split(".");
-  if (
-    !(await crypto.subtle.verify(
-      {
-        name: "HMAC",
-        hash: "SHA-256",
-      },
-      await getKey(),
-      hexDecode(signature),
-      hexDecode(encodedPayload),
-    ))
-  ) {
-    throw new Error("Invalid signature");
-  }
-  const { userID } = JSON.parse(
-    new TextDecoder().decode(hexDecode(encodedPayload)),
-  );
+export async function decodeUserID(token: string) {
+  const { userID } = (await decode(token)) as { userID: number };
+  invariant(userID, 'No userID in token');
   return userID;
 }
 

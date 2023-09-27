@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getCurrentUser, requirePermission } from "@/lib/auth/server";
 import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
@@ -7,7 +8,7 @@ import { getUserName } from "@/components/UserHelpers";
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user;
   if (params.id === "me") {
-    user = await getCurrentUser();
+    user = People.ExposedUserModel.parse(await getCurrentUser());
   } else {
     await requirePermission(
       "ManageMembers.Members.List",
@@ -21,7 +22,18 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   }
   return (
     <div>
-      <h1>{getUserName(user)}</h1>
+      <h1>
+        {user.avatar && (
+          <Image
+            src={user.avatar}
+            alt=""
+            width={96}
+            height={96}
+            className="max-h-[4.5rem] w-auto rounded-full py-2"
+          />
+        )}
+        {getUserName(user)}
+      </h1>
       <h2>Add Calendar to Google Calendar</h2>
       <p>
         Add this URL as a new calendar in Google Calendar:
