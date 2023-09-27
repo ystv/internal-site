@@ -64,7 +64,7 @@ function SignupSheet({
         {locked && (
           <p>
             <strong>
-              Sign-ups unlock on {formatDateTime(sheet.unlock_date!)}
+              Crew lists unlock on {formatDateTime(sheet.unlock_date!)}
             </strong>
           </p>
         )}
@@ -259,12 +259,12 @@ export function SignupSheetsView({
     <>
       {event.signup_sheets.length === 0 && (
         <h2 className={"py-8 text-center"}>
-          No sign-up sheets have been added yet.
+          No crew lists have been added yet.
         </h2>
       )}
       {canManage(event, me) && (
         <div className={"mx-auto text-right"}>
-          <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
+          <Button onClick={() => setCreateOpen(true)}>Add Crew List</Button>
           <br />
         </div>
       )}
@@ -280,15 +280,6 @@ export function SignupSheetsView({
         <AddEditSignUpSheetForm
           action={async (sheet) => createSignUpSheet(event.event_id, sheet)}
           onSuccess={() => setCreateOpen(false)}
-          // initialValues={{
-          //   title: "Crew List",
-          //   description: undefined,
-          //   arrival_time: event.start_date,
-          //   start_time: dayjs(event.start_date).add(2, "hour").toDate(),
-          //   end_time: event.end_date,
-          //   unlock_date: null,
-          //   crews: [],
-          // }}
         />
       </Modal>
     </>
