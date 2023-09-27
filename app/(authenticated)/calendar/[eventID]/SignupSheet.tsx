@@ -111,6 +111,7 @@ function SignupSheet({
                             "!cursor-default !select-text active:!transform-none"
                           }
                           justify={"left"}
+                          color={"black"}
                         >
                           {getUserName(crew.users)}
                         </Button>
