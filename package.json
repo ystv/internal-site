@@ -50,6 +50,7 @@
     "fast-xml-parser": "^4.2.5",
     "fetch-cookie": "^2.1.0",
     "google-auth-library": "^9.0.0",
+    "ical-generator": "^5.0.1",
     "immer": "^10.0.2",
     "lodash": "^4.17.21",
     "lru-cache": "^10.0.0",

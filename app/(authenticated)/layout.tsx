@@ -24,13 +24,15 @@ export default async function AuthenticatedLayout({
           />
         </Link>
         <div className="ml-auto space-x-1">
-          <Image
-            src={user.avatar}
-            alt=""
-            width={96}
-            height={96}
-            className="max-h-[4.5rem] w-auto rounded-full py-2"
-          />
+          <Link href="/user/me">
+            <Image
+              src={user.avatar}
+              alt=""
+              width={96}
+              height={96}
+              className="max-h-[4.5rem] w-auto rounded-full py-2"
+            />
+          </Link>
         </div>
       </nav>
       <Breadcrumbs />
