@@ -9,7 +9,11 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   if (params.id === "me") {
     user = await getCurrentUser();
   } else {
-    await requirePermission("ManageMembers.Members.List", "ManageMembers.Members.Admin", "ManageMembers.Admin");
+    await requirePermission(
+      "ManageMembers.Members.List",
+      "ManageMembers.Members.Admin",
+      "ManageMembers.Admin",
+    );
     user = await People.getUser(parseInt(params.id, 10));
     if (!user) {
       notFound();
@@ -21,8 +25,14 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       <h2>Add Calendar to Google Calendar</h2>
       <p>
         Add this URL as a new calendar in Google Calendar:
-        <input disabled className="w-96" value={`${process.env.PUBLIC_URL}/iCal/${await Calendar.createICalTokenForUser(user.user_id)}`} />
+        <input
+          disabled
+          className="w-96"
+          value={`${
+            process.env.PUBLIC_URL
+          }/iCal/${await Calendar.createICalTokenForUser(user.user_id)}`}
+        />
       </p>
     </div>
-  )
+  );
 }
