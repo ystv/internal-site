@@ -7,7 +7,7 @@ import { format } from "date-fns";
  */
 
 export function formatDate(date: Date): string {
-  return format(date, "MM/dd/yyyy");
+  return format(date, "dd/MM/yyyy");
 }
 
 export function formatTime(time: Date): string {
@@ -15,5 +15,5 @@ export function formatTime(time: Date): string {
 }
 
 export function formatDateTime(dt: Date): string {
-  return format(dt, "MM/dd/yyyy h:mm aa");
+  return format(dt, "dd/MM/yyyy h:mm aa");
 }
