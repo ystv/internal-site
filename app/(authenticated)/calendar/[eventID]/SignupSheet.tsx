@@ -257,20 +257,25 @@ export function SignupSheetsView({
   const [isCreateOpen, setCreateOpen] = useState(false);
   return (
     <>
+      {event.signup_sheets.length === 0 && (
+        <h2 className={"py-8 text-center"}>
+          No sign-up sheets have been added yet.
+        </h2>
+      )}
+      {canManage(event, me) && (
+        <div className={"mx-auto text-right"}>
+          <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
+          <br />
+        </div>
+      )}
       <div className="flex flex-row flex-wrap gap-4">
-        {event.signup_sheets.length === 0 && (
-          <p>No sign-up sheets have been added yet.</p>
-        )}
         {event.signup_sheets.map((ss) => (
-          <SignupSheet key={ss.signup_id} event={event} sheet={ss} me={me} />
+          <>
+            <br />
+            <SignupSheet key={ss.signup_id} event={event} sheet={ss} me={me} />
+          </>
         ))}
       </div>
-      {canManage(event, me) && (
-        <>
-          <br />
-          <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
-        </>
-      )}
       <Modal opened={isCreateOpen} onClose={() => setCreateOpen(false)}>
         <AddEditSignUpSheetForm
           action={async (sheet) => createSignUpSheet(event.event_id, sheet)}
