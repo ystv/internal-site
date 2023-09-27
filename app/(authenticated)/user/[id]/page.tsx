@@ -42,7 +42,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           className="w-96"
           value={`${
             process.env.PUBLIC_URL
-          }/iCal/${await Calendar.createICalTokenForUser(user.user_id)}`}
+          }/iCal/${await Calendar.encodeUserID(user.user_id)}`}
         />
       </p>
     </div>
