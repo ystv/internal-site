@@ -63,14 +63,29 @@ export function AddEditSignUpSheetForm(props: {
       action={props.action}
       onSuccess={props.onSuccess}
       schema={SignupSheetSchema}
-      initialValues={props.initialValues}
+      initialValues={props.initialValues ?? { title: "Crew List" }}
       submitLabel={props.submitLabel}
     >
-      <TextField name="title" label="Title" />
+      <TextField
+        name="title"
+        label="Title"
+        required
+        placeholder={"Crew List"}
+      />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField name="arrival_time" label="Arrival Time" />
-      <DatePickerField name="start_time" label="Broadcast Start" />
-      <DatePickerField name="end_time" label="Broadcast End" />
+      <DatePickerField
+        name="arrival_time"
+        label="Arrival Time"
+        required
+        modal
+      />
+      <DatePickerField
+        name="start_time"
+        label="Broadcast Start"
+        required
+        modal
+      />
+      <DatePickerField name="end_time" label="Broadcast End" required modal />
       <NullableCheckboxField
         name="unlock_date"
         checkboxLabel="Lock signups until a certain date?"
