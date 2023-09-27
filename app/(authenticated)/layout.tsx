@@ -40,6 +40,7 @@ export default async function AuthenticatedLayout({
       <main className="mx-2 max-w-[min(theme(maxWidth.6xl),theme(maxWidth.full))] md:mx-6 [@media(min-width:calc(theme(maxWidth.6xl)+theme(margin.6)*2))]:mx-auto">
         {children}
       </main>
+      <br />
     </UserProvider>
   );
 }
