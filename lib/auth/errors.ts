@@ -4,7 +4,7 @@ const NOT_LOGGED_IN = "Not logged in";
 
 export class NotLoggedIn extends Error {
   constructor(message?: string) {
-    super(message ? (NOT_LOGGED_IN + ": " + message) : NOT_LOGGED_IN);
+    super(message ? NOT_LOGGED_IN + ": " + message : NOT_LOGGED_IN);
   }
 }
 

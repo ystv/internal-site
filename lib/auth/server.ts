@@ -4,9 +4,7 @@ import { Forbidden, NotLoggedIn } from "./errors";
 import { Permission, PermissionEnum } from "./common";
 import { User } from "@prisma/client";
 import { NextRequest } from "next/server";
-import {
-  findOrCreateUserFromGoogleToken,
-} from "./google";
+import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { _UserModel } from "../db/types";

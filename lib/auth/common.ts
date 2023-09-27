@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-
 /**
  * Available permissions. Should contain all the ones that users are expected
  * to have, along with some special ones:

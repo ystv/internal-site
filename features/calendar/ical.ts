@@ -1,8 +1,8 @@
-import { getUserName } from '@/components/UserHelpers';
-import { prisma } from '@/lib/db';
-import { decode, encode } from '@/lib/sessionSecrets';
-import ical from 'ical-generator';
-import invariant from 'tiny-invariant';
+import { getUserName } from "@/components/UserHelpers";
+import { prisma } from "@/lib/db";
+import { decode, encode } from "@/lib/sessionSecrets";
+import ical from "ical-generator";
+import invariant from "tiny-invariant";
 
 export function encodeUserID(userID: number) {
   return encode({ userID });
@@ -10,7 +10,7 @@ export function encodeUserID(userID: number) {
 
 export async function decodeUserID(token: string) {
   const { userID } = (await decode(token)) as { userID: number };
-  invariant(userID, 'No userID in token');
+  invariant(userID, "No userID in token");
   return userID;
 }
 
