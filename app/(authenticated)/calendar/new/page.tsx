@@ -58,7 +58,7 @@ export default async function NewEventPage() {
   }
   return (
     <div className="mx-auto max-w-xl">
-      <h1 className="text-4xl">New Event</h1>
+      <h1 className="mb-4 mt-0 text-4xl font-bold">New Event</h1>
       <CreateEventForm
         action={createEvent}
         permittedEventTypes={permittedEventTypes}

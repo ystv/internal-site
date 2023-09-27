@@ -100,7 +100,7 @@ export default async function EventPage({
         }
       >
         <div className="w-fit grow font-bold">
-          <h1>{event.name}</h1>
+          <h1 className={"text-4xl font-bold"}>{event.name}</h1>
         </div>
         {/*  TODO wrap this in a permission gate  */}
         <EventActionsUI event={event} />
