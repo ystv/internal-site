@@ -25,7 +25,12 @@ export default function YSTVBreadcrumbs() {
     const result = [];
     for (const segment of segments) {
       result.push(
-        <Anchor href={segment.path} component={Link} underline="hover">
+        <Anchor
+          href={segment.path}
+          component={Link}
+          underline="hover"
+          key={`BC${result.length}`}
+        >
           {segment.name}
         </Anchor>,
       );
@@ -35,7 +40,7 @@ export default function YSTVBreadcrumbs() {
 
   return (
     <Breadcrumbs>
-      <Anchor href="/" component={Link} underline="hover">
+      <Anchor href="/" component={Link} underline="hover" key="BC0">
         Home
       </Anchor>
       {segments}
