@@ -13,7 +13,7 @@ import {
   removeSelfFromRole,
   signUpToRole,
 } from "@/app/(authenticated)/calendar/[eventID]/actions";
-import { Button, Modal } from "@mantine/core";
+import { Button, Modal, Paper } from "@mantine/core";
 import {
   canManage,
   canManageSignUpSheet,
@@ -43,17 +43,25 @@ function SignupSheet({
   const [signUpCrew, setSignUpCrew] = useState<CrewType | null>(null);
   return (
     <>
-      <div className="flex-grow-1 m-4 w-full rounded-xl border-2 border-solid border-gray-900 p-4 lg:w-auto lg:flex-grow-0">
-        <h2>{sheet.title}</h2>
-        <strong>Arrive at {formatTime(sheet.arrival_time)}</strong>
+      <Paper
+        shadow="xs"
+        radius="md"
+        withBorder
+        p="xl"
+        className="flex-grow-1 w-full lg:w-[calc(50%-theme(gap.4)/2)] lg:flex-grow-0"
+      >
+        <h2 className={"m-0"}>{sheet.title}</h2>
+        <strong className={"text-sm font-extrabold"}>
+          Arrive at {formatTime(sheet.arrival_time)}
+        </strong>
         <br />
-        <strong>
+        <strong className={"text-sm font-extrabold"}>
           Broadcast at {formatTime(sheet.start_time)} -{" "}
           {isSameDay(sheet.start_time, sheet.end_time)
             ? formatTime(sheet.end_time)
             : formatDateTime(sheet.end_time)}
         </strong>
-        <p>{sheet.description}</p>
+        <p className={"max-w-prose text-sm"}>{sheet.description}</p>
         {locked && (
           <p>
             <strong>
@@ -61,13 +69,14 @@ function SignupSheet({
             </strong>
           </p>
         )}
+        {sheet.crews && <h3 className={"m-0 mt-5"}>Crew:</h3>}
         <table className="mt-2">
           <tbody>
             {sheet.crews
               .sort((a, b) => a.ordering - b.ordering)
               .map((crew) => (
                 <tr key={crew.crew_id}>
-                  <td className="pr-2">
+                  <td className="pr-4">
                     {crew.user_id === me.user_id ? (
                       <strong>
                         {crew.positions?.name ?? <em>Unknown Role</em>}
@@ -76,31 +85,40 @@ function SignupSheet({
                       crew.positions?.name ?? <em>Unknown Role</em>
                     )}
                   </td>
-                  {crew.users ? (
-                    <td>
-                      {crew.user_id === me.user_id ? (
-                        <button
-                          className="rounded-md border-none bg-gray-100 px-2 py-0.5 italic hover:bg-blue-400"
-                          onClick={() => setSignUpCrew(crew)}
-                        >
-                          <strong>{getUserName(crew.users)}</strong>
-                        </button>
-                      ) : (
-                        getUserName(crew.users)
-                      )}
-                    </td>
-                  ) : locked || crew.locked ? (
+                  {locked || crew.locked ? (
                     <td>
                       <em>Locked</em>
                     </td>
                   ) : (
                     <td>
-                      <button
-                        className="rounded-md border-none bg-gray-100 px-2 py-0.5 italic hover:bg-blue-400"
-                        onClick={() => setSignUpCrew(crew)}
-                      >
-                        Vacant
-                      </button>
+                      {crew.user_id === me.user_id ? (
+                        <Button
+                          onClick={() => setSignUpCrew(crew)}
+                          variant={"light"}
+                          fullWidth
+                        >
+                          <strong>
+                            {getUserName(crew.users!) ?? "Unknown Member"}
+                          </strong>
+                        </Button>
+                      ) : crew.users ? (
+                        <Button
+                          variant={"transparent"}
+                          fullWidth
+                          className={"!cursor-default active:!transform-none"}
+                          ta={"left"}
+                        >
+                          {getUserName(crew.users)}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => setSignUpCrew(crew)}
+                          variant={"outline"}
+                          fullWidth
+                        >
+                          Vacant
+                        </Button>
+                      )}
                     </td>
                   )}
                 </tr>
@@ -129,7 +147,7 @@ function SignupSheet({
             </div>
           </>
         )}
-      </div>
+      </Paper>
       <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
         <AddEditSignUpSheetForm
           action={async (data) => editSignUpSheet(sheet.signup_id, data)}
@@ -223,7 +241,7 @@ export function SignupSheetsView({
   const [isCreateOpen, setCreateOpen] = useState(false);
   return (
     <>
-      <div className="flex flex-row flex-wrap space-x-4">
+      <div className="flex flex-row flex-wrap gap-4">
         {event.signup_sheets.length === 0 && (
           <div className="my-8">
             <p>No sign-up sheets yet.</p>
@@ -240,7 +258,10 @@ export function SignupSheetsView({
         ))}
       </div>
       {canManage(event, me) && (
-        <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
+        <>
+          <br />
+          <Button onClick={() => setCreateOpen(true)}>Add Sign-Up Sheet</Button>
+        </>
       )}
       <Modal opened={isCreateOpen} onClose={() => setCreateOpen(false)}>
         <AddEditSignUpSheetForm
