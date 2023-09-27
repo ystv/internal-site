@@ -16,10 +16,6 @@ export type UserType = User & {
   permissions: Permission[];
 };
 
-const userTypeSchema: z.ZodSchema<UserType> = _UserModel.extend({
-  permissions: z.array(PermissionEnum),
-});
-
 async function resolvePermissionsForUser(userID: number) {
   const result = await prisma.rolePermission.findMany({
     where: {
@@ -50,19 +46,23 @@ export async function requirePermission(...perms: Permission[]) {
 
 const cookieName = "ystv-calendar-session";
 
-async function getRawSessionValue(req?: NextRequest) {
+const sessionSchema = z.object({
+  userID: z.number(),
+});
+
+async function getSession(req?: NextRequest) {
   if (req) {
     const sessionID = req.cookies.get(cookieName);
     if (!sessionID) return null;
-    return sessionID.value;
+    return sessionSchema.parse(await decode(sessionID.value));
   }
   const { cookies } = await import("next/headers");
   const sessionID = cookies().get(cookieName);
   if (!sessionID) return null;
-  return sessionID.value;
+  return sessionSchema.parse(await decode(sessionID.value));
 }
 
-async function setSession(user: UserType) {
+async function setSession(user: z.infer<typeof sessionSchema>) {
   const payload = await encode(user);
   const { cookies } = await import("next/headers");
   cookies().set(cookieName, payload, {
@@ -77,20 +77,30 @@ async function setSession(user: UserType) {
 export async function getCurrentUserOrNull(
   req?: NextRequest,
 ): Promise<UserType | string> {
-  const session = await getRawSessionValue(req);
+  let session;
+  try {
+    session = await getSession(req);
+  } catch (e) {
+    return String(e);
+  }
   if (!session) {
     return "No session";
   }
-  let userInfo;
-  try {
-    userInfo = await decode(session);
-  } catch (e) {
-    console.warn(e);
-    return String(e);
+  // This is fairly expensive (two DB calls per every page load). If this starts
+  // to become a problem, we should consider caching.
+  // (See below for why we don't store the user object in the session.)
+  const user = await prisma.user.findUnique({
+    where: { user_id: session.userID },
+  });
+  if (!user) {
+    return "User not found";
   }
-  // Doesn't handle the case where a user is deleted while signed in,
-  // but that's rare enough that it's not worth worrying.
-  return userTypeSchema.parse(userInfo);
+  const permissions = await resolvePermissionsForUser(user.user_id);
+  const userType = {
+    ...user,
+    permissions,
+  } satisfies UserType;
+  return userType;
 }
 
 export async function getCurrentUser(req?: NextRequest): Promise<UserType> {
@@ -135,6 +145,9 @@ export async function loginOrCreateUser(rawGoogleToken: string) {
     ...user,
     permissions,
   } satisfies UserType;
-  await setSession(userType);
+  // We don't store the full user object in the session because then it wouldn't
+  // pick up user info or permission changes without signing out and back in.
+  // It also makes the session token shorter.
+  await setSession({ userID: user.user_id });
   return userType;
 }
