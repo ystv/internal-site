@@ -103,7 +103,7 @@ export default async function EventPage({
           <h1>{event.name}</h1>
         </div>
         {/*  TODO wrap this in a permission gate  */}
-        {/*<EventActionsUI event={event} />*/}
+        <EventActionsUI event={event} />
       </div>
       <div className={"text-center sm:text-left"}>
         <strong>
