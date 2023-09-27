@@ -69,14 +69,20 @@ function SignupSheet({
             </strong>
           </p>
         )}
-        {sheet.crews && <h3 className={"m-0 mt-5"}>Crew:</h3>}
-        <table className="mt-2">
-          <tbody>
+        <table className="mt-4 border-collapse">
+          <tbody
+            className={"divide-x-0 divide-y-2 divide-dashed divide-gray-200"}
+          >
             {sheet.crews
               .sort((a, b) => a.ordering - b.ordering)
-              .map((crew) => (
-                <tr key={crew.crew_id}>
-                  <td className="pr-4">
+              .map((crew, index) => (
+                <tr
+                  key={crew.crew_id}
+                  className={
+                    "divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold"
+                  }
+                >
+                  <td className="px-3">
                     {crew.user_id === me.user_id ? (
                       <strong>
                         {crew.positions?.name ?? <em>Unknown Role</em>}
@@ -85,49 +91,49 @@ function SignupSheet({
                       crew.positions?.name ?? <em>Unknown Role</em>
                     )}
                   </td>
-                  {locked || crew.locked ? (
-                    <td>
+                  <td className={"px-3 py-1"}>
+                    {locked || crew.locked ? (
                       <em>Locked</em>
-                    </td>
-                  ) : (
-                    <td>
-                      {crew.user_id === me.user_id ? (
-                        <Button
-                          onClick={() => setSignUpCrew(crew)}
-                          variant={"light"}
-                          fullWidth
-                          className={"!select-text"}
-                          justify={"left"}
-                        >
-                          <strong>
-                            {getUserName(crew.users!) ?? "Unknown Member"}
-                          </strong>
-                        </Button>
-                      ) : crew.users ? (
-                        <Button
-                          variant={"transparent"}
-                          fullWidth
-                          className={
-                            "!cursor-default !select-text active:!transform-none"
-                          }
-                          justify={"left"}
-                          color={"black"}
-                        >
-                          {getUserName(crew.users)}
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={() => setSignUpCrew(crew)}
-                          variant={"outline"}
-                          fullWidth
-                          className={"!select-text"}
-                          justify={"left"}
-                        >
-                          Vacant
-                        </Button>
-                      )}
-                    </td>
-                  )}
+                    ) : (
+                      <>
+                        {crew.user_id === me.user_id ? (
+                          <Button
+                            onClick={() => setSignUpCrew(crew)}
+                            variant={"light"}
+                            fullWidth
+                            className={"!select-text"}
+                            justify={"left"}
+                          >
+                            <strong>
+                              {getUserName(crew.users!) ?? "Unknown Member"}
+                            </strong>
+                          </Button>
+                        ) : crew.users ? (
+                          <Button
+                            variant={"transparent"}
+                            fullWidth
+                            className={
+                              "!cursor-default !select-text active:!transform-none"
+                            }
+                            justify={"left"}
+                            color={"black"}
+                          >
+                            {getUserName(crew.users)}
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => setSignUpCrew(crew)}
+                            variant={"outline"}
+                            fullWidth
+                            className={"!select-text"}
+                            justify={"left"}
+                          >
+                            Vacant
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </td>
                 </tr>
               ))}
           </tbody>
@@ -266,6 +272,15 @@ export function SignupSheetsView({
         <AddEditSignUpSheetForm
           action={async (sheet) => createSignUpSheet(event.event_id, sheet)}
           onSuccess={() => setCreateOpen(false)}
+          // initialValues={{
+          //   title: "Crew List",
+          //   description: undefined,
+          //   arrival_time: event.start_date,
+          //   start_time: dayjs(event.start_date).add(2, "hour").toDate(),
+          //   end_time: event.end_date,
+          //   unlock_date: null,
+          //   crews: [],
+          // }}
         />
       </Modal>
     </>
