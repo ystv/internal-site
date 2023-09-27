@@ -24,6 +24,7 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
       onSuccess={props.close}
       submitLabel="Save"
     >
+      <h1 className={"mb-2 mt-0"}>Edit Event</h1>
       <TextField name="name" label="Name" />
       <TextAreaField name="description" label="Description" />
       <DatePickerField name="start_date" label="Start" />
