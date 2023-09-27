@@ -24,14 +24,16 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
       onSuccess={props.close}
       submitLabel="Save"
     >
-      <h1 className={"mb-2 mt-0"}>Edit Event</h1>
-      <TextField name="name" label="Name" />
+      <h1 className={"mb-2 mt-0 text-4xl font-bold"}>Edit Event</h1>
+      <TextField name="name" label="Name" required />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField name="start_date" label="Start" />
-      <DatePickerField name="end_date" label="End" />
+      <DatePickerField name="start_date" label="Start" required />
+      <DatePickerField name="end_date" label="End" required />
       <TextField name="location" label="Location" />
-      <CheckBoxField name="is_private" label="Private" />
-      <CheckBoxField name="is_tentative" label="Tentative" />
+      <br />
+      <CheckBoxField name="is_private" label="Private Event" />
+      <br />
+      <CheckBoxField name="is_tentative" label="Tentative Event" />
     </Form>
   );
 }

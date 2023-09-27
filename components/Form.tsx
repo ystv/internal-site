@@ -100,13 +100,16 @@ export default function Form<
           </span>
         )}
         {props.children}
-        <Button
-          type="submit"
-          disabled={!form.formState.isValid}
-          loading={isSubmitting}
-        >
-          {props.submitLabel ?? "Create"}
-        </Button>
+        <br />
+        <div className={"text-right"}>
+          <Button
+            type="submit"
+            disabled={!form.formState.isValid}
+            loading={isSubmitting}
+          >
+            {props.submitLabel ?? "Create"}
+          </Button>
+        </div>
       </form>
       <DebugOnly>
         <pre className="mt-4 text-xs text-gray-500">

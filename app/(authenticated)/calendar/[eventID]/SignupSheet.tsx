@@ -178,13 +178,18 @@ function SignupSheet({
           </>
         )}
       </Paper>
-      <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
+      <Modal
+        opened={isEditOpen}
+        onClose={() => setEditOpen(false)}
+        size={"95%"}
+      >
         <AddEditSignUpSheetForm
           action={async (data) => editSignUpSheet(sheet.signup_id, data)}
           onSuccess={() => setEditOpen(false)}
           initialValues={sheet}
           submitLabel="Save"
         />
+        <br />
       </Modal>
       <Modal opened={signUpCrew !== null} onClose={() => setSignUpCrew(null)}>
         {signUpCrew !== null && (
@@ -290,11 +295,16 @@ export function SignupSheetsView({
           </>
         ))}
       </div>
-      <Modal opened={isCreateOpen} onClose={() => setCreateOpen(false)}>
+      <Modal
+        opened={isCreateOpen}
+        onClose={() => setCreateOpen(false)}
+        size={"95%"}
+      >
         <AddEditSignUpSheetForm
           action={async (sheet) => createSignUpSheet(event.event_id, sheet)}
           onSuccess={() => setCreateOpen(false)}
         />
+        <br />
       </Modal>
     </>
   );

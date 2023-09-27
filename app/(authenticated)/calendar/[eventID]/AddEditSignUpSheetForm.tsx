@@ -66,6 +66,9 @@ export function AddEditSignUpSheetForm(props: {
       initialValues={props.initialValues ?? { title: "Crew List" }}
       submitLabel={props.submitLabel}
     >
+      <h1 className={"mb-2 mt-0 text-4xl font-bold"}>
+        {props.initialValues ? "Edit" : "New"} List
+      </h1>
       <TextField
         name="title"
         label="Title"
@@ -86,6 +89,7 @@ export function AddEditSignUpSheetForm(props: {
         modal
       />
       <DatePickerField name="end_time" label="Broadcast End" required modal />
+      <br />
       <NullableCheckboxField
         name="unlock_date"
         checkboxLabel="Lock signups until a certain date?"
