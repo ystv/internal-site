@@ -103,7 +103,8 @@ function SignupSheet({
                           "!h-auto min-h-[var(--button-height)] !cursor-default !select-text active:!transform-none"
                         }
                         justify={"left"}
-                        color={"grey"}
+                        disabled
+                        role={"presentation"}
                       >
                         Locked
                       </Button>
@@ -127,8 +128,9 @@ function SignupSheet({
                           <Button
                             variant={"transparent"}
                             fullWidth
+                            component={"div"}
                             className={
-                              "!h-auto min-h-[var(--button-height)] !cursor-default !select-text active:!transform-none"
+                              "!flex !h-auto min-h-[var(--button-height)] !cursor-default !select-text items-center !text-left active:!transform-none"
                             }
                             justify={"left"}
                             color={"black"}
