@@ -159,18 +159,18 @@ export function ArrayField<
         props.children(field as any, idx, {
           remove: (
             <Button
-              className="h-full min-w-[2rem] align-middle font-black"
+              className="h-full min-w-[2rem] align-middle text-2xl font-black [&_.mantine-Button-inner]:text-xl"
               onClick={() => remove(idx)}
               variant="danger"
               size="sm"
             >
-              -
+              x
             </Button>
           ),
         }),
       )}
       <Button
-        className="mt-1 font-black"
+        className="mt-1 font-black md:col-span-3"
         onClick={() => append(props.newElement(fields) as any)}
         variant="outline"
         size="sm"
