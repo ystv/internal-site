@@ -16,7 +16,10 @@ export const CrewSchema = z.object({
   custom_position_name: z.string().optional(),
   ordering: z.number(),
   locked: z.boolean().default(false),
-  user_id: z.coerce.number().nullable().default(null),
+  user_id: z
+    .string()
+    .transform((v) => (v === "" ? null : v))
+    .pipe(z.coerce.number().nullable().default(null)),
 });
 
 export const SignupSheetSchema = z.object({
