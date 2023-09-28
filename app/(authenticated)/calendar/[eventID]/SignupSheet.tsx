@@ -294,9 +294,7 @@ export function SignupSheetsView({
       {event.signup_sheets.length != 0 && <br />}
       <div className="flex flex-row flex-wrap gap-4">
         {event.signup_sheets.map((ss) => (
-          <>
-            <SignupSheet key={ss.signup_id} event={event} sheet={ss} me={me} />
-          </>
+          <SignupSheet key={ss.signup_id} event={event} sheet={ss} me={me} />
         ))}
       </div>
       <Modal
