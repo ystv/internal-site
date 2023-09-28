@@ -220,6 +220,7 @@ function MyRoleSignUpModal({
   onSuccess: () => void;
   me: ExposedUser;
 }) {
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   return (
     <div>
@@ -234,16 +235,19 @@ function MyRoleSignUpModal({
           <Button
             size="large"
             variant="danger"
-            onClick={async () => {
-              const res = await removeSelfFromRole(
-                sheet.signup_id,
-                crew.crew_id,
-              );
-              if (!res.ok) {
-                setError(res.errors!.root as string);
-                return;
-              }
-              onSuccess();
+            loading={isPending}
+            onClick={() => {
+              startTransition(async () => {
+                const res = await removeSelfFromRole(
+                  sheet.signup_id,
+                  crew.crew_id,
+                );
+                if (!res.ok) {
+                  setError(res.errors!.root as string);
+                  return;
+                }
+                onSuccess();
+              })
             }}
           >
             Drop Out
@@ -251,13 +255,16 @@ function MyRoleSignUpModal({
         ) : (
           <Button
             size="large"
-            onClick={async () => {
-              const res = await signUpToRole(sheet.signup_id, crew.crew_id);
-              if (!res.ok) {
-                setError(res.errors!.root as string);
-                return;
-              }
-              onSuccess();
+            loading={isPending}
+            onClick={() => {
+              startTransition(async () => {
+                const res = await signUpToRole(sheet.signup_id, crew.crew_id);
+                if (!res.ok) {
+                  setError(res.errors!.root as string);
+                  return;
+                }
+                onSuccess();
+              })
             }}
           >
             Sign Up
