@@ -26,7 +26,7 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
     (att) => att.user_id === me.user_id,
   );
   return (
-    <table>
+    <table className={"mx-auto w-full max-w-2xl"}>
       <thead>
         <tr>
           <th>Name</th>
@@ -35,13 +35,13 @@ async function AttendeesView({ event }: { event: EventObjectType }) {
       </thead>
       <tbody>
         {event.attendees!.map((att) => (
-          <tr key={att.user_id}>
+          <tr key={att.user_id} className={"text-center"}>
             {att.user_id === me.user_id ? (
               <CurrentUserAttendeeRow event={event} me={me} />
             ) : (
               <>
                 <td>{getUserName(att.users)}</td>
-                <td>
+                <td className={"text-sm"}>
                   {att.attend_status in AttendStatusLabels
                     ? AttendStatusLabels[
                         att.attend_status as keyof typeof AttendStatusLabels
@@ -115,7 +115,11 @@ export default async function EventPage({
       </div>
       <p>{event.description}</p>
       {event.updated_by_user && event.event_type !== "show" && (
-        <p>Host: {getUserName(event.updated_by_user)}</p>
+        <div className={"py-2"}>
+          <strong className={"text-sm"}>
+            Host: {getUserName(event.updated_by_user)}
+          </strong>
+        </div>
       )}
       {event.location && <p>Location: {event.location}</p>}
       {event.event_type === "show" ? (
