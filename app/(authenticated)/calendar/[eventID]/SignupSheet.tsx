@@ -100,7 +100,7 @@ function SignupSheet({
                         variant={"transparent"}
                         fullWidth
                         className={
-                          "!cursor-default !select-text active:!transform-none"
+                          "!h-auto min-h-[var(--button-height)] !cursor-default !select-text active:!transform-none"
                         }
                         justify={"left"}
                         color={"grey"}
@@ -114,7 +114,9 @@ function SignupSheet({
                             onClick={() => setSignUpCrew(crew)}
                             variant={"light"}
                             fullWidth
-                            className={"!select-text"}
+                            className={
+                              "!h-auto min-h-[var(--button-height)] !select-text"
+                            }
                             justify={"left"}
                           >
                             <strong>
@@ -126,7 +128,7 @@ function SignupSheet({
                             variant={"transparent"}
                             fullWidth
                             className={
-                              "!cursor-default !select-text active:!transform-none"
+                              "!h-auto min-h-[var(--button-height)] !cursor-default !select-text active:!transform-none"
                             }
                             justify={"left"}
                             color={"black"}
@@ -138,7 +140,9 @@ function SignupSheet({
                             onClick={() => setSignUpCrew(crew)}
                             variant={"outline"}
                             fullWidth
-                            className={"!select-text"}
+                            className={
+                              "!h-auto min-h-[var(--button-height)] !select-text"
+                            }
                             justify={"left"}
                           >
                             Vacant
