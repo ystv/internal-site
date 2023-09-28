@@ -63,9 +63,10 @@ export function EventActionsUI(props: { event: EventObjectType }) {
               createAdamRMSProject(props.event.event_id);
             })
           }
+          color={"green"}
         >
           <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
-          Create AdamRMS Project
+          New AdamRMS Project
         </Button>
       )}
       <Button variant="warning" className="block">
