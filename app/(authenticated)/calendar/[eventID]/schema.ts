@@ -17,7 +17,8 @@ export const CrewSchema = z.object({
   ordering: z.number(),
   locked: z.boolean().default(false),
   user_id: z
-    .string().or(z.number())
+    .string()
+    .or(z.number())
     .transform((v) => (v === "" ? null : v))
     .pipe(z.coerce.number().nullable().default(null))
     .nullable(),

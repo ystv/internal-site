@@ -119,7 +119,6 @@ export async function createSignUpSheet(
   if (!payload.success) {
     return zodErrorResponse(payload.error);
   }
-  console.log(payload.data);
 
   await Calendar.createSignupSheet(eventID, payload.data);
   revalidatePath("/calendar/[eventID]");
@@ -153,7 +152,6 @@ export async function editSignUpSheet(
   if (!payload.success) {
     return zodErrorResponse(payload.error);
   }
-  console.log(payload.data);
 
   await updateSignUpSheet(sheetID, payload.data);
   revalidatePath("/calendar/[eventID]");

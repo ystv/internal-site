@@ -13,7 +13,10 @@ import {
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
-import { useCrewPositions, useMembers } from "@/components/FormFieldPreloadedData";
+import {
+  useCrewPositions,
+  useMembers,
+} from "@/components/FormFieldPreloadedData";
 import { Fragment, useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import { Select } from "@mantine/core";
@@ -54,12 +57,14 @@ function CrewPositionField(props: { parentName: string }) {
 
 function CrewMemberField(props: { parentName: string }) {
   const ctx = useFormContext();
-  const [isCustom, setIsCustom] = useState(() => ctx.getValues(props.parentName)?.custom_crew_member_name?.length > 0)
+  const [isCustom, setIsCustom] = useState(
+    () => ctx.getValues(props.parentName)?.custom_crew_member_name?.length > 0,
+  );
   const vals = useMembers();
   const controller = useController({
     name: `${props.parentName}.user_id`,
   });
-  
+
   return isCustom ? (
     <TextField
       name={`${props.parentName}.custom_crew_member_name`}

@@ -88,7 +88,9 @@ function SignupSheet({
                         getUserName(crew.users)
                       )}
                     </td>
-                  ) : crew.custom_crew_member_name ? <td>{crew.custom_crew_member_name}</td> : locked || crew.locked ? (
+                  ) : crew.custom_crew_member_name ? (
+                    <td>{crew.custom_crew_member_name}</td>
+                  ) : locked || crew.locked ? (
                     <td>
                       <em>Locked</em>
                     </td>
@@ -163,9 +165,7 @@ function MyRoleSignUpModal({
   return (
     <div>
       <h1 className="text-4xl">{crew.positions.name}</h1>
-      <p>
-        {crew.positions.full_description}
-      </p>
+      <p>{crew.positions.full_description}</p>
       {error && <strong className="text-danger">{error}</strong>}
       <div>
         {crew.user_id === me.user_id ? (
