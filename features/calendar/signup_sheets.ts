@@ -13,6 +13,7 @@ export interface CrewType {
   ordering: number;
   locked: boolean;
   user_id: number | null;
+  custom_crew_member_name: string | null;
   users: ExposedUser | null;
 }
 
@@ -54,6 +55,7 @@ export async function createSignupSheet(
             ordering: c.ordering,
             locked: c.locked,
             user_id: c.user_id,
+            custom_crew_member_name: c.custom_crew_member_name,
           })),
         },
       },
@@ -88,6 +90,7 @@ interface CrewCreateUpdateInput {
   position_id?: number;
   custom_position_name?: string;
   user_id: number | null;
+  custom_crew_member_name: string | null;
 }
 
 /**
@@ -157,6 +160,7 @@ export async function updateSignUpSheet(
           data: {
             position_id: c.position_id,
             user_id: c.user_id,
+            custom_crew_member_name: c.custom_crew_member_name,
             locked: c.locked,
             ordering: c.ordering,
           },
@@ -170,6 +174,7 @@ export async function updateSignUpSheet(
             signup_id: sheetID,
             position_id: c.position_id!,
             user_id: c.user_id,
+            custom_crew_member_name: c.custom_crew_member_name,
             locked: c.locked,
             ordering: c.ordering,
           },

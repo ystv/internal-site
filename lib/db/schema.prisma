@@ -91,16 +91,17 @@ model Attendee {
 }
 
 model Crew {
-  crew_id       Int         @id @default(autoincrement())
-  signup_id     Int
-  position_id   Int
-  user_id       Int?
-  credited      Boolean     @default(true)
-  locked        Boolean     @default(false)
-  ordering      Int
-  positions     Position    @relation(fields: [position_id], references: [position_id], onDelete: Cascade)
-  signup_sheets SignupSheet @relation(fields: [signup_id], references: [signup_id], onDelete: Cascade)
-  users         User?       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  crew_id                 Int         @id @default(autoincrement())
+  signup_id               Int
+  position_id             Int
+  user_id                 Int?
+  custom_crew_member_name String?
+  credited                Boolean     @default(true)
+  locked                  Boolean     @default(false)
+  ordering                Int
+  positions               Position    @relation(fields: [position_id], references: [position_id], onDelete: Cascade)
+  signup_sheets           SignupSheet @relation(fields: [signup_id], references: [signup_id], onDelete: Cascade)
+  users                   User?       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@map("crews")
 }
