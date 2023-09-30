@@ -146,6 +146,12 @@ export default function YSTVCalendar({
         viewClassNames={
           isMobileView ? "fc-daygrid-day-events-mobile-shrink" : undefined
         }
+        views={{
+          timeGridDay: {
+            type: "timeGridDay",
+            weekNumbers: false,
+          },
+        }}
         fixedWeekCount={false}
         eventDisplay={"block"}
         weekNumbers={true}
