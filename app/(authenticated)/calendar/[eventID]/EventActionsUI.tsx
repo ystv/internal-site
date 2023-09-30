@@ -13,7 +13,7 @@ import {
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
-import { Button, Modal } from "@mantine/core";
+import { Button, Menu, Modal } from "@mantine/core";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -46,32 +46,46 @@ export function EventActionsUI(props: { event: EventObjectType }) {
       <Button variant="danger" className="block">
         Delete Event
       </Button>
-      {props.event.adam_rms_project_id ? (
-        <Button
-          component="a"
-          href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
-          target="_blank"
-        >
-          <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
-          View on AdamRMS
-        </Button>
-      ) : (
-        <Button
-          loading={isPending}
-          onClick={() =>
-            startTransition(async () => {
-              createAdamRMSProject(props.event.event_id);
-            })
-          }
-          color={"green"}
-        >
-          <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
-          New AdamRMS Project
-        </Button>
-      )}
       <Button variant="warning" className="block">
         Cancel Event
       </Button>
+      <Menu shadow="md">
+        <Menu.Target>
+          <Button color={"green"}>
+            <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
+            Kit List
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Item>
+            <Button
+              loading={isPending}
+              onClick={() =>
+                startTransition(async () => {
+                  createAdamRMSProject(props.event.event_id);
+                })
+              }
+              fullWidth
+              disabled={props.event.adam_rms_project_id !== null}
+            >
+              <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
+              New AdamRMS Project
+            </Button>
+          </Menu.Item>
+          <Menu.Item>
+            <Button
+              component="a"
+              href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
+              target="_blank"
+              fullWidth
+              disabled={!props.event.adam_rms_project_id}
+            >
+              <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
+              View AdamRMS Project
+            </Button>
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
       <Button onClick={() => setEditOpen(true)} className="block">
         Edit Event
       </Button>
