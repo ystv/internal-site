@@ -249,7 +249,7 @@ function MyRoleSignUpModal({
                   return;
                 }
                 onSuccess();
-              })
+              });
             }}
           >
             Drop Out
@@ -266,7 +266,7 @@ function MyRoleSignUpModal({
                   return;
                 }
                 onSuccess();
-              })
+              });
             }}
           >
             Sign Up
