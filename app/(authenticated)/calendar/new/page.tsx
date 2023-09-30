@@ -9,6 +9,7 @@ import {
 } from "@/features/calendar/permissions";
 import * as Calendar from "@/features/calendar/events";
 import { Forbidden, Permission } from "@/lib/auth/common";
+import { revalidatePath } from "next/cache";
 
 async function createEvent(
   data: unknown,
@@ -39,6 +40,7 @@ async function createEvent(
     },
     user.user_id,
   );
+  revalidatePath("calendar");
   return {
     ok: true,
     id: evt.event_id,

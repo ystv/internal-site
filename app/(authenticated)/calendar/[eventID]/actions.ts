@@ -49,6 +49,7 @@ export async function editEvent(
     }
   }
   revalidatePath(`/calendar/${eventID}`);
+  revalidatePath("calendar");
   return { ok: true };
 }
 
