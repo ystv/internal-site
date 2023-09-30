@@ -127,7 +127,7 @@ export default function YSTVCalendar({
         //////
         dayHeaders={!isMobileView}
         dayHeaderDidMount={({ dow, el }) => {
-          if (dow === 1) {
+          if (dow === 1 && el.parentElement?.children.length === 7) {
             const header = document.createElement("th");
             header.style.width = "1.6em";
             el.parentElement?.prepend(header);
