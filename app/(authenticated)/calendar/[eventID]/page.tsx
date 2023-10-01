@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 import { getUserName } from "@/components/UserHelpers";
 import { getCurrentUser, UserType } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/(authenticated)/calendar/[eventID]/AttendeeStatus";

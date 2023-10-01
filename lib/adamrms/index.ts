@@ -1,4 +1,4 @@
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 import { login, makeRequest } from "./client";
 
 async function findIDOfUser(email: string): Promise<number | null> {
