@@ -2,7 +2,13 @@
 
 import Form from "@/components/Form";
 import { EventObjectType, EventType } from "@/features/calendar";
-import { createAdamRMSProject, deleteEvent, editEvent } from "./actions";
+import {
+  cancelEvent,
+  createAdamRMSProject,
+  deleteEvent,
+  editEvent,
+  reinstateEvent,
+} from "./actions";
 import { EditEventSchema } from "./schema";
 import {
   CheckBoxField,
@@ -46,6 +52,53 @@ export function EventActionsUI(props: { event: EventObjectType }) {
   const modals = useModals();
   const router = useRouter();
 
+  const doCancel = useCallback(
+    function doCancel() {
+      modals.openConfirmModal({
+        title: "Cancel " + props.event.name,
+        children: (
+          <Text size="sm">
+            Are you sure you want to cancel {props.event.name}? You can undo
+            this later.
+          </Text>
+        ),
+        labels: { confirm: "Cancel Event", cancel: "cancel" },
+        confirmProps: {
+          variant: "warning",
+        },
+        onConfirm() {
+          startTransition(async () => {
+            await cancelEvent(props.event.event_id);
+          });
+        },
+      });
+    },
+    [modals, props.event],
+  );
+
+  const doReinstate = useCallback(
+    function doReinstate() {
+      modals.openConfirmModal({
+        title: "Reinstate " + props.event.name,
+        children: (
+          <Text size="sm">
+            Are you sure you want to reinstate {props.event.name}?
+          </Text>
+        ),
+        labels: { confirm: "Reinstate Event", cancel: "cancel" },
+        confirmProps: {
+          variant: "warning",
+        },
+        onConfirm() {
+          startTransition(async () => {
+            await reinstateEvent(props.event.event_id);
+          });
+        },
+      });
+    },
+    [modals, props.event],
+  );
+
   const doDelete = useCallback(
     function doDelete() {
       modals.openConfirmModal({
@@ -68,7 +121,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         },
       });
     },
-    [modals, props.event],
+    [modals, props.event, router],
   );
 
   return (
@@ -76,9 +129,15 @@ export function EventActionsUI(props: { event: EventObjectType }) {
       <Button variant="danger" className="block" onClick={doDelete}>
         Delete Event
       </Button>
-      <Button variant="warning" className="block">
-        Cancel Event
-      </Button>
+      {props.event.is_cancelled ? (
+        <Button variant="warning" className="block" onClick={doReinstate}>
+          Reinstate Event
+        </Button>
+      ) : (
+        <Button variant="warning" className="block" onClick={doCancel}>
+          Cancel Event
+        </Button>
+      )}
       <Menu shadow="md">
         <Menu.Target>
           <Button color={"green"}>

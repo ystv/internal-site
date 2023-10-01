@@ -39,6 +39,7 @@ function SignupSheet({
     () => sheet.unlock_date && isBefore(new Date(), sheet.unlock_date),
     [sheet.unlock_date],
   );
+  const readOnly = event.is_cancelled;
   const [isEditOpen, setEditOpen] = useState(false);
   const [signUpCrew, setSignUpCrew] = useState<CrewType | null>(null);
   return (
@@ -119,6 +120,7 @@ function SignupSheet({
                               "!h-auto min-h-[var(--button-height)] !select-text"
                             }
                             justify={"left"}
+                            disabled={readOnly}
                           >
                             <strong>
                               {getUserName(crew.users!) ?? "Unknown Member"}
@@ -134,6 +136,7 @@ function SignupSheet({
                             }
                             justify={"left"}
                             color={"black"}
+                            disabled={readOnly}
                           >
                             {getUserName(crew.users)}
                           </Button>
@@ -146,6 +149,7 @@ function SignupSheet({
                               "!h-auto min-h-[var(--button-height)] !select-text"
                             }
                             justify={"left"}
+                            disabled={readOnly}
                           >
                             Vacant
                           </Button>
@@ -294,7 +298,7 @@ export function SignupSheetsView({
           No crew lists have been added yet.
         </h2>
       )}
-      {canManage(event, me) && (
+      {canManage(event, me) && !event.is_cancelled && (
         <div className={"mx-auto text-right"}>
           <Button onClick={() => setCreateOpen(true)}>Add Crew List</Button>
           <br />

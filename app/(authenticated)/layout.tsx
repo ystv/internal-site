@@ -11,7 +11,6 @@ export default async function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   const user = await mustGetCurrentUser();
-  console.log("User in AuthenticatedLayout", user);
   return (
     <UserProvider user={user}>
       <nav className="mb-4 flex h-[4.5rem] flex-row flex-nowrap items-center bg-dark px-2 text-light shadow-black/5">
