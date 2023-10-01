@@ -2,7 +2,7 @@
 
 import Form from "@/components/Form";
 import { EventObjectType, EventType } from "@/features/calendar";
-import { createAdamRMSProject, editEvent } from "./actions";
+import { createAdamRMSProject, deleteEvent, editEvent } from "./actions";
 import { EditEventSchema } from "./schema";
 import {
   CheckBoxField,
@@ -10,10 +10,12 @@ import {
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
-import { useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import Image from "next/image";
 import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
-import { Button, Menu, Modal } from "@mantine/core";
+import { Button, Menu, Modal, Text } from "@mantine/core";
+import { useModals } from "@mantine/modals";
+import { useRouter } from "next/navigation";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -41,9 +43,37 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
 export function EventActionsUI(props: { event: EventObjectType }) {
   const [isEditOpen, setEditOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const modals = useModals();
+  const router = useRouter();
+
+  const doDelete = useCallback(
+    function doDelete() {
+      modals.openConfirmModal({
+        title: "Delete " + props.event.name,
+        children: (
+          <Text size="sm">
+            Are you sure you want to delete {props.event.name}?{" "}
+            <strong>You can&apos;t undo this action.</strong>
+          </Text>
+        ),
+        labels: { confirm: "Delete", cancel: "Cancel" },
+        confirmProps: {
+          variant: "danger",
+        },
+        onConfirm() {
+          startTransition(async () => {
+            await deleteEvent(props.event.event_id);
+            router.push("/calendar");
+          });
+        },
+      });
+    },
+    [modals, props.event],
+  );
+
   return (
     <div className="mb-4 flex h-min w-auto flex-shrink flex-wrap justify-end gap-1 sm:mb-0 sm:max-md:w-1/3">
-      <Button variant="danger" className="block">
+      <Button variant="danger" className="block" onClick={doDelete}>
         Delete Event
       </Button>
       <Button variant="warning" className="block">

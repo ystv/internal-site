@@ -287,6 +287,44 @@ export async function updateEventAttendeeStatus(
   }
 }
 
+export async function cancelEvent(eventID: number) {
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      is_cancelled: true,
+    },
+  });
+}
+
+export async function reinstateEvent(eventID: number) {
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      is_cancelled: false,
+    },
+  });
+}
+
+export async function deleteEvent(eventID: number, userID: number) {
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      deleted_at: new Date(),
+      deleted_by_user: {
+        connect: {
+          user_id: userID,
+        },
+      },
+    },
+  });
+}
+
 export async function addProjectToAdamRMS(
   eventID: number,
   currentUserID: number,

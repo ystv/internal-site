@@ -5,14 +5,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "tiny-invariant";
-import {
-  createAdamRMSProject,
-  createSignUpSheet,
-  deleteSignUpSheet,
-  editSignUpSheet,
-  removeSelfFromRole,
-  signUpToRole,
-} from "@/app/(authenticated)/calendar/[eventID]/actions";
+import { createAdamRMSProject } from "@/app/(authenticated)/calendar/[eventID]/actions";
 import { Button, Modal, Paper } from "@mantine/core";
 import {
   canManage,
@@ -25,6 +18,13 @@ import { EventObjectType } from "@/features/calendar/events";
 import { ExposedUser } from "@/features/people";
 import Image from "next/image";
 import AdamRMSLogo from "@/app/_assets/adamrms-logo.png";
+import {
+  createSignUpSheet,
+  deleteSignUpSheet,
+  editSignUpSheet,
+  removeSelfFromRole,
+  signUpToRole,
+} from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
 
 function SignupSheet({
   event,
