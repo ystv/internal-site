@@ -90,12 +90,6 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         Edit Event
       </Button>
       <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
-        <Button
-          className="absolute right-4 top-4"
-          onClick={() => setEditOpen(false)}
-        >
-          &times;
-        </Button>
         <EditModal event={props.event} close={() => setEditOpen(false)} />
       </Modal>
     </div>
