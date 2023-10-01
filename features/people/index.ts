@@ -11,6 +11,7 @@ export const ExposedUserModel = z.object({
   first_name: z.string(),
   last_name: z.string(),
   nickname: z.string().optional(),
+  avatar: z.string().nullable(),
 });
 
 export type ExposedUser = z.infer<typeof ExposedUserModel>;
