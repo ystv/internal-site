@@ -24,8 +24,13 @@ pipeline {
       }
     }
     stage('Build Images') {
+      environment {
+        SENTRY_AUTH_TOKEN = credentials('calendar-sentry-auth-token')
+      }
       steps {
         sh """docker build \\
+          --build-arg GIT_REV=${env.GIT_COMMIT} \\
+          --build-arg SENTRY_AUTH_TOKEN=\$SENTRY_AUTH_TOKEN \\
           -t registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}\\
           .
         """
