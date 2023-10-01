@@ -2,7 +2,7 @@
 
 import Form from "@/components/Form";
 import { EventObjectType, EventType } from "@/features/calendar";
-import { createAdamRMSProject, editEvent } from "./actions";
+import { createAdamRMSProject, editEvent, unlinkAdamRMS } from "./actions";
 import { EditEventSchema } from "./schema";
 import {
   CheckBoxField,
@@ -51,39 +51,56 @@ export function EventActionsUI(props: { event: EventObjectType }) {
       </Button>
       <Menu shadow="md">
         <Menu.Target>
-          <Button color={"green"}>
+          <Button color={"green"} loading={isPending}>
             <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
             Kit List
           </Button>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Item>
-            <Button
-              loading={isPending}
-              onClick={() =>
-                startTransition(async () => {
-                  createAdamRMSProject(props.event.event_id);
-                })
-              }
-              fullWidth
-              disabled={props.event.adam_rms_project_id !== null}
-            >
-              <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
-              New AdamRMS Project
-            </Button>
-          </Menu.Item>
-          <Menu.Item>
-            <Button
-              component="a"
-              href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
-              target="_blank"
-              fullWidth
-              disabled={!props.event.adam_rms_project_id}
-            >
-              <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
-              View AdamRMS Project
-            </Button>
-          </Menu.Item>
+          {props.event.adam_rms_project_id === null ? (
+            <>
+              <Menu.Item
+                disabled={isPending}
+                onClick={() =>
+                  startTransition(async () => {
+                    await createAdamRMSProject(props.event.event_id);
+                  })
+                }
+              >
+                New AdamRMS Project
+              </Menu.Item>
+              {/*<Menu.Item*/}
+              {/*  disabled={isPending}*/}
+              {/*  onClick={() =>*/}
+              {/*    startTransition(async () => {*/}
+              {/*      await createAdamRMSProject(props.event.event_id);*/}
+              {/*    })*/}
+              {/*  }*/}
+              {/*>*/}
+              {/*  Link Existing Project*/}
+              {/*</Menu.Item>*/}
+            </>
+          ) : (
+            <>
+              <Menu.Item
+                component="a"
+                href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
+                target="_blank"
+              >
+                View AdamRMS Project
+              </Menu.Item>
+              <Menu.Item
+                disabled={isPending}
+                onClick={() =>
+                  startTransition(async () => {
+                    await unlinkAdamRMS(props.event.event_id);
+                  })
+                }
+              >
+                Unlink Project
+              </Menu.Item>
+            </>
+          )}
         </Menu.Dropdown>
       </Menu>
       <Button onClick={() => setEditOpen(true)} className="block">

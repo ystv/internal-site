@@ -293,3 +293,41 @@ export async function createAdamRMSProject(eventID: number) {
   revalidatePath(`/calendar/${event.event_id}`);
   return { ok: true };
 }
+
+export async function linkAdamRMSProject(eventID: number, projectID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to manage this event",
+      },
+    };
+  }
+
+  await Calendar.linkAdamRMS(eventID, projectID);
+  revalidatePath(`/calendar/${event.event_id}`);
+  return { ok: true };
+}
+
+export async function unlinkAdamRMS(eventID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to manage this event",
+      },
+    };
+  }
+
+  await Calendar.unlinkAdamRMS(eventID);
+  revalidatePath(`/calendar/${event.event_id}`);
+  return { ok: true };
+}

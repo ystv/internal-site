@@ -325,4 +325,51 @@ export async function addProjectToAdamRMS(
       adam_rms_project_id: projectId,
     },
   });
+  await AdamRMS.newQuickProjectComment(
+    projectId,
+    `This project is linked to the Calendar event "${event.name}" (${process.env.PUBLIC_URL}/calendar/${event.event_id}).`,
+  );
+}
+
+export async function linkAdamRMS(eventID: number, projectID: number) {
+  const event = await prisma.event.findFirstOrThrow({
+    where: {
+      event_id: eventID,
+    },
+  });
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      adam_rms_project_id: projectID,
+    },
+  });
+  await AdamRMS.newQuickProjectComment(
+    projectID,
+    `This project is linked to the Calendar event "${event.name}" (${process.env.PUBLIC_URL}/calendar/${event.event_id}).`,
+  );
+}
+
+export async function unlinkAdamRMS(eventID: number) {
+  const event = await prisma.event.findFirstOrThrow({
+    where: {
+      event_id: eventID,
+    },
+  });
+  if (!event.adam_rms_project_id) {
+    return;
+  }
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      adam_rms_project_id: null,
+    },
+  });
+  await AdamRMS.newQuickProjectComment(
+    event.adam_rms_project_id,
+    `This project was unlinked from the Calendar event "${event.name}".`,
+  );
 }
