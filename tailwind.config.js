@@ -18,6 +18,9 @@ module.exports = {
   },
   theme: {
     extend: {
+      screens: {
+        xs: "480px",
+      },
       colors: {
         light: "#fbfbfb",
         dark: "#333333",

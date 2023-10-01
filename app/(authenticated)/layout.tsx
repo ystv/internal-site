@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Logo from "@/app/_assets/logo.png";
 import Link from "next/link";
-import Breadcrumbs from "@/components/Breadcrumbs";
 import { UserProvider } from "@/components/UserContext";
 import { mustGetCurrentUser } from "@/lib/auth/server";
+import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 
 export default async function AuthenticatedLayout({
   children,
@@ -36,8 +36,14 @@ export default async function AuthenticatedLayout({
           </Link>
         </div>
       </nav>
-      <Breadcrumbs />
-      <main className="mx-2 max-w-6xl lg:mx-auto">{children}</main>
+      <div className="mx-2 md:mx-6">
+        <YSTVBreadcrumbs />
+      </div>
+      <br />
+      <main className="mx-2 max-w-[min(theme(maxWidth.6xl),theme(maxWidth.full))] overflow-x-hidden md:mx-6 [@media(min-width:calc(theme(maxWidth.6xl)+theme(margin.6)*2))]:mx-auto">
+        {children}
+      </main>
+      <br />
     </UserProvider>
   );
 }

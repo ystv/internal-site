@@ -11,6 +11,10 @@
   display: none;
 }
 
+.fc-header-toolbar .fc-toolbar-chunk:last-of-type button {
+  font-weight: 600;
+}
+
 .fc-header-toolbar .fc-toolbar-chunk:last-of-type {
   text-align: right;
 }

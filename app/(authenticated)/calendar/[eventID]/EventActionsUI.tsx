@@ -13,7 +13,7 @@ import {
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
-import { Button, Modal } from "@mantine/core";
+import { Button, Menu, Modal } from "@mantine/core";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -24,13 +24,16 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
       onSuccess={props.close}
       submitLabel="Save"
     >
-      <TextField name="name" label="Name" />
+      <h1 className={"mb-2 mt-0 text-4xl font-bold"}>Edit Event</h1>
+      <TextField name="name" label="Name" required />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField name="start_date" label="Start" />
-      <DatePickerField name="end_date" label="End" />
+      <DatePickerField name="start_date" label="Start" required />
+      <DatePickerField name="end_date" label="End" required />
       <TextField name="location" label="Location" />
-      <CheckBoxField name="is_private" label="Private" />
-      <CheckBoxField name="is_tentative" label="Tentative" />
+      <br />
+      <CheckBoxField name="is_private" label="Private Event" />
+      <br />
+      <CheckBoxField name="is_tentative" label="Tentative Event" />
     </Form>
   );
 }
@@ -39,47 +42,56 @@ export function EventActionsUI(props: { event: EventObjectType }) {
   const [isEditOpen, setEditOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   return (
-    <>
+    <div className="mb-4 flex h-min w-auto flex-shrink flex-wrap justify-end gap-1 sm:mb-0 sm:max-md:w-1/3">
+      <Button variant="danger" className="block">
+        Delete Event
+      </Button>
+      <Button variant="warning" className="block">
+        Cancel Event
+      </Button>
+      <Menu shadow="md">
+        <Menu.Target>
+          <Button color={"green"}>
+            <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
+            Kit List
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Item>
+            <Button
+              loading={isPending}
+              onClick={() =>
+                startTransition(async () => {
+                  createAdamRMSProject(props.event.event_id);
+                })
+              }
+              fullWidth
+              disabled={props.event.adam_rms_project_id !== null}
+            >
+              <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
+              New AdamRMS Project
+            </Button>
+          </Menu.Item>
+          <Menu.Item>
+            <Button
+              component="a"
+              href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
+              target="_blank"
+              fullWidth
+              disabled={!props.event.adam_rms_project_id}
+            >
+              <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
+              View AdamRMS Project
+            </Button>
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
       <Button onClick={() => setEditOpen(true)} className="block">
         Edit Event
       </Button>
-      {props.event.adam_rms_project_id ? (
-        <Button
-          component="a"
-          href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
-          target="_blank"
-        >
-          <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
-          View on AdamRMS
-        </Button>
-      ) : (
-        <Button
-          loading={isPending}
-          onClick={() =>
-            startTransition(async () => {
-              createAdamRMSProject(props.event.event_id);
-            })
-          }
-        >
-          <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
-          Create AdamRMS Project
-        </Button>
-      )}
-      <Button variant="warning" className="block">
-        Cancel Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
-      </Button>
-      <Button variant="danger" className="block">
-        Delete Event&nbsp;<small>(doesn&apos;t work yet, soz)</small>
-      </Button>
       <Modal opened={isEditOpen} onClose={() => setEditOpen(false)}>
-        <Button
-          className="absolute right-4 top-4"
-          onClick={() => setEditOpen(false)}
-        >
-          &times;
-        </Button>
         <EditModal event={props.event} close={() => setEditOpen(false)} />
       </Modal>
-    </>
+    </div>
   );
 }

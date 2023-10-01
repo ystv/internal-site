@@ -22,10 +22,10 @@ export function CreateEventForm(props: {
       schema={schema}
       onSuccess={(res) => router.push(`/calendar/${res.id}`)}
     >
-      <TextField name="name" label="Name" />
+      <TextField name="name" label="Name" required placeholder={"New Event"} />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField name="startDate" label="Start" />
-      <DatePickerField name="endDate" label="End" />
+      <DatePickerField name="startDate" label="Start" required />
+      <DatePickerField name="endDate" label="End" required />
       <TextField name="location" label="Location" />
       <SelectField
         name="type"

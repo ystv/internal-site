@@ -49,6 +49,7 @@ export async function editEvent(
     }
   }
   revalidatePath(`/calendar/${eventID}`);
+  revalidatePath("calendar");
   return { ok: true };
 }
 
@@ -87,7 +88,7 @@ export async function updateAttendeeStatus(
 
   await updateEventAttendeeStatus(evt.event_id, me.user_id, status);
 
-  revalidatePath("/calendar/[eventID]");
+  revalidatePath(`/calendar/${evt.event_id}`);
   return { ok: true };
 }
 
@@ -121,7 +122,7 @@ export async function createSignUpSheet(
   }
 
   await Calendar.createSignupSheet(eventID, payload.data);
-  revalidatePath("/calendar/[eventID]");
+  revalidatePath(`/calendar/${eventID}`);
   return { ok: true } as const;
 }
 
@@ -154,7 +155,7 @@ export async function editSignUpSheet(
   }
 
   await updateSignUpSheet(sheetID, payload.data);
-  revalidatePath("/calendar/[eventID]");
+  revalidatePath(`/calendar/${sheet.events.event_id}`);
   return { ok: true } as const;
 }
 
@@ -179,7 +180,7 @@ export async function deleteSignUpSheet(sheetID: number) {
   }
 
   await Calendar.deleteSignUpSheet(sheetID);
-  revalidatePath("/calendar/[eventID]");
+  revalidatePath(`/calendar/${sheet.events.event_id}`);
   return { ok: true } as const;
 }
 
@@ -228,7 +229,7 @@ export async function signUpToRole(sheetID: number, crewID: number) {
       },
     };
   }
-  revalidatePath("/calendar/[eventID]");
+  revalidatePath(`/calendar/${sheet.events.event_id}`);
   return { ok: true };
 }
 
@@ -243,6 +244,8 @@ export async function removeSelfFromRole(sheetID: number, crewID: number) {
       },
     };
   }
+  // TODO: All these checks need to go into a transaction (so inside features/calendar)
+  // otherwise we risk a race condition
   if (sheet.unlock_date && isBefore(new Date(), sheet.unlock_date)) {
     return {
       ok: false,
@@ -277,7 +280,7 @@ export async function removeSelfFromRole(sheetID: number, crewID: number) {
       },
     };
   }
-  revalidatePath("/calendar/[eventID]");
+  revalidatePath(`/calendar/${sheet.events.event_id}`);
   return { ok: true };
 }
 

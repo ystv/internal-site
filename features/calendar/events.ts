@@ -119,8 +119,14 @@ const EventSelectors = {
   created_by_user: true,
   updated_by_user: true,
   signup_sheets: {
+    orderBy: {
+      signup_id: "asc",
+    },
     include: {
       crews: {
+        orderBy: {
+          crew_id: "asc",
+        },
         include: {
           users: true,
           positions: true,
