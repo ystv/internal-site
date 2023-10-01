@@ -10,6 +10,10 @@ COPY . /app/
 RUN --mount=type=cache,id=calendar2023-yarn,target=.yarn/cache yarn install --immutable --inline-builds
 
 ENV NODE_ENV=production
+ARG GIT_REV
+ENV GIT_REV=$GIT_REV
+ARG SENTRY_AUTH_TOKEN
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 RUN yarn run build
 
 FROM base
