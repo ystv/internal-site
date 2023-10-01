@@ -2,7 +2,7 @@ import { getUserName } from "@/components/UserHelpers";
 import { prisma } from "@/lib/db";
 import { decode, encode } from "@/lib/sessionSecrets";
 import ical from "ical-generator";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 
 export function encodeUserID(userID: number) {
   return encode({ userID });

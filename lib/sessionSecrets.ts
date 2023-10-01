@@ -1,4 +1,4 @@
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 import { encode as b64Encode, decode as b64Decode } from "base64-arraybuffer";
 
 function urlbase64Unescape(str: string) {
