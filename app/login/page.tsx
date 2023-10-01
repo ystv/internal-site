@@ -1,7 +1,7 @@
 import Image from "next/image";
 import BG from "./login-bg.png";
 import { GoogleLoginButton } from "./GoogleLoginButton";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 
 export default function GoogleSignInPage(props: {
   searchParams: { error?: string };

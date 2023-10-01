@@ -4,7 +4,7 @@ import { isBefore, isSameDay } from "date-fns";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 import {
   createAdamRMSProject,
   createSignUpSheet,

@@ -18,7 +18,7 @@ import { FormResponse } from "@/components/Form";
 import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import { isBefore } from "date-fns";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 
 export async function editEvent(
   eventID: number,
