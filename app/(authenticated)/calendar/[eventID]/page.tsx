@@ -59,7 +59,7 @@ async function AttendeesView({
           </tr>
         ))}
         {!isCurrentUserAttending && (
-          <tr>
+          <tr className={"text-center"}>
             <CurrentUserAttendeeRow event={event} me={me} />
           </tr>
         )}
