@@ -80,10 +80,7 @@ export default function YSTVCalendar({
         <>
           <Select
             label="Calendar View"
-            styles={{
-              root: { textAlign: "right" },
-              input: { textAlign: "right" },
-            }}
+            className={"text-right [&_input]:select-none [&_input]:text-right"}
             data={viewsList}
             value={calendarAPI.view.type}
             onChange={(e) => calendarAPI.changeView(e ?? "dayGridMonth")}
