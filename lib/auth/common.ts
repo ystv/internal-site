@@ -19,6 +19,9 @@ export type Permission =
   | "Calendar.Meeting.Admin"
   | "Calendar.Meeting.Creator"
   | "Calendar.Social.Admin"
-  | "Calendar.Social.Creator";
+  | "Calendar.Social.Creator"
+  | "ManageMembers.Members.List"
+  | "ManageMembers.Members.Admin"
+  | "ManageMembers.Admin";
 
 export * from "./errors";

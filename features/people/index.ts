@@ -21,3 +21,11 @@ export async function getAllUsers(): Promise<ExposedUser[]> {
   });
   return users.map((user) => ExposedUserModel.parse(user));
 }
+
+export async function getUser(id: number): Promise<ExposedUser | null> {
+  const user = await prisma.user.findUnique({
+    where: { user_id: id },
+  });
+  if (!user) return null;
+  return ExposedUserModel.parse(user);
+}
