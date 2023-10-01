@@ -294,6 +294,15 @@ export async function createAdamRMSProject(eventID: number) {
   return { ok: true };
 }
 
+export async function getAdamRMSLinkCandidates() {
+  const me = await mustGetCurrentUser();
+  // Rudimentary check
+  if (me.permissions.length === 0) {
+    return { ok: false, errors: { root: "You do not have permission" } };
+  }
+  return { ok: true, candidates: await Calendar.getAdamRMSLinkCandidates() };
+}
+
 export async function linkAdamRMSProject(eventID: number, projectID: number) {
   const me = await mustGetCurrentUser();
   const event = await Calendar.getEvent(eventID);

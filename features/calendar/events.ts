@@ -331,6 +331,24 @@ export async function addProjectToAdamRMS(
   );
 }
 
+export async function getAdamRMSLinkCandidates() {
+  // Fetch the list of events that have an AdamRMS project ID, to filter them out
+  const projects = await prisma.event.findMany({
+    where: {
+      adam_rms_project_id: {
+        not: null,
+      },
+    },
+    select: {
+      adam_rms_project_id: true,
+    },
+  });
+  const projectIDs = new Set(projects.map((p) => p.adam_rms_project_id));
+  const upcomingProjects = await AdamRMS.listProjects();
+
+  return upcomingProjects.filter((x) => !projectIDs.has(x.projects_id));
+}
+
 export async function linkAdamRMS(eventID: number, projectID: number) {
   const event = await prisma.event.findFirstOrThrow({
     where: {
