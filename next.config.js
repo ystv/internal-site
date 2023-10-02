@@ -4,6 +4,9 @@ const { execFileSync } = require("child_process");
 const gitCommit =
   process.env.GIT_REV ??
   execFileSync("/usr/bin/git", ["rev-parse", "HEAD"]).toString().trim();
+const version = process.env.VERSION ?? "v0.0.0";
+
+const sentryRelease = `${version}-${gitCommit.slice(0, 7)}`;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -22,6 +25,7 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_GIT_COMMIT: gitCommit,
+    NEXT_PUBLIC_RELEASE: sentryRelease,
   },
   //// This stuff is useful for developing the yarn patch to FullCalendar
   // webpack: (
@@ -70,5 +74,5 @@ module.exports = withSentryConfig(
 
     // Automatically tree-shake Sentry logger statements to reduce bundle size
     disableLogger: true,
-  }
+  },
 );
