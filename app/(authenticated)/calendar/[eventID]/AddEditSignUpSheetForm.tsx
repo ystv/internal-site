@@ -104,14 +104,33 @@ export function AddEditSignUpSheetForm(props: {
       action={props.action}
       onSuccess={props.onSuccess}
       schema={SignupSheetSchema}
-      initialValues={props.initialValues}
+      initialValues={props.initialValues ?? { title: "Crew List" }}
       submitLabel={props.submitLabel}
     >
-      <TextField name="title" label="Title" />
+      <h1 className={"mb-2 mt-0 text-4xl font-bold"}>
+        {props.initialValues ? "Edit" : "New"} List
+      </h1>
+      <TextField
+        name="title"
+        label="Title"
+        required
+        placeholder={"Crew List"}
+      />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField name="arrival_time" label="Arrival Time" />
-      <DatePickerField name="start_time" label="Broadcast Start" />
-      <DatePickerField name="end_time" label="Broadcast End" />
+      <DatePickerField
+        name="arrival_time"
+        label="Arrival Time"
+        required
+        modal
+      />
+      <DatePickerField
+        name="start_time"
+        label="Broadcast Start"
+        required
+        modal
+      />
+      <DatePickerField name="end_time" label="Broadcast End" required modal />
+      <br />
       <NullableCheckboxField
         name="unlock_date"
         checkboxLabel="Lock signups until a certain date?"
@@ -119,7 +138,7 @@ export function AddEditSignUpSheetForm(props: {
         <DatePickerField name="unlock_date" label="Unlock Date" />
       </NullableCheckboxField>
       <h2 className="mt-4 text-2xl">Positions</h2>
-      <div className="grid grid-cols-[1fr_1fr_auto_auto]">
+      <div className="grid grid-cols-2 gap-y-1 md:grid-cols-[2fr_6rem_3fr_auto]">
         <ArrayField
           name="crews"
           newElement={(v) =>
@@ -133,30 +152,56 @@ export function AddEditSignUpSheetForm(props: {
           }
           header={
             <>
-              <div className="mb-4 font-bold">Position</div>
-              <div className="font-bold">Locked</div>
-              <div className="font-bold">User</div>
-              <div className="font-bold" />
+              <div className="col-span-1 mb-4 hidden font-bold md:block">
+                Position
+              </div>
+              <div className="col-span-1 hidden font-bold md:block">Locked</div>
+              <div className="col-span-1 hidden font-bold md:block">User</div>
+              <div className="col-span-1 hidden font-bold md:block" />
             </>
           }
         >
-          {(row, idx, els) => (
-            <Fragment key={row.id}>
-              {row.crew_id ? (
-                <input
-                  type="hidden"
-                  name={`crews.${idx}.crew_id`}
-                  value={row.crew_id as string}
+          {(row, idx, els) => {
+            return (
+              <Fragment key={row.id}>
+                {row.crew_id ? (
+                  <input
+                    type="hidden"
+                    name={`crews.${idx}.crew_id`}
+                    value={row.crew_id as string}
+                  />
+                ) : null}
+                <div
+                  className={"col-span-2 md:col-span-1 md:!row-auto"}
+                  style={{ gridRow: `${idx * 4 + 1} / ${idx * 4 + 2}` }}
+                >
+                  <CrewPositionField parentName={`crews.${idx}`} />
+                </div>
+                <div
+                  className={
+                    "col-span-1 flex items-center justify-center md:!row-auto"
+                  }
+                  style={{ gridRow: `${idx * 4 + 3} / ${idx * 4 + 4}` }}
+                >
+                  <p className={"my-0 mr-2 text-sm font-medium md:hidden"}>
+                    Locked:
+                  </p>
+                  <CheckBoxField name={`crews.${idx}.locked`} />
+                </div>
+                <div
+                  className={"col-span-2 md:col-span-1 md:!row-auto"}
+                  style={{ gridRow: `${idx * 4 + 2} / ${idx * 4 + 3}` }}
+                >
+                  <CrewMemberField parentName={`crews.${idx}`} />
+                </div>
+                {els.remove}
+                <div
+                  className="col-span-2 h-6 md:hidden"
+                  style={{ gridRow: `${idx * 4 + 4} / ${idx * 4 + 5}` }}
                 />
-              ) : null}
-              <CrewPositionField parentName={`crews.${idx}`} />
-              <div className="flex items-center justify-center">
-                <CheckBoxField name={`crews.${idx}.locked`} />
-              </div>
-              <CrewMemberField parentName={`crews.${idx}`} />
-              {els.remove}
-            </Fragment>
-          )}
+              </Fragment>
+            );
+          }}
         </ArrayField>
       </div>
     </Form>

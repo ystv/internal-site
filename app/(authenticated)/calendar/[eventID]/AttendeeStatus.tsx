@@ -11,9 +11,11 @@ import { NativeSelect } from "@mantine/core";
 export function CurrentUserAttendeeRow({
   event,
   me,
+  readOnly,
 }: {
   event: EventObjectType;
   me: UserType;
+  readOnly?: boolean;
 }) {
   const myAttendee = event.attendees.find((att) => att.user_id === me.user_id);
   const [isPending, startTransition] = useTransition();
@@ -33,7 +35,7 @@ export function CurrentUserAttendeeRow({
               );
             });
           }}
-          disabled={isPending}
+          disabled={isPending || readOnly}
           className="inline-block"
         >
           {Object.entries(AttendStatusLabels)

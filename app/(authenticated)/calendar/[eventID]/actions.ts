@@ -5,20 +5,12 @@ import { z } from "zod";
 import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
 import * as Calendar from "@/features/calendar";
 import { EventType, hasRSVP } from "@/features/calendar/types";
-import {
-  canManage,
-  canManageSignUpSheet,
-} from "@/features/calendar/permissions";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
-import {
-  EditEventSchema,
-  SignupSheetSchema,
-} from "@/app/(authenticated)/calendar/[eventID]/schema";
+import { EditEventSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
-import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
-import { isBefore } from "date-fns";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
+import { canManage } from "@/features/calendar";
 
 export async function editEvent(
   eventID: number,
@@ -49,6 +41,7 @@ export async function editEvent(
     }
   }
   revalidatePath(`/calendar/${eventID}`);
+  revalidatePath("calendar");
   return { ok: true };
 }
 
@@ -87,7 +80,7 @@ export async function updateAttendeeStatus(
 
   await updateEventAttendeeStatus(evt.event_id, me.user_id, status);
 
-  revalidatePath("/calendar/[eventID]");
+  revalidatePath(`/calendar/${evt.event_id}`);
   return { ok: true };
 }
 
@@ -98,14 +91,8 @@ export async function createSignUpSheet(
   const me = await getCurrentUser();
 
   const event = await Calendar.getEvent(eventID);
-  if (!event) {
-    return {
-      ok: false,
-      errors: {
-        root: "Event not found",
-      },
-    };
-  }
+  invariant(event, "Event does not exist");
+
   if (!canManage(event, me)) {
     return {
       ok: false,
@@ -286,7 +273,81 @@ export async function createAdamRMSProject(eventID: number) {
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to cancel this event",
+      },
+    };
+  }
+
   await Calendar.addProjectToAdamRMS(eventID, me.user_id);
   revalidatePath(`/calendar/${event.event_id}`);
   return { ok: true };
 }
+
+
+export async function cancelEvent(eventID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to cancel this event",
+      },
+    };
+  }
+
+  await Calendar.cancelEvent(eventID);
+
+  revalidatePath(`/calendar/${event.event_id}`);
+  revalidatePath("/calendar");
+  return { ok: true };
+}
+
+export async function reinstateEvent(eventID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to reinstate this event",
+      },
+    };
+  }
+
+  await Calendar.reinstateEvent(eventID);
+
+  revalidatePath(`/calendar/${event.event_id}`);
+  revalidatePath("/calendar");
+  return { ok: true };
+}
+
+export async function deleteEvent(eventID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to delete this event",
+      },
+    };
+  }
+
+  await Calendar.deleteEvent(eventID, me.user_id);
+
+  revalidatePath(`/calendar/${event.event_id}`);
+  revalidatePath("/calendar");
+  return { ok: true };
+}
+

@@ -45,29 +45,6 @@ export async function verifyToken(
   return payload;
 }
 
-export async function mustFindUserFromGoogleToken(rawToken: string) {
-  let claims;
-  try {
-    claims = await verifyToken(rawToken);
-  } catch (e) {
-    throw new NotLoggedIn();
-  }
-  const user = await prisma.user.findFirst({
-    where: {
-      identities: {
-        some: {
-          provider: "google",
-          provider_key: claims.sub,
-        },
-      },
-    },
-  });
-  if (!user) {
-    throw new Error("No user found for Google token");
-  }
-  return user;
-}
-
 export async function findOrCreateUserFromGoogleToken(rawToken: string) {
   const claims = await verifyToken(rawToken);
   const user = await prisma.user.findFirst({

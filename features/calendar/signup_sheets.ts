@@ -4,7 +4,7 @@ import { Event, Prisma } from "@prisma/client";
 import { CrewPositionType } from "@/features/calendar/crew_positions";
 import { omit } from "lodash";
 import { ExposedUser } from "@/features/people";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 
 export interface CrewType {
   crew_id: number;
