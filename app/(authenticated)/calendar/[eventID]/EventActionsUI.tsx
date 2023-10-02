@@ -22,7 +22,7 @@ import {
 import { useCallback, useState, useTransition } from "react";
 import Image from "next/image";
 import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
-import {Button, Menu, Modal, Select, Text} from "@mantine/core";
+import { Button, Menu, Modal, Select, Text } from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import { useRouter } from "next/navigation";
 
@@ -183,12 +183,11 @@ export function EventActionsUI(props: { event: EventObjectType }) {
       )}
       <Menu shadow="md">
         <Menu.Target>
-          <Button
-            color={props.event.adam_rms_project_id !== null ? "green" : "blue"}
-            loading={isPending}
-          >
+          <Button color="green" loading={isPending}>
             <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
-            Kit List
+            {props.event.adam_rms_project_id !== null
+              ? "Kit List"
+              : "Create Kit List"}
           </Button>
         </Menu.Target>
         <Menu.Dropdown>
