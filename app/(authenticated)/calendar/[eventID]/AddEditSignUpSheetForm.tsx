@@ -13,10 +13,14 @@ import {
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
-import { useCrewPositions } from "@/components/FormFieldPreloadedData";
+import {
+  useCrewPositions,
+  useMembers,
+} from "@/components/FormFieldPreloadedData";
 import { Fragment, useState } from "react";
-import { useController } from "react-hook-form";
+import { useController, useFormContext } from "react-hook-form";
 import { Select } from "@mantine/core";
+import { getUserName } from "@/components/UserHelpers";
 
 function CrewPositionField(props: { parentName: string }) {
   const [isCustom, setIsCustom] = useState(false);
@@ -46,6 +50,43 @@ function CrewPositionField(props: { parentName: string }) {
           return;
         }
         selectController.field.onChange(newValue);
+      }}
+    />
+  );
+}
+
+function CrewMemberField(props: { parentName: string }) {
+  const ctx = useFormContext();
+  const [isCustom, setIsCustom] = useState(
+    () => ctx.getValues(props.parentName)?.custom_crew_member_name?.length > 0,
+  );
+  const vals = useMembers();
+  const controller = useController({
+    name: `${props.parentName}.user_id`,
+  });
+
+  return isCustom ? (
+    <TextField
+      name={`${props.parentName}.custom_crew_member_name`}
+      placeholder="Enter crew member name"
+    />
+  ) : (
+    <Select
+      data={[
+        ...vals.map((val) => ({
+          label: getUserName(val),
+          value: val.user_id.toString(10),
+        })),
+        { label: "Custom", value: "$custom" },
+      ]}
+      value={controller.field.value}
+      onChange={(newValue) => {
+        if (newValue === "$custom") {
+          controller.field.onChange("");
+          setIsCustom(true);
+          return;
+        }
+        controller.field.onChange(newValue);
       }}
     />
   );
@@ -106,6 +147,7 @@ export function AddEditSignUpSheetForm(props: {
               ordering: v.length,
               locked: false,
               user_id: null,
+              custom_crew_member_name: null,
             }) satisfies z.infer<typeof CrewSchema>
           }
           header={
@@ -150,7 +192,7 @@ export function AddEditSignUpSheetForm(props: {
                   className={"col-span-2 md:col-span-1 md:!row-auto"}
                   style={{ gridRow: `${idx * 4 + 2} / ${idx * 4 + 3}` }}
                 >
-                  <MemberSelect name={`crews.${idx}.user_id`} nullable />
+                  <CrewMemberField parentName={`crews.${idx}`} />
                 </div>
                 {els.remove}
                 <div

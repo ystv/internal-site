@@ -20,7 +20,9 @@ export const CrewSchema = z.object({
     .string().or(z.number())
     .nullable()
     .transform((v) => (v === "" ? null : v))
-    .pipe(z.coerce.number().nullable().default(null)),
+    .pipe(z.coerce.number().nullable().default(null))
+    .nullable(),
+  custom_crew_member_name: z.string().optional().nullable().default(null),
 });
 
 export const SignupSheetSchema = z.object({

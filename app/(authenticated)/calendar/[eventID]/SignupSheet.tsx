@@ -123,7 +123,7 @@ function SignupSheet({
                               {getUserName(crew.users!) ?? "Unknown Member"}
                             </strong>
                           </Button>
-                        ) : crew.users ? (
+                        ) : crew.users ?? crew.custom_crew_member_name ? (
                           <Button
                             variant={"transparent"}
                             fullWidth
@@ -135,7 +135,7 @@ function SignupSheet({
                             color={"black"}
                             disabled={readOnly}
                           >
-                            {getUserName(crew.users)}
+                            {crew.users ? getUserName(crew.users) : crew.custom_crew_member_name}
                           </Button>
                         ) : (
                           <Button
@@ -229,8 +229,7 @@ function MyRoleSignUpModal({
     <div>
       <h1 className="mt-0">{crew.positions.name}</h1>
       <p>
-        {crew.positions.full_description ||
-          "If this role had a description, it'd go here."}
+        {crew.positions.full_description}
       </p>
       {error && <strong className="text-danger">{error}</strong>}
       <div>
