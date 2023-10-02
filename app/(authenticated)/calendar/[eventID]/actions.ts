@@ -6,11 +6,19 @@ import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
 import * as Calendar from "@/features/calendar";
 import { EventType, hasRSVP } from "@/features/calendar/types";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
-import { EditEventSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
+import {
+  EditEventSchema,
+  SignupSheetSchema,
+} from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import invariant from "@/lib/invariant";
-import { canManage } from "@/features/calendar";
+import {
+  canManage,
+  canManageSignUpSheet,
+  updateSignUpSheet,
+} from "@/features/calendar";
+import { isBefore } from "date-fns";
 
 export async function editEvent(
   eventID: number,
@@ -287,7 +295,6 @@ export async function createAdamRMSProject(eventID: number) {
   return { ok: true };
 }
 
-
 export async function cancelEvent(eventID: number) {
   const me = await mustGetCurrentUser();
   const event = await Calendar.getEvent(eventID);
@@ -350,4 +357,3 @@ export async function deleteEvent(eventID: number) {
   revalidatePath("/calendar");
   return { ok: true };
 }
-
