@@ -175,6 +175,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
                   label: proj.projects_name,
                 }))}
               />
+              {/* TODO: this isPending is captured in the closure so doesn't update */}
               <Button type="submit" disabled={isPending}>
                 Link
               </Button>
