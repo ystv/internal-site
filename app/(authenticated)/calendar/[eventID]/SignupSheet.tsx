@@ -1,11 +1,10 @@
 "use client";
 
 import { isBefore, isSameDay } from "date-fns";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
-import invariant from "tiny-invariant";
-import { createAdamRMSProject } from "@/app/(authenticated)/calendar/[eventID]/actions";
+import invariant from "@/lib/invariant";
 import { Button, Modal, Paper } from "@mantine/core";
 import {
   canManage,
@@ -16,8 +15,6 @@ import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]
 import { CrewType, SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventObjectType } from "@/features/calendar/events";
 import { ExposedUser } from "@/features/people";
-import Image from "next/image";
-import AdamRMSLogo from "@/app/_assets/adamrms-logo.png";
 import {
   createSignUpSheet,
   deleteSignUpSheet,

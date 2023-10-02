@@ -80,9 +80,11 @@ export default function YSTVCalendar({
         <>
           <Select
             label="Calendar View"
+            className={"text-right [&_input]:select-none [&_input]:text-right"}
             styles={{
-              root: { textAlign: "right" },
-              input: { textAlign: "right" },
+              input: {
+                userSelect: "none",
+              },
             }}
             data={viewsList}
             value={calendarAPI.view.type}

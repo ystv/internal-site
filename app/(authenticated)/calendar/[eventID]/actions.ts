@@ -9,7 +9,7 @@ import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { EditEventSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 import { canManage } from "@/features/calendar";
 
 export async function editEvent(
