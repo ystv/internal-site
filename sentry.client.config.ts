@@ -29,4 +29,12 @@ Sentry.init({
       blockAllMedia: true,
     }),
   ],
+
+  beforeSend(event) {
+    // Filter out errors during the Next.js build phase
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      return null;
+    }
+    return event;
+  },
 });
