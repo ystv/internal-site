@@ -58,7 +58,11 @@ function SignupSheet({
             ? formatTime(sheet.end_time)
             : formatDateTime(sheet.end_time)}
         </strong>
-        <p className={"max-w-prose text-sm"}>{sheet.description}</p>
+        <div className={"max-w-prose text-sm"}>
+          {sheet.description.split(/(\r\n|\r|\n)/g).map((p, idx) => (
+            <p key={idx}>{p}</p>
+          ))}
+        </div>
         {locked && (
           <p>
             <strong>
