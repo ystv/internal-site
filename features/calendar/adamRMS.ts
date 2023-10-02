@@ -69,6 +69,22 @@ export async function linkAdamRMS(eventID: number, projectID: number) {
       event_id: eventID,
     },
   });
+  // Try changing deliver dates first to trigger kit clash check
+  const result = await AdamRMS.changeProjectDates(
+    projectID,
+    event.start_date,
+    event.end_date,
+    "deliver_dates",
+  );
+  if (!result.changed) {
+    return { ok: false, error: "kit_clash" };
+  }
+  await AdamRMS.changeProjectDates(
+    projectID,
+    event.start_date,
+    event.end_date,
+    "dates",
+  );
   await prisma.event.update({
     where: {
       event_id: eventID,
@@ -81,6 +97,7 @@ export async function linkAdamRMS(eventID: number, projectID: number) {
     projectID,
     `This project is linked to the Calendar event "${event.name}" (${process.env.PUBLIC_URL}/calendar/${event.event_id}).`,
   );
+  return { ok: true };
 }
 
 export async function unlinkAdamRMS(eventID: number) {

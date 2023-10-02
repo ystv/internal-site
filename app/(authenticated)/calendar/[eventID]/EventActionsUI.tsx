@@ -140,11 +140,30 @@ export function EventActionsUI(props: { event: EventObjectType }) {
             <form
               action={(data) => {
                 startTransition(async () => {
-                  await linkAdamRMSProject(
+                  const res = await linkAdamRMSProject(
                     props.event.event_id,
                     parseInt(data.get("projectID") as string, 10),
                   );
-                  modals.closeAll();
+                  if (res.ok) {
+                    modals.closeAll();
+                  } else {
+                    modals.openModal({
+                      id: "link-adamrms-error",
+                      title: "Error",
+                      children: (
+                        <>
+                          <Text>{res.errors?.root}</Text>
+                          <Button
+                            onClick={() =>
+                              modals.closeModal("link-adamrms-error")
+                            }
+                          >
+                            Close
+                          </Button>
+                        </>
+                      ),
+                    });
+                  }
                 });
               }}
             >

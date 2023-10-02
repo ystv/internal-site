@@ -320,7 +320,25 @@ export async function linkAdamRMSProject(eventID: number, projectID: number) {
     };
   }
 
-  await Calendar.linkAdamRMS(eventID, projectID);
+  const res = await Calendar.linkAdamRMS(eventID, projectID);
+  if (!res.ok) {
+    switch (res.error) {
+      case "kit_clash":
+        return {
+          ok: false,
+          errors: {
+            root: "The project dates would result in a kit clash. Please contact the Tech Team.",
+          },
+        };
+      default:
+        return {
+          ok: false,
+          errors: {
+            root: `An unknown error occurred (${res.error})`,
+          },
+        };
+    }
+  }
   revalidatePath(`/calendar/${event.event_id}`);
   return { ok: true };
 }
