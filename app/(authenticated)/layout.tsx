@@ -4,6 +4,7 @@ import Link from "next/link";
 import { UserProvider } from "@/components/UserContext";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
+import * as Sentry from "@sentry/nextjs";
 
 export default async function AuthenticatedLayout({
   children,
@@ -11,6 +12,11 @@ export default async function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   const user = await mustGetCurrentUser();
+  Sentry.setUser({
+    id: user.user_id,
+    username: user.username,
+    email: user.email,
+  });
   return (
     <UserProvider user={user}>
       <nav className="mb-4 flex h-[4.5rem] flex-row flex-nowrap items-center bg-dark px-2 text-light shadow-black/5">

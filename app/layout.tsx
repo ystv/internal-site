@@ -39,8 +39,8 @@ export default async function RootLayout({
               <DebugModeProvider value={debugMode}>
                 {children}
                 <DebugIndicator />
-                <footer className="text-sm text-center text-gray-500 mt-8">
-                  Calendar version {process.env.NEXT_PUBLIC_GIT_COMMIT?.slice(0, 7)}.{" "}
+                <footer className="mt-8 text-center text-sm text-gray-500">
+                  Calendar version {process.env.NEXT_PUBLIC_RELEASE}.
                 </footer>
               </DebugModeProvider>
             </PublicURLProvider>
