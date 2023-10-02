@@ -62,7 +62,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
             this later.
           </Text>
         ),
-        labels: { confirm: "Cancel Event", cancel: "Cancel" },
+        labels: { confirm: "Cancel Event", cancel: "Go Back" },
         confirmProps: {
           variant: "warning",
         },
@@ -85,7 +85,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
             Are you sure you want to reinstate {props.event.name}?
           </Text>
         ),
-        labels: { confirm: "Reinstate Event", cancel: "Cancel" },
+        labels: { confirm: "Reinstate Event", cancel: "Go Back" },
         confirmProps: {
           variant: "warning",
         },
