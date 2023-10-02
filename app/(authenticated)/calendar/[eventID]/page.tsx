@@ -146,7 +146,11 @@ export default async function EventPage({
             : formatDateTime(event.end_date)}
         </strong>
       </div>
-      <p>{event.description}</p>
+      <div>
+        {event.description.split(/(\r\n|\r|\n)/g).map((p, idx) => (
+          <p key={idx}>{p}</p>
+        ))}
+      </div>
       {event.updated_by_user && event.event_type !== "show" && (
         <div className={"py-2"}>
           <strong className={"text-sm"}>
