@@ -80,9 +80,11 @@ export default function YSTVCalendar({
         <>
           <Select
             label="Calendar View"
+            className={"text-right [&_input]:select-none [&_input]:text-right"}
             styles={{
-              root: { textAlign: "right" },
-              input: { textAlign: "right" },
+              input: {
+                userSelect: "none",
+              },
             }}
             data={viewsList}
             value={calendarAPI.view.type}
@@ -183,7 +185,6 @@ export default function YSTVCalendar({
           }
           if (evt.is_cancelled) {
             eventObject.title = `CANCELLED: ${eventObject.title}`;
-            eventObject.url = "";
             eventObject.color = "#B00020";
           }
           return eventObject;

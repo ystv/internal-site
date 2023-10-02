@@ -286,3 +286,81 @@ export async function updateEventAttendeeStatus(
     });
   }
 }
+
+export async function cancelEvent(eventID: number) {
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      is_cancelled: true,
+    },
+  });
+}
+
+export async function reinstateEvent(eventID: number) {
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      is_cancelled: false,
+    },
+  });
+}
+
+export async function deleteEvent(eventID: number, userID: number) {
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      deleted_at: new Date(),
+      deleted_by_user: {
+        connect: {
+          user_id: userID,
+        },
+      },
+    },
+  });
+}
+
+export async function addProjectToAdamRMS(
+  eventID: number,
+  currentUserID: number,
+) {
+  const me = await prisma.user.findFirstOrThrow({
+    where: {
+      user_id: currentUserID,
+    },
+    select: {
+      email: true,
+    },
+  });
+  const event = await prisma.event.findFirstOrThrow({
+    where: {
+      event_id: eventID,
+    },
+  });
+  const projectId = await AdamRMS.createProject(event.name, me.email);
+  await AdamRMS.changeProjectDates(
+    projectId,
+    event.start_date,
+    event.end_date,
+    "dates",
+  );
+  await AdamRMS.changeProjectDates(
+    projectId,
+    event.start_date,
+    event.end_date,
+    "deliver_dates",
+  );
+  await prisma.event.update({
+    where: {
+      event_id: eventID,
+    },
+    data: {
+      adam_rms_project_id: projectId,
+    },
+  });
+}

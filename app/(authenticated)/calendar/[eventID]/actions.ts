@@ -99,14 +99,8 @@ export async function createSignUpSheet(
   const me = await getCurrentUser();
 
   const event = await Calendar.getEvent(eventID);
-  if (!event) {
-    return {
-      ok: false,
-      errors: {
-        root: "Event not found",
-      },
-    };
-  }
+  invariant(event, "Event does not exist");
+
   if (!canManage(event, me)) {
     return {
       ok: false,
@@ -212,7 +206,7 @@ export async function signUpToRole(sheetID: number, crewID: number) {
       },
     };
   }
-  if (crew.user_id !== null) {
+  if (crew.user_id !== null || crew.custom_crew_member_name !== null) {
     return {
       ok: false,
       errors: {
@@ -289,6 +283,15 @@ export async function createAdamRMSProject(eventID: number) {
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to cancel this event",
+      },
+    };
+  }
+
   await Calendar.addProjectToAdamRMS(eventID, me.user_id);
   revalidatePath(`/calendar/${event.event_id}`);
   return { ok: true };
@@ -338,5 +341,68 @@ export async function unlinkAdamRMS(eventID: number) {
 
   await Calendar.unlinkAdamRMS(eventID);
   revalidatePath(`/calendar/${event.event_id}`);
+  return { ok: true };
+}
+
+export async function cancelEvent(eventID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to cancel this event",
+      },
+    };
+  }
+
+  await Calendar.cancelEvent(eventID);
+
+  revalidatePath(`/calendar/${event.event_id}`);
+  revalidatePath("/calendar");
+  return { ok: true };
+}
+
+export async function reinstateEvent(eventID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to reinstate this event",
+      },
+    };
+  }
+
+  await Calendar.reinstateEvent(eventID);
+
+  revalidatePath(`/calendar/${event.event_id}`);
+  revalidatePath("/calendar");
+  return { ok: true };
+}
+
+export async function deleteEvent(eventID: number) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to delete this event",
+      },
+    };
+  }
+
+  await Calendar.deleteEvent(eventID, me.user_id);
+
+  revalidatePath(`/calendar/${event.event_id}`);
+  revalidatePath("/calendar");
   return { ok: true };
 }

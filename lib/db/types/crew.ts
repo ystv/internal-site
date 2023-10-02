@@ -6,6 +6,7 @@ export const _CrewModel = z.object({
   signup_id: z.number().int(),
   position_id: z.number().int(),
   user_id: z.number().int().nullish(),
+  custom_crew_member_name: z.string().nullish(),
   credited: z.boolean(),
   locked: z.boolean(),
   ordering: z.number().int(),

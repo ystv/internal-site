@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 // Work around for hot reloading in development
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-export const prisma =
+const rawPrisma =
   globalForPrisma.prisma ||
   new PrismaClient({
     log:
@@ -13,4 +13,27 @@ export const prisma =
         : ["query", "info", "warn", "error"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = rawPrisma;
+
+export const prisma = rawPrisma.$extends({
+  query: {
+    event: {
+      $allOperations({ model, operation, args, query }) {
+        switch (operation) {
+          case "findMany":
+          case "findUnique":
+          case "findUniqueOrThrow":
+          case "findFirst":
+          case "findFirstOrThrow":
+          case "count":
+          case "aggregate":
+            if (args.where) {
+              args.where.deleted_at = null;
+            }
+            break;
+        }
+        return query(args);
+      },
+    },
+  },
+});

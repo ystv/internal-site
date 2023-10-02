@@ -7,6 +7,7 @@ import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { SignupSheetsView } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
 import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
 import { isSameDay } from "date-fns";
+import { twMerge } from "tailwind-merge";
 import { EventObjectType, getEvent } from "@/features/calendar/events";
 import {
   canManage,
@@ -43,7 +44,11 @@ async function AttendeesView({
         {event.attendees!.map((att) => (
           <tr key={att.user_id} className={"text-center"}>
             {att.user_id === me.user_id ? (
-              <CurrentUserAttendeeRow event={event} me={me} />
+              <CurrentUserAttendeeRow
+                event={event}
+                me={me}
+                readOnly={event.is_cancelled}
+              />
             ) : (
               <>
                 <td>{getUserName(att.users)}</td>
@@ -60,7 +65,11 @@ async function AttendeesView({
         ))}
         {!isCurrentUserAttending && (
           <tr className={"text-center"}>
-            <CurrentUserAttendeeRow event={event} me={me} />
+            <CurrentUserAttendeeRow
+              event={event}
+              me={me}
+              readOnly={event.is_cancelled}
+            />
           </tr>
         )}
       </tbody>
@@ -112,11 +121,24 @@ export default async function EventPage({
         }
       >
         <div className="w-fit grow font-bold">
-          <h1 className={"text-4xl font-bold"}>{event.name}</h1>
+          <h1
+            className={twMerge(
+              "text-4xl font-bold",
+              event.is_cancelled && "text-danger-4 line-through",
+            )}
+          >
+            {event.is_cancelled && <span>CANCELLED: </span>}
+            {event.name}
+          </h1>
         </div>
         {canManage(event, me) && <EventActionsUI event={event} />}
       </div>
-      <div className={"text-center sm:text-left"}>
+      <div
+        className={twMerge(
+          "text-center sm:text-left",
+          event.is_cancelled && "line-through",
+        )}
+      >
         <strong>
           {formatDateTime(event.start_date)} -{" "}
           {isSameDay(event.start_date, event.end_date)

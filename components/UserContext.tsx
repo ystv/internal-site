@@ -1,8 +1,9 @@
 "use client";
 
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import { Permission } from "@/lib/auth/common";
 import { UserType } from "@/lib/auth/server";
+import * as Sentry from "@sentry/nextjs";
 
 const UserContext = createContext<UserType>(
   null as unknown as UserType /* Bit naughty, but getCurrentUser ensures there's a user signed in */,
@@ -12,6 +13,13 @@ export function UserProvider(props: {
   children: React.ReactNode;
   user: UserType;
 }) {
+  useEffect(() => {
+    Sentry.setUser({
+      id: props.user.user_id,
+      username: props.user.username,
+      email: props.user.email,
+    });
+  }, [props.user]);
   return (
     <UserContext.Provider value={props.user}>
       {props.children}

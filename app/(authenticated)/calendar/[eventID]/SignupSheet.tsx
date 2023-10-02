@@ -1,18 +1,10 @@
 "use client";
 
 import { isBefore, isSameDay } from "date-fns";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
-import {
-  createAdamRMSProject,
-  createSignUpSheet,
-  deleteSignUpSheet,
-  editSignUpSheet,
-  removeSelfFromRole,
-  signUpToRole,
-} from "@/app/(authenticated)/calendar/[eventID]/actions";
 import { Button, Modal, Paper } from "@mantine/core";
 import {
   canManage,
@@ -23,8 +15,13 @@ import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]
 import { CrewType, SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventObjectType } from "@/features/calendar/events";
 import { ExposedUser } from "@/features/people";
-import Image from "next/image";
-import AdamRMSLogo from "@/app/_assets/adamrms-logo.png";
+import {
+  createSignUpSheet,
+  deleteSignUpSheet,
+  editSignUpSheet,
+  removeSelfFromRole,
+  signUpToRole,
+} from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
 
 function SignupSheet({
   event,
@@ -39,6 +36,7 @@ function SignupSheet({
     () => sheet.unlock_date && isBefore(new Date(), sheet.unlock_date),
     [sheet.unlock_date],
   );
+  const readOnly = event.is_cancelled;
   const [isEditOpen, setEditOpen] = useState(false);
   const [signUpCrew, setSignUpCrew] = useState<CrewType | null>(null);
   return (
@@ -119,12 +117,13 @@ function SignupSheet({
                               "!h-auto min-h-[var(--button-height)] !select-text"
                             }
                             justify={"left"}
+                            disabled={readOnly}
                           >
                             <strong>
                               {getUserName(crew.users!) ?? "Unknown Member"}
                             </strong>
                           </Button>
-                        ) : crew.users ? (
+                        ) : crew.users ?? crew.custom_crew_member_name ? (
                           <Button
                             variant={"transparent"}
                             fullWidth
@@ -134,8 +133,9 @@ function SignupSheet({
                             }
                             justify={"left"}
                             color={"black"}
+                            disabled={readOnly}
                           >
-                            {getUserName(crew.users)}
+                            {crew.users ? getUserName(crew.users) : crew.custom_crew_member_name}
                           </Button>
                         ) : (
                           <Button
@@ -146,6 +146,7 @@ function SignupSheet({
                               "!h-auto min-h-[var(--button-height)] !select-text"
                             }
                             justify={"left"}
+                            disabled={readOnly}
                           >
                             Vacant
                           </Button>
@@ -228,8 +229,7 @@ function MyRoleSignUpModal({
     <div>
       <h1 className="mt-0">{crew.positions.name}</h1>
       <p>
-        {crew.positions.full_description ||
-          "If this role had a description, it'd go here."}
+        {crew.positions.full_description}
       </p>
       {error && <strong className="text-danger">{error}</strong>}
       <div>
@@ -294,7 +294,7 @@ export function SignupSheetsView({
           No crew lists have been added yet.
         </h2>
       )}
-      {canManage(event, me) && (
+      {canManage(event, me) && !event.is_cancelled && (
         <div className={"mx-auto text-right"}>
           <Button onClick={() => setCreateOpen(true)}>Add Crew List</Button>
           <br />
