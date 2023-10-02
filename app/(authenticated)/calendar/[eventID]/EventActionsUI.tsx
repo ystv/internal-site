@@ -164,7 +164,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         });
       });
     },
-    [modals],
+    [modals, isPending, props.event.event_id],
   );
 
   return (
