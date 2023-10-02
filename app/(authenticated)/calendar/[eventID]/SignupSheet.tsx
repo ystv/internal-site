@@ -93,7 +93,38 @@ function SignupSheet({
                       "px-3 py-1 [&_.mantine-Button-label]:whitespace-normal [&_button]:text-left"
                     }
                   >
-                    {locked || crew.locked ? (
+                    {crew.user_id === me.user_id ? (
+                      <Button
+                        onClick={() => setSignUpCrew(crew)}
+                        variant={"light"}
+                        fullWidth
+                        className={
+                          "!h-auto min-h-[var(--button-height)] !select-text"
+                        }
+                        justify={"left"}
+                        disabled={readOnly}
+                      >
+                        <strong>
+                          {getUserName(crew.users!) ?? "Unknown Member"}
+                        </strong>
+                      </Button>
+                    ) : crew.users || crew.custom_crew_member_name ? (
+                      <Button
+                        variant={"transparent"}
+                        fullWidth
+                        component={"div"}
+                        className={
+                          "!flex !h-auto min-h-[var(--button-height)] !cursor-default !select-text items-center !text-left active:!transform-none"
+                        }
+                        justify={"left"}
+                        color={"black"}
+                        disabled={readOnly}
+                      >
+                        {crew.users
+                          ? getUserName(crew.users)
+                          : crew.custom_crew_member_name}
+                      </Button>
+                    ) : locked || crew.locked ? (
                       <Button
                         variant={"transparent"}
                         fullWidth
@@ -107,51 +138,18 @@ function SignupSheet({
                         Locked
                       </Button>
                     ) : (
-                      <>
-                        {crew.user_id === me.user_id ? (
-                          <Button
-                            onClick={() => setSignUpCrew(crew)}
-                            variant={"light"}
-                            fullWidth
-                            className={
-                              "!h-auto min-h-[var(--button-height)] !select-text"
-                            }
-                            justify={"left"}
-                            disabled={readOnly}
-                          >
-                            <strong>
-                              {getUserName(crew.users!) ?? "Unknown Member"}
-                            </strong>
-                          </Button>
-                        ) : crew.users ?? crew.custom_crew_member_name ? (
-                          <Button
-                            variant={"transparent"}
-                            fullWidth
-                            component={"div"}
-                            className={
-                              "!flex !h-auto min-h-[var(--button-height)] !cursor-default !select-text items-center !text-left active:!transform-none"
-                            }
-                            justify={"left"}
-                            color={"black"}
-                            disabled={readOnly}
-                          >
-                            {crew.users ? getUserName(crew.users) : crew.custom_crew_member_name}
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={() => setSignUpCrew(crew)}
-                            variant={"outline"}
-                            fullWidth
-                            className={
-                              "!h-auto min-h-[var(--button-height)] !select-text"
-                            }
-                            justify={"left"}
-                            disabled={readOnly}
-                          >
-                            Vacant
-                          </Button>
-                        )}
-                      </>
+                      <Button
+                        onClick={() => setSignUpCrew(crew)}
+                        variant={"outline"}
+                        fullWidth
+                        className={
+                          "!h-auto min-h-[var(--button-height)] !select-text"
+                        }
+                        justify={"left"}
+                        disabled={readOnly}
+                      >
+                        Vacant
+                      </Button>
                     )}
                   </td>
                 </tr>
@@ -228,9 +226,7 @@ function MyRoleSignUpModal({
   return (
     <div>
       <h1 className="mt-0">{crew.positions.name}</h1>
-      <p>
-        {crew.positions.full_description}
-      </p>
+      <p>{crew.positions.full_description}</p>
       {error && <strong className="text-danger">{error}</strong>}
       <div>
         {crew.user_id === me.user_id ? (
