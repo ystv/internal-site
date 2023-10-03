@@ -1,5 +1,5 @@
 import { EventType } from "@/features/calendar/types";
-import { Permission } from "@/lib/auth/common";
+import { Permission } from "@/lib/auth/permissions";
 import { UserType } from "@/lib/auth/server";
 import { Event } from "@prisma/client";
 import { SignUpSheetType } from "@/features/calendar/signup_sheets";

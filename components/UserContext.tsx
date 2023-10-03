@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo } from "react";
-import { Permission } from "@/lib/auth/common";
+import { Permission } from "@/lib/auth/permissions";
 import { UserType } from "@/lib/auth/server";
 import * as Sentry from "@sentry/nextjs";
 
