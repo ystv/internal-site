@@ -5,7 +5,7 @@ import { getCurrentUser, UserType } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/(authenticated)/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { SignupSheetsView } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
-import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
+import { DateTime } from "@/components/DateTimeHelpers";
 import { isSameDay } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import { EventObjectType, getEvent } from "@/features/calendar/events";
@@ -140,10 +140,12 @@ export default async function EventPage({
         )}
       >
         <strong>
-          {formatDateTime(event.start_date)} -{" "}
-          {isSameDay(event.start_date, event.end_date)
-            ? formatTime(event.end_date)
-            : formatDateTime(event.end_date)}
+          <DateTime val={event.start_date.toISOString()} format="datetime" /> -{" "}
+          {isSameDay(event.start_date, event.end_date) ? (
+            <DateTime val={event.end_date.toISOString()} format="time" />
+          ) : (
+            <DateTime val={event.end_date.toISOString()} format="datetime" />
+          )}
         </strong>
       </div>
       <div>

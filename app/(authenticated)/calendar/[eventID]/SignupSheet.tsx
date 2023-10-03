@@ -10,7 +10,7 @@ import {
   canManage,
   canManageSignUpSheet,
 } from "@/features/calendar/permissions";
-import { formatDateTime, formatTime } from "@/components/DateTimeHelpers";
+import { DateTime } from "@/components/DateTimeHelpers";
 import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]/AddEditSignUpSheetForm";
 import { CrewType, SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventObjectType } from "@/features/calendar/events";
@@ -49,14 +49,18 @@ function SignupSheet({
       >
         <h2 className={"m-0"}>{sheet.title}</h2>
         <strong className={"text-sm font-extrabold"}>
-          Arrive at {formatTime(sheet.arrival_time)}
+          Arrive at{" "}
+          <DateTime val={sheet.arrival_time.toISOString()} format="time" />
         </strong>
         <br />
         <strong className={"text-sm font-extrabold"}>
-          Broadcast at {formatTime(sheet.start_time)} -{" "}
-          {isSameDay(sheet.start_time, sheet.end_time)
-            ? formatTime(sheet.end_time)
-            : formatDateTime(sheet.end_time)}
+          Broadcast at{" "}
+          <DateTime val={sheet.start_time.toISOString()} format="datetime" /> -{" "}
+          {isSameDay(sheet.start_time, sheet.end_time) ? (
+            <DateTime val={sheet.end_time.toISOString()} format="time" />
+          ) : (
+            <DateTime val={sheet.end_time.toISOString()} format="datetime" />
+          )}
         </strong>
         <div className={"max-w-prose text-sm"}>
           {sheet.description.split(/(\r\n|\r|\n)/g).map((p, idx) => (
@@ -66,7 +70,11 @@ function SignupSheet({
         {locked && (
           <p>
             <strong>
-              Crew lists unlock on {formatDateTime(sheet.unlock_date!)}
+              Crew lists unlock on{" "}
+              <DateTime
+                val={sheet.unlock_date!.toISOString()}
+                format="datetime"
+              />
             </strong>
           </p>
         )}
