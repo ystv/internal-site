@@ -153,6 +153,13 @@ export default function YSTVCalendar({
           timeGridDay: {
             type: "timeGridDay",
             weekNumbers: false,
+            dayHeaderFormat: (date) => {
+              return date.date.marker.toLocaleDateString(undefined, {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+              });
+            },
           },
         }}
         fixedWeekCount={false}
