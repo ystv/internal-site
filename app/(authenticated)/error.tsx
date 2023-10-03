@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { isNotLoggedIn } from "@/lib/auth/errors";
+import * as Sentry from "@sentry/nextjs";
 
 export default function Error({
   error,
@@ -19,6 +20,11 @@ export default function Error({
       router.push("/login?error=" + encodeURIComponent(error.message));
     }
     // Log the error to an error reporting service
+    Sentry.captureException(error, {
+      tags: {
+        pathName,
+      },
+    });
     console.error(error);
   }, [error, pathName, router]);
 
