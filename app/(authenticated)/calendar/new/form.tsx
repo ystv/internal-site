@@ -2,6 +2,7 @@
 import Form, { FormAction } from "@/components/Form";
 import { schema } from "./schema";
 import {
+  CheckBoxField,
   DatePickerField,
   SelectField,
   TextAreaField,
@@ -35,6 +36,10 @@ export function CreateEventForm(props: {
         renderOption={(v) => v[0].toUpperCase() + v.slice(1)}
         filter={(v, q) => v.includes(q)}
       />
+      <br />
+      <CheckBoxField name="is_private" label="Private Event" />
+      <br />
+      <CheckBoxField name="is_tentative" label="Tentative Event" />
     </Form>
   );
 }
