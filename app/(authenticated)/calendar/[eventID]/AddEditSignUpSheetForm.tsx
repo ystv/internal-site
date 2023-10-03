@@ -17,7 +17,7 @@ import {
   useCrewPositions,
   useMembers,
 } from "@/components/FormFieldPreloadedData";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useMemo, useRef, useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import {
   Combobox,
@@ -48,13 +48,15 @@ import { getUserName } from "@/components/UserHelpers";
  */
 function SelectWithCustomOption(props: {
   data: { label: string; value: string }[];
-  value: string;
+  value: string | null;
   isCustomValue: boolean;
   onChange: (value: string, isCustom: boolean) => unknown;
+  placeholder?: string;
 }) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [search, setSearch] = useState("");
 
@@ -69,8 +71,7 @@ function SelectWithCustomOption(props: {
     () =>
       props.isCustomValue
         ? props.value
-        : props.data.find((x) => x.value === props.value)?.label ??
-          "SHOULD NEVER HAPPEN",
+        : props.data.find((x) => x.value === props.value)?.label ?? "",
     [props.data, props.value, props.isCustomValue],
   );
 
@@ -95,20 +96,30 @@ function SelectWithCustomOption(props: {
     >
       <ComboboxTarget>
         <InputBase
+          ref={inputRef}
           rightSection={<ComboboxChevron />}
-          value={search || selected}
+          value={search || selected || ""}
           onChange={(e) => {
             combobox.openDropdown();
             combobox.updateSelectedOptionIndex();
             setSearch(e.currentTarget.value);
           }}
           onClick={() => combobox.openDropdown()}
-          onFocus={() => combobox.openDropdown()}
+          onFocus={() => {
+            combobox.openDropdown();
+            inputRef.current?.select();
+          }}
           onBlur={() => {
             combobox.closeDropdown();
             setSearch(selected ? selected : "");
           }}
-          placeholder="TODO"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              combobox.selectActiveOption();
+            }
+          }}
+          placeholder={props.placeholder}
           rightSectionPointerEvents="none"
         />
       </ComboboxTarget>
@@ -116,7 +127,9 @@ function SelectWithCustomOption(props: {
         <ComboboxOptions>
           {options}
           {filtered.length === 0 && search.trim().length > 0 && (
-            <ComboboxOption value="$create">"{search}"</ComboboxOption>
+            <ComboboxOption value="$create">
+              &apos;{search}&apos;
+            </ComboboxOption>
           )}
         </ComboboxOptions>
       </ComboboxDropdown>
@@ -167,39 +180,44 @@ function CrewPositionField(props: { parentName: string }) {
 }
 
 function CrewMemberField(props: { parentName: string }) {
-  const ctx = useFormContext();
-  const [isCustom, setIsCustom] = useState(
-    () => ctx.getValues(props.parentName)?.custom_crew_member_name?.length > 0,
-  );
   const vals = useMembers();
-  const controller = useController({
+  const selectController = useController({
     name: `${props.parentName}.user_id`,
   });
+  const customController = useController({
+    name: `${props.parentName}.custom_crew_member_name`,
+  });
 
-  return isCustom ? (
-    <TextField
-      name={`${props.parentName}.custom_crew_member_name`}
-      placeholder="Enter crew member name"
-    />
-  ) : (
-    <Select
-      data={[
-        ...vals.map((val) => ({
-          label: getUserName(val),
-          value: val.user_id.toString(10),
-        })),
-        { label: "Custom", value: "$custom" },
-      ]}
-      value={controller.field.value}
-      onChange={(newValue) => {
-        if (newValue === "$custom") {
-          controller.field.onChange("");
-          setIsCustom(true);
-          return;
+  const [value, isCustom] = useMemo<[string | null, boolean]>(() => {
+    if (customController.field.value?.trim().length > 0) {
+      return [customController.field.value, true];
+    }
+    if (typeof selectController.field.value === "string") {
+      return [selectController.field.value, false];
+    }
+    if (selectController.field.value === null) {
+      return [null, false];
+    }
+    return [selectController.field.value.toString(10), false];
+  }, [selectController.field.value, customController.field.value]);
+
+  return (
+    <SelectWithCustomOption
+      data={vals.map((v) => ({
+        label: getUserName(v),
+        value: v.user_id.toString(10),
+      }))}
+      value={value}
+      isCustomValue={isCustom}
+      onChange={(newV, isNew) => {
+        if (isNew) {
+          selectController.field.onChange("");
+          customController.field.onChange(newV);
+        } else {
+          selectController.field.onChange(newV);
+          customController.field.onChange("");
         }
-        controller.field.onChange(newValue);
       }}
-      searchable
     />
   );
 }
