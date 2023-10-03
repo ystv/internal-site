@@ -37,9 +37,9 @@ export function CreateEventForm(props: {
         filter={(v, q) => v.includes(q)}
       />
       <br />
-      <CheckBoxField name="is_private" label="Private Event" />
+      <CheckBoxField name="private" label="Private Event" />
       <br />
-      <CheckBoxField name="is_tentative" label="Tentative Event" />
+      <CheckBoxField name="tentative" label="Tentative Event" />
     </Form>
   );
 }
