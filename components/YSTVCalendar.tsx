@@ -3,7 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
-import { CalendarApi, EventInput } from "@fullcalendar/core";
+import { CalendarApi, EventInput, formatDate } from "@fullcalendar/core";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@mantine/hooks";
 import {
@@ -160,6 +160,15 @@ export default function YSTVCalendar({
                 month: "long",
               });
             },
+          },
+          dayGridWeek: {
+            type: "dayGridWeek",
+            dayHeaderFormat: (date) =>
+              formatDate(date.date.marker, {
+                month: "2-digit",
+                day: "2-digit",
+                locale: "en-GB",
+              }),
           },
         }}
         fixedWeekCount={false}
