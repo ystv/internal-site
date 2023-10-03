@@ -1,24 +1,28 @@
 "use server";
-import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
+import {
+  getCurrentUser,
+  mustGetCurrentUser,
+  requirePermission,
+} from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
 import * as Calendar from "@/features/calendar";
 import { EventType, hasRSVP } from "@/features/calendar/types";
+import {
+  canManage,
+  canManageSignUpSheet,
+} from "@/features/calendar/permissions";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import {
   EditEventSchema,
   SignupSheetSchema,
 } from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
+import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
-import invariant from "@/lib/invariant";
-import {
-  canManage,
-  canManageSignUpSheet,
-  updateSignUpSheet,
-} from "@/features/calendar";
 import { isBefore } from "date-fns";
+import invariant from "@/lib/invariant";
 
 export async function editEvent(
   eventID: number,
@@ -91,193 +95,9 @@ export async function updateAttendeeStatus(
   revalidatePath(`/calendar/${evt.event_id}`);
   return { ok: true };
 }
-
-export async function createSignUpSheet(
-  eventID: number,
-  sheet: z.infer<typeof SignupSheetSchema>,
-): Promise<FormResponse> {
-  const me = await getCurrentUser();
-
-  const event = await Calendar.getEvent(eventID);
-  invariant(event, "Event does not exist");
-
-  if (!canManage(event, me)) {
-    return {
-      ok: false,
-      errors: {
-        root: "You do not have permission to manage this event",
-      },
-    };
-  }
-
-  const payload = SignupSheetSchema.safeParse(sheet);
-  if (!payload.success) {
-    return zodErrorResponse(payload.error);
-  }
-
-  await Calendar.createSignupSheet(eventID, payload.data);
-  revalidatePath("/calendar/[eventID]");
-  return { ok: true } as const;
-}
-
-export async function editSignUpSheet(
-  sheetID: number,
-  data: z.infer<typeof SignupSheetSchema>,
-): Promise<FormResponse> {
-  const me = await getCurrentUser();
-  const sheet = await Calendar.getSignUpSheet(sheetID);
-  if (!sheet) {
-    return {
-      ok: false,
-      errors: {
-        root: "Signup sheet not found",
-      },
-    };
-  }
-  if (!canManageSignUpSheet(sheet.events, sheet, me)) {
-    return {
-      ok: false,
-      errors: {
-        root: "You do not have permission to manage this signup sheet",
-      },
-    };
-  }
-
-  const payload = SignupSheetSchema.safeParse(data);
-  if (!payload.success) {
-    return zodErrorResponse(payload.error);
-  }
-
-  await updateSignUpSheet(sheetID, payload.data);
-  revalidatePath("/calendar/[eventID]");
-  return { ok: true } as const;
-}
-
-export async function deleteSignUpSheet(sheetID: number) {
-  const me = await getCurrentUser();
-  const sheet = await Calendar.getSignUpSheet(sheetID);
-  if (!sheet) {
-    return {
-      ok: false,
-      errors: {
-        root: "Signup sheet not found",
-      },
-    };
-  }
-  if (!canManageSignUpSheet(sheet.events, sheet, me)) {
-    return {
-      ok: false,
-      errors: {
-        root: "You do not have permission to manage this signup sheet",
-      },
-    };
-  }
-
-  await Calendar.deleteSignUpSheet(sheetID);
-  revalidatePath("/calendar/[eventID]");
-  return { ok: true } as const;
-}
-
-export async function signUpToRole(sheetID: number, crewID: number) {
-  const me = await getCurrentUser();
-  const sheet = await Calendar.getSignUpSheet(sheetID);
-  if (!sheet) {
-    return {
-      ok: false,
-      errors: {
-        root: "Signup sheet not found",
-      },
-    };
-  }
-  if (sheet.unlock_date && isBefore(new Date(), sheet.unlock_date)) {
-    return {
-      ok: false,
-      errors: {
-        root: "Signup sheet is locked",
-      },
-    };
-  }
-  const crew = sheet.crews.find((crew) => crew.crew_id === crewID);
-  if (!crew) {
-    return {
-      ok: false,
-      errors: {
-        root: "Role not found",
-      },
-    };
-  }
-  if (crew.user_id !== null || crew.custom_crew_member_name !== null) {
-    return {
-      ok: false,
-      errors: {
-        root: "Role is already filled",
-      },
-    };
-  }
-  const res = await Calendar.signUpToRole(sheetID, crewID, me.user_id);
-  if (!res.ok) {
-    return {
-      ok: false,
-      errors: {
-        root: res.reason,
-      },
-    };
-  }
-  revalidatePath("/calendar/[eventID]");
-  return { ok: true };
-}
-
-export async function removeSelfFromRole(sheetID: number, crewID: number) {
-  const me = await getCurrentUser();
-  const sheet = await Calendar.getSignUpSheet(sheetID);
-  if (!sheet) {
-    return {
-      ok: false,
-      errors: {
-        root: "Signup sheet not found",
-      },
-    };
-  }
-  if (sheet.unlock_date && isBefore(new Date(), sheet.unlock_date)) {
-    return {
-      ok: false,
-      errors: {
-        root: "Signup sheet is locked",
-      },
-    };
-  }
-  const crew = sheet.crews.find((crew) => crew.crew_id === crewID);
-  if (!crew) {
-    return {
-      ok: false,
-      errors: {
-        root: "Role not found",
-      },
-    };
-  }
-  if (crew.user_id !== me.user_id) {
-    return {
-      ok: false,
-      errors: {
-        root: "You are not signed up for this role",
-      },
-    };
-  }
-  const res = await Calendar.removeUserFromRole(sheetID, crewID, me.user_id);
-  if (!res.ok) {
-    return {
-      ok: false,
-      errors: {
-        root: res.reason,
-      },
-    };
-  }
-  revalidatePath("/calendar/[eventID]");
-  return { ok: true };
-}
-
 export async function createAdamRMSProject(eventID: number) {
   const me = await mustGetCurrentUser();
+  await requirePermission("CalendarIntegration.Admin");
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 
@@ -295,8 +115,77 @@ export async function createAdamRMSProject(eventID: number) {
   return { ok: true };
 }
 
+export async function getAdamRMSLinkCandidates() {
+  const me = await mustGetCurrentUser();
+  await requirePermission("CalendarIntegration.Admin");
+  // Rudimentary check
+  if (me.permissions.length === 0) {
+    return { ok: false, errors: { root: "You do not have permission" } };
+  }
+  return { ok: true, candidates: await Calendar.getAdamRMSLinkCandidates() };
+}
+
+export async function linkAdamRMSProject(eventID: number, projectID: number) {
+  const me = await mustGetCurrentUser();
+  await requirePermission("CalendarIntegration.Admin");
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to manage this event",
+      },
+    };
+  }
+
+  const res = await Calendar.linkAdamRMS(eventID, projectID);
+  if (!res.ok) {
+    switch (res.error) {
+      case "kit_clash":
+        return {
+          ok: false,
+          errors: {
+            root: "The project dates would result in a kit clash. Please contact the Tech Team.",
+          },
+        };
+      default:
+        return {
+          ok: false,
+          errors: {
+            root: `An unknown error occurred (${res.error})`,
+          },
+        };
+    }
+  }
+  revalidatePath(`/calendar/${event.event_id}`);
+  return { ok: true };
+}
+
+export async function unlinkAdamRMS(eventID: number) {
+  const me = await mustGetCurrentUser();
+  await requirePermission("CalendarIntegration.Admin");
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to manage this event",
+      },
+    };
+  }
+
+  await Calendar.unlinkAdamRMS(eventID);
+  revalidatePath(`/calendar/${event.event_id}`);
+  return { ok: true };
+}
+
 export async function cancelEvent(eventID: number) {
   const me = await mustGetCurrentUser();
+  await requirePermission("CalendarIntegration.Admin");
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 
@@ -318,6 +207,7 @@ export async function cancelEvent(eventID: number) {
 
 export async function reinstateEvent(eventID: number) {
   const me = await mustGetCurrentUser();
+  await requirePermission("CalendarIntegration.Admin");
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 
@@ -339,6 +229,7 @@ export async function reinstateEvent(eventID: number) {
 
 export async function deleteEvent(eventID: number) {
   const me = await mustGetCurrentUser();
+  await requirePermission("CalendarIntegration.Admin");
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 

@@ -1,13 +1,12 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { Forbidden, NotLoggedIn } from "./errors";
-import { Permission, PermissionEnum } from "./common";
+import { Permission } from "./permissions";
 import { User } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { _UserModel } from "../db/types";
 import { decode, encode } from "../sessionSecrets";
 
 export type UserType = User & {

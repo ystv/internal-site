@@ -1,8 +1,8 @@
 "use client";
 
-import { isNotLoggedIn } from "@/lib/auth/common";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { isNotLoggedIn } from "@/lib/auth/errors";
 
 export default function Error({
   error,

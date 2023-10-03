@@ -21,6 +21,17 @@ async function findIDOfUser(email: string): Promise<number | null> {
   }
 }
 
+export async function listProjects() {
+  return (await makeRequest("/projects/list.php", "GET")) as {
+    projects_id: number;
+    projects_name: string;
+    clients_name: any;
+    projects_manager: number;
+    thisProjectManager: boolean;
+    subprojects: unknown[];
+  }[];
+}
+
 export async function createProject(
   name: string,
   projectManagerEmail: string,
@@ -81,4 +92,14 @@ export async function changeProjectDates(
     default:
       invariant(false, type);
   }
+}
+
+export async function newQuickProjectComment(
+  projectID: number,
+  comment: string,
+) {
+  return (await makeRequest("/projects/newQuickComment.php", "POST", {
+    projects_id: projectID.toString(10),
+    text: comment,
+  })) as {};
 }

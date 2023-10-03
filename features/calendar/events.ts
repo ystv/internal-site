@@ -4,11 +4,11 @@ import { prisma } from "@/lib/db";
 import {
   Attendee,
   Crew,
-  Prisma,
   Event,
-  User,
-  SignupSheet,
   Position,
+  Prisma,
+  SignupSheet,
+  User,
 } from "@prisma/client";
 import { AttendStatus } from "@/features/calendar/statuses";
 import { ExposedUser, ExposedUserModel } from "@/features/people";
@@ -321,46 +321,6 @@ export async function deleteEvent(eventID: number, userID: number) {
           user_id: userID,
         },
       },
-    },
-  });
-}
-
-export async function addProjectToAdamRMS(
-  eventID: number,
-  currentUserID: number,
-) {
-  const me = await prisma.user.findFirstOrThrow({
-    where: {
-      user_id: currentUserID,
-    },
-    select: {
-      email: true,
-    },
-  });
-  const event = await prisma.event.findFirstOrThrow({
-    where: {
-      event_id: eventID,
-    },
-  });
-  const projectId = await AdamRMS.createProject(event.name, me.email);
-  await AdamRMS.changeProjectDates(
-    projectId,
-    event.start_date,
-    event.end_date,
-    "dates",
-  );
-  await AdamRMS.changeProjectDates(
-    projectId,
-    event.start_date,
-    event.end_date,
-    "deliver_dates",
-  );
-  await prisma.event.update({
-    where: {
-      event_id: eventID,
-    },
-    data: {
-      adam_rms_project_id: projectId,
     },
   });
 }

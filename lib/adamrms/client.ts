@@ -33,8 +33,9 @@ export async function makeRequest(
   const res = await fetchCookie(url, init);
   const data = await res.json();
   if (data.result !== true) {
-    if (data.error.code === "AUTH" && data.error.message === "AUTH FAIL") {
+    if (data.error.message.startsWith("AUTH FAIL")) {
       if (shouldRetryOnAuthFail) {
+        console.log("AUTH FAIL - retrying");
         await login();
         return await makeRequest(endpoint, method, params, false);
       }

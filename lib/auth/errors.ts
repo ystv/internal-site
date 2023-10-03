@@ -1,4 +1,4 @@
-import { Permission } from "@/lib/auth/common";
+import type { Permission } from "@/lib/auth/permissions";
 
 const NOT_LOGGED_IN = "Not logged in";
 
