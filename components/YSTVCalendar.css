@@ -24,7 +24,7 @@
 }
 
 .fc-event-time {
-  width: fit-content;
+  flex-shrink: 0;
 }
 
 @keyframes fadeInFromNone {
