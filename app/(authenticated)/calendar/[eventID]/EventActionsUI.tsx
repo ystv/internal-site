@@ -25,6 +25,7 @@ import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
 import { Button, Menu, Modal, Select, Text } from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import { useRouter } from "next/navigation";
+import { PermissionGate } from "@/components/UserContext";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -201,62 +202,64 @@ export function EventActionsUI(props: { event: EventObjectType }) {
           Cancel Event
         </Button>
       )}
-      <Menu shadow="md">
-        <Menu.Target>
-          <Button color="green" loading={isPending}>
-            <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
-            {props.event.adam_rms_project_id !== null
-              ? "Kit List"
-              : "Create Kit List"}
-          </Button>
-        </Menu.Target>
-        <Menu.Dropdown>
-          {props.event.adam_rms_project_id === null ? (
-            <>
-              <Menu.Item
-                disabled={isPending}
-                onClick={() =>
-                  startTransition(async () => {
-                    await createAdamRMSProject(props.event.event_id);
-                  })
-                }
-              >
-                New AdamRMS Project
-              </Menu.Item>
-              <Menu.Item
-                disabled={isPending}
-                onClick={() =>
-                  startTransition(async () => {
-                    await doLink();
-                  })
-                }
-              >
-                Link Existing Project
-              </Menu.Item>
-            </>
-          ) : (
-            <>
-              <Menu.Item
-                component="a"
-                href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
-                target="_blank"
-              >
-                View AdamRMS Project
-              </Menu.Item>
-              <Menu.Item
-                disabled={isPending}
-                onClick={() =>
-                  startTransition(async () => {
-                    await unlinkAdamRMS(props.event.event_id);
-                  })
-                }
-              >
-                Unlink Project
-              </Menu.Item>
-            </>
-          )}
-        </Menu.Dropdown>
-      </Menu>
+      <PermissionGate required={["CalendarIntegration.Admin"]}>
+        <Menu shadow="md">
+          <Menu.Target>
+            <Button color="green" loading={isPending}>
+              <Image src={AdamRMSLogo} className="mr-1 h-4 w-4" alt="" />
+              {props.event.adam_rms_project_id !== null
+                ? "Kit List"
+                : "Create Kit List"}
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown>
+            {props.event.adam_rms_project_id === null ? (
+              <>
+                <Menu.Item
+                  disabled={isPending}
+                  onClick={() =>
+                    startTransition(async () => {
+                      await createAdamRMSProject(props.event.event_id);
+                    })
+                  }
+                >
+                  New AdamRMS Project
+                </Menu.Item>
+                <Menu.Item
+                  disabled={isPending}
+                  onClick={() =>
+                    startTransition(async () => {
+                      await doLink();
+                    })
+                  }
+                >
+                  Link Existing Project
+                </Menu.Item>
+              </>
+            ) : (
+              <>
+                <Menu.Item
+                  component="a"
+                  href={`https://dash.adam-rms.com/project/?id=${props.event.adam_rms_project_id}`}
+                  target="_blank"
+                >
+                  View AdamRMS Project
+                </Menu.Item>
+                <Menu.Item
+                  disabled={isPending}
+                  onClick={() =>
+                    startTransition(async () => {
+                      await unlinkAdamRMS(props.event.event_id);
+                    })
+                  }
+                >
+                  Unlink Project
+                </Menu.Item>
+              </>
+            )}
+          </Menu.Dropdown>
+        </Menu>
+      </PermissionGate>
       <Button onClick={() => setEditOpen(true)} className="block">
         Edit Event
       </Button>

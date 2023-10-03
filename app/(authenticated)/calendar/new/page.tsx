@@ -8,8 +8,9 @@ import {
   creatableEventTypes,
 } from "@/features/calendar/permissions";
 import * as Calendar from "@/features/calendar/events";
-import { Forbidden, Permission } from "@/lib/auth/common";
+import { Permission } from "@/lib/auth/permissions";
 import { revalidatePath } from "next/cache";
+import { Forbidden } from "@/lib/auth/errors";
 
 async function createEvent(
   data: unknown,

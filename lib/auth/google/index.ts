@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 import { OAuth2Client } from "google-auth-library";
-import { NotLoggedIn } from "../common";
 
 const Google = new OAuth2Client();
 
