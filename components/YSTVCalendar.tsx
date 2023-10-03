@@ -111,13 +111,14 @@ export default function YSTVCalendar({
           list: "List",
         }}
         showNonCurrentDates={false}
-        datesSet={(n) =>
-          router.push(
-            `/calendar?year=${n.start.getFullYear()}&month=${
-              n.start.getMonth() + 1
-            }&day=${n.start.getDate()}`,
-          )
-        }
+        datesSet={(n) => {
+          const newDate = n.view.calendar.getDate();
+          return router.push(
+            `/calendar?year=${newDate.getFullYear()}&month=${
+              newDate.getMonth() + 1
+            }&day=${newDate.getDate()}`,
+          );
+        }}
         titleFormat={{
           year: "numeric",
           month: isMobileView ? "short" : "long",
