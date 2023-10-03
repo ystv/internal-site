@@ -23,6 +23,10 @@
   margin-top: 0.25em;
 }
 
+.fc-event-time {
+  width: fit-content;
+}
+
 @keyframes fadeInFromNone {
   0% {
     background-color: var(--fc-today-bg-color);
