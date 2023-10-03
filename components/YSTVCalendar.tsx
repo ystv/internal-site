@@ -50,10 +50,10 @@ function getUoYWeekName(date: Date) {
 
 export default function YSTVCalendar({
   events,
-  selectedMonth,
+  selectedDate,
 }: {
   events: Event[];
-  selectedMonth: Date;
+  selectedDate: Date;
 }) {
   const router = useRouter();
   const isMobileView = useMediaQuery("(max-width: 650px)", undefined, {
@@ -115,7 +115,7 @@ export default function YSTVCalendar({
           router.push(
             `/calendar?year=${n.start.getFullYear()}&month=${
               n.start.getMonth() + 1
-            }`,
+            }&day=${n.start.getDate()}`,
           )
         }
         titleFormat={{
@@ -180,7 +180,7 @@ export default function YSTVCalendar({
         weekNumberFormat={{ week: "long" }} //Do not delete this line, it is used to format the week number or it kicks up a fuss
         height={"auto"}
         //////
-        initialDate={selectedMonth}
+        initialDate={selectedDate}
         eventClick={(info) => {
           // don't let the browser navigate
           info.jsEvent.preventDefault();
