@@ -17,39 +17,150 @@ import {
   useCrewPositions,
   useMembers,
 } from "@/components/FormFieldPreloadedData";
-import { Fragment, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
-import { Select } from "@mantine/core";
+import {
+  Combobox,
+  ComboboxChevron,
+  ComboboxDropdown,
+  ComboboxOption,
+  ComboboxOptions,
+  ComboboxTarget,
+  InputBase,
+  Select,
+  useCombobox,
+} from "@mantine/core";
 import { getUserName } from "@/components/UserHelpers";
 
+/**
+ * React component for a select input with custom options.
+ *
+ * Its behaviour depends on the value of `props.isCustomValue`:
+ * * If false, `props.value` is assumed to be the `value` field of one of the `props.data` elements, and the corresponding `label` is displayed.
+ * * If true, `props.value` is assumed to be a custom value, and is displayed as-is. It is assumed that the parent component will handle storing it on the server.
+ *
+ * @component
+ * @param {Object} props - Component props.
+ * @param {Array} props.data - Array of objects with `label` and `value` properties for selectable options.
+ * @param {string} props.value - Currently selected value (custom or from options).
+ * @param {boolean} props.isCustomValue - Flag indicating if the selected value is custom.
+ * @param {(value: string, isCustom: boolean) => unknown} props.onChange - Callback on value change.
+ */
+function SelectWithCustomOption(props: {
+  data: { label: string; value: string }[];
+  value: string;
+  isCustomValue: boolean;
+  onChange: (value: string, isCustom: boolean) => unknown;
+}) {
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+  });
+
+  const [search, setSearch] = useState("");
+
+  const filtered = useMemo(
+    () =>
+      props.data.filter((x) =>
+        x.label.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
+      ),
+    [props.data, search],
+  );
+  const selected = useMemo(
+    () =>
+      props.isCustomValue
+        ? props.value
+        : props.data.find((x) => x.value === props.value)?.label ??
+          "SHOULD NEVER HAPPEN",
+    [props.data, props.value, props.isCustomValue],
+  );
+
+  const options = filtered.map((item) => (
+    <ComboboxOption key={item.value} value={item.value}>
+      {item.label}
+    </ComboboxOption>
+  ));
+
+  return (
+    <Combobox
+      store={combobox}
+      withinPortal={false}
+      onOptionSubmit={(val) => {
+        if (val === "$create") {
+          props.onChange(search, true);
+        } else {
+          props.onChange(val, false);
+        }
+        combobox.closeDropdown();
+      }}
+    >
+      <ComboboxTarget>
+        <InputBase
+          rightSection={<ComboboxChevron />}
+          value={search || selected}
+          onChange={(e) => {
+            combobox.openDropdown();
+            combobox.updateSelectedOptionIndex();
+            setSearch(e.currentTarget.value);
+          }}
+          onClick={() => combobox.openDropdown()}
+          onFocus={() => combobox.openDropdown()}
+          onBlur={() => {
+            combobox.closeDropdown();
+            setSearch(selected ? selected : "");
+          }}
+          placeholder="TODO"
+          rightSectionPointerEvents="none"
+        />
+      </ComboboxTarget>
+      <ComboboxDropdown>
+        <ComboboxOptions>
+          {options}
+          {filtered.length === 0 && search.trim().length > 0 && (
+            <ComboboxOption value="$create">"{search}"</ComboboxOption>
+          )}
+        </ComboboxOptions>
+      </ComboboxDropdown>
+    </Combobox>
+  );
+}
+
 function CrewPositionField(props: { parentName: string }) {
-  const [isCustom, setIsCustom] = useState(false);
   const vals = useCrewPositions();
   const selectController = useController({
     name: `${props.parentName}.position_id`,
   });
-  return isCustom ? (
-    <TextField
-      name={`${props.parentName}.custom_position_name`}
-      placeholder="Enter crew position name"
-    />
-  ) : (
-    <Select
+  const customController = useController({
+    name: `${props.parentName}.custom_position_name`,
+  });
+
+  const [value, isCustom] = useMemo<[string, boolean]>(() => {
+    if (customController.field.value?.trim().length > 0) {
+      return [customController.field.value, true];
+    }
+    if (typeof selectController.field.value === "string") {
+      return [selectController.field.value, false];
+    }
+    return [selectController.field.value.toString(10), false];
+  }, [selectController.field.value, customController.field.value]);
+
+  return (
+    <SelectWithCustomOption
       data={[
         ...vals.map((val) => ({
           label: val.name,
           value: val.position_id.toString(10),
         })),
-        { label: "Custom", value: "$custom" },
-      ]}
-      value={selectController.field.value}
-      onChange={(newValue) => {
-        if (newValue === "$custom") {
+      ].filter(Boolean)}
+      value={value}
+      isCustomValue={isCustom}
+      onChange={(newValue, isNew) => {
+        if (isNew) {
           selectController.field.onChange("");
-          setIsCustom(true);
-          return;
+          customController.field.onChange(newValue);
+        } else {
+          selectController.field.onChange(newValue);
+          customController.field.onChange("");
         }
-        selectController.field.onChange(newValue);
       }}
     />
   );
@@ -88,6 +199,7 @@ function CrewMemberField(props: { parentName: string }) {
         }
         controller.field.onChange(newValue);
       }}
+      searchable
     />
   );
 }
