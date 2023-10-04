@@ -20,6 +20,8 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
+import { Alert } from "@mantine/core";
+import { TbInfoCircle, TbAlertTriangle } from "react-icons/tb";
 
 async function AttendeesView({
   event,
@@ -115,6 +117,28 @@ export default async function EventPage({
   const me = await getCurrentUser();
   return (
     <>
+      {event.is_cancelled && (
+        <Alert
+          variant="light"
+          color="red"
+          title="Event Cancelled"
+          icon={<TbAlertTriangle />}
+        >
+          Unfortunately this event has been cancelled. If you have any
+          questions, please contact the producer/host.
+        </Alert>
+      )}
+      {event.is_tentative && (
+        <Alert
+          variant="light"
+          color="grey"
+          title="Tentative Event"
+          icon={<TbInfoCircle />}
+        >
+          This event has not been confirmed by the producer/host yet. Please
+          check back later for updates.
+        </Alert>
+      )}
       <div
         className={
           "flex w-full flex-col items-center justify-between sm:flex-row"
@@ -125,9 +149,9 @@ export default async function EventPage({
             className={twMerge(
               "text-4xl font-bold",
               event.is_cancelled && "text-danger-4 line-through",
+              event.is_tentative && "italic text-gray-600",
             )}
           >
-            {event.is_cancelled && <span>CANCELLED: </span>}
             {event.name}
           </h1>
         </div>

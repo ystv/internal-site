@@ -27,6 +27,14 @@
   flex-shrink: 0;
 }
 
+.ystv-calendar-strike-through .fc-event-title {
+  text-decoration: line-through;
+}
+
+.ystv-calendar-strike-through .fc-list-event-title {
+  text-decoration: line-through;
+}
+
 @keyframes fadeInFromNone {
   0% {
     background-color: var(--fc-today-bg-color);

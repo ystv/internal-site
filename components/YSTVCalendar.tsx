@@ -200,8 +200,8 @@ export default function YSTVCalendar({
             eventObject.color = "#8b8b8b";
           }
           if (evt.is_cancelled) {
-            eventObject.title = `CANCELLED: ${eventObject.title}`;
             eventObject.color = "#B00020";
+            eventObject.className = "ystv-calendar-strike-through";
           }
           return eventObject;
         })}
