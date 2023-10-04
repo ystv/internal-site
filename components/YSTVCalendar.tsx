@@ -88,7 +88,7 @@ export default function YSTVCalendar({
             }}
             data={viewsList}
             value={calendarAPI.view.type}
-            onChange={(e) => calendarAPI.changeView(e ?? "dayGridMonth")}
+            onChange={(e) => calendarAPI.changeView(e ?? "dayGridWeek")}
             autoComplete="off"
           />
           <br />
