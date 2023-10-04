@@ -4,6 +4,7 @@ import { schema } from "./schema";
 import {
   CheckBoxField,
   DatePickerField,
+  SegmentedField,
   SelectField,
   TextAreaField,
   TextField,
@@ -28,13 +29,12 @@ export function CreateEventForm(props: {
       <DatePickerField name="startDate" label="Start" required />
       <DatePickerField name="endDate" label="End" required />
       <TextField name="location" label="Location" />
-      <SelectField
+      <SegmentedField
         name="type"
         label="Type"
         options={props.permittedEventTypes}
         getOptionValue={identity}
         renderOption={(v) => v[0].toUpperCase() + v.slice(1)}
-        filter={(v, q) => v.includes(q)}
       />
       {/*<br />*/}
       {/*<CheckBoxField name="private" label="Private Event" />*/}
