@@ -3,7 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
-import { CalendarApi, EventInput, formatDate } from "@fullcalendar/core";
+import { EventInput, formatDate } from "@fullcalendar/core";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@mantine/hooks";
 import {
@@ -16,7 +16,7 @@ import "./YSTVCalendar.css";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import { Select } from "@mantine/core";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 dayjs.extend(weekOfYear);
 
@@ -50,10 +50,10 @@ function getUoYWeekName(date: Date) {
 
 export default function YSTVCalendar({
   events,
-  selectedMonth,
+  selectedDate,
 }: {
   events: Event[];
-  selectedMonth: Date;
+  selectedDate: Date;
 }) {
   const router = useRouter();
   const isMobileView = useMediaQuery("(max-width: 650px)", undefined, {
@@ -61,11 +61,7 @@ export default function YSTVCalendar({
   });
 
   const calendarRef = useRef<FullCalendar>(null);
-  const [calendarAPI, setCalendarAPI] = useState<CalendarApi | null>(null);
-  useEffect(() => {
-    if (calendarRef.current == null) return;
-    setCalendarAPI(calendarRef.current.getApi());
-  }, [calendarRef]);
+  const [calendarView, setCalendarView] = useState<string | null>(null);
 
   const viewsList = [
     { value: "dayGridMonth", label: "Month" },
@@ -76,7 +72,7 @@ export default function YSTVCalendar({
 
   return (
     <>
-      {isMobileView && calendarRef.current && calendarAPI && (
+      {isMobileView && calendarRef.current && calendarView && (
         <>
           <Select
             label="Calendar View"
@@ -87,8 +83,10 @@ export default function YSTVCalendar({
               },
             }}
             data={viewsList}
-            value={calendarAPI.view.type}
-            onChange={(e) => calendarAPI.changeView(e ?? "dayGridMonth")}
+            value={calendarView}
+            onChange={(e) =>
+              calendarRef.current?.getApi().changeView(e ?? "dayGridWeek")
+            }
             autoComplete="off"
           />
           <br />
@@ -110,14 +108,19 @@ export default function YSTVCalendar({
           day: "Day",
           list: "List",
         }}
+        viewDidMount={(n) => {
+          setCalendarView(n.view.type);
+        }}
         showNonCurrentDates={false}
-        datesSet={(n) =>
-          router.push(
-            `/calendar?year=${n.start.getFullYear()}&month=${
-              n.start.getMonth() + 1
-            }`,
-          )
-        }
+        datesSet={(n) => {
+          setCalendarView(n.view.type);
+          const newDate = n.view.calendar.getDate();
+          return router.push(
+            `/calendar?year=${newDate.getFullYear()}&month=${
+              newDate.getMonth() + 1
+            }&day=${newDate.getDate()}`,
+          );
+        }}
         titleFormat={{
           year: "numeric",
           month: isMobileView ? "short" : "long",
@@ -180,7 +183,7 @@ export default function YSTVCalendar({
         weekNumberFormat={{ week: "long" }} //Do not delete this line, it is used to format the week number or it kicks up a fuss
         height={"auto"}
         //////
-        initialDate={selectedMonth}
+        initialDate={selectedDate}
         eventClick={(info) => {
           // don't let the browser navigate
           info.jsEvent.preventDefault();
