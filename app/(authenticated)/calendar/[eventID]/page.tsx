@@ -124,7 +124,7 @@ export default async function EventPage({
           title="Event Cancelled"
           icon={<TbAlertTriangle />}
         >
-          Unfortunately, this event has been cancelled. If you have any
+          Unfortunately this event has been cancelled. If you have any
           questions, please contact the producer/host.
         </Alert>
       )}
@@ -135,7 +135,7 @@ export default async function EventPage({
           title="Tentative Event"
           icon={<TbInfoCircle />}
         >
-          This event is has not been confirmed by the producer/host yet. Please
+          This event has not been confirmed by the producer/host yet. Please
           check back later for updates.
         </Alert>
       )}
