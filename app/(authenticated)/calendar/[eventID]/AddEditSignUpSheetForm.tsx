@@ -52,6 +52,7 @@ function SelectWithCustomOption(props: {
   isCustomValue: boolean;
   onChange: (value: string, isCustom: boolean) => unknown;
   placeholder?: string;
+  allowNone?: boolean;
 }) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
@@ -88,6 +89,8 @@ function SelectWithCustomOption(props: {
       onOptionSubmit={(val) => {
         if (val === "$create") {
           props.onChange(search, true);
+        } else if (val === "$null") {
+          props.onChange("", false);
         } else {
           props.onChange(val, false);
         }
@@ -125,6 +128,9 @@ function SelectWithCustomOption(props: {
       </ComboboxTarget>
       <ComboboxDropdown>
         <ComboboxOptions>
+          {props.allowNone && search.trim().length === 0 && (
+            <ComboboxOption value={"$null"}>None</ComboboxOption>
+          )}
           {options}
           {filtered.length === 0 && search.trim().length > 0 && (
             <ComboboxOption value="$create">
@@ -209,6 +215,7 @@ function CrewMemberField(props: { parentName: string }) {
       }))}
       value={value}
       isCustomValue={isCustom}
+      allowNone
       onChange={(newV, isNew) => {
         if (isNew) {
           selectController.field.onChange("");
