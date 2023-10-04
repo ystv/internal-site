@@ -36,8 +36,8 @@ export function CreateEventForm(props: {
         renderOption={(v) => v[0].toUpperCase() + v.slice(1)}
         filter={(v, q) => v.includes(q)}
       />
-      <br />
-      <CheckBoxField name="private" label="Private Event" />
+      {/*<br />*/}
+      {/*<CheckBoxField name="private" label="Private Event" />*/}
       <br />
       <CheckBoxField name="tentative" label="Tentative Event" />
     </Form>

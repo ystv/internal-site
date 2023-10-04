@@ -42,8 +42,8 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
       <DatePickerField name="start_date" label="Start" required />
       <DatePickerField name="end_date" label="End" required />
       <TextField name="location" label="Location" />
-      <br />
-      <CheckBoxField name="is_private" label="Private Event" />
+      {/*<br />*/}
+      {/*<CheckBoxField name="is_private" label="Private Event" />*/}
       <br />
       <CheckBoxField name="is_tentative" label="Tentative Event" />
     </Form>
