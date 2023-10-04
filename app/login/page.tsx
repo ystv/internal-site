@@ -16,7 +16,7 @@ export default function GoogleSignInPage(props: {
         className="fixed left-0 top-0 z-0 h-full w-full object-cover"
       />
       <div className="relative z-50 mx-auto mt-16 block max-w-lg rounded-lg bg-white p-16 shadow-lg">
-        <h1 className="text-4xl font-bold text-black">Welcome to YSTV</h1>
+        <h1 className="text-4xl font-bold text-black text-center">Welcome to YSTV</h1>
         {props.searchParams?.error &&
           props.searchParams.error !== "No session" && (
             <p className="text-danger">{props.searchParams.error}</p>
