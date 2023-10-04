@@ -16,6 +16,8 @@ import {
   TextInput,
   Textarea,
   Box,
+  SegmentedControl,
+  Input,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import {
@@ -178,6 +180,40 @@ export function ArrayField<
         +
       </Button>
     </>
+  );
+}
+
+export function SegmentedField<TObj extends {}>(props: {
+  name: string;
+  options: TObj[];
+  label?: string;
+  renderOption: (obj: TObj) => string;
+  getOptionValue: (obj: TObj) => string;
+}) {
+  const ctx = useFormContext();
+  const { name, label, options, getOptionValue, renderOption } = props;
+  const selectedValue = ctx.watch(name) ?? getOptionValue(options[0]);
+  useEffect(() => {
+    if (!ctx.getValues(name)) {
+      ctx.setValue(name, selectedValue);
+    }
+  }, [ctx, name, selectedValue]);
+  return (
+    <Input.Wrapper label={label}>
+      <div>
+        <SegmentedControl
+          {...ctx.register(name, {})}
+          value={selectedValue}
+          onChange={(value) => ctx.setValue(name, value)}
+          data={[
+            ...options.map((obj) => ({
+              label: renderOption(obj),
+              value: getOptionValue(obj),
+            })),
+          ]}
+        />
+      </div>
+    </Input.Wrapper>
   );
 }
 
