@@ -205,12 +205,10 @@ export function SegmentedField<TObj extends {}>(props: {
           {...ctx.register(name, {})}
           value={selectedValue}
           onChange={(value) => ctx.setValue(name, value)}
-          data={[
-            ...options.map((obj) => ({
-              label: renderOption(obj),
-              value: getOptionValue(obj),
-            })),
-          ]}
+          data={options.map((obj) => ({
+            label: renderOption(obj),
+            value: getOptionValue(obj),
+          }))}
         />
       </div>
     </Input.Wrapper>
