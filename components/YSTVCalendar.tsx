@@ -17,12 +17,18 @@ import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import { Select } from "@mantine/core";
 import { useRef, useState } from "react";
+import * as Sentry from "@sentry/nextjs";
 
 dayjs.extend(weekOfYear);
 
 function getUoYWeekName(date: Date) {
   if (!Array.isArray(academicYears)) {
     // Something has gone badly wrong (https://linear.app/ystv/issue/WEB-100/typeerror-cacademicyearsfindlast-is-not-a-function-in)
+    Sentry.captureException(new Error("Failed to load academicYears"), {
+      extra: {
+        academicYears
+      },
+    });
     return "Week " + dayjs(date).week();
   }
   const academicYear = academicYears.findLast(
