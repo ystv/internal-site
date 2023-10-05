@@ -144,7 +144,7 @@ export async function listEventsForMonth(year: number, month: number) {
           // javascript dates are 0-indexed for months, but humans are 1-indexed
           // (human is dealt with at the API layer to avoid confusing JS everywhere else)
           gte: new Date(year, month, 1),
-          lte: new Date(year, month + 1, 0),
+          lt: new Date(year, month + 1, 1),
         },
         deleted_at: null,
       },
