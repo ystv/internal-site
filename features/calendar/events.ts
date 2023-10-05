@@ -153,6 +153,89 @@ export async function listEventsForMonth(year: number, month: number) {
   ).map((e) => sanitize(e));
 }
 
+export async function listVacantCrewRoles(role?: number) {
+  const roleQuery = {
+    AND: [
+      { user_id: null },
+      { locked: false },
+      { custom_crew_member_name: null },
+      { position_id: role ? { equals: role } : { not: undefined } },
+    ],
+  };
+
+  const sheetQuery = {
+    OR: [
+      {
+        unlock_date: null,
+      },
+      {
+        unlock_date: {
+          lt: new Date(),
+        },
+      },
+    ],
+  };
+
+  return (
+    await prisma.event.findMany({
+      where: {
+        start_date: {
+          // javascript dates are 0-indexed for months, but humans are 1-indexed
+          // (human is dealt with at the API layer to avoid confusing JS everywhere else)
+          gte: new Date(),
+        },
+        deleted_at: null,
+        is_cancelled: false,
+        signup_sheets: {
+          some: {
+            AND: [
+              sheetQuery,
+              {
+                crews: {
+                  some: roleQuery,
+                },
+              },
+            ],
+          },
+        },
+      },
+      include: {
+        attendees: {
+          include: {
+            users: true,
+            events: true,
+          },
+          where: {
+            attend_status: {
+              not: "unknown",
+            },
+          },
+        },
+        created_by_user: true,
+        updated_by_user: true,
+        signup_sheets: {
+          orderBy: {
+            signup_id: "asc",
+          },
+          where: sheetQuery,
+          include: {
+            crews: {
+              orderBy: {
+                crew_id: "asc",
+              },
+              where: roleQuery,
+              include: {
+                users: true,
+                positions: true,
+              },
+            },
+          },
+        },
+      },
+    })
+  ).map((e) => sanitize(e));
+}
+
 export async function getEvent(id: number): Promise<EventObjectType | null> {
   const res = await prisma.event.findFirst({
     where: {
