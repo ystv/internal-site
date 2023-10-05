@@ -21,14 +21,19 @@ import * as Sentry from "@sentry/nextjs";
 
 dayjs.extend(weekOfYear);
 
+let didLogAcademicYearError = false;
+
 function getUoYWeekName(date: Date) {
   if (!Array.isArray(academicYears)) {
     // Something has gone badly wrong (https://linear.app/ystv/issue/WEB-100/typeerror-cacademicyearsfindlast-is-not-a-function-in)
-    Sentry.captureException(new Error("Failed to load academicYears"), {
-      extra: {
-        academicYears
-      },
-    });
+    if (!didLogAcademicYearError) {
+      Sentry.captureException(new Error("Failed to load academicYears"), {
+        extra: {
+          academicYears
+        },
+      });
+      didLogAcademicYearError = true;
+    }
     return "Week " + dayjs(date).week();
   }
   const academicYear = academicYears.findLast(
