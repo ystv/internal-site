@@ -21,6 +21,10 @@ import { useRef, useState } from "react";
 dayjs.extend(weekOfYear);
 
 function getUoYWeekName(date: Date) {
+  if (!Array.isArray(academicYears)) {
+    // Something has gone badly wrong (https://linear.app/ystv/issue/WEB-100/typeerror-cacademicyearsfindlast-is-not-a-function-in)
+    return "Week " + dayjs(date).week();
+  }
   const academicYear = academicYears.findLast(
     (x) => x.periods[0].startDate.getTime() <= date.getTime(),
   );
