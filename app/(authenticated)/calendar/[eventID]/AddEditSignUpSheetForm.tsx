@@ -94,6 +94,7 @@ function SelectWithCustomOption(props: {
         } else {
           props.onChange(val, false);
         }
+        setSearch("");
         combobox.closeDropdown();
       }}
     >
@@ -132,7 +133,7 @@ function SelectWithCustomOption(props: {
             <ComboboxOption value={"$null"}>None</ComboboxOption>
           )}
           {options}
-          {filtered.length === 0 && search.trim().length > 0 && (
+          {search.trim().length > 0 && !filtered.some(x => x.label === search.trim()) && (
             <ComboboxOption value="$create">
               &apos;{search}&apos;
             </ComboboxOption>
