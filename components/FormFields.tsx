@@ -22,6 +22,7 @@ import { DateTimePicker } from "@mantine/dates";
 import { useMembers } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
 import dayjs from "dayjs";
+import { twMerge } from "tailwind-merge";
 
 export function TextField(props: {
   name: string;
@@ -87,9 +88,10 @@ export function DatePickerField(props: {
         const today = dayjs(date).isSame(dayjs(), "day");
         return (
           <Box
-            className={`flex h-full w-full items-center justify-center rounded-sm text-center ${
-              dayjs(date).isSame(dayjs(), "day") && "bg-blue-100"
-            }`}
+            className={twMerge(
+              "flex h-full w-full items-center justify-center rounded-sm text-center",
+              today && "bg-blue-100",
+            )}
           >
             <div>{date.getDate()}</div>
           </Box>
