@@ -1,5 +1,7 @@
 @Library('ystv-jenkins')
 
+def branch = env.BRANCH_NAME.replaceAll("/", "_")
+
 def imageTag = ''
 pipeline {
   agent {
@@ -16,8 +18,8 @@ pipeline {
         ciSkip action: 'check'
         script {
           def imageNamePrefix = ''
-          if (env.BRANCH_NAME != 'main') {
-            imageNamePrefix = "${env.BRANCH_NAME}-"
+          if (branch != 'main') {
+            imageNamePrefix = "${branch}-"
           }
           imageTag = "${imageNamePrefix}${env.BUILD_NUMBER}"
         }
@@ -49,7 +51,7 @@ pipeline {
         withDockerRegistry(credentialsId: 'docker-registry', url: 'https://registry.comp.ystv.co.uk') {
           sh "docker push registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}"
           script {
-            if (env.BRANCH_NAME == 'master') {
+            if (branch == 'master') {
               sh "docker tag registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag} registry.comp.ystv.co.uk/ystv/calendar2023:latest"
               sh 'docker push registry.comp.ystv.co.uk/ystv/calendar2023:latest'
             }
