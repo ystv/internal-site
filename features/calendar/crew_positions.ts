@@ -9,10 +9,13 @@ export interface CrewPositionType {
   full_description: string;
 }
 
-export function getAllCrewPositions(): Promise<CrewPositionType[]> {
+export function getAllNonCustomCrewPositions(): Promise<CrewPositionType[]> {
   return prisma.position.findMany({
     orderBy: {
       position_id: "asc",
     },
+    where: {
+      is_custom: false,
+    }
   });
 }
