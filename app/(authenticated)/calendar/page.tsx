@@ -7,7 +7,7 @@ import { Button } from "@mantine/core";
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: { year?: string; month?: string; day?: string };
+  searchParams: { year?: string; month?: string; day?: string; view?: string };
 }) {
   const now = new Date();
   const year = searchParams.year
@@ -42,7 +42,7 @@ export default async function CalendarPage({
         </PermissionGate>
       </div>
       <br />
-      <YSTVCalendar events={events} selectedDate={date} />
+      <YSTVCalendar events={events} selectedDate={date} view={searchParams.view} />
     </>
   );
 }

@@ -66,17 +66,19 @@ function getUoYWeekName(date: Date) {
 export default function YSTVCalendar({
   events,
   selectedDate,
+  view: rawView,
 }: {
   events: Event[];
   selectedDate: Date;
+  view?: string;
 }) {
   const router = useRouter();
   const isMobileView = useMediaQuery("(max-width: 650px)", undefined, {
     getInitialValueInEffect: false,
   });
+  const view = rawView ?? (isMobileView ? "dayGridWeek" : "dayGridMonth");
 
   const calendarRef = useRef<FullCalendar>(null);
-  const [calendarView, setCalendarView] = useState<string | null>(null);
 
   const viewsList = [
     { value: "dayGridMonth", label: "Month" },
@@ -87,7 +89,7 @@ export default function YSTVCalendar({
 
   return (
     <>
-      {isMobileView && calendarRef.current && calendarView && (
+      {isMobileView && calendarRef.current && (
         <>
           <Select
             label="Calendar View"
@@ -98,10 +100,15 @@ export default function YSTVCalendar({
               },
             }}
             data={viewsList}
-            value={calendarView}
-            onChange={(e) =>
-              calendarRef.current?.getApi().changeView(e ?? "dayGridWeek")
-            }
+            value={view}
+            onChange={(e) => {
+              const date = calendarRef.current?.getApi().getDate() ?? new Date();
+              router.push(
+                `/calendar?year=${date.getFullYear()}&month=${
+                  date.getMonth() + 1
+                }&day=${date.getDate()}&view=${e}`,
+              );
+            }}
             autoComplete="off"
           />
           <br />
@@ -110,7 +117,7 @@ export default function YSTVCalendar({
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin]}
-        initialView={isMobileView ? "dayGridWeek" : "dayGridMonth"}
+        initialView={view}
         headerToolbar={{
           right:
             "today prev,next" +
@@ -124,16 +131,21 @@ export default function YSTVCalendar({
           list: "List",
         }}
         viewDidMount={(n) => {
-          setCalendarView(n.view.type);
+          if (!rawView) {
+            router.replace(
+              `/calendar?year=${n.view.currentStart.getDay()}&month=${
+                n.view.currentStart.getMonth() + 1
+              }&day=${n.view.currentStart.getDate()}&view=${n.view.type}`,
+            );
+          }
         }}
         showNonCurrentDates={false}
         datesSet={(n) => {
-          setCalendarView(n.view.type);
           const newDate = n.view.calendar.getDate();
           return router.push(
             `/calendar?year=${newDate.getFullYear()}&month=${
               newDate.getMonth() + 1
-            }&day=${newDate.getDate()}`,
+            }&day=${newDate.getDate()}&view=${n.view.type}`,
           );
         }}
         titleFormat={{
