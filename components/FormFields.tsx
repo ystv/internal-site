@@ -188,12 +188,10 @@ export function SegmentedField<TObj extends {}>(props: {
   renderOption: (obj: TObj) => string;
   getOptionValue: (obj: TObj) => string;
 }) {
-  const ctx = useFormContext();
   const { name, label, options, getOptionValue, renderOption } = props;
   return (
     <Controller
       name={name}
-      control={ctx.control}
       defaultValue={getOptionValue(options[0])}
       render={({ field }) => (
         <Input.Wrapper label={label}>
