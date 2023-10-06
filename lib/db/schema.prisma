@@ -146,6 +146,7 @@ model Position {
   brief_description String  @default("")
   full_description  String
   crews             Crew[]
+  is_custom         Boolean @default(false)
 
   @@map("positions")
 }

@@ -8,6 +8,7 @@ export const _PositionModel = z.object({
   admin: z.boolean(),
   brief_description: z.string(),
   full_description: z.string(),
+  is_custom: z.boolean(),
 })
 
 export interface CompletePosition extends z.infer<typeof _PositionModel> {

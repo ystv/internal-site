@@ -12,7 +12,7 @@ import { EventObjectType, getEvent } from "@/features/calendar/events";
 import {
   canManage,
   canManageAnySignupSheet,
-  getAllCrewPositions,
+  getAllNonCustomCrewPositions,
 } from "@/features/calendar";
 import {
   CrewPositionsProvider,
@@ -87,11 +87,10 @@ async function ShowView({
   me: UserType;
 }) {
   if (canManageAnySignupSheet(event, me)) {
-    // TODO(WEB-40): this pre-loads quite a bit of information (~56k gzipped, 4MB uncompressed)
-    //  that we don't actually need until you go to edit a sheet.
+    // TODO(WEB-40): this pre-loads quite a bit of information that we don't actually need until you go to edit a sheet.
     //  Would be better to either load it on-demand dynamically, or move the edit view to a sub-page.
     const [positions, members] = await Promise.all([
-      getAllCrewPositions(),
+      getAllNonCustomCrewPositions(),
       getAllUsers(),
     ]);
     return (
