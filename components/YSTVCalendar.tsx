@@ -16,7 +16,7 @@ import "./YSTVCalendar.css";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import { Select } from "@mantine/core";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import * as Sentry from "@sentry/nextjs";
 
 dayjs.extend(weekOfYear);
@@ -29,7 +29,7 @@ function getUoYWeekName(date: Date) {
     if (!didLogAcademicYearError) {
       Sentry.captureException(new Error("Failed to load academicYears"), {
         extra: {
-          academicYears
+          academicYears,
         },
       });
       didLogAcademicYearError = true;
@@ -73,9 +73,11 @@ export default function YSTVCalendar({
   view?: string;
 }) {
   const router = useRouter();
+
   const isMobileView = useMediaQuery("(max-width: 650px)", undefined, {
     getInitialValueInEffect: false,
   });
+
   const view = rawView ?? (isMobileView ? "dayGridWeek" : "dayGridMonth");
 
   const calendarRef = useRef<FullCalendar>(null);
@@ -102,12 +104,7 @@ export default function YSTVCalendar({
             data={viewsList}
             value={view}
             onChange={(e) => {
-              const date = calendarRef.current?.getApi().getDate() ?? new Date();
-              router.push(
-                `/calendar?year=${date.getFullYear()}&month=${
-                  date.getMonth() + 1
-                }&day=${date.getDate()}&view=${e}`,
-              );
+              e && calendarRef.current?.getApi().changeView(e);
             }}
             autoComplete="off"
           />
@@ -130,17 +127,11 @@ export default function YSTVCalendar({
           day: "Day",
           list: "List",
         }}
-        viewDidMount={(n) => {
-          if (!rawView) {
-            router.replace(
-              `/calendar?year=${n.view.currentStart.getDay()}&month=${
-                n.view.currentStart.getMonth() + 1
-              }&day=${n.view.currentStart.getDate()}&view=${n.view.type}`,
-            );
-          }
-        }}
         showNonCurrentDates={false}
         datesSet={(n) => {
+          // Per https://github.com/fullcalendar/fullcalendar/issues/6582#issuecomment-942758927
+          // With the current view set being different durations, this handler is called every time
+          // the view changes as well this may change in-future, consider re-adding viewDidMount handler
           const newDate = n.view.calendar.getDate();
           return router.push(
             `/calendar?year=${newDate.getFullYear()}&month=${
