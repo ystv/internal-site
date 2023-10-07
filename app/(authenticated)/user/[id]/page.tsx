@@ -5,9 +5,11 @@ import * as Calendar from "@/features/calendar";
 import { notFound } from "next/navigation";
 import { getUserName } from "@/components/UserHelpers";
 import {Button} from "@mantine/core";
+import {ExposedUser} from "@/features/people";
+
+let user: ExposedUser | null;
 
 export default async function UserPage({ params }: { params: { id: string } }) {
-  let user;
   if (params.id === "me") {
     user = People.ExposedUserModel.parse(await getCurrentUser());
   } else {
@@ -49,7 +51,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           className="h-full min-w-[2rem] align-middle text-2xl font-black [&_.mantine-Button-inner]:text-xl"
           onClick={async () => location.href = `${
               process.env.PUBLIC_URL
-          }/iCal/${await Calendar.encodeUserID(user.user_id)}`}
+          }/iCal/${await Calendar.encodeUserID(user ? user.user_id : 0)}`}
           variant="danger"
           size="sm"
       >
