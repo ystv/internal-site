@@ -1,21 +1,11 @@
 "use client";
 
 import { LuMoon, LuSun } from "react-icons/lu";
-
-// import { Button } from "@/components/ui/button";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
 import { Button, Menu } from "@mantine/core";
 import { useMantineColorScheme } from "@mantine/core";
 
 export function ModeToggle() {
-  // const setTheme = localStorageColorSchemeManager().set;
-
-  const { setColorScheme, clearColorScheme } = useMantineColorScheme();
+  const { setColorScheme } = useMantineColorScheme();
 
   return (
     <Menu>
