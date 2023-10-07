@@ -15,7 +15,7 @@ import {
 import "./YSTVCalendar.css";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
-import { Select } from "@mantine/core";
+import { Loader, Select } from "@mantine/core";
 import { useRef } from "react";
 import * as Sentry from "@sentry/nextjs";
 
@@ -75,7 +75,7 @@ export default function YSTVCalendar({
   const router = useRouter();
 
   const isMobileView = useMediaQuery("(max-width: 650px)", undefined, {
-    getInitialValueInEffect: false,
+    getInitialValueInEffect: true,
   });
 
   const view = rawView ?? (isMobileView ? "dayGridWeek" : "dayGridMonth");
@@ -89,9 +89,16 @@ export default function YSTVCalendar({
     { value: "timeGridDay", label: "Day" },
   ];
 
+  if (isMobileView == undefined)
+    return (
+      <div className={"flex w-full justify-center"}>
+        <Loader />
+      </div>
+    );
+
   return (
     <>
-      {isMobileView && calendarRef.current && (
+      {isMobileView && (
         <>
           <Select
             label="Calendar View"
