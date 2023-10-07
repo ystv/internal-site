@@ -54,7 +54,7 @@ pipeline {
 
     stage('Deploy to development') {
       when {
-        branch 'master'
+        expression { env.BRANCH_IS_PRIMARY }
       }
       steps {
         build job: 'Deploy Nomad Job', parameters: [
