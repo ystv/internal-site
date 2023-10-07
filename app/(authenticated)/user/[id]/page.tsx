@@ -4,6 +4,7 @@ import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { notFound } from "next/navigation";
 import { getUserName } from "@/components/UserHelpers";
+import {Button} from "@mantine/core";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user;
@@ -43,7 +44,17 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           value={`${
             process.env.WEBCAL_URL
           }/iCal/${await Calendar.encodeUserID(user.user_id)}`}
-        />
+        /><br></br>
+          Press this button to add this to your calendar: <Button
+          className="h-full min-w-[2rem] align-middle text-2xl font-black [&_.mantine-Button-inner]:text-xl"
+          onClick={async () => location.href = `${
+              process.env.PUBLIC_URL
+          }/iCal/${await Calendar.encodeUserID(user.user_id)}`}
+          variant="danger"
+          size="sm"
+      >
+          Add to calendar
+      </Button>
       </p>
     </div>
   );
