@@ -41,7 +41,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           disabled
           className="w-96"
           value={`${
-            process.env.PUBLIC_URL
+            process.env.WEBCAL_URL
           }/iCal/${await Calendar.encodeUserID(user.user_id)}`}
         />
       </p>
