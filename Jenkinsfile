@@ -39,12 +39,6 @@ pipeline {
     }
 
     stage('Push') {
-      when {
-        anyOf {
-          branch 'master'
-          tag 'v*'
-        }
-      }
       steps {
         withDockerRegistry(credentialsId: 'docker-registry', url: 'https://registry.comp.ystv.co.uk') {
           sh "docker push registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}"
