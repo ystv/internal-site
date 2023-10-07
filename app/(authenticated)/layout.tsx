@@ -5,6 +5,7 @@ import { UserProvider } from "@/components/UserContext";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 import * as Sentry from "@sentry/nextjs";
+import { ModeToggle } from "@/components/ColorSchemeToggle";
 
 export default async function AuthenticatedLayout({
   children,
@@ -30,6 +31,9 @@ export default async function AuthenticatedLayout({
           />
         </Link>
         <div className="ml-auto space-x-1">
+          <ModeToggle />
+        </div>
+        <div className="ml-2 space-x-1">
           <Link href="/user/me">
             <Image
               src={user.avatar}
