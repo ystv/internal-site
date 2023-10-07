@@ -5,15 +5,19 @@ import { DateTime } from "@/components/DateTimeHelpers";
 import { isSameDay } from "date-fns";
 import { useRouter } from "next/navigation";
 import { CrewPositionType, EventObjectType } from "@/features/calendar";
+import { useEffect, useRef } from "react";
 
 export function DiscoverView({
   vacantRoles,
   crewPositions,
+  position,
 }: {
   vacantRoles: EventObjectType[];
   crewPositions: CrewPositionType[];
+  position?: number;
 }) {
   const router = useRouter();
+
   return (
     <>
       <h1 className={"text-4xl font-bold"}>Vacant Roles</h1>
@@ -21,6 +25,7 @@ export function DiscoverView({
         clearable
         searchable
         placeholder={"Filter vacancies by role"}
+        defaultValue={position?.toString(10) ?? null}
         data={crewPositions
           .map((val) => ({
             label: val.name,
@@ -28,11 +33,17 @@ export function DiscoverView({
           }))
           .filter(Boolean)}
         onChange={(val) => {
-          router.push(`/calendar/discover${val ? `?role=${val}` : ""}`);
+          router.push(`/calendar/discover${val ? `?position=${val}` : ""}`);
         }}
         className={"mb-4"}
       />
-      {vacantRoles.length === 0 && <p>No vacant roles</p>}
+      {vacantRoles.length === 0 && (
+        <p className={"text-xl"}>
+          <strong>
+            Sorry, no vacant roles found - please check back later!
+          </strong>
+        </p>
+      )}
       <div className={"flex flex-row flex-wrap gap-4"}>
         {vacantRoles.map((event) => (
           <Paper

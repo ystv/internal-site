@@ -5,13 +5,18 @@ import { DiscoverView } from "@/app/(authenticated)/calendar/discover/DiscoverVi
 export default async function CalendarDiscoverPage({
   searchParams,
 }: {
-  searchParams: { role?: string };
+  searchParams: { position?: string };
 }) {
-  const role = searchParams.role ? parseInt(searchParams.role, 10) : undefined;
-  const vacantRoles = await listVacantCrewRoles(role);
-  const crewPositions = await getAllCrewPositions();
+  const position = searchParams.position
+    ? parseInt(searchParams.position, 10)
+    : undefined;
+  const vacantRoles = await listVacantCrewRoles(position);
   const crewPositions = await getAllNonCustomCrewPositions();
   return (
-    <DiscoverView vacantRoles={vacantRoles} crewPositions={crewPositions} />
+    <DiscoverView
+      vacantRoles={vacantRoles}
+      crewPositions={crewPositions}
+      position={position}
+    />
   );
 }
