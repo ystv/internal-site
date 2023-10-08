@@ -47,6 +47,8 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+To get admin permissions, sign in once with Google, then run `yarn do promoteUser <your email>`.
+
 ## Structure
 
 - app/ - pages
