@@ -40,9 +40,9 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         <input
           disabled
           className="w-96"
-          value={`${
-            process.env.PUBLIC_URL
-          }/iCal/${await Calendar.encodeUserID(user.user_id)}`}
+          value={`${process.env.PUBLIC_URL}/iCal/${await Calendar.encodeUserID(
+            user.user_id,
+          )}`}
         />
       </p>
     </div>
