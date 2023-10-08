@@ -48,3 +48,11 @@
 .fc-view {
   --fc-today-bg-color: #3788d845;
 }
+
+/* .fc-col-header-cell {
+  background-color: var(--mantine-color-default);
+} */
+
+th.fc-col-header-cell > div, .fc-list-day > th, thead > tr[role="row"]:nth-child(1) {
+  background-color: var(--mantine-color-default) !important;
+}
