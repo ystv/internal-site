@@ -165,10 +165,16 @@ function CrewPositionField(props: { parentName: string }) {
     return [selectController.field.value.toString(10), false];
   }, [selectController.field.value, customController.field.value]);
 
-  const filteredProcessedVals = useMemo(() => vals.filter(x => (!x.is_custom || x.position_id === initialSelectedID)).map(v => ({
-    label: v.name,
-    value: v.position_id.toString(10),
-  })), [vals, initialSelectedID]);
+  const filteredProcessedVals = useMemo(
+    () =>
+      vals
+        .filter((x) => !x.is_custom || x.position_id === initialSelectedID)
+        .map((v) => ({
+          label: v.name,
+          value: v.position_id.toString(10),
+        })),
+    [vals, initialSelectedID],
+  );
 
   return (
     <SelectWithCustomOption
