@@ -18,7 +18,7 @@ import {
   EventObjectType,
 } from "@/features/calendar";
 import { useEffect, useRef, useState } from "react";
-import { TbFilter, TbInfoCircle } from "react-icons/tb";
+import { TbArticle, TbFilter, TbInfoCircle } from "react-icons/tb";
 import { MyRoleSignUpModal } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
 
 export function DiscoverView({
@@ -148,8 +148,9 @@ export function DiscoverView({
             <div className={"flex grow items-end justify-end"}>
               <Button
                 onClick={() => router.push(`/calendar/${event.event_id}`)}
+                leftSection={<TbArticle />}
               >
-                Event Page
+                Event Details
               </Button>
             </div>
           </Paper>
