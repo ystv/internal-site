@@ -222,16 +222,18 @@ function SignupSheet({
   );
 }
 
-function MyRoleSignUpModal({
+export function MyRoleSignUpModal({
   sheet,
   crew,
   onSuccess,
   me,
+  buttonless,
 }: {
-  sheet: SignUpSheetType;
+  sheet?: SignUpSheetType;
   crew: CrewType;
-  onSuccess: () => void;
-  me: ExposedUser;
+  onSuccess?: () => void;
+  me?: ExposedUser;
+  buttonless?: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -240,47 +242,49 @@ function MyRoleSignUpModal({
       <h1 className="mt-0">{crew.positions.name}</h1>
       <p>{crew.positions.full_description}</p>
       {error && <strong className="text-danger">{error}</strong>}
-      <div>
-        {crew.user_id === me.user_id ? (
-          <Button
-            size="large"
-            variant="danger"
-            loading={isPending}
-            onClick={() => {
-              startTransition(async () => {
-                const res = await removeSelfFromRole(
-                  sheet.signup_id,
-                  crew.crew_id,
-                );
-                if (!res.ok) {
-                  setError(res.errors!.root as string);
-                  return;
-                }
-                onSuccess();
-              });
-            }}
-          >
-            Drop Out
-          </Button>
-        ) : (
-          <Button
-            size="large"
-            loading={isPending}
-            onClick={() => {
-              startTransition(async () => {
-                const res = await signUpToRole(sheet.signup_id, crew.crew_id);
-                if (!res.ok) {
-                  setError(res.errors!.root as string);
-                  return;
-                }
-                onSuccess();
-              });
-            }}
-          >
-            Sign Up
-          </Button>
-        )}
-      </div>
+      {!buttonless && me && sheet && onSuccess && (
+        <div>
+          {crew.user_id === me.user_id ? (
+            <Button
+              size="large"
+              variant="danger"
+              loading={isPending}
+              onClick={() => {
+                startTransition(async () => {
+                  const res = await removeSelfFromRole(
+                    sheet.signup_id,
+                    crew.crew_id,
+                  );
+                  if (!res.ok) {
+                    setError(res.errors!.root as string);
+                    return;
+                  }
+                  onSuccess();
+                });
+              }}
+            >
+              Drop Out
+            </Button>
+          ) : (
+            <Button
+              size="large"
+              loading={isPending}
+              onClick={() => {
+                startTransition(async () => {
+                  const res = await signUpToRole(sheet.signup_id, crew.crew_id);
+                  if (!res.ok) {
+                    setError(res.errors!.root as string);
+                    return;
+                  }
+                  onSuccess();
+                });
+              }}
+            >
+              Sign Up
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

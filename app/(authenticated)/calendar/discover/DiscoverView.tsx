@@ -1,11 +1,25 @@
 "use client";
 
-import { Button, Divider, Paper, Select } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Divider,
+  Modal,
+  Paper,
+  Select,
+  Tooltip,
+} from "@mantine/core";
 import { DateTime } from "@/components/DateTimeHelpers";
 import { isSameDay } from "date-fns";
 import { useRouter } from "next/navigation";
-import { CrewPositionType, EventObjectType } from "@/features/calendar";
-import { useEffect, useRef } from "react";
+import {
+  CrewPositionType,
+  CrewType,
+  EventObjectType,
+} from "@/features/calendar";
+import { useEffect, useRef, useState } from "react";
+import { TbInfoCircle } from "react-icons/tb";
+import { MyRoleSignUpModal } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
 
 export function DiscoverView({
   vacantRoles,
@@ -18,13 +32,40 @@ export function DiscoverView({
 }) {
   const router = useRouter();
 
+  const [roleInfoModal, setRoleInfoModal] = useState(false);
+
+  const crewPosition = crewPositions.find(
+    (val) => val.position_id === position,
+  );
+
   return (
     <>
-      <h1 className={"text-4xl font-bold"}>Vacant Roles</h1>
+      <h1 className={"text-4xl font-bold"}>
+        Vacant Roles{" - "}
+        {crewPosition ? (
+          <span className={"inline-flex align-top"}>
+            {crewPosition.name}
+            <Tooltip label="Role Info" position={"right"}>
+              <ActionIcon
+                variant="light"
+                radius="xl"
+                aria-label="Settings"
+                className={"ml-2"}
+                onClick={() => setRoleInfoModal(true)}
+              >
+                <TbInfoCircle />
+              </ActionIcon>
+            </Tooltip>
+          </span>
+        ) : (
+          <span>All</span>
+        )}
+      </h1>
       <Select
         clearable
         searchable
-        placeholder={"Filter vacancies by role"}
+        nothingFoundMessage="No positions found."
+        placeholder={"Filter vacancies by type..."}
         defaultValue={position?.toString(10) ?? null}
         data={crewPositions
           .map((val) => ({
@@ -35,7 +76,7 @@ export function DiscoverView({
         onChange={(val) => {
           router.push(`/calendar/discover${val ? `?position=${val}` : ""}`);
         }}
-        className={"mb-4"}
+        className={"mb-4 max-w-[15rem]"}
       />
       {vacantRoles.length === 0 && (
         <p className={"text-xl"}>
@@ -113,6 +154,14 @@ export function DiscoverView({
           </Paper>
         ))}
       </div>
+      <Modal opened={roleInfoModal} onClose={() => setRoleInfoModal(false)}>
+        {crewPosition && (
+          <MyRoleSignUpModal
+            crew={{ positions: crewPosition } as CrewType}
+            buttonless
+          />
+        )}
+      </Modal>
     </>
   );
 }
