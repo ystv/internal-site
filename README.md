@@ -27,6 +27,7 @@ Once you have PostgreSQL installed, run `createdb calendar_2023`.
 
 Now run `yarn prisma:migrateDev` to set up the database tables.
 If you get a permissions error, check your PostgreSQL authentication settings - you should have a `local all all peer` line in your pg_hba.conf.
+You may also need to run `yarn prisma:seed` to set up initial data.
 
 ### Google OAuth Keys
 
