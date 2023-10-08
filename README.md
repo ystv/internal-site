@@ -19,6 +19,8 @@ git clone git@github.com:ystv/experimental-hypothetical-new-internal-site-idea.g
 
 In the new folder, copy the `.env` file to `.env.local`.
 
+Then run `yarn` to install all the dependencies.
+
 You will also need to set up the following:
 
 ### Postgres Database
