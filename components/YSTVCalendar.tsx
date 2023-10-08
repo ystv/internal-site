@@ -15,9 +15,10 @@ import {
 import "./YSTVCalendar.css";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
-import { Select } from "@mantine/core";
+import { ActionIcon, Menu, Select } from "@mantine/core";
 import { useRef, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
+import { TbFilter } from "react-icons/tb";
 
 dayjs.extend(weekOfYear);
 
@@ -29,7 +30,7 @@ function getUoYWeekName(date: Date) {
     if (!didLogAcademicYearError) {
       Sentry.captureException(new Error("Failed to load academicYears"), {
         extra: {
-          academicYears
+          academicYears,
         },
       });
       didLogAcademicYearError = true;
@@ -66,9 +67,11 @@ function getUoYWeekName(date: Date) {
 export default function YSTVCalendar({
   events,
   selectedDate,
+  selectedFilter,
 }: {
   events: Event[];
   selectedDate: Date;
+  selectedFilter?: string;
 }) {
   const router = useRouter();
   const isMobileView = useMediaQuery("(max-width: 650px)", undefined, {
@@ -85,10 +88,50 @@ export default function YSTVCalendar({
     { value: "timeGridDay", label: "Day" },
   ];
 
+  const updateCalendarURL = (newDate?: Date, newFilter?: String) => {
+    const date = newDate ?? selectedDate;
+    const filter = newFilter ?? selectedFilter;
+    router.push(
+      `/calendar?year=${date.getFullYear()}&month=${
+        date.getMonth() + 1
+      }&day=${date.getDate()}${
+        !filter || filter === "all" ? "" : `&filter=${filter}`
+      }`,
+    );
+  };
+
   return (
     <>
-      {isMobileView && calendarRef.current && calendarView && (
-        <>
+      <div className={"flex items-end justify-between gap-1"}>
+        <Menu>
+          <Menu.Target>
+            <ActionIcon size={36} variant={"outline"} color={"blue"}>
+              <TbFilter />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Label>Filter Events</Menu.Label>
+            <Menu.Item
+              disabled={selectedFilter === undefined}
+              onClick={() => updateCalendarURL(undefined, "all")}
+            >
+              All
+            </Menu.Item>
+            <Menu.Item
+              disabled={selectedFilter == "vacant"}
+              onClick={() => updateCalendarURL(undefined, "vacant")}
+            >
+              Vacant
+            </Menu.Item>
+            <Menu.Item
+              disabled={selectedFilter == "my"}
+              onClick={() => updateCalendarURL(undefined, "my")}
+            >
+              My
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+        {isMobileView && calendarRef.current && calendarView && (
           <Select
             label="Calendar View"
             className={"text-right [&_input]:select-none [&_input]:text-right"}
@@ -104,9 +147,9 @@ export default function YSTVCalendar({
             }
             autoComplete="off"
           />
-          <br />
-        </>
-      )}
+        )}
+      </div>
+      <br />
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin]}
@@ -130,11 +173,7 @@ export default function YSTVCalendar({
         datesSet={(n) => {
           setCalendarView(n.view.type);
           const newDate = n.view.calendar.getDate();
-          return router.push(
-            `/calendar?year=${newDate.getFullYear()}&month=${
-              newDate.getMonth() + 1
-            }&day=${newDate.getDate()}`,
-          );
+          updateCalendarURL(newDate);
         }}
         titleFormat={{
           year: "numeric",

@@ -8,7 +8,12 @@ import { Permission } from "@/lib/auth/permissions";
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: { year?: string; month?: string; day?: string };
+  searchParams: {
+    year?: string;
+    month?: string;
+    day?: string;
+    filter?: string;
+  };
 }) {
   const now = new Date();
   const year = searchParams.year
@@ -46,7 +51,11 @@ export default async function CalendarPage({
       <PermissionGate required={calendarEditPermissions}>
         <br />
       </PermissionGate>
-      <YSTVCalendar events={events} selectedDate={date} />
+      <YSTVCalendar
+        events={events}
+        selectedDate={date}
+        selectedFilter={filter}
+      />
     </>
   );
 }
