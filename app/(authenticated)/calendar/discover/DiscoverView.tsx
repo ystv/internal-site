@@ -18,7 +18,7 @@ import {
   EventObjectType,
 } from "@/features/calendar";
 import { useEffect, useRef, useState } from "react";
-import { TbInfoCircle } from "react-icons/tb";
+import { TbFilter, TbInfoCircle } from "react-icons/tb";
 import { MyRoleSignUpModal } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
 
 export function DiscoverView({
@@ -67,6 +67,7 @@ export function DiscoverView({
         nothingFoundMessage="No positions found."
         placeholder={"Filter vacancies by type..."}
         defaultValue={position?.toString(10) ?? null}
+        leftSection={<TbFilter />}
         data={crewPositions
           .map((val) => ({
             label: val.name,
