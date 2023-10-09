@@ -8,9 +8,6 @@ import {
   SegmentedControl,
   useMantineColorScheme,
 } from "@mantine/core";
-import { UserType } from "@/lib/auth/server";
-import { ModeToggle } from "./ColorSchemeToggle";
-import Link from "next/link";
 import { LuLaptop, LuMoon, LuSun } from "react-icons/lu";
 
 export function UserMenu({ userAvatar }: { userAvatar: string }) {
