@@ -136,7 +136,11 @@ const EventSelectors = {
   },
 } satisfies Prisma.EventInclude;
 
-export async function listEventsForMonth(year: number, month: number) {
+export async function listEventsForMonth(
+  year: number,
+  month: number,
+  me?: number,
+) {
   return (
     await prisma.event.findMany({
       where: {
@@ -147,6 +151,31 @@ export async function listEventsForMonth(year: number, month: number) {
           lt: new Date(year, month + 1, 1),
         },
         deleted_at: null,
+        OR: me
+          ? [
+              {
+                signup_sheets: {
+                  some: {
+                    crews: {
+                      some: {
+                        users: {
+                          user_id: me,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                attendees: {
+                  some: {
+                    user_id: me,
+                    attend_status: { equals: "attending" },
+                  },
+                },
+              },
+            ]
+          : undefined,
       },
       include: EventSelectors,
     })

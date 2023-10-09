@@ -7,6 +7,7 @@ import {
 } from "@/features/calendar/events";
 import { Button } from "@mantine/core";
 import { Permission } from "@/lib/auth/permissions";
+import { getCurrentUser } from "@/lib/auth/server";
 
 export default async function CalendarPage({
   searchParams,
@@ -27,11 +28,15 @@ export default async function CalendarPage({
     : now.getMonth();
   const day = searchParams.day ? parseInt(searchParams.day, 10) : now.getDate();
   const date = new Date(year, month, day);
+  const me = await getCurrentUser();
 
   const filter = searchParams.filter;
 
   let events;
   switch (filter) {
+    case "my":
+      events = await listEventsForMonth(year, month, me.user_id);
+      break;
     case "vacant":
       events = await listVacantEvents(undefined, { year, month }, true);
       break;
