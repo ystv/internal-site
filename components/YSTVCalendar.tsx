@@ -105,14 +105,18 @@ export default function YSTVCalendar({
       <div className={"flex items-end justify-between gap-1"}>
         <Menu>
           <Menu.Target>
-            <ActionIcon size={36} variant={"outline"} color={"blue"}>
+            <ActionIcon
+              size={36}
+              variant={selectedFilter ? "filled" : "outline"}
+              color={"blue"}
+            >
               <TbFilter />
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>
             <Menu.Label>Filter Events</Menu.Label>
             <Menu.Item
-              disabled={selectedFilter === undefined}
+              disabled={typeof selectedFilter === "undefined"}
               onClick={() => updateCalendarURL(undefined, "all")}
             >
               All
