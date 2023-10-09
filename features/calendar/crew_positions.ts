@@ -16,6 +16,6 @@ export function getAllNonCustomCrewPositions(): Promise<CrewPositionType[]> {
     },
     where: {
       is_custom: false,
-    }
+    },
   });
 }

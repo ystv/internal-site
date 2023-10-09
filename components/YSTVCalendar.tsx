@@ -29,7 +29,7 @@ function getUoYWeekName(date: Date) {
     if (!didLogAcademicYearError) {
       Sentry.captureException(new Error("Failed to load academicYears"), {
         extra: {
-          academicYears
+          academicYears,
         },
       });
       didLogAcademicYearError = true;

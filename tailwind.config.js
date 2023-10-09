@@ -46,5 +46,5 @@ module.exports = {
     require("tailwindcss-animate"),
     mantineVariantsPlugin,
   ],
-  darkMode: ['class', '[data-mantine-color-scheme="dark"]'],
+  darkMode: ["class", '[data-mantine-color-scheme="dark"]'],
 };

@@ -130,7 +130,7 @@ export default async function EventPage({
       {event.is_tentative && (
         <Alert
           variant="light"
-          className="!bg-[#f3f3f4] dark:!bg-[--mantine-color-gray-filled] !text-[--mantine-color-default-color]"
+          className="!bg-[#f3f3f4] !text-[--mantine-color-default-color] dark:!bg-[--mantine-color-gray-filled]"
           title="Tentative Event"
           icon={<TbInfoCircle />}
         >
