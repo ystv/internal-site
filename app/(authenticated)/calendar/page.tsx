@@ -1,7 +1,10 @@
 import YSTVCalendar from "@/components/YSTVCalendar";
 import Link from "next/link";
 import { PermissionGate } from "@/components/UserContext";
-import { listEventsForMonth } from "@/features/calendar/events";
+import {
+  listEventsForMonth,
+  listVacantEvents,
+} from "@/features/calendar/events";
 import { Button } from "@mantine/core";
 import { Permission } from "@/lib/auth/permissions";
 
@@ -24,7 +27,18 @@ export default async function CalendarPage({
     : now.getMonth();
   const day = searchParams.day ? parseInt(searchParams.day, 10) : now.getDate();
   const date = new Date(year, month, day);
-  const events = await listEventsForMonth(year, month);
+
+  const filter = searchParams.filter;
+
+  let events;
+  switch (filter) {
+    case "vacant":
+      events = await listVacantEvents(undefined, { year, month }, true);
+      break;
+    default:
+      events = await listEventsForMonth(year, month);
+      break;
+  }
 
   const calendarEditPermissions: Permission[] = [
     "Calendar.Admin",

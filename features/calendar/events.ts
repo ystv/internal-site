@@ -153,7 +153,11 @@ export async function listEventsForMonth(year: number, month: number) {
   ).map((e) => sanitize(e));
 }
 
-export async function listVacantCrewRoles(role?: number) {
+export async function listVacantEvents(
+  role?: number,
+  date?: { year: number; month: number },
+  includeAttendeeEvents?: boolean,
+) {
   const roleQuery = {
     AND: [
       { user_id: null },
@@ -182,22 +186,30 @@ export async function listVacantCrewRoles(role?: number) {
         start_date: {
           // javascript dates are 0-indexed for months, but humans are 1-indexed
           // (human is dealt with at the API layer to avoid confusing JS everywhere else)
-          gte: new Date(),
+          gte: date ? new Date(date.year, date.month, 1) : new Date(),
+          lt: date ? new Date(date.year, date.month + 1, 1) : undefined,
         },
         deleted_at: null,
         is_cancelled: false,
-        signup_sheets: {
-          some: {
-            AND: [
-              sheetQuery,
-              {
-                crews: {
-                  some: roleQuery,
-                },
+        OR: [
+          {
+            signup_sheets: {
+              some: {
+                AND: [
+                  sheetQuery,
+                  {
+                    crews: {
+                      some: roleQuery,
+                    },
+                  },
+                ],
               },
-            ],
+            },
           },
-        },
+          {
+            event_type: includeAttendeeEvents ? { not: "show" } : undefined,
+          },
+        ],
       },
       include: {
         attendees: {
