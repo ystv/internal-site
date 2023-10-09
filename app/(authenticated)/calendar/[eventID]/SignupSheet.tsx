@@ -111,7 +111,7 @@ function SignupSheet({
                         variant={"light"}
                         fullWidth
                         className={
-                          "!h-auto min-h-[var(--button-height)] !select-text"
+                          "dark:data-[disabled='true']:!bg-[--mantine-color-gray-filled] dark:data-[disabled='true']:text-[#888] !h-auto min-h-[var(--button-height)] !select-text"
                         }
                         justify={"left"}
                         disabled={readOnly}

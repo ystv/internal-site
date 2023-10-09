@@ -6,6 +6,8 @@ import { mustGetCurrentUser } from "@/lib/auth/server";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 import * as Sentry from "@sentry/nextjs";
 import { ModeToggle } from "@/components/ColorSchemeToggle";
+import { Menu, MenuItem } from "@mantine/core";
+import { UserMenu } from "@/components/UserMenu";
 
 export default async function AuthenticatedLayout({
   children,
@@ -31,18 +33,7 @@ export default async function AuthenticatedLayout({
           />
         </Link>
         <div className="ml-auto space-x-1">
-          <ModeToggle />
-        </div>
-        <div className="ml-2 space-x-1">
-          <Link href="/user/me">
-            <Image
-              src={user.avatar}
-              alt=""
-              width={96}
-              height={96}
-              className="max-h-[4.5rem] w-auto rounded-full py-2"
-            />
-          </Link>
+          <UserMenu userAvatar={user.avatar}/>
         </div>
       </nav>
       <div className="mx-2 md:mx-6">
