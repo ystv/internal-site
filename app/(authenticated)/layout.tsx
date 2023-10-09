@@ -33,7 +33,7 @@ export default async function AuthenticatedLayout({
           />
         </Link>
         <div className="ml-auto space-x-1">
-          <UserMenu userAvatar={user.avatar}/>
+          <UserMenu userAvatar={user.avatar} />
         </div>
       </nav>
       <div className="mx-2 md:mx-6">

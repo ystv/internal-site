@@ -56,7 +56,6 @@ tbody[role="presentation"] > br {
 
 /* Any theming inside this will only apply to dark color scheme. */
 :is([data-mantine-color-scheme="dark"]) {
-
   tbody[role="presentation"] > div > tr:not(:first-child) {
     background-color: var(--mantine-color-body);
   }
