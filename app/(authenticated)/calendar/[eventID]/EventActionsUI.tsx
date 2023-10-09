@@ -95,7 +95,23 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         },
         onConfirm() {
           startTransition(async () => {
-            await reinstateEvent(props.event.event_id);
+            const result = await reinstateEvent(props.event.event_id);
+            if (!result.ok) {
+              modals.openModal({
+                id: "reinstate-error",
+                title: "Error",
+                children: (
+                  <>
+                    <Text>{result.errors?.root ?? `Unknown error (${JSON.stringify(result)})`}</Text>
+                    <Button
+                      onClick={() => modals.closeModal("reinstate-error")}
+                    >
+                      Close
+                    </Button>
+                  </>
+                ),
+              });
+            }
           });
         },
       });

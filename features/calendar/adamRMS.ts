@@ -31,6 +31,11 @@ export async function addProjectToAdamRMS(
     event.end_date,
     "deliver_dates",
   );
+  await AdamRMS.setProjectStatus(
+    projectId,
+    // No idea why you'd link a cancelled project to the RMS, but you do you...
+    event.is_cancelled ? "cancelled" : event.is_tentative ? "tentative" : "confirmed",
+  );
   await prisma.event.update({
     where: {
       event_id: eventID,
@@ -84,6 +89,10 @@ export async function linkAdamRMS(eventID: number, projectID: number) {
     event.start_date,
     event.end_date,
     "dates",
+  );
+  await AdamRMS.setProjectStatus(
+    projectID,
+    event.is_cancelled ? "cancelled" : event.is_tentative ? "tentative" : "confirmed",
   );
   await prisma.event.update({
     where: {

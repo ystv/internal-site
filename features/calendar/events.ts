@@ -195,9 +195,9 @@ export async function updateEvent(
     // We use a raw query to get the event info so that we can SELECT FOR UPDATE,
     // otherwise this risks a race condition.
     const events = await $db.$queryRaw<
-      { adam_rms_project_id: number | null; start_date: Date; end_date: Date }[]
+      { adam_rms_project_id: number | null; start_date: Date; end_date: Date; is_tentative: boolean; is_cancelled: boolean; }[]
     >`
-      SELECT adam_rms_project_id, start_date, end_date FROM events WHERE event_id = ${eventID} FOR UPDATE`;
+      SELECT adam_rms_project_id, start_date, end_date, is_tentative, is_cancelled FROM events WHERE event_id = ${eventID} FOR UPDATE`;
     if (events.length === 0) {
       throw new Error("Event not found");
     }
@@ -207,6 +207,8 @@ export async function updateEvent(
     // This is because AdamRMS will reject the request if the dates would cause a kit clash.
     // We change the "deliver dates" first, because this actually triggers the kit clash check.
     // Then if it succeeds we update it locally and update the event dates to match.
+    // Similarly, if the status has changed, we need to update that, as un-cancelling an event
+    // can have the same effect.
     if (
       event.adam_rms_project_id &&
       (event.start_date.getTime() !== data.start_date.getTime() ||
@@ -222,6 +224,13 @@ export async function updateEvent(
         return { ok: false, error: "kit_clash" };
       }
     }
+
+    // It's not possible to reinstate an even through this function, so we don't need to worry about
+    // the status changing from cancelled to uncancelled. In other words, cancelled trumps tentative.
+    if (!event.is_cancelled && event.adam_rms_project_id && event.is_tentative !== data.is_tentative) {
+      await AdamRMS.setProjectStatus(event.adam_rms_project_id, data.is_tentative ? "tentative" : "confirmed");
+    }
+
     const result = await $db.event.update({
       where: {
         event_id: eventID,
@@ -288,25 +297,51 @@ export async function updateEventAttendeeStatus(
 }
 
 export async function cancelEvent(eventID: number) {
-  await prisma.event.update({
+  const res = await prisma.event.update({
     where: {
       event_id: eventID,
     },
     data: {
       is_cancelled: true,
     },
+    select: {
+      adam_rms_project_id: true,
+    }
   });
+  if (res.adam_rms_project_id) {
+    await AdamRMS.setProjectStatus(res.adam_rms_project_id, "cancelled");
+  }
 }
 
 export async function reinstateEvent(eventID: number) {
-  await prisma.event.update({
-    where: {
-      event_id: eventID,
-    },
-    data: {
-      is_cancelled: false,
-    },
-  });
+  // Watch out! Cancelling an event in AdamRMS releases its assets, so un-cancelling
+  // an event can cause a kit clash. We need to check this first.
+  // Do it inside a transaction with a SELECT FOR UPDATE.
+  return await prisma.$transaction(async $db => {
+    const events = await $db.$queryRaw<{ adam_rms_project_id: number | null; }[]>`
+      SELECT adam_rms_project_id FROM events WHERE event_id = ${eventID} FOR UPDATE`;
+    if (events.length === 0) {
+      throw new Error("Event not found");
+    }
+    const event = events[0];
+
+    if (event.adam_rms_project_id) {
+      const changed = await AdamRMS.setProjectStatus(event.adam_rms_project_id, "confirmed");
+      if (!changed) {
+        return { ok: false, error: "kit_clash" };
+      }
+    }
+
+    await $db.event.update({
+      where: {
+        event_id: eventID,
+      },
+      data: {
+        is_cancelled: false,
+      },
+    });
+    return { ok: true };
+  })
 }
 
 export async function deleteEvent(eventID: number, userID: number) {

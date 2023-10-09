@@ -103,3 +103,30 @@ export async function newQuickProjectComment(
     text: comment,
   })) as {};
 }
+
+export async function setProjectStatus(projectID: number, status: "tentative" | "confirmed" | "cancelled") {
+  let statusIDStr;
+  switch (status) {
+    case "tentative":
+      statusIDStr = process.env.ADAMRMS_TENTATIVE_STATUS_ID;
+      break;
+    case "confirmed":
+      statusIDStr = process.env.ADAMRMS_CONFIRMED_STATUS_ID;
+      break;
+    case "cancelled":
+      statusIDStr = process.env.ADAMRMS_CANCELLED_STATUS_ID;
+      break;
+    default:
+      invariant(false, `Invalid project status ${status}`);;
+  }
+  invariant(statusIDStr, "Missing status ID for status " + status);
+  const statusID = parseInt(statusIDStr, 10);
+
+  // We still need to check for kit clashes - it's possible that changing a cancelled
+  // project to un-cancelled will cause a clash.
+  const res = await makeRequest("/projects/changeStatus.php", "POST", {
+    projects_id: projectID.toString(10),
+    projects_status: statusID.toString(10),
+  }) as { changed: boolean };
+  return res.changed;
+}
