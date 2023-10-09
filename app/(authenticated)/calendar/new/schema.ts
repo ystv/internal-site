@@ -1,6 +1,7 @@
 import { zfd } from "zod-form-data";
 import { z } from "zod";
 import { EventTypes } from "@/features/calendar/types";
+import { isBefore } from "date-fns";
 
 export const schema = zfd.formData({
   name: z.string().nonempty(),
@@ -11,4 +12,7 @@ export const schema = zfd.formData({
   private: z.boolean().optional().default(false),
   tentative: z.boolean().optional().default(false),
   type: z.enum(EventTypes),
+}).refine(val => isBefore(val.startDate, val.endDate), {
+  message: "End date must be after start date",
+  path: ["endDate"],
 });

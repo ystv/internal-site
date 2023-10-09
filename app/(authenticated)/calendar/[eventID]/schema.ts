@@ -1,3 +1,4 @@
+import { isBefore } from "date-fns";
 import { z } from "zod";
 
 export const EditEventSchema = z.object({
@@ -8,6 +9,9 @@ export const EditEventSchema = z.object({
   location: z.string(),
   is_private: z.boolean(),
   is_tentative: z.boolean(),
+}).refine(val => isBefore(val.start_date, val.end_date), {
+  message: "End date must be after start date",
+  path: ["endDate"],
 });
 
 export const CrewSchema = z.object({
