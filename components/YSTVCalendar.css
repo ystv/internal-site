@@ -49,10 +49,28 @@
   --fc-today-bg-color: #3788d845;
 }
 
-/* .fc-col-header-cell {
-  background-color: var(--mantine-color-default);
-} */
+/* Removes empty week separators on mobile month view */
+tbody[role="presentation"] > br {
+  display: none;
+}
 
-th.fc-col-header-cell > div, .fc-list-day > th, thead > tr[role="row"]:nth-child(1) {
-  background-color: var(--mantine-color-default) !important;
+/* Any theming inside this will only apply to dark color scheme. */
+:is([data-mantine-color-scheme="dark"]) {
+
+  tbody[role="presentation"] > div > tr:not(:first-child) {
+    background-color: var(--mantine-color-body);
+  }
+
+  th.fc-col-header-cell > div,
+  .fc-list-day > th,
+  thead > tr[role="row"]:nth-child(1),
+  .fc-list-day-cushion,
+  .fc-daygrid-body,
+  tbody[role="presentation"] > div > tr:first-child > td {
+    background-color: var(--mantine-color-default) !important;
+  }
+
+  tr.fc-event:hover {
+    background-color: #000 !important;
+  }
 }
