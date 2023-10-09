@@ -30,14 +30,14 @@ function getUoYWeekName(date: Date) {
     if (!didLogAcademicYearError) {
       Sentry.captureException(new Error("Failed to load academicYears"), {
         extra: {
-          academicYears
+          academicYears,
         },
       });
       didLogAcademicYearError = true;
     }
     return "Week " + dayjs(date).week();
   }
-  const academicYear = findLast( 
+  const academicYear = findLast(
     academicYears,
     (x) => x.periods[0].startDate.getTime() <= date.getTime(),
   );
