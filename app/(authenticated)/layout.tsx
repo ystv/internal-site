@@ -5,8 +5,6 @@ import { UserProvider } from "@/components/UserContext";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 import * as Sentry from "@sentry/nextjs";
-import { ModeToggle } from "@/components/ColorSchemeToggle";
-import { Menu, MenuItem } from "@mantine/core";
 import { UserMenu } from "@/components/UserMenu";
 
 export default async function AuthenticatedLayout({
