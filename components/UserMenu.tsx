@@ -7,6 +7,7 @@ import {
   Menu,
   SegmentedControl,
   useMantineColorScheme,
+  VisuallyHidden,
 } from "@mantine/core";
 import { LuLaptop, LuMoon, LuSun } from "react-icons/lu";
 
@@ -22,6 +23,7 @@ export function UserMenu({ userAvatar }: { userAvatar: string }) {
           width={96}
           height={96}
           className="max-h-[4.5rem] w-auto rounded-full py-2"
+          aria-label="user menu"
         />
       </Menu.Target>
       <Menu.Dropdown className="right-2 -ml-1.5 mr-2 min-w-[150px]">
@@ -39,7 +41,8 @@ export function UserMenu({ userAvatar }: { userAvatar: string }) {
               value: "light",
               label: (
                 <Center>
-                  <LuSun className="scale-150" />
+                  <LuSun className="scale-150" aria-label="light mode" />
+                  <VisuallyHidden>Light Mode</VisuallyHidden>
                 </Center>
               ),
             },
@@ -47,7 +50,8 @@ export function UserMenu({ userAvatar }: { userAvatar: string }) {
               value: "auto",
               label: (
                 <Center>
-                  <LuLaptop className="scale-150" />
+                  <LuLaptop className="scale-150" aria-label="auto mode" />
+                  <VisuallyHidden>Auto Mode</VisuallyHidden>
                 </Center>
               ),
             },
@@ -55,7 +59,8 @@ export function UserMenu({ userAvatar }: { userAvatar: string }) {
               value: "dark",
               label: (
                 <Center>
-                  <LuMoon className="scale-150" />
+                  <LuMoon className="scale-150" aria-label="dark mode" />
+                  <VisuallyHidden>Dark Mode</VisuallyHidden>
                 </Center>
               ),
             },
