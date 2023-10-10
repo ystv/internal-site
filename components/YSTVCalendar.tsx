@@ -15,8 +15,8 @@ import {
 import "./YSTVCalendar.css";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
-import { Select } from "@mantine/core";
-import { useRef, useState } from "react";
+import { Loader, Select } from "@mantine/core";
+import { useRef } from "react";
 import * as Sentry from "@sentry/nextjs";
 import findLast from "core-js-pure/stable/array/find-last";
 
@@ -68,17 +68,21 @@ function getUoYWeekName(date: Date) {
 export default function YSTVCalendar({
   events,
   selectedDate,
+  view: rawView,
 }: {
   events: Event[];
   selectedDate: Date;
+  view?: string;
 }) {
   const router = useRouter();
+
   const isMobileView = useMediaQuery("(max-width: 650px)", undefined, {
-    getInitialValueInEffect: false,
+    getInitialValueInEffect: true,
   });
 
+  const view = rawView ?? (isMobileView ? "dayGridWeek" : "dayGridMonth");
+
   const calendarRef = useRef<FullCalendar>(null);
-  const [calendarView, setCalendarView] = useState<string | null>(null);
 
   const viewsList = [
     { value: "dayGridMonth", label: "Month" },
@@ -87,9 +91,16 @@ export default function YSTVCalendar({
     { value: "timeGridDay", label: "Day" },
   ];
 
+  if (isMobileView === undefined)
+    return (
+      <div className={"flex w-full justify-center"}>
+        <Loader />
+      </div>
+    );
+
   return (
     <>
-      {isMobileView && calendarRef.current && calendarView && (
+      {isMobileView && (
         <>
           <Select
             label="Calendar View"
@@ -100,10 +111,10 @@ export default function YSTVCalendar({
               },
             }}
             data={viewsList}
-            value={calendarView}
-            onChange={(e) =>
-              calendarRef.current?.getApi().changeView(e ?? "dayGridWeek")
-            }
+            value={view}
+            onChange={(e) => {
+              e && calendarRef.current?.getApi().changeView(e);
+            }}
             autoComplete="off"
           />
           <br />
@@ -112,7 +123,7 @@ export default function YSTVCalendar({
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin]}
-        initialView={isMobileView ? "dayGridWeek" : "dayGridMonth"}
+        initialView={view}
         headerToolbar={{
           right:
             "today prev,next" +
@@ -125,17 +136,20 @@ export default function YSTVCalendar({
           day: "Day",
           list: "List",
         }}
-        viewDidMount={(n) => {
-          setCalendarView(n.view.type);
-        }}
         showNonCurrentDates={false}
         datesSet={(n) => {
-          setCalendarView(n.view.type);
+          // Per https://github.com/fullcalendar/fullcalendar/issues/6582#issuecomment-942758927
+          // As each calendar view we use at the moment represents a different duration of time
+          // (day week month), this means the date range for each is different. So, this handler
+          // is called when the date range changes anyway, but also when the view changes.
+          //
+          // However, this could change in-future (depending on FullCalendar or the durations of
+          // any future views we add), consider restoring viewDidMount handler if problems arise.
           const newDate = n.view.calendar.getDate();
           return router.push(
             `/calendar?year=${newDate.getFullYear()}&month=${
               newDate.getMonth() + 1
-            }&day=${newDate.getDate()}`,
+            }&day=${newDate.getDate()}&view=${n.view.type}`,
           );
         }}
         titleFormat={{
