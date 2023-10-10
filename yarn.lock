@@ -2407,10 +2407,10 @@ __metadata:
 
 "@fullcalendar/daygrid@patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch::locator=hypothetical-new-internal-site%40workspace%3A.":
   version: 6.1.8
-  resolution: "@fullcalendar/daygrid@patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch::version=6.1.8&hash=eeec5d&locator=hypothetical-new-internal-site%40workspace%3A."
+  resolution: "@fullcalendar/daygrid@patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch::version=6.1.8&hash=a8e1ec&locator=hypothetical-new-internal-site%40workspace%3A."
   peerDependencies:
     "@fullcalendar/core": ~6.1.8
-  checksum: 9b70e76b0ec96ef66daf3a6af1add86bf08ecc63fd70c4a2749af56aeb34539e325b5d48f8c3e3a3b737b571247ba252206ef1b364339290ebb6bd800ac4520e
+  checksum: cf8f4bc0046276b6eeff1567e1c5d95d89c13550211db85cab30284ca8c4e71c8eaeb62e8376708be724257ca62b71ba72c31522d7c4a10fece099abd5ddc0ce
   languageName: node
   linkType: hard
 
