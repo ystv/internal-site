@@ -89,7 +89,7 @@ export default function YSTVCalendar({
     { value: "timeGridDay", label: "Day" },
   ];
 
-  if (isMobileView == undefined)
+  if (isMobileView === undefined)
     return (
       <div className={"flex w-full justify-center"}>
         <Loader />
