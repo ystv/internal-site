@@ -137,8 +137,12 @@ export default function YSTVCalendar({
         showNonCurrentDates={false}
         datesSet={(n) => {
           // Per https://github.com/fullcalendar/fullcalendar/issues/6582#issuecomment-942758927
-          // With the current view set being different durations, this handler is called every time
-          // the view changes as well this may change in-future, consider re-adding viewDidMount handler
+          // As each calendar view we use at the moment represents a different duration of time
+          // (day week month), this means the date range for each is different. So, this handler
+          // is called when the date range changes anyway, but also when the view changes.
+          //
+          // However, this could change in-future (depending on FullCalendar or the durations of
+          // any future views we add), consider restoring viewDidMount handler if problems arise.
           const newDate = n.view.calendar.getDate();
           return router.push(
             `/calendar?year=${newDate.getFullYear()}&month=${
