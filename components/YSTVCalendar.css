@@ -49,11 +49,6 @@
   --fc-today-bg-color: #3788d845;
 }
 
-/* Removes empty week separators on mobile month view */
-tbody[role="presentation"] > br {
-  display: none;
-}
-
 /* Any theming inside this will only apply to dark color scheme. */
 :is([data-mantine-color-scheme="dark"]) {
   tbody[role="presentation"] > div > tr:not(:first-child) {
