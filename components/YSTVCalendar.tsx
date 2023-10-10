@@ -18,7 +18,7 @@ import weekOfYear from "dayjs/plugin/weekOfYear";
 import { ActionIcon, Menu, Select } from "@mantine/core";
 import { useRef, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
-import { TbFilter } from "react-icons/tb";
+import { TbCheck, TbFilter } from "react-icons/tb";
 
 dayjs.extend(weekOfYear);
 
@@ -116,19 +116,28 @@ export default function YSTVCalendar({
           <Menu.Dropdown>
             <Menu.Label>Filter Events</Menu.Label>
             <Menu.Item
-              disabled={selectedFilter === undefined}
+              {...(selectedFilter === undefined && {
+                leftSection: <TbCheck />,
+                disabled: true,
+              })}
               onClick={() => updateCalendarURL(undefined, "all")}
             >
               All
             </Menu.Item>
             <Menu.Item
-              disabled={selectedFilter == "vacant"}
+              {...(selectedFilter == "vacant" && {
+                leftSection: <TbCheck />,
+                disabled: true,
+              })}
               onClick={() => updateCalendarURL(undefined, "vacant")}
             >
               Vacant
             </Menu.Item>
             <Menu.Item
-              disabled={selectedFilter == "my"}
+              {...(selectedFilter == "my" && {
+                leftSection: <TbCheck />,
+                disabled: true,
+              })}
               onClick={() => updateCalendarURL(undefined, "my")}
             >
               My
