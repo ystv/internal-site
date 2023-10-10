@@ -116,7 +116,7 @@ export default function YSTVCalendar({
           <Menu.Dropdown>
             <Menu.Label>Filter Events</Menu.Label>
             <Menu.Item
-              disabled={typeof selectedFilter === "undefined"}
+              disabled={selectedFilter === undefined}
               onClick={() => updateCalendarURL(undefined, "all")}
             >
               All
