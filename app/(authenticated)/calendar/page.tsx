@@ -42,7 +42,11 @@ export default async function CalendarPage({
         </PermissionGate>
       </div>
       <br />
-      <YSTVCalendar events={events} selectedDate={date} view={searchParams.view} />
+      <YSTVCalendar
+        events={events}
+        selectedDate={date}
+        view={searchParams.view}
+      />
     </>
   );
 }
