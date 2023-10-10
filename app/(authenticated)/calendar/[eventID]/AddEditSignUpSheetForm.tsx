@@ -148,6 +148,9 @@ function CrewPositionField(props: { parentName: string }) {
   const selectController = useController({
     name: `${props.parentName}.position_id`,
   });
+  // Track the initial selected ID so that, if it's a custom field (but one that existed
+  // before), we can still display the correct value.
+  const [initialSelectedID] = useState(() => selectController.field.value);
   const customController = useController({
     name: `${props.parentName}.custom_position_name`,
   });
@@ -162,14 +165,20 @@ function CrewPositionField(props: { parentName: string }) {
     return [selectController.field.value.toString(10), false];
   }, [selectController.field.value, customController.field.value]);
 
+  const filteredProcessedVals = useMemo(
+    () =>
+      vals
+        .filter((x) => !x.is_custom || x.position_id === initialSelectedID)
+        .map((v) => ({
+          label: v.name,
+          value: v.position_id.toString(10),
+        })),
+    [vals, initialSelectedID],
+  );
+
   return (
     <SelectWithCustomOption
-      data={[
-        ...vals.map((val) => ({
-          label: val.name,
-          value: val.position_id.toString(10),
-        })),
-      ].filter(Boolean)}
+      data={filteredProcessedVals}
       value={value}
       isCustomValue={isCustom}
       onChange={(newValue, isNew) => {
