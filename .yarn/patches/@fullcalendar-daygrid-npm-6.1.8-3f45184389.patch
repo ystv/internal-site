@@ -1,5 +1,5 @@
 diff --git a/internal.js b/internal.js
-index 26fee0cdcfd1d3da9ce40ae707a9dad54a3cbc99..f7be916bf4e694bb0f5047ee3b571401dc74c028 100644
+index 26fee0cdcfd1d3da9ce40ae707a9dad54a3cbc99..a0f838b36bc0875aa0ddd63e717dcfec382faa8b 100644
 --- a/internal.js
 +++ b/internal.js
 @@ -143,7 +143,6 @@ class TableCell extends DateComponent {
@@ -10,12 +10,8 @@ index 26fee0cdcfd1d3da9ce40ae707a9dad54a3cbc99..f7be916bf4e694bb0f5047ee3b571401
              !renderProps.isDisabled &&
                  (props.showDayNumber || hasCustomDayCellContent(options) || props.forceDayTop) ? (createElement("div", { className: "fc-daygrid-day-top" },
                  createElement(InnerContent, { elTag: "a", elClasses: [
-@@ -433,23 +432,41 @@ class TableRow extends DateComponent {
-         let mirrorSegsByCol = splitSegsByFirstCol(this.getMirrorSegs(), colCnt);
-         let { singleColPlacements, multiColPlacements, moreCnts, moreMarginTops } = computeFgSegPlacement(sortEventSegs(props.fgEventSegs, options.eventOrder), props.dayMaxEvents, props.dayMaxEventRows, options.eventOrderStrict, state.eventInstanceHeights, state.maxContentHeight, props.cells);
-         let isForcedInvisible = // TODO: messy way to compute this
--         (props.eventDrag && props.eventDrag.affectedInstances) ||
-+            (props.eventDrag && props.eventDrag.affectedInstances) ||
+@@ -436,21 +435,37 @@ class TableRow extends DateComponent {
+          (props.eventDrag && props.eventDrag.affectedInstances) ||
              (props.eventResize && props.eventResize.affectedInstances) ||
              {};
 -        return (createElement("tr", { ref: this.rootElRef, role: "row" },
@@ -32,6 +28,7 @@ index 26fee0cdcfd1d3da9ce40ae707a9dad54a3cbc99..f7be916bf4e694bb0f5047ee3b571401
 -                        this.renderFillSegs(businessHoursByCol[col], 'non-business'),
 -                        this.renderFillSegs(bgEventSegsByCol[col], 'bg-event'))), minHeight: props.cellMinHeight }));
 -            })));
+-    }
 +        /////////
 +        // debugger;
 +        let { dateEnv } = context
@@ -40,9 +37,7 @@ index 26fee0cdcfd1d3da9ce40ae707a9dad54a3cbc99..f7be916bf4e694bb0f5047ee3b571401
 +        let num = dateEnv.computeWeekNumber(date) // TODO: somehow use for formatting as well?
 +        let text = dateEnv.format(date, format)
 +        let renderProps = { num, text, date }
-+
 +        /////////
-+
 +        return [createElement(options.dayHeaders ? "tr" : "div", { ref: this.rootElRef, role: options.dayHeaders ? "row" : "rowgroup", style: options.dayHeaders ? undefined : { display: "contents", fontSize: "110%" }},
 +            (props.showWeekNumbers ? [createElement("td", {elClasses: ['fc-daygrid-day'], role: "gridcell", style: {fontWeight: 700, backgroundColor: !options.dayHeaders && "var(--fc-neutral-bg-color)", verticalAlign: options.dayHeaders && "middle", rotate: options.dayHeaders && "180deg", width: options.dayHeaders && "1.6em"}}, createElement("div", {style: {writingMode: options.dayHeaders && "vertical-rl", margin: options.dayHeaders ? ".6rem .1rem" : ".6rem", height: options.dayHeaders && "max-content"}}, options.weekNumberContent(renderProps)))] : []).concat(
 +                props.cells.map((cell, col) => {
@@ -63,24 +58,8 @@ index 26fee0cdcfd1d3da9ce40ae707a9dad54a3cbc99..f7be916bf4e694bb0f5047ee3b571401
 +            }, []).map((row, index) => {
 +                return options.dayHeaders ? row : createElement("tr", { key: index, role: "row" }, row);
 +            })
-+        ), !options.dayHeaders && createElement("br")];
-     }
++        ), !options.dayHeaders && createElement("div", {elClasses: ["fc-daygrid-ystv-spacer"]})];
++     }
      componentDidMount() {
          this.updateSizing(true);
-@@ -901,11 +918,11 @@ class TableView extends DateComponent {
-                 key: 'header',
-                 isSticky: stickyHeaderDates,
-                 chunks: [{
--                        key: 'main',
--                        elRef: this.headerElRef,
--                        tableClassName: 'fc-col-header',
--                        rowContent: headerRowContent,
--                    }],
-+                    key: 'main',
-+                    elRef: this.headerElRef,
-+                    tableClassName: 'fc-col-header',
-+                    rowContent: headerRowContent,
-+                }],
-             });
-         }
-         sections.push({
+         this.context.addResizeHandler(this.handleResize);
