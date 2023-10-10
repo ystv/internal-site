@@ -80,7 +80,7 @@ function SignupSheet({
         )}
         <table className="mt-4 border-collapse">
           <tbody
-            className={"divide-x-0 divide-y-2 divide-dashed divide-gray-200"}
+            className={"divide-x-0 divide-y-2 divide-dashed divide-gray-200 dark:divide-[--mantine-color-placeholder]"}
           >
             {sheet.crews
               .sort((a, b) => a.ordering - b.ordering)
@@ -88,7 +88,7 @@ function SignupSheet({
                 <tr
                   key={crew.crew_id}
                   className={
-                    "divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold"
+                    "divide-x-2 divide-y-0 divide-dashed divide-gray-200 dark:divide-[--mantine-color-placeholder] text-sm font-semibold"
                   }
                 >
                   <td className="px-3">
