@@ -1,9 +1,8 @@
 import {
   ArrayPath,
+  Controller,
   FieldArray,
   FieldValues,
-  Path,
-  RegisterOptions,
   useController,
   useFieldArray,
   useFormContext,
@@ -20,12 +19,10 @@ import {
   Input,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import {
-  useCrewPositions,
-  useMembers,
-} from "@/components/FormFieldPreloadedData";
+import { useMembers } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
 import dayjs from "dayjs";
+import { twMerge } from "tailwind-merge";
 
 export function TextField(props: {
   name: string;
@@ -91,9 +88,10 @@ export function DatePickerField(props: {
         const today = dayjs(date).isSame(dayjs(), "day");
         return (
           <Box
-            className={`flex h-full w-full items-center justify-center rounded-sm text-center ${
-              dayjs(date).isSame(dayjs(), "day") && "bg-blue-100"
-            }`}
+            className={twMerge(
+              "flex h-full w-full items-center justify-center rounded-sm text-center",
+              today && "bg-blue-100",
+            )}
           >
             <div>{date.getDate()}</div>
           </Box>
@@ -190,28 +188,25 @@ export function SegmentedField<TObj extends {}>(props: {
   renderOption: (obj: TObj) => string;
   getOptionValue: (obj: TObj) => string;
 }) {
-  const ctx = useFormContext();
   const { name, label, options, getOptionValue, renderOption } = props;
-  const selectedValue = ctx.watch(name) ?? getOptionValue(options[0]);
-  useEffect(() => {
-    if (!ctx.getValues(name)) {
-      ctx.setValue(name, selectedValue);
-    }
-  }, [ctx, name, selectedValue]);
   return (
-    <Input.Wrapper label={label}>
-      <div>
-        <SegmentedControl
-          {...ctx.register(name, {})}
-          value={selectedValue}
-          onChange={(value) => ctx.setValue(name, value)}
-          data={options.map((obj) => ({
-            label: renderOption(obj),
-            value: getOptionValue(obj),
-          }))}
-        />
-      </div>
-    </Input.Wrapper>
+    <Controller
+      name={name}
+      defaultValue={getOptionValue(options[0])}
+      render={({ field }) => (
+        <Input.Wrapper label={label}>
+          <div>
+            <SegmentedControl
+              {...field}
+              data={options.map((obj) => ({
+                label: renderOption(obj),
+                value: getOptionValue(obj),
+              }))}
+            />
+          </div>
+        </Input.Wrapper>
+      )}
+    />
   );
 }
 

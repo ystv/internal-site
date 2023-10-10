@@ -7,6 +7,7 @@ export interface CrewPositionType {
   admin: boolean;
   brief_description: string;
   full_description: string;
+  is_custom: boolean;
 }
 
 export function getAllCrewPositions(): Promise<CrewPositionType[]> {

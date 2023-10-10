@@ -18,6 +18,7 @@ import weekOfYear from "dayjs/plugin/weekOfYear";
 import { Loader, Select } from "@mantine/core";
 import { useRef } from "react";
 import * as Sentry from "@sentry/nextjs";
+import findLast from "core-js-pure/stable/array/find-last";
 
 dayjs.extend(weekOfYear);
 
@@ -36,7 +37,8 @@ function getUoYWeekName(date: Date) {
     }
     return "Week " + dayjs(date).week();
   }
-  const academicYear = academicYears.findLast(
+  const academicYear = findLast(
+    academicYears,
     (x) => x.periods[0].startDate.getTime() <= date.getTime(),
   );
   if (!academicYear) {

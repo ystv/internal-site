@@ -107,6 +107,7 @@ async function ensurePositionsForCrews(crews: CrewCreateUpdateInput[]) {
         data: {
           name,
           full_description: "",
+          is_custom: true,
         },
       }),
     ),
