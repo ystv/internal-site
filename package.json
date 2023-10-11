@@ -45,6 +45,7 @@
     "autoprefixer": "^10.4.14",
     "base64-arraybuffer": "^1.0.2",
     "classnames": "^2.3.2",
+    "core-js-pure": "^3.33.0",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
     "eslint": "8.44.0",

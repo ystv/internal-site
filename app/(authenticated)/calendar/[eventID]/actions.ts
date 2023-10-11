@@ -185,7 +185,6 @@ export async function unlinkAdamRMS(eventID: number) {
 
 export async function cancelEvent(eventID: number) {
   const me = await mustGetCurrentUser();
-  await requirePermission("CalendarIntegration.Admin");
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 
@@ -207,7 +206,6 @@ export async function cancelEvent(eventID: number) {
 
 export async function reinstateEvent(eventID: number) {
   const me = await mustGetCurrentUser();
-  await requirePermission("CalendarIntegration.Admin");
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 
@@ -229,7 +227,6 @@ export async function reinstateEvent(eventID: number) {
 
 export async function deleteEvent(eventID: number) {
   const me = await mustGetCurrentUser();
-  await requirePermission("CalendarIntegration.Admin");
   const event = await Calendar.getEvent(eventID);
   invariant(event, "Event does not exist");
 

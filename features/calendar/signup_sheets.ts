@@ -98,11 +98,14 @@ interface CrewCreateUpdateInput {
  * it with the position ID.
  */
 async function ensurePositionsForCrews(crews: CrewCreateUpdateInput[]) {
-  const newPosNames = crews
-    .filter((x) => x.custom_position_name)
-    .map((x) => x.custom_position_name!);
+  // Ensure we only create one new position even if it's given multiple times
+  const newPosNames = new Set(
+    crews
+      .filter((x) => x.custom_position_name)
+      .map((x) => x.custom_position_name!),
+  );
   const newPositions = await prisma.$transaction(
-    newPosNames.map((name) =>
+    Array.from(newPosNames).map((name) =>
       prisma.position.create({
         data: {
           name,
