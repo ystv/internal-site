@@ -48,3 +48,37 @@
 .fc-view {
   --fc-today-bg-color: #3788d845;
 }
+
+.fc-daygrid-day-events-mobile-shrink.fc-dayGridMonth-view div[elClasses="fc-daygrid-ystv-spacer"] {
+  height: 3rem;
+}
+
+.fc-daygrid-day-events-mobile-shrink.fc-daygrid .fc-scrollgrid,
+.fc-daygrid-day-events-mobile-shrink.fc-daygrid td[role="presentation"] {
+  border: 0;
+}
+
+.fc-daygrid-day-events-mobile-shrink.fc-daygrid .fc-scrollgrid table {
+  border-style: inherit;
+}
+
+  /* Any theming inside this will only apply to dark color scheme. */
+:is([data-mantine-color-scheme="dark"]) {
+  tbody[role="presentation"] > div > tr:not(:first-child),
+  .fc-dayGridMonth-view div[elClasses="fc-daygrid-ystv-spacer"] {
+    background-color: var(--mantine-color-body);
+  }
+
+  th.fc-col-header-cell > div,
+  .fc-list-day > th,
+  thead > tr[role="row"]:nth-child(1),
+  .fc-list-day-cushion,
+  .fc-daygrid-body,
+  tbody[role="presentation"] > div > tr:first-child > td {
+    background-color: var(--mantine-color-default) !important;
+  }
+
+  tr.fc-event:hover {
+    background-color: #000 !important;
+  }
+}
