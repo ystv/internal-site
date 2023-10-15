@@ -31,6 +31,7 @@ import {
   useCombobox,
 } from "@mantine/core";
 import { getUserName } from "@/components/UserHelpers";
+import invariant from "@/lib/invariant";
 
 /**
  * React component for a select input with custom options.
@@ -59,13 +60,13 @@ function SelectWithCustomOption(props: {
   });
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState<string | null>(null);
 
   const filtered = useMemo(
     () =>
-      props.data.filter((x) =>
+      search ? props.data.filter((x) =>
         x.label.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
-      ),
+      ) : props.data,
     [props.data, search],
   );
   const selected = useMemo(
@@ -88,13 +89,14 @@ function SelectWithCustomOption(props: {
       withinPortal={false}
       onOptionSubmit={(val) => {
         if (val === "$create") {
+          invariant(search !== null, "selected $create but search is null");
           props.onChange(search, true);
         } else if (val === "$null") {
           props.onChange("", false);
         } else {
           props.onChange(val, false);
         }
-        setSearch("");
+        setSearch(null);
         combobox.closeDropdown();
       }}
     >
@@ -102,7 +104,7 @@ function SelectWithCustomOption(props: {
         <InputBase
           ref={inputRef}
           rightSection={<ComboboxChevron />}
-          value={search || selected || ""}
+          value={search === null ? (selected || "") : search}
           onChange={(e) => {
             combobox.openDropdown();
             combobox.updateSelectedOptionIndex();
@@ -115,7 +117,7 @@ function SelectWithCustomOption(props: {
           }}
           onBlur={() => {
             combobox.closeDropdown();
-            setSearch(selected ? selected : "");
+            setSearch(selected ? selected : null);
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -129,11 +131,11 @@ function SelectWithCustomOption(props: {
       </ComboboxTarget>
       <ComboboxDropdown>
         <ComboboxOptions>
-          {props.allowNone && search.trim().length === 0 && (
+          {props.allowNone && (!search || search.trim().length === 0) && (
             <ComboboxOption value={"$null"}>None</ComboboxOption>
           )}
           {options}
-          {search.trim().length > 0 && !filtered.some(x => x.label === search.trim()) && (
+          {(search?.trim().length ?? 0) > 0 && !filtered.some(x => x.label === search?.trim()) && (
             <ComboboxOption value="$create">
               &apos;{search}&apos;
             </ComboboxOption>
