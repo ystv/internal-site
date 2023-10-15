@@ -30,7 +30,7 @@ export default async function AuthenticatedLayout({
             className="max-h-[4.5rem] w-auto py-2"
           />
         </Link>
-        <div className="ml-auto space-x-1 h-14 w-14">
+        <div className="ml-auto h-14 w-14 space-x-1">
           <UserMenu userAvatar={user.avatar} />
         </div>
       </nav>

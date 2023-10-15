@@ -22,11 +22,11 @@ export function UserMenu({ userAvatar }: { userAvatar: string }) {
           alt=""
           width={56}
           height={56}
-          className="transition-all duration-50 max-h-14 max-w-14 rounded-[28px] hover:rounded-xl cursor-pointer border-solid border-0 hover:border-2 hover:border-slate-200"
+          className="duration-50 max-w-14 max-h-14 cursor-pointer rounded-[28px] border-0 border-solid transition-all hover:rounded-xl hover:border-2 hover:border-slate-200"
           aria-label="user menu"
         />
       </Menu.Target>
-      <Menu.Dropdown className="right-2 -ml-1.5 mt-1.5 mr-2 min-w-[150px]">
+      <Menu.Dropdown className="right-2 -ml-1.5 mr-2 mt-1.5 min-w-[150px]">
         <Menu.Item component="a" href="/user/me">
           Profile
         </Menu.Item>

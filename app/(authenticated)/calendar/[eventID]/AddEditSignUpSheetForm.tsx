@@ -64,9 +64,11 @@ function SelectWithCustomOption(props: {
 
   const filtered = useMemo(
     () =>
-      search ? props.data.filter((x) =>
-        x.label.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
-      ) : props.data,
+      search
+        ? props.data.filter((x) =>
+            x.label.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
+          )
+        : props.data,
     [props.data, search],
   );
   const selected = useMemo(
@@ -104,7 +106,7 @@ function SelectWithCustomOption(props: {
         <InputBase
           ref={inputRef}
           rightSection={<ComboboxChevron />}
-          value={search === null ? (selected || "") : search}
+          value={search === null ? selected || "" : search}
           onChange={(e) => {
             combobox.openDropdown();
             combobox.updateSelectedOptionIndex();
@@ -135,11 +137,12 @@ function SelectWithCustomOption(props: {
             <ComboboxOption value={"$null"}>None</ComboboxOption>
           )}
           {options}
-          {(search?.trim().length ?? 0) > 0 && !filtered.some(x => x.label === search?.trim()) && (
-            <ComboboxOption value="$create">
-              &apos;{search}&apos;
-            </ComboboxOption>
-          )}
+          {(search?.trim().length ?? 0) > 0 &&
+            !filtered.some((x) => x.label === search?.trim()) && (
+              <ComboboxOption value="$create">
+                &apos;{search}&apos;
+              </ComboboxOption>
+            )}
         </ComboboxOptions>
       </ComboboxDropdown>
     </Combobox>
