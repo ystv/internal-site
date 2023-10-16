@@ -15,8 +15,5 @@ export function getAllCrewPositions(): Promise<CrewPositionType[]> {
     orderBy: {
       position_id: "asc",
     },
-    where: {
-      is_custom: false,
-    },
   });
 }

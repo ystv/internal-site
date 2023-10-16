@@ -141,7 +141,7 @@ function SelectWithCustomOption(props: {
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
-              combobox.selectActiveOption();
+              combobox.clickSelectedOption();
             }
           }}
           placeholder={props.placeholder}
