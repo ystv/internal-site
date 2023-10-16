@@ -159,6 +159,7 @@ export default function YSTVCalendar({
         firstDay={1}
         eventTimeFormat={{
           hour: "numeric",
+          minute: "2-digit",
           meridiem: "short",
         }}
         //////
