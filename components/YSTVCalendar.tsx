@@ -19,6 +19,7 @@ import { Loader, Select } from "@mantine/core";
 import { useRef } from "react";
 import * as Sentry from "@sentry/nextjs";
 import findLast from "core-js-pure/stable/array/find-last";
+import { format } from "date-fns";
 
 dayjs.extend(weekOfYear);
 
@@ -157,10 +158,16 @@ export default function YSTVCalendar({
           month: isMobileView ? "short" : "long",
         }}
         firstDay={1}
-        eventTimeFormat={{
-          hour: "numeric",
-          minute: "2-digit",
-          meridiem: "short",
+        eventTimeFormat={(el) => {
+          console.log(el);
+          let twelveHr = el.date.hour % 12;
+          if (twelveHr === 0) twelveHr = 12;
+          if (el.date.minute === 0) {
+            return `${twelveHr}${el.date.hour < 12 ? "am" : "pm"}`;
+          }
+          return `${twelveHr}:${el.date.minute}${
+            el.date.hour < 12 ? "am" : "pm"
+          }`;
         }}
         //////
         dayHeaders={!isMobileView}
