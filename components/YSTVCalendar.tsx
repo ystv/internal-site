@@ -159,7 +159,6 @@ export default function YSTVCalendar({
         }}
         firstDay={1}
         eventTimeFormat={(el) => {
-          console.log(el);
           let twelveHr = el.date.hour % 12;
           if (twelveHr === 0) twelveHr = 12;
           if (el.date.minute === 0) {
