@@ -3,6 +3,10 @@ generator client {
   previewFeatures = ["postgresqlExtensions"]
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 generator zod {
   provider              = "zod-prisma"
   output                = "./types"
@@ -64,6 +68,9 @@ model User {
   events_events_deleted_byTousers Event[]      @relation("events_deleted_byTousers")
   events_events_updated_byTousers Event[]      @relation("events_updated_byTousers")
   role_members                    RoleMember[]
+
+  /// [UserPreferences]
+  preferences Json @default("{}")
 
   @@map("users")
 }

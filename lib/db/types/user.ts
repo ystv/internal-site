@@ -1,6 +1,12 @@
 import * as z from "zod"
 import { CompleteIdentity, IdentityModel, CompleteAttendee, AttendeeModel, CompleteCrew, CrewModel, CompleteEvent, EventModel, CompleteRoleMember, RoleMemberModel } from "./index"
 
+// Helper schema for JSON fields
+type Literal = boolean | number | string
+type Json = Literal | { [key: string]: Json } | Json[]
+const literalSchema = z.union([z.string(), z.number(), z.boolean()])
+const jsonSchema: z.ZodSchema<Json> = z.lazy(() => z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)]))
+
 export const _UserModel = z.object({
   user_id: z.number().int(),
   username: z.string(),
@@ -9,6 +15,10 @@ export const _UserModel = z.object({
   last_name: z.string(),
   nickname: z.string(),
   avatar: z.string(),
+  /**
+   * [UserPreferences]
+   */
+  preferences: jsonSchema,
 })
 
 export interface CompleteUser extends z.infer<typeof _UserModel> {

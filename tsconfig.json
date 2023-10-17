@@ -28,7 +28,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "lib/db/seed.mts"
+    "lib/db/seed.mts",
+    "lib/db/json.d.ts"
   ],
   "exclude": ["node_modules"]
 }
