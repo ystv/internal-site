@@ -4,5 +4,7 @@ declare namespace PrismaJson {
     // must be optional.
 
     timeFormat?: "12hr" | "24hr";
+
+    icalFilter?: "only-mine" | "all";
   }
 }
