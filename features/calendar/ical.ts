@@ -5,6 +5,7 @@ import ical from "ical-generator";
 import invariant from "@/lib/invariant";
 import { Prisma } from "@prisma/client";
 import { preferenceDefaults } from "../people";
+import { EventObjectType, listEventsForMonth } from "./events";
 
 export function encodeUserID(userID: number) {
   return encode({ userID });
@@ -26,54 +27,24 @@ export async function generateICalFeedForUser(userID: number) {
       preferences: true,
     },
   });
-  let filters: Prisma.EventWhereInput;
+
+  const now = new Date();
+
+  let events: EventObjectType[];
   switch (preferenceDefaults(user.preferences).icalFilter) {
     case "all":
-      filters = {
-        end_date: {
-          gte: new Date(),
-        },
-      };
+      events = await listEventsForMonth(now.getFullYear(), now.getMonth());
       break;
     case "only-mine":
-      filters = {
-        AND: [
-          {
-            end_date: {
-              gte: new Date(),
-            },
-          },
-          {
-            OR: [
-              {
-                attendees: {
-                  some: {
-                    user_id: userID,
-                  },
-                },
-              },
-              {
-                signup_sheets: {
-                  some: {
-                    crews: {
-                      some: {
-                        user_id: userID,
-                      },
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        ],
-      };
+      events = await listEventsForMonth(
+        now.getFullYear(),
+        now.getMonth(),
+        userID,
+      );
       break;
     default:
       invariant(false, `Unknown icalFilter ${user.preferences.icalFilter}`);
   }
-  const events = await prisma.event.findMany({
-    where: filters,
-  });
   const calendar = ical({ name: `YSTV Calendar for ${getUserName(user)}` });
   for (const evt of events) {
     calendar.createEvent({
