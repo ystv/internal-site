@@ -221,16 +221,25 @@ export default function YSTVCalendar({
           month: isMobileView ? "short" : "long",
         }}
         firstDay={1}
-        eventTimeFormat={v => {
+        eventTimeFormat={(v) => {
           if (prefs.timeFormat === "12hr") {
             let hour = v.date.hour % 12;
             if (hour === 0) hour = 12;
             if (v.date.minute === 0) {
               return hour.toString() + (v.date.hour < 12 ? "am" : "pm");
             }
-            return hour.toString() + ":" + v.date.minute.toString().padStart(2, "0") + (v.date.hour < 12 ? "am" : "pm");
+            return (
+              hour.toString() +
+              ":" +
+              v.date.minute.toString().padStart(2, "0") +
+              (v.date.hour < 12 ? "am" : "pm")
+            );
           }
-          return v.date.hour.toString().padStart(2, "0") + ":" + v.date.minute.toString().padStart(2, "0");
+          return (
+            v.date.hour.toString().padStart(2, "0") +
+            ":" +
+            v.date.minute.toString().padStart(2, "0")
+          );
         }}
         //////
         dayHeaders={!isMobileView}
