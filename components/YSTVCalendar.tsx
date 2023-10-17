@@ -15,9 +15,10 @@ import {
 import "./YSTVCalendar.css";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
-import { Loader, Select } from "@mantine/core";
+import { ActionIcon, Menu, Select, Loader } from "@mantine/core";
 import { useRef } from "react";
 import * as Sentry from "@sentry/nextjs";
+import { TbCheck, TbFilter } from "react-icons/tb";
 import findLast from "core-js-pure/stable/array/find-last";
 
 dayjs.extend(weekOfYear);
@@ -68,11 +69,13 @@ function getUoYWeekName(date: Date) {
 export default function YSTVCalendar({
   events,
   selectedDate,
-  view: rawView,
+  selectedFilter,
+  selectedView: selectedView,
 }: {
   events: Event[];
   selectedDate: Date;
-  view?: string;
+  selectedFilter?: string;
+  selectedView?: string;
 }) {
   const router = useRouter();
 
@@ -80,7 +83,8 @@ export default function YSTVCalendar({
     getInitialValueInEffect: true,
   });
 
-  const view = rawView ?? (isMobileView ? "dayGridWeek" : "dayGridMonth");
+  const initialView =
+    selectedView ?? (isMobileView ? "dayGridWeek" : "dayGridMonth");
 
   const calendarRef = useRef<FullCalendar>(null);
 
@@ -91,6 +95,27 @@ export default function YSTVCalendar({
     { value: "timeGridDay", label: "Day" },
   ];
 
+  const updateCalendarURL = ({
+    newDate,
+    newFilter,
+    newView,
+  }: {
+    newDate?: Date;
+    newFilter?: String;
+    newView?: String;
+  }) => {
+    const date = newDate ?? selectedDate;
+    const view = newView ?? initialView;
+    const filter = newFilter ?? selectedFilter;
+    router.push(
+      `/calendar?year=${date.getFullYear()}&month=${
+        date.getMonth() + 1
+      }&day=${date.getDate()}${!view || view === "all" ? "" : `&view=${view}`}${
+        !filter || filter === "all" ? "" : `&filter=${filter}`
+      }`,
+    );
+  };
+
   if (isMobileView === undefined)
     return (
       <div className={"flex w-full justify-center"}>
@@ -100,8 +125,49 @@ export default function YSTVCalendar({
 
   return (
     <>
-      {isMobileView && (
-        <>
+      <div className={"flex items-end justify-between gap-1"}>
+        <Menu>
+          <Menu.Target>
+            <ActionIcon
+              size={36}
+              variant={selectedFilter ? "filled" : "outline"}
+              color={"blue"}
+            >
+              <TbFilter />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Label>Filter Events</Menu.Label>
+            <Menu.Item
+              {...(selectedFilter === undefined && {
+                leftSection: <TbCheck />,
+                disabled: true,
+              })}
+              onClick={() => updateCalendarURL({ newFilter: "all" })}
+            >
+              All
+            </Menu.Item>
+            <Menu.Item
+              {...(selectedFilter == "vacant" && {
+                leftSection: <TbCheck />,
+                disabled: true,
+              })}
+              onClick={() => updateCalendarURL({ newFilter: "vacant" })}
+            >
+              Vacant
+            </Menu.Item>
+            <Menu.Item
+              {...(selectedFilter == "my" && {
+                leftSection: <TbCheck />,
+                disabled: true,
+              })}
+              onClick={() => updateCalendarURL({ newFilter: "my" })}
+            >
+              My
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+        {isMobileView && calendarRef.current && (
           <Select
             label="Calendar View"
             className={"text-right [&_input]:select-none [&_input]:text-right"}
@@ -111,19 +177,19 @@ export default function YSTVCalendar({
               },
             }}
             data={viewsList}
-            value={view}
+            value={initialView}
             onChange={(e) => {
               e && calendarRef.current?.getApi().changeView(e);
             }}
             autoComplete="off"
           />
-          <br />
-        </>
-      )}
+        )}
+      </div>
+      <br />
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin]}
-        initialView={view}
+        initialView={initialView}
         headerToolbar={{
           right:
             "today prev,next" +
@@ -146,11 +212,7 @@ export default function YSTVCalendar({
           // However, this could change in-future (depending on FullCalendar or the durations of
           // any future views we add), consider restoring viewDidMount handler if problems arise.
           const newDate = n.view.calendar.getDate();
-          return router.push(
-            `/calendar?year=${newDate.getFullYear()}&month=${
-              newDate.getMonth() + 1
-            }&day=${newDate.getDate()}&view=${n.view.type}`,
-          );
+          updateCalendarURL({ newDate: newDate, newView: n.view.type });
         }}
         titleFormat={{
           year: "numeric",

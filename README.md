@@ -5,11 +5,12 @@ This is the repo for https://internal.ystv.co.uk. (Don't question the name.)
 ## Getting Started
 
 To set up a local copy of the new calendar, you will need
-* Node.js (18 or later) - https://nodejs.org/en/download
-* Yarn - once you have Node installed, run `corepack enable`
-* PostgreSQL - https://www.postgresql.org/download/
-* Git - https://git-scm.com/downloads
-  * You will also need to configure authentication - https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github#authenticating-with-the-command-line
+
+- Node.js (18 or later) - https://nodejs.org/en/download
+- Yarn - once you have Node installed, run `corepack enable`
+- PostgreSQL - https://www.postgresql.org/download/
+- Git - https://git-scm.com/downloads
+  - You will also need to configure authentication - https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github#authenticating-with-the-command-line
 
 Then, clone this repository:
 
@@ -57,7 +58,7 @@ To get admin permissions, sign in once with Google, then run `yarn do promoteUse
 - app/ - pages
 <!-- TODO - https://linear.app/ystv/issue/WEB-101/api-time
 - app/api/ - api routes (trpc and REST)
--->
+  -->
 - features/ - business logic functinality
 - lib/ - low level utilities (auth, db, etc.)
 

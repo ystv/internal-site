@@ -70,18 +70,18 @@ export interface EventCreateUpdateFields {
  * out all sensitive fields.
  * @param input an event or event-like object
  */
-function sanitize(
-  input: Event & {
-    event_type: any; // the type coming from the DB is `string`;
-    updated_by_user: User | null;
-    signup_sheets: Array<
-      SignupSheet & {
-        crews: Array<Crew & { users: User | null; positions: Position }>;
-      }
-    >;
-    attendees: Array<Attendee & { users: User; attend_status: any }>;
-  },
-): EventObjectType {
+
+type sanitizableEvent = Event & {
+  event_type: any; // the type coming from the DB is `string`;
+  updated_by_user: User | null;
+  signup_sheets: Array<
+    SignupSheet & {
+      crews: Array<Crew & { users: User | null; positions: Position }>;
+    }
+  >;
+  attendees: Array<Attendee & { users: User; attend_status: any }>;
+};
+function sanitize(input: sanitizableEvent): EventObjectType {
   return produce(input, (draft) => {
     draft.event_type = draft.event_type as EventType;
     // @ts-expect-error
@@ -136,7 +136,11 @@ const EventSelectors = {
   },
 } satisfies Prisma.EventInclude;
 
-export async function listEventsForMonth(year: number, month: number) {
+export async function listEventsForMonth(
+  year: number,
+  month: number,
+  me?: number,
+) {
   return (
     await prisma.event.findMany({
       where: {
@@ -147,10 +151,153 @@ export async function listEventsForMonth(year: number, month: number) {
           lt: new Date(year, month + 1, 1),
         },
         deleted_at: null,
+        OR: me
+          ? [
+              {
+                signup_sheets: {
+                  some: {
+                    crews: {
+                      some: {
+                        users: {
+                          user_id: me,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                attendees: {
+                  some: {
+                    user_id: me,
+                    attend_status: { equals: "attending" },
+                  },
+                },
+              },
+            ]
+          : undefined,
       },
       include: EventSelectors,
     })
   ).map((e) => sanitize(e));
+}
+
+export async function listVacantEvents({
+  role,
+  date,
+  includeAttendeeEvents,
+}: {
+  role?: number;
+  date?: { year: number; month: number };
+  includeAttendeeEvents?: boolean;
+}) {
+  const roleQuery = {
+    AND: [
+      { user_id: null },
+      { locked: false },
+      { custom_crew_member_name: null },
+      { position_id: role ? { equals: role } : { not: undefined } },
+    ],
+  };
+
+  const sheetQuery = {
+    OR: [
+      {
+        unlock_date: null,
+      },
+      {
+        unlock_date: {
+          lt: new Date(),
+        },
+      },
+    ],
+  };
+
+  const mainQuery = {
+    where: {
+      start_date: {
+        // javascript dates are 0-indexed for months, but humans are 1-indexed
+        // (human is dealt with at the API layer to avoid confusing JS everywhere else)
+        gte: date ? new Date(date.year, date.month, 1) : new Date(),
+        lt: date ? new Date(date.year, date.month + 1, 1) : undefined,
+      },
+      deleted_at: null,
+      is_cancelled: false,
+      OR: [
+        {
+          signup_sheets: {
+            some: {
+              AND: [
+                sheetQuery,
+                {
+                  crews: {
+                    some: roleQuery,
+                  },
+                },
+              ],
+            },
+          },
+        },
+        {
+          event_type: includeAttendeeEvents ? { not: "show" } : undefined,
+        },
+      ],
+    },
+    include: {
+      attendees: {
+        include: {
+          users: true,
+          events: true,
+        },
+        where: {
+          attend_status: {
+            not: "unknown",
+          },
+        },
+      },
+      created_by_user: true,
+      updated_by_user: true,
+      signup_sheets: {
+        orderBy: {
+          signup_id: "asc",
+        },
+        where: sheetQuery,
+        include: {
+          crews: {
+            orderBy: {
+              crew_id: "asc",
+            },
+            where: roleQuery,
+            include: {
+              users: true,
+              positions: true,
+            },
+          },
+        },
+      },
+    },
+  } satisfies Prisma.EventFindManyArgs;
+
+  // if (getCountOnly) {
+  //   return (await prisma.event.findMany(mainQuery))
+  //     .flatMap((event) =>
+  //       event.signup_sheets.map((signupSheet) => signupSheet._count.crews),
+  //     )
+  //     .reduce((acc, curr) => acc + curr, 0);
+  // }
+
+  const vacantEvents = (await prisma.event.findMany(mainQuery)).map((e) =>
+    sanitize(e as sanitizableEvent),
+  );
+  const vacantsignUpRolesCount = vacantEvents
+    .flatMap((event) =>
+      event.signup_sheets.map((signupSheet) => signupSheet.crews),
+    )
+    .reduce((acc, curr) => acc + curr.length, 0);
+  return {
+    events: vacantEvents,
+    signUpRolesCount: vacantsignUpRolesCount,
+  };
 }
 
 export async function getEvent(id: number): Promise<EventObjectType | null> {
