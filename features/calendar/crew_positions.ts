@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 
 export interface CrewPositionType {
   position_id: number;
@@ -10,10 +11,14 @@ export interface CrewPositionType {
   is_custom: boolean;
 }
 
-export function getAllCrewPositions(): Promise<CrewPositionType[]> {
-  return prisma.position.findMany({
+export function getAllCrewPositions(includeCustom = true): Promise<CrewPositionType[]> {
+  const filters: Prisma.PositionFindManyArgs = {
     orderBy: {
       position_id: "asc",
     },
-  });
+  };
+  if (!includeCustom) {
+    filters.where = { is_custom: false };
+  }
+  return prisma.position.findMany(filters);
 }
