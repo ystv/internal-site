@@ -10,7 +10,7 @@ export default async function CalendarDiscoverPage({
   const position = searchParams.position
     ? parseInt(searchParams.position, 10)
     : undefined;
-  const vacantRoles = await listVacantEvents(position);
+  const vacantRoles = (await listVacantEvents({ role: position })).events;
   const crewPositions = await getAllNonCustomCrewPositions();
   return (
     <DiscoverView
