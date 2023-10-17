@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useMemo } from "react";
 import { Permission } from "@/lib/auth/permissions";
 import { UserType } from "@/lib/auth/server";
 import * as Sentry from "@sentry/nextjs";
+import { preferenceDefaults } from "@/features/people/preferences";
 
 const UserContext = createContext<UserType>(
   null as unknown as UserType /* Bit naughty, but getCurrentUser ensures there's a user signed in */,
@@ -28,6 +29,11 @@ export function UserProvider(props: {
 }
 
 export const useCurrentUser = () => useContext(UserContext);
+
+export function useUserPreferences(): Required<PrismaJson.UserPreferences> {
+  const user = useCurrentUser();
+  return preferenceDefaults(user.preferences);
+}
 
 export function PermissionGate(props: {
   children: React.ReactNode;

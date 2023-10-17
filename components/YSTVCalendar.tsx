@@ -20,6 +20,7 @@ import { useRef } from "react";
 import * as Sentry from "@sentry/nextjs";
 import { TbCheck, TbFilter } from "react-icons/tb";
 import findLast from "core-js-pure/stable/array/find-last";
+import { useUserPreferences } from "./UserContext";
 
 dayjs.extend(weekOfYear);
 
@@ -78,6 +79,7 @@ export default function YSTVCalendar({
   selectedView?: string;
 }) {
   const router = useRouter();
+  const prefs = useUserPreferences();
 
   const isMobileView = useMediaQuery("(max-width: 650px)", undefined, {
     getInitialValueInEffect: true,
@@ -219,9 +221,16 @@ export default function YSTVCalendar({
           month: isMobileView ? "short" : "long",
         }}
         firstDay={1}
-        eventTimeFormat={{
-          hour: "numeric",
-          meridiem: "short",
+        eventTimeFormat={v => {
+          if (prefs.timeFormat === "12hr") {
+            let hour = v.date.hour % 12;
+            if (hour === 0) hour = 12;
+            if (v.date.minute === 0) {
+              return hour.toString() + (v.date.hour < 12 ? "am" : "pm");
+            }
+            return hour.toString() + ":" + v.date.minute.toString().padStart(2, "0") + (v.date.hour < 12 ? "am" : "pm");
+          }
+          return v.date.hour.toString().padStart(2, "0") + ":" + v.date.minute.toString().padStart(2, "0");
         }}
         //////
         dayHeaders={!isMobileView}
