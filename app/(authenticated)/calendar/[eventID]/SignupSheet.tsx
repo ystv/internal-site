@@ -80,7 +80,9 @@ function SignupSheet({
         )}
         <table className="mt-4 border-collapse">
           <tbody
-            className={"divide-x-0 divide-y-2 divide-dashed divide-gray-200"}
+            className={
+              "divide-x-0 divide-y-2 divide-dashed divide-gray-200 dark:divide-[--mantine-color-placeholder]"
+            }
           >
             {sheet.crews
               .sort((a, b) => a.ordering - b.ordering)
@@ -88,7 +90,7 @@ function SignupSheet({
                 <tr
                   key={crew.crew_id}
                   className={
-                    "divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold"
+                    "divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold dark:divide-[--mantine-color-placeholder]"
                   }
                 >
                   <td className="px-3">
@@ -111,7 +113,7 @@ function SignupSheet({
                         variant={"light"}
                         fullWidth
                         className={
-                          "!h-auto min-h-[var(--button-height)] !select-text"
+                          "!h-auto min-h-[var(--button-height)] !select-text dark:data-[disabled='true']:!bg-[--mantine-color-gray-filled] dark:data-[disabled='true']:text-[#888]"
                         }
                         justify={"left"}
                         disabled={readOnly}
@@ -126,10 +128,9 @@ function SignupSheet({
                         fullWidth
                         component={"div"}
                         className={
-                          "!flex !h-auto min-h-[var(--button-height)] !cursor-default !select-text items-center !text-left active:!transform-none"
+                          "!flex !h-auto min-h-[var(--button-height)] !cursor-default !select-text items-center !text-left !text-[--mantine-color-default-color] active:!transform-none"
                         }
                         justify={"left"}
-                        color={"black"}
                         disabled={readOnly}
                       >
                         {crew.users

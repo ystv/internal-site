@@ -82,6 +82,7 @@ export function DatePickerField(props: {
       label={props.label}
       value={dv}
       onChange={(v) => controller.field.onChange(v?.toISOString())}
+      error={controller.fieldState.error?.message as string}
       withAsterisk={props.required}
       dropdownType={props.modal ? "modal" : "popover"}
       renderDay={(date) => {

@@ -15,10 +15,11 @@ import {
 import "./YSTVCalendar.css";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
-import { ActionIcon, Menu, Select } from "@mantine/core";
+import { ActionIcon, Menu, Select, Loader } from "@mantine/core";
 import { useRef, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
 import { TbCheck, TbFilter } from "react-icons/tb";
+import findLast from "core-js-pure/stable/array/find-last";
 
 dayjs.extend(weekOfYear);
 
@@ -37,7 +38,8 @@ function getUoYWeekName(date: Date) {
     }
     return "Week " + dayjs(date).week();
   }
-  const academicYear = academicYears.findLast(
+  const academicYear = findLast(
+    academicYears,
     (x) => x.periods[0].startDate.getTime() <= date.getTime(),
   );
   if (!academicYear) {
@@ -68,18 +70,22 @@ export default function YSTVCalendar({
   events,
   selectedDate,
   selectedFilter,
+  view: rawView,
 }: {
   events: Event[];
   selectedDate: Date;
   selectedFilter?: string;
+  view?: string;
 }) {
   const router = useRouter();
+
   const isMobileView = useMediaQuery("(max-width: 650px)", undefined, {
-    getInitialValueInEffect: false,
+    getInitialValueInEffect: true,
   });
 
+  const view = rawView ?? (isMobileView ? "dayGridWeek" : "dayGridMonth");
+
   const calendarRef = useRef<FullCalendar>(null);
-  const [calendarView, setCalendarView] = useState<string | null>(null);
 
   const viewsList = [
     { value: "dayGridMonth", label: "Month" },
@@ -88,17 +94,12 @@ export default function YSTVCalendar({
     { value: "timeGridDay", label: "Day" },
   ];
 
-  const updateCalendarURL = (newDate?: Date, newFilter?: String) => {
-    const date = newDate ?? selectedDate;
-    const filter = newFilter ?? selectedFilter;
-    router.push(
-      `/calendar?year=${date.getFullYear()}&month=${
-        date.getMonth() + 1
-      }&day=${date.getDate()}${
-        !filter || filter === "all" ? "" : `&filter=${filter}`
-      }`,
+  if (isMobileView === undefined)
+    return (
+      <div className={"flex w-full justify-center"}>
+        <Loader />
+      </div>
     );
-  };
 
   return (
     <>
@@ -154,10 +155,10 @@ export default function YSTVCalendar({
               },
             }}
             data={viewsList}
-            value={calendarView}
-            onChange={(e) =>
-              calendarRef.current?.getApi().changeView(e ?? "dayGridWeek")
-            }
+            value={view}
+            onChange={(e) => {
+              e && calendarRef.current?.getApi().changeView(e);
+            }}
             autoComplete="off"
           />
         )}
@@ -166,7 +167,7 @@ export default function YSTVCalendar({
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin]}
-        initialView={isMobileView ? "dayGridWeek" : "dayGridMonth"}
+        initialView={view}
         headerToolbar={{
           right:
             "today prev,next" +
@@ -179,14 +180,21 @@ export default function YSTVCalendar({
           day: "Day",
           list: "List",
         }}
-        viewDidMount={(n) => {
-          setCalendarView(n.view.type);
-        }}
         showNonCurrentDates={false}
         datesSet={(n) => {
-          setCalendarView(n.view.type);
+          // Per https://github.com/fullcalendar/fullcalendar/issues/6582#issuecomment-942758927
+          // As each calendar view we use at the moment represents a different duration of time
+          // (day week month), this means the date range for each is different. So, this handler
+          // is called when the date range changes anyway, but also when the view changes.
+          //
+          // However, this could change in-future (depending on FullCalendar or the durations of
+          // any future views we add), consider restoring viewDidMount handler if problems arise.
           const newDate = n.view.calendar.getDate();
-          updateCalendarURL(newDate);
+          return router.push(
+            `/calendar?year=${newDate.getFullYear()}&month=${
+              newDate.getMonth() + 1
+            }&day=${newDate.getDate()}&view=${n.view.type}`,
+          );
         }}
         titleFormat={{
           year: "numeric",

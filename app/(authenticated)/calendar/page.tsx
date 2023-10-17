@@ -17,6 +17,7 @@ export default async function CalendarPage({
     year?: string;
     month?: string;
     day?: string;
+    view?: string;
     filter?: string;
   };
 }) {
@@ -101,6 +102,7 @@ export default async function CalendarPage({
         events={events}
         selectedDate={date}
         selectedFilter={filter}
+        view={searchParams.view}
       />
     </>
   );

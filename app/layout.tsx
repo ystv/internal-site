@@ -33,7 +33,7 @@ export default async function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className={inter.className}>
-        <MantineProvider theme={theme}>
+        <MantineProvider theme={theme} defaultColorScheme="light">
           <ModalsProvider>
             <PublicURLProvider value={process.env.PUBLIC_URL!}>
               <DebugModeProvider value={debugMode}>

@@ -5,6 +5,7 @@ import { UserProvider } from "@/components/UserContext";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 import * as Sentry from "@sentry/nextjs";
+import { UserMenu } from "@/components/UserMenu";
 
 export default async function AuthenticatedLayout({
   children,
@@ -29,16 +30,8 @@ export default async function AuthenticatedLayout({
             className="max-h-[4.5rem] w-auto py-2"
           />
         </Link>
-        <div className="ml-auto space-x-1">
-          <Link href="/user/me">
-            <Image
-              src={user.avatar}
-              alt=""
-              width={96}
-              height={96}
-              className="max-h-[4.5rem] w-auto rounded-full py-2"
-            />
-          </Link>
+        <div className="ml-auto h-14 w-14 space-x-1">
+          <UserMenu userAvatar={user.avatar} />
         </div>
       </nav>
       <div className="mx-2 md:mx-6">
