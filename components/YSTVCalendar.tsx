@@ -16,7 +16,7 @@ import "./YSTVCalendar.css";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import { ActionIcon, Menu, Select, Loader } from "@mantine/core";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import * as Sentry from "@sentry/nextjs";
 import { TbCheck, TbFilter } from "react-icons/tb";
 import findLast from "core-js-pure/stable/array/find-last";
@@ -70,12 +70,12 @@ export default function YSTVCalendar({
   events,
   selectedDate,
   selectedFilter,
-  view: rawView,
+  selectedView: selectedView,
 }: {
   events: Event[];
   selectedDate: Date;
   selectedFilter?: string;
-  view?: string;
+  selectedView?: string;
 }) {
   const router = useRouter();
 
@@ -83,7 +83,8 @@ export default function YSTVCalendar({
     getInitialValueInEffect: true,
   });
 
-  const view = rawView ?? (isMobileView ? "dayGridWeek" : "dayGridMonth");
+  const initialView =
+    selectedView ?? (isMobileView ? "dayGridWeek" : "dayGridMonth");
 
   const calendarRef = useRef<FullCalendar>(null);
 
@@ -93,6 +94,23 @@ export default function YSTVCalendar({
     { value: "listMonth", label: "List" },
     { value: "timeGridDay", label: "Day" },
   ];
+
+  const updateCalendarURL = (
+    newDate?: Date,
+    newFilter?: String,
+    newView?: String,
+  ) => {
+    const date = newDate ?? selectedDate;
+    const view = newView ?? initialView;
+    const filter = newFilter ?? selectedFilter;
+    router.push(
+      `/calendar?year=${date.getFullYear()}&month=${
+        date.getMonth() + 1
+      }&day=${date.getDate()}${!view || view === "all" ? "" : `&view=${view}`}${
+        !filter || filter === "all" ? "" : `&filter=${filter}`
+      }`,
+    );
+  };
 
   if (isMobileView === undefined)
     return (
@@ -145,7 +163,7 @@ export default function YSTVCalendar({
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
-        {isMobileView && calendarRef.current && calendarView && (
+        {isMobileView && calendarRef.current && (
           <Select
             label="Calendar View"
             className={"text-right [&_input]:select-none [&_input]:text-right"}
@@ -155,7 +173,7 @@ export default function YSTVCalendar({
               },
             }}
             data={viewsList}
-            value={view}
+            value={initialView}
             onChange={(e) => {
               e && calendarRef.current?.getApi().changeView(e);
             }}
@@ -167,7 +185,7 @@ export default function YSTVCalendar({
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin]}
-        initialView={view}
+        initialView={initialView}
         headerToolbar={{
           right:
             "today prev,next" +

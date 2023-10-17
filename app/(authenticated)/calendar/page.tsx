@@ -102,7 +102,7 @@ export default async function CalendarPage({
         events={events}
         selectedDate={date}
         selectedFilter={filter}
-        view={searchParams.view}
+        selectedView={searchParams.view}
       />
     </>
   );

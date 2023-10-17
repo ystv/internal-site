@@ -1,5 +1,5 @@
 import { listVacantEvents } from "@/features/calendar/events";
-import { getAllNonCustomCrewPositions } from "@/features/calendar";
+import { getAllCrewPositions } from "@/features/calendar";
 import { DiscoverView } from "@/app/(authenticated)/calendar/discover/DiscoverView";
 
 export default async function CalendarDiscoverPage({
@@ -11,7 +11,7 @@ export default async function CalendarDiscoverPage({
     ? parseInt(searchParams.position, 10)
     : undefined;
   const vacantRoles = (await listVacantEvents({ role: position })).events;
-  const crewPositions = await getAllNonCustomCrewPositions();
+  const crewPositions = await getAllCrewPositions();
   return (
     <DiscoverView
       vacantRoles={vacantRoles}
