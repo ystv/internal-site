@@ -117,7 +117,7 @@ export function DiscoverView({
               <p className={"m-0 text-sm"}>{event.description}</p>
             )}
             <Divider my="xs" label="Available Roles" labelPosition="center" />
-            {event.signup_sheets.map((sheet) => (
+            {event.signup_sheets.filter(sheet => sheet.crews.length > 0).map((sheet) => (
               <div key={sheet.signup_id}>
                 <h3 className={"m-0 text-lg"}>{sheet.title}</h3>
                 <p className={"m-0 text-xs"}>
