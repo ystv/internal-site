@@ -11,7 +11,9 @@ export interface CrewPositionType {
   is_custom: boolean;
 }
 
-export function getAllCrewPositions(includeCustom = true): Promise<CrewPositionType[]> {
+export function getAllCrewPositions(
+  includeCustom = true,
+): Promise<CrewPositionType[]> {
   const filters: Prisma.PositionFindManyArgs = {
     orderBy: {
       position_id: "asc",
