@@ -65,7 +65,7 @@ function PrefWrapper<K extends keyof ReqPrefs>(
   });
 }
 
-function SegmentedPreference<K extends "timeFormat">(
+function SegmentedPreference<K extends "timeFormat" | "icalFilter">(
   props: PrefWrapperPassthroughProps<K> & {
     label: string;
     values: ReqPrefs[K][] | Array<{ value: ReqPrefs[K]; label: string }>;
@@ -89,32 +89,6 @@ function SegmentedPreference<K extends "timeFormat">(
   );
 }
 
-function RadioGroupPreference<K extends "icalFilter">(
-  props: PrefWrapperPassthroughProps<K> & {
-    label: string;
-    values: Array<{ value: ReqPrefs[K]; label: string }>;
-  },
-) {
-  const { values, label, ...rest } = props;
-  return (
-    <PrefWrapper
-      {...rest}
-      renderField={({ value, onChange, disabled }) => (
-        <RadioGroup value={value} onChange={onChange} label={label}>
-          {values.map((v) => (
-            <Radio
-              key={v.value}
-              value={v.value}
-              label={v.label}
-              disabled={disabled}
-            />
-          ))}
-        </RadioGroup>
-      )}
-    />
-  );
-}
-
 export function UserPreferences(props: { value: ReqPrefs; userID: number }) {
   return (
     <Stack>
@@ -125,11 +99,11 @@ export function UserPreferences(props: { value: ReqPrefs; userID: number }) {
         prefs={props.value}
         userID={props.userID}
       />
-      <RadioGroupPreference
+      <SegmentedPreference
         label="Which events to display in external calendar feed?"
         field="icalFilter"
         values={[
-          { label: "Only My Events", value: "only-mine" },
+          { label: "Only Mine", value: "only-mine" },
           { label: "All Events", value: "all" },
         ]}
         prefs={props.value}
