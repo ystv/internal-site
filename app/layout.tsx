@@ -10,6 +10,8 @@ import { theme } from "./theme";
 
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
+import { Notifications } from "@mantine/notifications";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,6 +46,7 @@ export default async function RootLayout({
                 </footer>
               </DebugModeProvider>
             </PublicURLProvider>
+            <Notifications />
           </ModalsProvider>
         </MantineProvider>
       </body>

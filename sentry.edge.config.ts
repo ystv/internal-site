@@ -21,6 +21,10 @@ Sentry.init({
     if (process.env.NEXT_PHASE === "phase-production-build") {
       return null;
     }
+    // Filter out errors on localhost - the jenkins builds set NODE_ENV=production on all envs
+    if (process.env.NODE_ENV !== "production") {
+      return null;
+    }
     return event;
   },
 });

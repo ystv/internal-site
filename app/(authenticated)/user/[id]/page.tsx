@@ -4,22 +4,27 @@ import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { notFound } from "next/navigation";
 import { getUserName } from "@/components/UserHelpers";
+import Form from "@/components/Form";
+import { InputWrapper, SegmentedControl, Stack } from "@mantine/core";
+import { UserPreferences } from "./UserPreferences";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
-  let user;
+  let user: People.SecureUser;
   if (params.id === "me") {
-    user = People.ExposedUserModel.parse(await getCurrentUser());
+    user = People.SecureUserModel.parse(await getCurrentUser());
   } else {
     await requirePermission(
       "ManageMembers.Members.List",
       "ManageMembers.Members.Admin",
       "ManageMembers.Admin",
     );
-    user = await People.getUser(parseInt(params.id, 10));
-    if (!user) {
+    const dbUser = await People.getUser(parseInt(params.id, 10));
+    if (!dbUser) {
       notFound();
     }
+    user = People.SecureUserModel.parse(dbUser);
   }
+  const prefs = People.preferenceDefaults(user.preferences);
   return (
     <div>
       <h1>
@@ -34,6 +39,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         )}
         {getUserName(user)}
       </h1>
+      <h2>Preferences</h2>
+      <UserPreferences value={prefs} userID={user.user_id} />
       <h2>Add Calendar to Google Calendar</h2>
       <p>
         Add this URL as a new calendar in Google Calendar:
