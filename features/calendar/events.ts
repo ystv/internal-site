@@ -276,6 +276,9 @@ export async function listVacantEvents({
         },
       },
     },
+    orderBy: {
+      start_date: "asc",
+    },
   } satisfies Prisma.EventFindManyArgs;
 
   // if (getCountOnly) {
