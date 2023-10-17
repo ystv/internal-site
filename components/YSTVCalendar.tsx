@@ -95,11 +95,15 @@ export default function YSTVCalendar({
     { value: "timeGridDay", label: "Day" },
   ];
 
-  const updateCalendarURL = (
-    newDate?: Date,
-    newFilter?: String,
-    newView?: String,
-  ) => {
+  const updateCalendarURL = ({
+    newDate,
+    newFilter,
+    newView,
+  }: {
+    newDate?: Date;
+    newFilter?: String;
+    newView?: String;
+  }) => {
     const date = newDate ?? selectedDate;
     const view = newView ?? initialView;
     const filter = newFilter ?? selectedFilter;
@@ -139,7 +143,7 @@ export default function YSTVCalendar({
                 leftSection: <TbCheck />,
                 disabled: true,
               })}
-              onClick={() => updateCalendarURL(undefined, "all")}
+              onClick={() => updateCalendarURL({ newFilter: "all" })}
             >
               All
             </Menu.Item>
@@ -148,7 +152,7 @@ export default function YSTVCalendar({
                 leftSection: <TbCheck />,
                 disabled: true,
               })}
-              onClick={() => updateCalendarURL(undefined, "vacant")}
+              onClick={() => updateCalendarURL({ newFilter: "vacant" })}
             >
               Vacant
             </Menu.Item>
@@ -157,7 +161,7 @@ export default function YSTVCalendar({
                 leftSection: <TbCheck />,
                 disabled: true,
               })}
-              onClick={() => updateCalendarURL(undefined, "my")}
+              onClick={() => updateCalendarURL({ newFilter: "my" })}
             >
               My
             </Menu.Item>
@@ -208,11 +212,7 @@ export default function YSTVCalendar({
           // However, this could change in-future (depending on FullCalendar or the durations of
           // any future views we add), consider restoring viewDidMount handler if problems arise.
           const newDate = n.view.calendar.getDate();
-          return router.push(
-            `/calendar?year=${newDate.getFullYear()}&month=${
-              newDate.getMonth() + 1
-            }&day=${newDate.getDate()}&view=${n.view.type}`,
-          );
+          updateCalendarURL({ newDate: newDate, newView: n.view.type });
         }}
         titleFormat={{
           year: "numeric",
