@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { z } from "zod";
-import { UserPreferencesSchema } from "../../lib/db/preferences";
+import { UserPreferencesSchema } from "@/lib/db/preferences";
 
 /**
  * Fields of a user object that we (usually) want to expose to the world.
