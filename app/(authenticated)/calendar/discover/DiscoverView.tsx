@@ -77,6 +77,7 @@ export function DiscoverView({
         onChange={(val) => {
           router.push(`/calendar/discover${val ? `?position=${val}` : ""}`);
         }}
+        selectFirstOptionOnChange
         className={"mb-4 max-w-[15rem]"}
       />
       {vacantRoles.length === 0 && (
@@ -117,34 +118,38 @@ export function DiscoverView({
               <p className={"m-0 text-sm"}>{event.description}</p>
             )}
             <Divider my="xs" label="Available Roles" labelPosition="center" />
-            {event.signup_sheets.filter(sheet => sheet.crews.length > 0).map((sheet) => (
-              <div key={sheet.signup_id}>
-                <h3 className={"m-0 text-lg"}>{sheet.title}</h3>
-                <p className={"m-0 text-xs"}>
-                  <DateTime
-                    val={sheet.arrival_time.toISOString()}
-                    format="datetime"
-                  />{" "}
-                  -{" "}
-                  {isSameDay(sheet.arrival_time, sheet.end_time) ? (
+            {event.signup_sheets
+              .filter((sheet) => sheet.crews.length > 0)
+              .map((sheet) => (
+                <div key={sheet.signup_id}>
+                  <h3 className={"m-0 text-lg"}>{sheet.title}</h3>
+                  <p className={"m-0 text-xs"}>
                     <DateTime
-                      val={sheet.end_time.toISOString()}
-                      format="time"
-                    />
-                  ) : (
-                    <DateTime
-                      val={sheet.end_time.toISOString()}
+                      val={sheet.arrival_time.toISOString()}
                       format="datetime"
-                    />
-                  )}
-                </p>
-                {sheet.crews.map((crew) => (
-                  <div key={crew.crew_id}>
-                    <li className={"ml-6 text-base"}>{crew.positions.name}</li>
-                  </div>
-                ))}
-              </div>
-            ))}
+                    />{" "}
+                    -{" "}
+                    {isSameDay(sheet.arrival_time, sheet.end_time) ? (
+                      <DateTime
+                        val={sheet.end_time.toISOString()}
+                        format="time"
+                      />
+                    ) : (
+                      <DateTime
+                        val={sheet.end_time.toISOString()}
+                        format="datetime"
+                      />
+                    )}
+                  </p>
+                  {sheet.crews.map((crew) => (
+                    <div key={crew.crew_id}>
+                      <li className={"ml-6 text-base"}>
+                        {crew.positions.name}
+                      </li>
+                    </div>
+                  ))}
+                </div>
+              ))}
             <div className={"flex grow items-end justify-end"}>
               <Button
                 onClick={() => router.push(`/calendar/${event.event_id}`)}
