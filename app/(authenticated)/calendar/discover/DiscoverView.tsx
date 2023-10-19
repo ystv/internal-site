@@ -16,7 +16,7 @@ import { CrewType, EventObjectType } from "@/features/calendar";
 import { useState } from "react";
 import { TbArticle, TbFilter, TbInfoCircle } from "react-icons/tb";
 import { MyRoleSignUpModal } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
-import { crewPositionsTypeWithAvailability } from "@/app/(authenticated)/calendar/discover/page";
+import { CrewPositionsTypeWithAvailability } from "@/app/(authenticated)/calendar/discover/page";
 
 export function DiscoverView({
   vacantRoles,
@@ -24,7 +24,7 @@ export function DiscoverView({
   position,
 }: {
   vacantRoles: EventObjectType[];
-  crewPositions: crewPositionsTypeWithAvailability[];
+  crewPositions: CrewPositionsTypeWithAvailability[];
   position?: number;
 }) {
   const router = useRouter();

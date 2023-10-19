@@ -13,7 +13,7 @@ export default async function CalendarDiscoverPage({
   const vacantRoles = (await listVacantEvents({})).events;
   const crewPositions = (await getAllCrewPositions(
     false,
-  )) as crewPositionsTypeWithAvailability[];
+  )) as CrewPositionsTypeWithAvailability[];
 
   const availableRoles = new Set<number>();
 
@@ -48,6 +48,6 @@ export default async function CalendarDiscoverPage({
   );
 }
 
-export interface crewPositionsTypeWithAvailability extends CrewPositionType {
+export interface CrewPositionsTypeWithAvailability extends CrewPositionType {
   available?: boolean;
 }
