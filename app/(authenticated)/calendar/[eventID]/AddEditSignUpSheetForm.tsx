@@ -17,7 +17,7 @@ import {
   useCrewPositions,
   useMembers,
 } from "@/components/FormFieldPreloadedData";
-import { Fragment, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import {
   Combobox,
@@ -95,6 +95,14 @@ function SelectWithCustomOption(props: {
       {item.label}
     </ComboboxOption>
   ));
+
+  useEffect(() => {
+    if (search === null || !combobox.dropdownOpened) {
+      // we're not searching, so we don't need to do anything
+      return;
+    }
+    combobox.selectFirstOption();
+  }, [combobox, search]);
 
   return (
     <Combobox
