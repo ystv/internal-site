@@ -85,6 +85,7 @@ export function DiscoverView({
       )}
       <div className={"flex flex-row flex-wrap gap-4"}>
         {vacantRoles
+          // only show events with any of the selected position vacant
           .filter(
             (event) =>
               !position ||
@@ -129,6 +130,7 @@ export function DiscoverView({
               <Divider my="xs" label="Available Roles" labelPosition="center" />
               {event.signup_sheets
                 .filter((sheet) => sheet.crews.length > 0)
+                // only show signup sheets with any of the selected position vacant
                 .filter(
                   (sheet) =>
                     !position ||
@@ -158,6 +160,7 @@ export function DiscoverView({
                       )}
                     </p>
                     {sheet.crews
+                      // only show crews with the selected position vacant
                       .filter(
                         (crew) =>
                           !position || crew.positions.position_id === position,
