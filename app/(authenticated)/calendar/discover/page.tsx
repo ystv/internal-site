@@ -15,8 +15,10 @@ export default async function CalendarDiscoverPage({
     false,
   )) as CrewPositionsTypeWithAvailability[];
 
+  // We want to only enable roles that are available in our selector
   const availableRoles = new Set<number>();
 
+  // create a memory efficient list of available roles
   for (const event of vacantRoles) {
     for (const signupSheet of event.signup_sheets) {
       for (const crew of signupSheet.crews) {
@@ -25,10 +27,12 @@ export default async function CalendarDiscoverPage({
     }
   }
 
+  // check if each role is available
   for (const crewPosition of crewPositions) {
     crewPosition.available = availableRoles.has(crewPosition.position_id);
   }
 
+  // send unavailable roles to the bottom of the selector list
   crewPositions.sort((a, b) => {
     if (a.available && !b.available) {
       return -1;
