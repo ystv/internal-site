@@ -213,6 +213,7 @@ export async function deleteSignUpSheet(sheetID: number) {
       signup_id: sheetID,
     },
   });
+  await deleteOrphanedCustomPositions();
 }
 
 export async function signUpToRole(
