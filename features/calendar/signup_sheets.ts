@@ -106,11 +106,19 @@ async function ensurePositionsForCrews(crews: CrewCreateUpdateInput[]) {
   );
   const newPositions = await prisma.$transaction(
     Array.from(newPosNames).map((name) =>
-      prisma.position.create({
-        data: {
+      prisma.position.upsert({
+        where: {
+          name,
+        },
+        create: {
           name,
           full_description: "",
           is_custom: true,
+        },
+        update: {},
+        select: {
+          name: true,
+          position_id: true,
         },
       }),
     ),
@@ -129,6 +137,17 @@ async function ensurePositionsForCrews(crews: CrewCreateUpdateInput[]) {
       delete crews[i].custom_position_name;
     }
   }
+}
+
+async function deleteOrphanedCustomPositions() {
+  await prisma.position.deleteMany({
+    where: {
+      is_custom: true,
+      crews: {
+        none: {},
+      },
+    },
+  });
 }
 
 export async function updateSignUpSheet(
@@ -185,6 +204,7 @@ export async function updateSignUpSheet(
         }),
       ),
   ]);
+  await deleteOrphanedCustomPositions();
 }
 
 export async function deleteSignUpSheet(sheetID: number) {
@@ -193,6 +213,7 @@ export async function deleteSignUpSheet(sheetID: number) {
       signup_id: sheetID,
     },
   });
+  await deleteOrphanedCustomPositions();
 }
 
 export async function signUpToRole(
