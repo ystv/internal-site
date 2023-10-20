@@ -108,7 +108,7 @@ async function ensurePositionsForCrews(crews: CrewCreateUpdateInput[]) {
     Array.from(newPosNames).map((name) =>
       prisma.position.upsert({
         where: {
-          name
+          name,
         },
         create: {
           name,
@@ -119,7 +119,7 @@ async function ensurePositionsForCrews(crews: CrewCreateUpdateInput[]) {
         select: {
           name: true,
           position_id: true,
-        }
+        },
       }),
     ),
   );
@@ -145,8 +145,8 @@ async function deleteOrphanedCustomPositions() {
       is_custom: true,
       crews: {
         none: {},
-      }
-    }
+      },
+    },
   });
 }
 
