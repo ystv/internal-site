@@ -148,6 +148,7 @@ model Position {
   crews             Crew[]
   is_custom         Boolean @default(false)
 
+  @@unique([name])
   @@map("positions")
 }
 
