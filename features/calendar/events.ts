@@ -41,6 +41,8 @@ export interface EventObjectType {
   updated_by_user: ExposedUser | null;
   deleted_by: number | null;
   adam_rms_project_id: number | null;
+  host: number;
+  host_user: ExposedUser;
 }
 
 export interface EventCreateUpdateFields {
@@ -74,6 +76,7 @@ export interface EventCreateUpdateFields {
 type sanitizableEvent = Event & {
   event_type: any; // the type coming from the DB is `string`;
   updated_by_user: User | null;
+  host_user: User;
   signup_sheets: Array<
     SignupSheet & {
       crews: Array<Crew & { users: User | null; positions: Position }>;
@@ -87,6 +90,8 @@ function sanitize(input: sanitizableEvent): EventObjectType {
     // @ts-expect-error
     draft.updated_by_user =
       draft.updated_by_user && ExposedUserModel.parse(draft.updated_by_user);
+    // @ts-expect-error
+    draft.host_user = ExposedUserModel.parse(draft.host_user);
     for (const sheet of draft.signup_sheets) {
       for (const crew of sheet.crews) {
         if (crew.users) {
@@ -118,6 +123,7 @@ const EventSelectors = {
   },
   created_by_user: true,
   updated_by_user: true,
+  host_user: true,
   signup_sheets: {
     orderBy: {
       signup_id: "asc",
@@ -257,6 +263,7 @@ export async function listVacantEvents({
       },
       created_by_user: true,
       updated_by_user: true,
+      host_user: true,
       signup_sheets: {
         orderBy: {
           signup_id: "asc",
@@ -328,6 +335,7 @@ export async function createEvent(
         created_at: new Date(),
         updated_by: currentUserID,
         updated_at: new Date(),
+        host: currentUserID,
       },
       include: EventSelectors,
     }),

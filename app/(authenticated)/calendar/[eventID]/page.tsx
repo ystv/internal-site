@@ -179,7 +179,7 @@ export default async function EventPage({
       {event.updated_by_user && event.event_type !== "show" && (
         <div className={"py-2"}>
           <strong className={"text-sm"}>
-            Host: {getUserName(event.updated_by_user)}
+            Host: {getUserName(event.host_user)}
           </strong>
         </div>
       )}
