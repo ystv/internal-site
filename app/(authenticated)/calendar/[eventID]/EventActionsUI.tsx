@@ -15,7 +15,9 @@ import {
 import { EditEventSchema } from "./schema";
 import {
   CheckBoxField,
+  ConditionalField,
   DatePickerField,
+  MemberSelect,
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
@@ -42,6 +44,13 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
       <DatePickerField name="start_date" label="Start" required />
       <DatePickerField name="end_date" label="End" required />
       <TextField name="location" label="Location" />
+      <ConditionalField
+        referencedFieldName="type"
+        condition={(t) => t !== "show"}
+        childFieldName="host"
+      >
+        <MemberSelect name="host" label="Host" />
+      </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="is_private" label="Private Event" />*/}
       <br />

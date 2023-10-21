@@ -114,6 +114,10 @@ export default async function EventPage({
     notFound();
   }
   const me = await getCurrentUser();
+  let allMembers;
+  if (canManage(event, me)) {
+    allMembers = await getAllUsers();
+  }
   return (
     <>
       {event.is_cancelled && (
@@ -154,7 +158,11 @@ export default async function EventPage({
             {event.name}
           </h1>
         </div>
-        {canManage(event, me) && <EventActionsUI event={event} />}
+        {canManage(event, me) && (
+          <MembersProvider members={allMembers!}>
+            <EventActionsUI event={event} />
+          </MembersProvider>
+        )}
       </div>
       <div
         className={twMerge(

@@ -13,6 +13,7 @@ export const schema = zfd
     private: z.boolean().optional().default(false),
     tentative: z.boolean().optional().default(false),
     type: z.enum(EventTypes),
+    host: z.coerce.number().optional(),
   })
   .refine((val) => isBefore(val.startDate, val.endDate), {
     message: "End date must be after start date",

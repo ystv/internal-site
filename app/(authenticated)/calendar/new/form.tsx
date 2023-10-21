@@ -3,7 +3,9 @@ import Form, { FormAction } from "@/components/Form";
 import { schema } from "./schema";
 import {
   CheckBoxField,
+  ConditionalField,
   DatePickerField,
+  MemberSelect,
   SegmentedField,
   SelectField,
   TextAreaField,
@@ -23,6 +25,7 @@ export function CreateEventForm(props: {
       action={props.action}
       schema={schema}
       onSuccess={(res) => router.push(`/calendar/${res.id}`)}
+      initialValues={{ type: "show" }}
     >
       <TextField name="name" label="Name" required placeholder={"New Event"} />
       <TextAreaField name="description" label="Description" />
@@ -34,8 +37,15 @@ export function CreateEventForm(props: {
         label="Type"
         options={props.permittedEventTypes}
         getOptionValue={identity}
-        renderOption={(v) => v[0].toUpperCase() + v.slice(1)}
+        renderOption={(v: string) => v[0].toUpperCase() + v.slice(1)}
       />
+      <ConditionalField
+        referencedFieldName="type"
+        condition={(t) => t !== "show"}
+        childFieldName="host"
+      >
+        <MemberSelect name="host" label="Host" />
+      </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="private" label="Private Event" />*/}
       <br />

@@ -7,7 +7,7 @@ import {
   useFieldArray,
   useFormContext,
 } from "react-hook-form";
-import { useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -23,6 +23,7 @@ import { useMembers } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
+import { FieldPath } from "react-hook-form/dist/types/path";
 
 export function TextField(props: {
   name: string;
@@ -263,4 +264,25 @@ export function MemberSelect(props: {
       }
     />
   );
+}
+
+export function ConditionalField<
+  TSchema extends FieldValues = Record<string, unknown>,
+  TField extends FieldPath<TSchema> = FieldPath<TSchema>,
+>(props: {
+  referencedFieldName: TField;
+  condition: (data: TSchema[TField]) => boolean;
+  childFieldName: string;
+  children: ReactNode;
+}) {
+  const ctx = useFormContext<TSchema>();
+  const referencedField = ctx.watch(props.referencedFieldName);
+  const shouldShow = props.condition(referencedField);
+  useEffect(() => {
+    if (!shouldShow) {
+      // @ts-expect-error - otherwise you get errors if referencedFieldName and childFieldName don't match
+      ctx.setValue(props.childFieldName, undefined as any);
+    }
+  }, [shouldShow, props.childFieldName, ctx]);
+  return shouldShow && props.children;
 }

@@ -54,6 +54,7 @@ export interface EventCreateUpdateFields {
   location: string;
   is_private: boolean;
   is_tentative: boolean;
+  host?: number;
 }
 
 export interface EventCreateUpdateFields {
@@ -335,7 +336,7 @@ export async function createEvent(
         created_at: new Date(),
         updated_by: currentUserID,
         updated_at: new Date(),
-        host: currentUserID,
+        host: event.host ?? currentUserID,
       },
       include: EventSelectors,
     }),
@@ -388,6 +389,7 @@ export async function updateEvent(
         ...data,
         updated_by: currentUserID,
         updated_at: new Date(),
+        host: data.host ?? currentUserID,
       },
       include: EventSelectors,
     });
