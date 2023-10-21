@@ -266,6 +266,17 @@ export function MemberSelect(props: {
   );
 }
 
+/**
+ * Wraps a form field to conditionally render it based on the value of another.
+ * This is useful for e.g. showing a field only if a checkbox is checked.
+ *
+ * To use it, wrap the field you want to conditionally render in a ConditionalField component.
+ * Then pass the name of the field that controls whether the field should be shown in the
+ * referencedFieldName prop, and a function that takes the value of that field and returns
+ * whether the field should be shown in the condition prop.
+ * Also pass the name of the field you want to conditionally render in the childFieldName prop,
+ * and its value will be set to undefined if the field is hidden.
+ */
 export function ConditionalField<
   TSchema extends FieldValues = Record<string, unknown>,
   TField extends FieldPath<TSchema> = FieldPath<TSchema>,
