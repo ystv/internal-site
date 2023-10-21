@@ -157,7 +157,7 @@ function SelectWithCustomOption(props: {
         />
       </ComboboxTarget>
       <ComboboxDropdown>
-        <ComboboxOptions>
+        <ComboboxOptions className="max-h-64 overflow-scroll">
           {props.allowNone && (!search || search.trim().length === 0) && (
             <ComboboxOption value={"$null"}>None</ComboboxOption>
           )}
