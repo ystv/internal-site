@@ -29,7 +29,7 @@ export interface CompleteUser extends z.infer<typeof _UserModel> {
   events_events_deleted_byTousers: CompleteEvent[]
   events_events_updated_byTousers: CompleteEvent[]
   role_members: CompleteRoleMember[]
-  Event: CompleteEvent[]
+  hosted_events: CompleteEvent[]
 }
 
 /**
@@ -45,5 +45,5 @@ export const UserModel: z.ZodSchema<CompleteUser> = z.lazy(() => _UserModel.exte
   events_events_deleted_byTousers: EventModel.array(),
   events_events_updated_byTousers: EventModel.array(),
   role_members: RoleMemberModel.array(),
-  Event: EventModel.array(),
+  hosted_events: EventModel.array(),
 }))

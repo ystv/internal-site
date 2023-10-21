@@ -68,10 +68,10 @@ model User {
   events_events_deleted_byTousers Event[]      @relation("events_deleted_byTousers")
   events_events_updated_byTousers Event[]      @relation("events_updated_byTousers")
   role_members                    RoleMember[]
-  hosted_events       Event[]
+  hosted_events                   Event[]
 
   /// [UserPreferences]
-  preferences Json    @default("{}")
+  preferences Json @default("{}")
 
   @@map("users")
 }
