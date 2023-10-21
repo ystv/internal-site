@@ -68,7 +68,7 @@ model User {
   events_events_deleted_byTousers Event[]      @relation("events_deleted_byTousers")
   events_events_updated_byTousers Event[]      @relation("events_updated_byTousers")
   role_members                    RoleMember[]
-  hosted_events                   Event[]
+  hosted_events                   Event[]      @relation("event_host_user")
 
   /// [UserPreferences]
   preferences Json @default("{}")
@@ -140,7 +140,7 @@ model Event {
   created_by_user User          @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   deleted_by_user User?         @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   updated_by_user User?         @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  host_user       User          @relation(fields: [host], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  host_user       User          @relation("event_host_user", fields: [host], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   signup_sheets   SignupSheet[]
 
   @@map("events")
