@@ -78,6 +78,8 @@ export default function YSTVCalendar({
   selectedFilter?: string;
   selectedView?: string;
 }) {
+  const currentDate = new Date();
+
   const router = useRouter();
   const prefs = useUserPreferences();
 
@@ -316,6 +318,9 @@ export default function YSTVCalendar({
           if (evt.is_cancelled) {
             eventObject.color = "#B00020";
             eventObject.className = "ystv-calendar-strike-through";
+          }
+          if (evt.end_date < currentDate) {
+            eventObject.className += " opacity-50"
           }
           return eventObject;
         })}
