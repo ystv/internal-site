@@ -273,7 +273,7 @@ function CrewMemberField(props: { parentName: string }) {
 
 export function AddEditSignUpSheetForm(props: {
   action: (data: z.infer<typeof SignupSheetSchema>) => Promise<FormResponse>;
-  initialValues?: z.infer<typeof SignupSheetSchema>;
+  initialValues?: Partial<z.infer<typeof SignupSheetSchema>>;
   onSuccess: () => void;
   submitLabel?: string;
 }) {
