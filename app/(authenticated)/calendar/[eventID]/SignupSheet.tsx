@@ -327,6 +327,7 @@ export function SignupSheetsView({
         <AddEditSignUpSheetForm
           action={async (sheet) => createSignUpSheet(event.event_id, sheet)}
           onSuccess={() => setCreateOpen(false)}
+          initialValues={{ arrival_time: event.start_date, start_time: event.start_date, end_time: event.end_date }}
         />
         <br />
       </Modal>
