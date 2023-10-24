@@ -7,7 +7,7 @@ import {
   useFieldArray,
   useFormContext,
 } from "react-hook-form";
-import { useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -23,6 +23,7 @@ import { useMembers } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
+import { FieldPath } from "react-hook-form/dist/types/path";
 
 export function TextField(props: {
   name: string;
@@ -263,4 +264,36 @@ export function MemberSelect(props: {
       }
     />
   );
+}
+
+/**
+ * Wraps a form field to conditionally render it based on the value of another.
+ * This is useful for e.g. showing a field only if a checkbox is checked.
+ *
+ * To use it, wrap the field you want to conditionally render in a ConditionalField component.
+ * Then pass the name of the field that controls whether the field should be shown in the
+ * referencedFieldName prop, and a function that takes the value of that field and returns
+ * whether the field should be shown in the condition prop.
+ * Also pass the name of the field you want to conditionally render in the childFieldName prop,
+ * and its value will be set to undefined if the field is hidden.
+ */
+export function ConditionalField<
+  TSchema extends FieldValues = Record<string, unknown>,
+  TField extends FieldPath<TSchema> = FieldPath<TSchema>,
+>(props: {
+  referencedFieldName: TField;
+  condition: (data: TSchema[TField]) => boolean;
+  childFieldName: string;
+  children: ReactNode;
+}) {
+  const ctx = useFormContext<TSchema>();
+  const referencedField = ctx.watch(props.referencedFieldName);
+  const shouldShow = props.condition(referencedField);
+  useEffect(() => {
+    if (!shouldShow) {
+      // @ts-expect-error - otherwise you get errors if referencedFieldName and childFieldName don't match
+      ctx.setValue(props.childFieldName, undefined as any);
+    }
+  }, [shouldShow, props.childFieldName, ctx]);
+  return shouldShow && props.children;
 }

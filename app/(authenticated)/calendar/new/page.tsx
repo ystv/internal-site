@@ -11,6 +11,8 @@ import * as Calendar from "@/features/calendar/events";
 import { Permission } from "@/lib/auth/permissions";
 import { revalidatePath } from "next/cache";
 import { Forbidden } from "@/lib/auth/errors";
+import { getAllUsers } from "@/features/people";
+import { MembersProvider } from "@/components/FormFieldPreloadedData";
 
 async function createEvent(
   data: unknown,
@@ -38,6 +40,7 @@ async function createEvent(
       location: payload.data.location,
       is_private: payload.data.private,
       is_tentative: payload.data.tentative,
+      host: payload.data.host,
     },
     user.user_id,
   );
@@ -57,13 +60,16 @@ export default async function NewEventPage() {
       "Calendar.Admin or Calendar.{Show,Meeting,Social}.{Creator,Admin}" as any,
     ]);
   }
+  const allMembers = await getAllUsers();
   return (
     <div className="mx-auto max-w-xl">
       <h1 className="mb-4 mt-0 text-4xl font-bold">New Event</h1>
-      <CreateEventForm
-        action={createEvent}
-        permittedEventTypes={permittedEventTypes}
-      />
+      <MembersProvider members={allMembers}>
+        <CreateEventForm
+          action={createEvent}
+          permittedEventTypes={permittedEventTypes}
+        />
+      </MembersProvider>
     </div>
   );
 }

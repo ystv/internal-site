@@ -18,6 +18,7 @@ export const _EventModel = z.object({
   updated_by: z.number().int().nullish(),
   deleted_at: z.date().nullish(),
   deleted_by: z.number().int().nullish(),
+  host: z.number().int(),
   adam_rms_project_id: z.number().int().nullish(),
 })
 
@@ -26,6 +27,7 @@ export interface CompleteEvent extends z.infer<typeof _EventModel> {
   created_by_user: CompleteUser
   deleted_by_user?: CompleteUser | null
   updated_by_user?: CompleteUser | null
+  host_user: CompleteUser
   signup_sheets: CompleteSignupSheet[]
 }
 
@@ -39,5 +41,6 @@ export const EventModel: z.ZodSchema<CompleteEvent> = z.lazy(() => _EventModel.e
   created_by_user: UserModel,
   deleted_by_user: UserModel.nullish(),
   updated_by_user: UserModel.nullish(),
+  host_user: UserModel,
   signup_sheets: SignupSheetModel.array(),
 }))
