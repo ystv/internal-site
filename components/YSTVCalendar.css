@@ -4,7 +4,7 @@
   animation: fadeInFromNone 1.5s ease-in-out infinite alternate;
 }
 
-.fc-day-today > div {
+.fc-day-today:not(.fc-col-header-cell) > div, .fc-event-today {
   background-color: #3788d860 !important;
   animation: ease-in-out;
 }
