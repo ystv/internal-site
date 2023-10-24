@@ -1,6 +1,12 @@
 .fc-day-today {
+  background-color: transparent !important;
   /*opacity: .5;*/
   animation: fadeInFromNone 1.5s ease-in-out infinite alternate;
+}
+
+.fc-day-today > div {
+  background-color: #3788d860 !important;
+  animation: ease-in-out;
 }
 
 .fc-daygrid-day-events-mobile-shrink .fc-daygrid-day-events {
