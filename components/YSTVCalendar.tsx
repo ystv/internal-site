@@ -297,9 +297,11 @@ export default function YSTVCalendar({
         initialDate={selectedDate}
         eventClick={(info) => {
           // don't let the browser navigate
-          info.jsEvent.preventDefault();
-          if (info.event.url) {
-            router.push(info.event.url);
+          if (!info.jsEvent.ctrlKey && !info.jsEvent.metaKey) {
+            info.jsEvent.preventDefault();
+            if (info.event.url) {
+              router.push(info.event.url);
+            }
           }
         }}
         events={events.map((evt) => {
