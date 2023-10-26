@@ -78,6 +78,8 @@ export default function YSTVCalendar({
   selectedFilter?: string;
   selectedView?: string;
 }) {
+  const currentDate = new Date();
+
   const router = useRouter();
   const prefs = useUserPreferences();
 
@@ -252,12 +254,14 @@ export default function YSTVCalendar({
         }}
         dayCellContent={
           isMobileView
-            ? (day) =>
-                day.date.toLocaleDateString(undefined, {
+            ? (day) => {
+                if (day.view.type == "timeGridDay") return;
+                return day.date.toLocaleDateString(undefined, {
                   weekday: "short",
                   day: "2-digit",
                   month: "short",
-                })
+                });
+              }
             : undefined
         }
         viewClassNames={
@@ -319,6 +323,9 @@ export default function YSTVCalendar({
           if (evt.is_cancelled) {
             eventObject.color = "#B00020";
             eventObject.className = "ystv-calendar-strike-through";
+          }
+          if (evt.end_date < currentDate) {
+            eventObject.className += " opacity-50";
           }
           return eventObject;
         })}
