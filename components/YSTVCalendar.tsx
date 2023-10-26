@@ -279,6 +279,7 @@ export default function YSTVCalendar({
             type: "dayGridWeek",
             dayHeaderFormat: (date) =>
               formatDate(date.date.marker, {
+                weekday: "narrow",
                 month: "2-digit",
                 day: "2-digit",
                 locale: "en-GB",
