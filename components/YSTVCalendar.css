@@ -1,6 +1,5 @@
-.fc-day-today {
-  /*opacity: .5;*/
-  animation: fadeInFromNone 1.5s ease-in-out infinite alternate;
+.fc-day-today:not(.fc-col-header-cell), .fc-list .fc-event-today {
+  animation: fadeInFromNone 2s ease-in-out infinite alternate;
 }
 
 .fc-daygrid-day-events-mobile-shrink .fc-daygrid-day-events {
@@ -41,12 +40,12 @@
   }
 
   100% {
-    background-color: #3788d830;
+    background-color: #3788d850;
   }
 }
 
 .fc-view {
-  --fc-today-bg-color: #3788d845;
+  --fc-today-bg-color: #3788d860;
 }
 
 .fc-daygrid-day-events-mobile-shrink.fc-dayGridMonth-view
