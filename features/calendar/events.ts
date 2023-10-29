@@ -143,19 +143,15 @@ const EventSelectors = {
   },
 } satisfies Prisma.EventInclude;
 
-export async function listEventsForMonth(
-  year: number,
-  month: number,
-  me?: number,
-) {
+export async function listEvents(start: Date, end: Date, me?: number) {
   return (
     await prisma.event.findMany({
       where: {
         start_date: {
           // javascript dates are 0-indexed for months, but humans are 1-indexed
           // (human is dealt with at the API layer to avoid confusing JS everywhere else)
-          gte: new Date(year, month, 1),
-          lt: new Date(year, month + 1, 1),
+          gte: start,
+          lt: end,
         },
         deleted_at: null,
         OR: me

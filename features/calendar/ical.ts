@@ -5,7 +5,8 @@ import ical from "ical-generator";
 import invariant from "@/lib/invariant";
 import { Prisma } from "@prisma/client";
 import { preferenceDefaults } from "../people";
-import { EventObjectType, listEventsForMonth } from "./events";
+import { EventObjectType, listEvents } from "./events";
+import { add } from "date-fns";
 
 export function encodeUserID(userID: number) {
   return encode({ userID });
@@ -28,19 +29,16 @@ export async function generateICalFeedForUser(userID: number) {
     },
   });
 
-  const now = new Date();
+  const start = new Date();
+  const end = add(start, { months: 3 });
 
   let events: EventObjectType[];
   switch (preferenceDefaults(user.preferences).icalFilter) {
     case "all":
-      events = await listEventsForMonth(now.getFullYear(), now.getMonth());
+      events = await listEvents(start, end);
       break;
     case "only-mine":
-      events = await listEventsForMonth(
-        now.getFullYear(),
-        now.getMonth(),
-        userID,
-      );
+      events = await listEvents(start, end, userID);
       break;
     default:
       invariant(false, `Unknown icalFilter ${user.preferences.icalFilter}`);

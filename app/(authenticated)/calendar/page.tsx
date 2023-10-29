@@ -1,14 +1,49 @@
 import YSTVCalendar from "@/components/YSTVCalendar";
 import Link from "next/link";
 import { PermissionGate } from "@/components/UserContext";
-import {
-  listEventsForMonth,
-  listVacantEvents,
-} from "@/features/calendar/events";
+import { listEvents, listVacantEvents } from "@/features/calendar/events";
 import { Alert, Button } from "@mantine/core";
 import { Permission } from "@/lib/auth/permissions";
 import { getCurrentUser } from "@/lib/auth/server";
 import { TbArticle, TbCalendarEvent, TbClipboardList } from "react-icons/tb";
+import invariant from "@/lib/invariant";
+import { add, set, setDay } from "date-fns";
+
+function dateRangeForView(
+  year: number,
+  month: number,
+  day: number,
+  view?: string,
+): [Date, Date] {
+  // These are just starting points, they'll shift depending on the view
+  let start = new Date(year, month, day);
+  let end = new Date(year, month, day);
+
+  switch (view) {
+    case "dayGridWeek":
+      start = setDay(start, 1, { weekStartsOn: 1 });
+      // set end to the next Monday
+      end = setDay(end, 1, { weekStartsOn: 1 });
+      end = add(end, { days: 7 });
+      break;
+    case "timeGridDay":
+      // add a day
+      end = add(end, { days: 1 });
+      break;
+    case "dayGridMonth":
+    case "listMonth":
+    case undefined:
+      // JavaScript dates are 0-indexed, but humans think in 1-indexed
+      // months, so we have to add 1 here
+      start = new Date(year, month, 1);
+      end = new Date(year, month + 1, 1);
+      break;
+    default:
+      invariant(false, `Unknown calendar view ${view}`);
+  }
+
+  return [start, end];
+}
 
 export default async function CalendarPage({
   searchParams,
@@ -29,7 +64,8 @@ export default async function CalendarPage({
     ? parseInt(searchParams.month, 10) - 1
     : now.getMonth();
   const day = searchParams.day ? parseInt(searchParams.day, 10) : now.getDate();
-  const date = new Date(year, month, day);
+  const selectedDay = new Date(year, month, day);
+
   const me = await getCurrentUser();
 
   const filter = searchParams.filter;
@@ -39,16 +75,17 @@ export default async function CalendarPage({
   });
   const vacantEventsCount = vacantEvents.signUpRolesCount;
 
+  const [start, end] = dateRangeForView(year, month, day, searchParams.view);
   let events;
   switch (filter) {
     case "my":
-      events = await listEventsForMonth(year, month, me.user_id);
+      events = await listEvents(start, end, me.user_id);
       break;
     case "vacant":
       events = vacantEvents.events;
       break;
     default:
-      events = await listEventsForMonth(year, month);
+      events = await listEvents(start, end);
       break;
   }
 
@@ -100,7 +137,7 @@ export default async function CalendarPage({
       </PermissionGate>
       <YSTVCalendar
         events={events}
-        selectedDate={date}
+        selectedDate={selectedDay}
         selectedFilter={filter}
         selectedView={searchParams.view}
       />
