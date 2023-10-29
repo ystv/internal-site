@@ -1,4 +1,5 @@
-.fc-day-today:not(.fc-col-header-cell), .fc-list .fc-event-today {
+.fc-day-today:not(.fc-col-header-cell),
+.fc-list .fc-event-today {
   animation: fadeInFromNone 2s ease-in-out infinite alternate;
 }
 
