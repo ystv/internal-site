@@ -22,12 +22,12 @@ function dateRangeForView(
   switch (view) {
     case "dayGridWeek":
       start = setDay(start, 1, { weekStartsOn: 1 });
-      // set end to the next Monday
+      // set end to the next Monday because the query does a <, not a <=
       end = setDay(end, 1, { weekStartsOn: 1 });
       end = add(end, { days: 7 });
       break;
     case "timeGridDay":
-      // add a day
+      // add a day because the query does a <, not a <=
       end = add(end, { days: 1 });
       break;
     case "dayGridMonth":
