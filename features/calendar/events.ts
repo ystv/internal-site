@@ -148,8 +148,6 @@ export async function listEvents(start: Date, end: Date, me?: number) {
     await prisma.event.findMany({
       where: {
         start_date: {
-          // javascript dates are 0-indexed for months, but humans are 1-indexed
-          // (human is dealt with at the API layer to avoid confusing JS everywhere else)
           gte: start,
           lt: end,
         },
