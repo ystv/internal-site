@@ -1,7 +1,7 @@
 import { getUserName } from "@/components/UserHelpers";
 import { prisma } from "@/lib/db";
 import { decode, encode } from "@/lib/sessionSecrets";
-import ical from "ical-generator";
+import ical, { ICalEventStatus } from "ical-generator";
 import invariant from "@/lib/invariant";
 import { Prisma } from "@prisma/client";
 import { preferenceDefaults } from "../people";
@@ -46,12 +46,17 @@ export async function generateICalFeedForUser(userID: number) {
   const calendar = ical({ name: `YSTV Calendar for ${getUserName(user)}` });
   for (const evt of events) {
     calendar.createEvent({
-      summary: evt.name,
+      summary: (evt.is_cancelled ? "CANCELLED: " : "") + evt.name,
       start: evt.start_date,
       end: evt.end_date,
       description: evt.description,
       location: evt.location,
       url: `${process.env.PUBLIC_URL}/calendar/${evt.event_id}`,
+      status: evt.is_cancelled
+        ? ICalEventStatus.CANCELLED
+        : evt.is_tentative
+        ? ICalEventStatus.TENTATIVE
+        : ICalEventStatus.CONFIRMED,
     });
   }
   return calendar.toString();
