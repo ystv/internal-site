@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import {
   ReactNode,
-  experimental_useOptimistic as useOptimistic,
+  useOptimistic,
   useTransition,
 } from "react";
 import { changePreference } from "./actions";
