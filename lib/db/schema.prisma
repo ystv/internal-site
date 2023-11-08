@@ -177,3 +177,14 @@ model SignupSheet {
 
   @@map("signup_sheets")
 }
+
+model Quote {
+  quote_id   Int       @id @default(autoincrement())
+  text       String
+  context    String    @default("")
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  created_by Int
+  deleted_at DateTime? @db.Timestamptz(6)
+
+  @@map("quotes")
+}
