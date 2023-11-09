@@ -1,14 +1,12 @@
 import { prisma } from "@/lib/db";
 
-const QUOTES_PER_PAGE = 25;
-
-export async function getQuotes(page?: number) {
+export async function getQuotes(page: number, pageSize: number) {
   return await prisma.quote.findMany({
     orderBy: {
       created_at: "desc",
     },
-    skip: ((page ?? 1) - 1) * QUOTES_PER_PAGE,
-    take: QUOTES_PER_PAGE,
+    skip: (page - 1) * pageSize,
+    take: pageSize,
   });
 }
 

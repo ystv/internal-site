@@ -25,7 +25,10 @@ export function AddEditQuoteForm(props: {
       <TextAreaField name="text" label="Quote" />
       <TextField name="context" label="Context" />
       {props.initialData && (
-        <HiddenField name="id" value={props.initialData.quote_id.toString(10)} />
+        <HiddenField
+          name="id"
+          value={props.initialData.quote_id.toString(10)}
+        />
       )}
     </Form>
   );
@@ -35,19 +38,32 @@ export function QuoteView(props: { data: Quote }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   return isEditing ? (
-    <AddEditQuoteForm initialData={props.data} onSuccess={() => setIsEditing(false)} />
+    <AddEditQuoteForm
+      initialData={props.data}
+      onSuccess={() => setIsEditing(false)}
+    />
   ) : (
     <>
       <p>{props.data.text}</p>
       {props.data.context.length > 0 && (
         <p className="text-sm">— {props.data.context}</p>
       )}
-      <Button onClick={() => setIsEditing(true)} disabled={isPending}>Edit</Button>
-      <Button variant="danger" disabled={isPending} onClick={() => {
-        if (confirm("You sure boss?")) {
-          startTransition(async () => {await deletQuote(props.data.quote_id);})
-        }
-      }}>Delet</Button>
+      <Button onClick={() => setIsEditing(true)} disabled={isPending}>
+        Edit
+      </Button>
+      <Button
+        variant="danger"
+        disabled={isPending}
+        onClick={() => {
+          if (confirm("You sure boss?")) {
+            startTransition(async () => {
+              await deletQuote(props.data.quote_id);
+            });
+          }
+        }}
+      >
+        Delet
+      </Button>
     </>
   );
 }

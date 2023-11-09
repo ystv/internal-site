@@ -1,6 +1,19 @@
 import * as Quotes from "@/features/quotes";
 import { requirePermission } from "@/lib/auth/server";
 import { AddQuote, QuoteView } from "./AddEditQuoteForm";
+import {
+  Pagination,
+  PaginationFirst,
+  PaginationItems,
+  PaginationLast,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationRoot,
+} from "@mantine/core";
+import Link from "next/link";
+import { QuotesPagination } from "./pagination";
+
+const PAGE_SIZE = 25;
 
 export default async function QuotesPage(props: {
   searchParams: { page?: string };
@@ -8,7 +21,7 @@ export default async function QuotesPage(props: {
   await requirePermission("ManageQuotes");
   const page = parseInt(props.searchParams?.page || "1");
   const [quotes, total] = await Promise.all([
-    Quotes.getQuotes(page),
+    Quotes.getQuotes(page, PAGE_SIZE),
     Quotes.getTotalQuotes(),
   ]);
 
@@ -26,6 +39,7 @@ export default async function QuotesPage(props: {
           </li>
         ))}
       </ul>
+      <QuotesPagination page={page} total={total} pageSize={PAGE_SIZE} />
     </div>
   );
 }
