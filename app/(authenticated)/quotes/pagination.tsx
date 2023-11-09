@@ -20,9 +20,10 @@ export function QuotesPagination({
   total: number;
   pageSize: number;
 }) {
+  const totalPages = Math.ceil(total / pageSize)
   return (
     <PaginationRoot
-      total={Math.ceil(total / pageSize)}
+      total={totalPages}
       value={page}
       getItemProps={(page) => ({
         component: Link,
@@ -39,8 +40,8 @@ export function QuotesPagination({
             />
           </>
         )}
-        {total / pageSize > 1 && <PaginationItems />}
-        {page < total / pageSize && (
+        {totalPages > 1 && <PaginationItems />}
+        {page < totalPages && (
           <>
             <PaginationNext
               component={Link}
@@ -48,7 +49,7 @@ export function QuotesPagination({
             />
             <PaginationLast
               component={Link}
-              href={`/quotes?page=${Math.ceil(total / pageSize)}`}
+              href={`/quotes?page=${Math.ceil(totalPages)}`}
             />
           </>
         )}
