@@ -69,6 +69,7 @@ model User {
   events_events_updated_byTousers Event[]      @relation("events_updated_byTousers")
   role_members                    RoleMember[]
   hosted_events                   Event[]      @relation("event_host_user")
+  slack_user_id                   String       @default("")
 
   /// [UserPreferences]
   preferences Json @default("{}")

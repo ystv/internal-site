@@ -23,6 +23,8 @@ export type ExposedUser = z.infer<typeof ExposedUserModel>;
  */
 export const SecureUserModel = ExposedUserModel.extend({
   preferences: UserPreferencesSchema,
+  slack_user_id: z.string().optional(),
+  email: z.string(),
 });
 
 export type SecureUser = z.infer<typeof SecureUserModel>;
@@ -56,6 +58,15 @@ export async function setUserPreference<
     await $db.user.update({
       where: { user_id: userID },
       data: { preferences },
+    });
+  });
+}
+
+export async function setUserSlackID(userID: number, slackID: string) {
+  await prisma.$transaction(async ($db) => {
+    await $db.user.update({
+      where: { user_id: userID },
+      data: { slack_user_id: slackID },
     });
   });
 }
