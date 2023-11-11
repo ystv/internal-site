@@ -19,6 +19,7 @@ import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
 import { Suspense } from "react";
 import { ICalCopyButton } from "@/components/ICalCopyButton";
+import { isSlackEnabled } from "@/lib/slack/slackConnect";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;
@@ -101,30 +102,34 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         </Group>
       </Card>
       <Space h={"md"} />
-      {!user.slack_user_id ? (
-        <Card>
-          <h2 className="mt-0">Link your account to slack</h2>
-          <Suspense>
-            <SlackLoginButton />
-          </Suspense>
-        </Card>
-      ) : (
-        <Card withBorder>
-          <h2 className="mt-0">Manage Slack link</h2>
-          <Suspense
-            fallback={
-              <>
-                <Card withBorder>
-                  <Group>
-                    <Skeleton height={38} circle />
-                  </Group>
-                </Card>
-              </>
-            }
-          >
-            <SlackUserInfo slack_user_id={user.slack_user_id} />
-          </Suspense>
-        </Card>
+      {isSlackEnabled && (
+        <>
+          {!user.slack_user_id ? (
+            <Card>
+              <h2 className="mt-0">Link your account to slack</h2>
+              <Suspense>
+                <SlackLoginButton />
+              </Suspense>
+            </Card>
+          ) : (
+            <Card withBorder>
+              <h2 className="mt-0">Manage Slack link</h2>
+              <Suspense
+                fallback={
+                  <>
+                    <Card withBorder>
+                      <Group>
+                        <Skeleton height={38} circle />
+                      </Group>
+                    </Card>
+                  </>
+                }
+              >
+                <SlackUserInfo slack_user_id={user.slack_user_id} />
+              </Suspense>
+            </Card>
+          )}
+        </>
       )}
     </div>
   );

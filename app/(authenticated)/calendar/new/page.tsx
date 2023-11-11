@@ -13,15 +13,20 @@ import { revalidatePath } from "next/cache";
 import { Forbidden } from "@/lib/auth/errors";
 import { getAllUsers } from "@/features/people";
 import { MembersProvider } from "@/components/FormFieldPreloadedData";
-import slackConnect from "@/lib/slack/slackConnect";
+import slackConnect, { isSlackEnabled } from "@/lib/slack/slackConnect";
 import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
+import { App } from "@slack/bolt";
+import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
 
 async function createEvent(
   data: unknown,
 ): Promise<FormResponse<{ id: number }>> {
   "use server";
   const user = await getCurrentUser();
-  const slackApp = await slackConnect();
+  let slackApp: App | null = null;
+  if (isSlackEnabled) {
+    slackApp = await slackConnect();
+  }
   const payload = schema.safeParse(data);
   if (!payload.success) {
     return zodErrorResponse(payload.error);
@@ -36,30 +41,32 @@ async function createEvent(
 
   let slack_channel_id: string | undefined;
 
-  if (payload.data.slack_channel_id) {
-    const channel_info = await slackApp.client.conversations.info({
-      channel: payload.data.slack_channel_id,
-    });
+  if (slackApp) {
+    if (payload.data.slack_channel_id && isSlackEnabled) {
+      const channel_info = await slackApp.client.conversations.info({
+        channel: payload.data.slack_channel_id,
+      });
 
-    if (channel_info.ok) {
-      slack_channel_id = payload.data.slack_channel_id;
+      if (channel_info.ok) {
+        slack_channel_id = payload.data.slack_channel_id;
+      }
+    } else if (payload.data.slack_new_channel_name) {
+      const new_channel = await slackApp.client.conversations.create({
+        name: payload.data.slack_new_channel_name,
+        team_id: process.env.SLACK_TEAM_ID,
+      });
+
+      if (new_channel.channel?.id) {
+        slack_channel_id = new_channel.channel?.id;
+      }
     }
-  } else if (payload.data.slack_new_channel_name) {
-    const new_channel = await slackApp.client.conversations.create({
-      name: payload.data.slack_new_channel_name,
-      team_id: process.env.SLACK_TEAM_ID,
-    });
 
-    if (new_channel.channel?.id) {
-      slack_channel_id = new_channel.channel?.id;
+    if (slack_channel_id && user.slack_user_id) {
+      await slackApp.client.conversations.invite({
+        channel: slack_channel_id,
+        users: user.slack_user_id,
+      });
     }
-  }
-
-  if (slack_channel_id && user.slack_user_id) {
-    await slackApp.client.conversations.invite({
-      channel: slack_channel_id,
-      users: user.slack_user_id,
-    });
   }
 
   const evt = await Calendar.createEvent(
@@ -105,10 +112,12 @@ export default async function NewEventPage() {
       <h1 className="mb-4 mt-0 text-4xl font-bold">New Event</h1>
       <MembersProvider members={allMembers}>
         <SlackChannelsProvider slackChannels={slackChannels.channels!}>
-          <CreateEventForm
-            action={createEvent}
-            permittedEventTypes={permittedEventTypes}
-          />
+          <SlackEnabledProvider isSlackEnabled={isSlackEnabled}>
+            <CreateEventForm
+              action={createEvent}
+              permittedEventTypes={permittedEventTypes}
+            />
+          </SlackEnabledProvider>
         </SlackChannelsProvider>
       </MembersProvider>
     </div>

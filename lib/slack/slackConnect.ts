@@ -21,4 +21,19 @@ async function slackConnect() {
   return app;
 }
 
+function checkEnabled() {
+  if (
+    process.env.SLACK_BOT_TOKEN &&
+    process.env.SLACK_APP_TOKEN &&
+    process.env.SLACK_SIGNING_SECRET &&
+    process.env.SLACK_CLIENT_ID &&
+    process.env.SLACK_CLIENT_SECRET
+  ) {
+    return true;
+  }
+  return false;
+}
+
 export default slackConnect;
+
+export const isSlackEnabled = checkEnabled();

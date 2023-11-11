@@ -22,7 +22,7 @@ import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
 import { Alert, Text } from "@mantine/core";
 import { TbInfoCircle, TbAlertTriangle } from "react-icons/tb";
-import slackConnect from "@/lib/slack/slackConnect";
+import slackConnect, { isSlackEnabled } from "@/lib/slack/slackConnect";
 import { ConversationsInfoResponse } from "@slack/web-api/dist/response";
 
 async function AttendeesView({
@@ -115,13 +115,17 @@ export default async function EventPage({
   if (!event) {
     notFound();
   }
-  const slackApp = await slackConnect();
+
   let eventChannelInfo: ConversationsInfoResponse | null = null;
-  if (event.slack_channel_id) {
-    eventChannelInfo = await slackApp.client.conversations.info({
-      channel: event.slack_channel_id,
-    });
+  if (isSlackEnabled) {
+    const slackApp = await slackConnect();
+    if (event.slack_channel_id) {
+      eventChannelInfo = await slackApp.client.conversations.info({
+        channel: event.slack_channel_id,
+      });
+    }
   }
+
   const me = await getCurrentUser();
   let allMembers;
   if (canManage(event, me)) {

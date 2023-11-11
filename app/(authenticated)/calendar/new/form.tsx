@@ -15,12 +15,14 @@ import { EventType } from "@/features/calendar/types";
 import { identity } from "lodash";
 import { InputLabel } from "@mantine/core";
 import SlackChannelField from "@/components/SlackChannelField";
+import { useSlackEnabled } from "@/components/slack/SlackEnabledProvider";
 
 export function CreateEventForm(props: {
   action: FormAction<{ id: number }>;
   permittedEventTypes: EventType[];
 }) {
   const router = useRouter();
+  const isSlackEnabled = useSlackEnabled();
   return (
     <Form
       action={props.action}
@@ -49,10 +51,15 @@ export function CreateEventForm(props: {
       </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="private" label="Private Event" />*/}
-      <input type="hidden" name={`slack_channel_id`} value={""} />
-      <input type="hidden" name={`slack_new_channel_name`} value={""} />
-      <InputLabel>Slack Channel</InputLabel>
-      <SlackChannelField parentName="slack" />
+      {isSlackEnabled && (
+        <>
+          <input type="hidden" name={`slack_channel_id`} value={""} />
+          <input type="hidden" name={`slack_new_channel_name`} value={""} />
+          <InputLabel>Slack Channel</InputLabel>
+          <SlackChannelField parentName="slack" />
+        </>
+      )}
+
       <br />
       <CheckBoxField name="tentative" label="Tentative Event" />
     </Form>

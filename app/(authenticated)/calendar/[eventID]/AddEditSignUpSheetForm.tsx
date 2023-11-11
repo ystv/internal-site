@@ -8,7 +8,6 @@ import {
   ArrayField,
   CheckBoxField,
   DatePickerField,
-  MemberSelect,
   NullableCheckboxField,
   TextAreaField,
   TextField,
@@ -19,20 +18,8 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
-import {
-  Combobox,
-  ComboboxChevron,
-  ComboboxDropdown,
-  ComboboxOption,
-  ComboboxOptions,
-  ComboboxTarget,
-  InputBase,
-  Select,
-  useCombobox,
-} from "@mantine/core";
 import { getUserName } from "@/components/UserHelpers";
 import SelectWithCustomOption from "@/components/SelectWithCustomOption";
-import invariant from "@/lib/invariant";
 
 function CrewPositionField(props: { parentName: string }) {
   const vals = useCrewPositions();
