@@ -37,8 +37,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         user: token["https://slack.com/user_id"],
       });
 
-      console.log(slackUser.profile);
-
       await People.setUserSlackID(
         user.user_id,
         token["https://slack.com/user_id"],
@@ -47,9 +45,4 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   const url = new URL("/user/me", process.env.PUBLIC_URL!);
   return NextResponse.redirect(url);
-}
-
-export async function POST(req: NextRequest): Promise<NextResponse> {
-  console.log("post");
-  return NextResponse.json({ hello: "there" });
 }

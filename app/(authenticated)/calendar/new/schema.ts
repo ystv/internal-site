@@ -14,6 +14,22 @@ export const schema = zfd
     tentative: z.boolean().optional().default(false),
     type: z.enum(EventTypes),
     host: z.coerce.number().optional(),
+    slack_channel_id: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((v) => (v === "" ? null : v))
+      .default(null),
+    slack_new_channel_name: z
+      .string()
+      .regex(
+        /^[a-zA-Z0-9-]{1,80}$/,
+        "Channel names can’t contain spaces or punctuation. Use dashes to separate words.",
+      )
+      .optional()
+      .nullable()
+      .transform((v) => (v === "" ? null : v))
+      .default(null),
   })
   .refine((val) => isBefore(val.startDate, val.endDate), {
     message: "End date must be after start date",

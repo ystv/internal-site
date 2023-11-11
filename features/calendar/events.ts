@@ -43,6 +43,7 @@ export interface EventObjectType {
   adam_rms_project_id: number | null;
   host: number;
   host_user: ExposedUser;
+  slack_channel_id: string | null;
 }
 
 export interface EventCreateUpdateFields {
@@ -55,17 +56,7 @@ export interface EventCreateUpdateFields {
   is_private: boolean;
   is_tentative: boolean;
   host?: number;
-}
-
-export interface EventCreateUpdateFields {
-  name: string;
-  description: string;
-  start_date: Date;
-  end_date: Date;
-  event_type?: EventType;
-  location: string;
-  is_private: boolean;
-  is_tentative: boolean;
+  slack_channel_id?: string;
 }
 
 /**
@@ -315,6 +306,7 @@ export async function getEvent(id: number): Promise<EventObjectType | null> {
   if (!res) {
     return null;
   }
+
   return sanitize(res);
 }
 

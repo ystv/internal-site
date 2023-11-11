@@ -20,6 +20,7 @@ export const _EventModel = z.object({
   deleted_by: z.number().int().nullish(),
   host: z.number().int(),
   adam_rms_project_id: z.number().int().nullish(),
+  slack_channel_id: z.string(),
 })
 
 export interface CompleteEvent extends z.infer<typeof _EventModel> {
