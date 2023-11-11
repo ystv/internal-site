@@ -15,8 +15,8 @@ import {
 } from "@mantine/core";
 import { UserPreferences } from "./UserPreferences";
 
-import SlackLoginButton from "@/components/SlackLoginButton";
-import SlackUserInfo from "@/components/SlackUserInfo";
+import SlackLoginButton from "@/components/slack/SlackLoginButton";
+import SlackUserInfo from "@/components/slack/SlackUserInfo";
 import { Suspense } from "react";
 import { ICalCopyButton } from "@/components/ICalCopyButton";
 
@@ -80,7 +80,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       <Space h={"md"} />
       <Card withBorder>
         <Group>
-          <Stack gap={0}>
+          <Stack gap={0} className="w-full">
             <h2 className="mt-0">Add Calendar to Google Calendar</h2>
             <Stack gap={0}>
               <p>Add this URL as a new calendar in Google Calendar:</p>
@@ -91,7 +91,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
                 return (
                   <Group>
-                    <input disabled className="max-w-96" value={link} />
+                    <input disabled className="sm:max-w-96" value={link} />
                     <ICalCopyButton link={link} />
                   </Group>
                 );

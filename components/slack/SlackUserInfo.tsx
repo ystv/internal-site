@@ -1,9 +1,18 @@
 import { setUserSlackID } from "@/features/people";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import slackConnect from "@/lib/slack/slackConnect";
-import { Avatar, Group, Stack, Text, Button, Card } from "@mantine/core";
-import { Form, useForm } from "@mantine/form";
+import {
+  Avatar,
+  Group,
+  Stack,
+  Text,
+  Button,
+  Card,
+  HoverCard,
+} from "@mantine/core";
 import { redirect } from "next/navigation";
+import { AiFillDelete } from "react-icons/ai";
+import SlackLogoutButton from "./SlackLogoutButton";
 
 export default async function SlackUserInfo({
   slack_user_id,
@@ -40,14 +49,7 @@ export default async function SlackUserInfo({
           }}
           className="ml-auto"
         >
-          <Button
-            variant="filled"
-            color="red"
-            className="ml-auto"
-            type="submit"
-          >
-            Remove
-          </Button>
+          <SlackLogoutButton />
         </form>
       </Group>
     </Card>

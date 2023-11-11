@@ -109,7 +109,9 @@ function SignupSheet({
                   >
                     {crew.user_id === me.user_id ? (
                       <Button
-                        onClick={() => setSignUpCrew(crew)}
+                        onClick={() => {
+                          setSignUpCrew(crew);
+                        }}
                         variant={"light"}
                         fullWidth
                         className={

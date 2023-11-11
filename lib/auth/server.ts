@@ -161,7 +161,6 @@ export async function loginOrCreateUser(rawGoogleToken: string) {
 
 export async function logout() {
   await clearSession();
-  console.log("Redirecting");
   const url = new URL("/login", process.env.PUBLIC_URL!);
   return NextResponse.redirect(url, {
     status: 303,

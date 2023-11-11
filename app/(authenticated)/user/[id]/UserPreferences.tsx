@@ -4,11 +4,9 @@ import {
   Stack,
   InputWrapper,
   SegmentedControl,
-  Switch,
-  RadioGroup,
   Group,
-  Radio,
   Divider,
+  InputLabel,
 } from "@mantine/core";
 import { ReactNode, useOptimistic, useTransition } from "react";
 import { changePreference } from "./actions";
@@ -73,14 +71,17 @@ function SegmentedPreference<K extends "timeFormat" | "icalFilter">(
     <PrefWrapper
       {...rest}
       renderField={({ value, onChange, disabled }) => (
-        <InputWrapper label={label} className="py-auto">
-          <SegmentedControl
-            value={value}
-            onChange={onChange}
-            data={props.values}
-            disabled={disabled}
-            className="float-right"
-          />
+        <InputWrapper>
+          <Group>
+            <InputLabel>{label}</InputLabel>
+            <SegmentedControl
+              value={value}
+              onChange={onChange}
+              data={props.values}
+              disabled={disabled}
+              className="ml-auto"
+            />
+          </Group>
         </InputWrapper>
       )}
     />
@@ -97,7 +98,7 @@ export function UserPreferences(props: { value: ReqPrefs; userID: number }) {
         prefs={props.value}
         userID={props.userID}
       />
-      <Divider className="border-[--mantine-color-dark-4]"/>
+      <Divider className="border-[--mantine-color-dark-4]" />
       <SegmentedPreference
         label="Which events to display in external calendar feed?"
         field="icalFilter"
