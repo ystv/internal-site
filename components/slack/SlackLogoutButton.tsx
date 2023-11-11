@@ -3,7 +3,7 @@
 import { Button, HoverCard } from "@mantine/core";
 import { AiFillDelete } from "react-icons/ai";
 
-export default async function SlackLogoutButton() {
+export default function SlackLogoutButton() {
   return (
     <HoverCard>
       <HoverCard.Target>
