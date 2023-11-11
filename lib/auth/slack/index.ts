@@ -1,4 +1,4 @@
-import slackConnect from "@/lib/slack/slackConnect";
+import slackConnect, { isSlackEnabled } from "@/lib/slack/slackConnect";
 import * as People from "@/features/people";
 import { jwtDecode } from "jwt-decode";
 import { mustGetCurrentUser } from "../server";
@@ -17,11 +17,12 @@ type TokenJson = {
 };
 
 export async function saveSlackUserInfo(code: string) {
-  const slackApp = await slackConnect();
+  if (isSlackEnabled) {
+    const slackApp = await slackConnect();
 
-  const user = await mustGetCurrentUser()
+    const user = await mustGetCurrentUser();
 
-  const tokenResponse = await slackApp.client.openid.connect
+    const tokenResponse = await slackApp.client.openid.connect
       .token({
         client_id: process.env.SLACK_CLIENT_ID || "",
         client_secret: process.env.SLACK_CLIENT_SECRET || "",
@@ -39,4 +40,5 @@ export async function saveSlackUserInfo(code: string) {
           token["https://slack.com/user_id"],
         );
       });
+  }
 }
