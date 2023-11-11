@@ -25,24 +25,28 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     const user = await mustGetCurrentUser();
 
-    const tokenResponse = await slackApp.client.openid.connect
-      .token({
-        client_id: process.env.SLACK_CLIENT_ID || "",
-        client_secret: process.env.SLACK_CLIENT_SECRET || "",
-        code: req.nextUrl.searchParams.get("code") || "",
-      })
-      .then(async (tokenResponse) => {
-        const token = jwtDecode(tokenResponse.id_token!) as TokenJson;
+    const code = req.nextUrl.searchParams.get("code");
 
-        const slackUser = await slackApp.client.users.profile.get({
-          user: token["https://slack.com/user_id"],
+    if (code) {
+      const tokenResponse = await slackApp.client.openid.connect
+        .token({
+          client_id: process.env.SLACK_CLIENT_ID || "",
+          client_secret: process.env.SLACK_CLIENT_SECRET || "",
+          code: code,
+        })
+        .then(async (tokenResponse) => {
+          const token = jwtDecode(tokenResponse.id_token!) as TokenJson;
+
+          const slackUser = await slackApp.client.users.profile.get({
+            user: token["https://slack.com/user_id"],
+          });
+
+          await People.setUserSlackID(
+            user.user_id,
+            token["https://slack.com/user_id"],
+          );
         });
-
-        await People.setUserSlackID(
-          user.user_id,
-          token["https://slack.com/user_id"],
-        );
-      });
+    }
   }
   const url = new URL("/user/me", process.env.PUBLIC_URL!);
   return NextResponse.redirect(url);
