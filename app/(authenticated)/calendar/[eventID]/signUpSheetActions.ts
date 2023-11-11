@@ -167,13 +167,13 @@ export async function signUpToRole(sheetID: number, crewID: number) {
       await slackApp.client.chat.postEphemeral({
         channel: sheet.events.slack_channel_id,
         user: me.slack_user_id,
-        text: `You have been added to this channel as you signed up for the role of ${sheet.crews.find(
+        text: `You have been added to this channel as you signed up for the role of '${sheet.crews.find(
           (crew_pos) => {
             if (crew_pos.crew_id == crewID) {
               return true;
             }
           },
-        )?.positions.name} on ${sheet.events.name}.`,
+        )?.positions.name}' on '${sheet.events.name}'.`,
       });
     }
   }
