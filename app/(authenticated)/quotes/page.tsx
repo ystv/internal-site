@@ -29,7 +29,7 @@ export default async function QuotesPage(props: {
     <div>
       <h1>Quotes</h1>
       <p>
-        Page {page} of {Math.ceil(total / 10)}
+        Page {page} of {Math.ceil(total / PAGE_SIZE)}
       </p>
       <AddQuote />
       <ul>
