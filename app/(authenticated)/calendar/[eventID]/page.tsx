@@ -20,7 +20,7 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
-import { Alert } from "@mantine/core";
+import { Alert, Group, Paper } from "@mantine/core";
 import { TbInfoCircle, TbAlertTriangle } from "react-icons/tb";
 
 async function AttendeesView({
@@ -184,7 +184,7 @@ export default async function EventPage({
           <p key={idx}>{p}</p>
         ))}
       </div>
-      {event.updated_by_user && event.event_type !== "show" && (
+      {event.host_user && (
         <div className={"py-2"}>
           <strong className={"text-sm"}>
             Host: {getUserName(event.host_user)}
