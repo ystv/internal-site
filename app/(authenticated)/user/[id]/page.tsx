@@ -105,7 +105,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       {isSlackEnabled && (
         <>
           {!user.slack_user_id ? (
-            <Card>
+            <Card withBorder>
               <h2 className="mt-0">Link your account to slack</h2>
               <Suspense>
                 <SlackLoginButton />
