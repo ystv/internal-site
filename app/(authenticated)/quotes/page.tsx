@@ -32,13 +32,11 @@ export default async function QuotesPage(props: {
         Page {page} of {Math.ceil(total / PAGE_SIZE)}
       </p>
       <AddQuote />
-      <ul>
+      <div className="space-y-4">
         {quotes.map((quote) => (
-          <li key={quote.quote_id} className="list-none">
-            <QuoteView data={quote} />
-          </li>
+          <QuoteView key={quote.quote_id} data={quote} />
         ))}
-      </ul>
+      </div>
       <QuotesPagination page={page} total={total} pageSize={PAGE_SIZE} />
     </div>
   );

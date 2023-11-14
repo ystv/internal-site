@@ -43,12 +43,12 @@ export function QuoteView(props: { data: Quote }) {
       onSuccess={() => setIsEditing(false)}
     />
   ) : (
-    <>
+    <div className="border-solid border-gray-400 px-4 py-2 my-1">
       <p>{props.data.text}</p>
       {props.data.context.length > 0 && (
         <p className="text-sm">— {props.data.context}</p>
       )}
-      <Button onClick={() => setIsEditing(true)} disabled={isPending}>
+      <Button onClick={() => setIsEditing(true)} disabled={isPending} size="compact-xs">
         Edit
       </Button>
       <Button
@@ -61,10 +61,11 @@ export function QuoteView(props: { data: Quote }) {
             });
           }
         }}
+        size="compact-xs"
       >
         Delet
       </Button>
-    </>
+    </div>
   );
 }
 
