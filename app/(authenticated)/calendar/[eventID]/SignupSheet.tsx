@@ -94,7 +94,7 @@ function SignupSheet({
                     key={crew.crew_id}
                     className={`${
                       isProducer
-                        ? "text-[--mantine-color-blue-8] dark:text-[--mantine-color-blue-5] "
+                        ? "!font-bold !text-base text-[--mantine-color-blue-8] dark:text-[--mantine-color-blue-5] "
                         : ""
                     }divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold dark:divide-[--mantine-color-placeholder]`}
                   >
