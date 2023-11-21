@@ -20,7 +20,7 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
-import { Alert, Group, Paper } from "@mantine/core";
+import { Alert } from "@mantine/core";
 import { TbInfoCircle, TbAlertTriangle } from "react-icons/tb";
 
 async function AttendeesView({
