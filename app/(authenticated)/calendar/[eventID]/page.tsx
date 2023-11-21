@@ -184,7 +184,7 @@ export default async function EventPage({
           <p key={idx}>{p}</p>
         ))}
       </div>
-      {event.host_user && (
+      {event.host_user && event.event_type !== "show" && (
         <div className={"py-2"}>
           <strong className={"text-sm"}>
             Host: {getUserName(event.host_user)}
