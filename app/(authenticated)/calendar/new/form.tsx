@@ -21,7 +21,7 @@ export function CreateEventForm(props: {
   permittedEventTypes: EventType[];
 }) {
   const router = useRouter();
-  const user = useCurrentUser()
+  const user = useCurrentUser();
   return (
     <Form
       action={props.action}
