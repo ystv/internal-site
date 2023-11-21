@@ -34,7 +34,6 @@ export function CreateEventForm(props: {
       <DatePickerField name="startDate" label="Start" required />
       <DatePickerField name="endDate" label="End" required />
       <TextField name="location" label="Location" />
-      <MemberSelect name="host" label="Host" />
       <SegmentedField
         name="type"
         label="Type"
@@ -42,6 +41,13 @@ export function CreateEventForm(props: {
         getOptionValue={identity}
         renderOption={(v: string) => v[0].toUpperCase() + v.slice(1)}
       />
+      <ConditionalField
+        referencedFieldName="type"
+        condition={(t) => t !== "show"}
+        childFieldName="host"
+      >
+        <MemberSelect name="host" label="Host" />
+      </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="private" label="Private Event" />*/}
       <br />
