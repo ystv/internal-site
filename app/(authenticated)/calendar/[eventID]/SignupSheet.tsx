@@ -87,14 +87,14 @@ function SignupSheet({
             {sheet.crews
               .sort((a, b) => a.ordering - b.ordering)
               .map((crew, index) => {
-                const isProducer = crew.positions.name === "Producer";
+                const isProducer = crew.positions.admin;
 
                 return (
                   <tr
                     key={crew.crew_id}
                     className={`${
                       isProducer
-                        ? "!text-base !font-bold text-[--mantine-color-blue-8] dark:text-[--mantine-color-blue-5] "
+                        ? "!font-extrabold "
                         : ""
                     }divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold dark:divide-[--mantine-color-placeholder]`}
                   >
