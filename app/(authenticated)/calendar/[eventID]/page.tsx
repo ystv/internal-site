@@ -133,7 +133,7 @@ export default async function EventPage({
   }
   return (
     <>
-      {event.is_cancelled && (
+      {event.is_cancelled ? (
         <Alert
           variant="light"
           color="red"
@@ -143,17 +143,20 @@ export default async function EventPage({
           Unfortunately this event has been cancelled. If you have any
           questions, please contact the producer/host.
         </Alert>
-      )}
-      {event.is_tentative && (
-        <Alert
-          variant="light"
-          className="!bg-[#f3f3f4] !text-[--mantine-color-default-color] dark:!bg-[--mantine-color-gray-filled]"
-          title="Tentative Event"
-          icon={<TbInfoCircle />}
-        >
-          This event has not been confirmed by the producer/host yet. Please
-          check back later for updates.
-        </Alert>
+      ) : (
+        <>
+          {event.is_tentative && (
+            <Alert
+              variant="light"
+              className="!bg-[#f3f3f4] !text-[--mantine-color-default-color] dark:!bg-[--mantine-color-gray-filled]"
+              title="Tentative Event"
+              icon={<TbInfoCircle />}
+            >
+              This event has not been confirmed by the producer/host yet. Please
+              check back later for updates.
+            </Alert>
+          )}
+        </>
       )}
       <div
         className={

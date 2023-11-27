@@ -14,6 +14,7 @@ import {
   Stack,
 } from "@mantine/core";
 import { UserPreferences } from "./UserPreferences";
+import { ICalCopyButton } from "@/components/ICalCopyButton";
 
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
