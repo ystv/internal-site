@@ -52,11 +52,13 @@ async function getSession(req?: NextRequest) {
   if (req) {
     const sessionID = req.cookies.get(cookieName);
     if (!sessionID) return null;
+    if (sessionID.value == "") return null;
     return sessionSchema.parse(await decode(sessionID.value));
   }
   const { cookies } = await import("next/headers");
   const sessionID = cookies().get(cookieName);
   if (!sessionID) return null;
+  if (sessionID.value == "") return null;
   return sessionSchema.parse(await decode(sessionID.value));
 }
 
