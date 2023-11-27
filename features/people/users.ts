@@ -23,6 +23,7 @@ export type ExposedUser = z.infer<typeof ExposedUserModel>;
  */
 export const SecureUserModel = ExposedUserModel.extend({
   preferences: UserPreferencesSchema,
+  email: z.string(),
 });
 
 export type SecureUser = z.infer<typeof SecureUserModel>;
