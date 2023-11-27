@@ -19,7 +19,6 @@ import { ICalCopyButton } from "@/components/ICalCopyButton";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
 import { Suspense } from "react";
-import { ICalCopyButton } from "@/components/ICalCopyButton";
 import { isSlackEnabled } from "@/lib/slack/slackConnect";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
