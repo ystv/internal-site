@@ -9,11 +9,7 @@ import {
   Group,
   Radio,
 } from "@mantine/core";
-import {
-  ReactNode,
-  useOptimistic,
-  useTransition,
-} from "react";
+import { ReactNode, useOptimistic, useTransition } from "react";
 import { changePreference } from "./actions";
 import { notifications } from "@mantine/notifications";
 
