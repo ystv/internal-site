@@ -3,14 +3,7 @@ import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { notFound } from "next/navigation";
 import { getUserName } from "@/components/UserHelpers";
-import {
-  Avatar,
-  Button,
-  Card,
-  Group,
-  Space,
-  Stack,
-} from "@mantine/core";
+import { Avatar, Button, Card, Group, Space, Stack } from "@mantine/core";
 import { UserPreferences } from "./UserPreferences";
 import { ICalCopyButton } from "@/components/ICalCopyButton";
 
