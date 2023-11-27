@@ -3,11 +3,12 @@ import { prisma } from "@/lib/db";
 import { Forbidden, NotLoggedIn } from "./errors";
 import { Permission } from "./permissions";
 import { User } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
+import { cookies } from "next/headers";
 
 export type UserType = User & {
   permissions: Permission[];
@@ -69,6 +70,13 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
+}
+
+async function clearSession() {
+  const { cookies } = await import("next/headers");
+
+  await cookies().delete(cookieName);
+  await cookies().delete("g_csrf_token");
 }
 
 export async function getCurrentUserOrNull(
@@ -147,4 +155,12 @@ export async function loginOrCreateUser(rawGoogleToken: string) {
   // It also makes the session token shorter.
   await setSession({ userID: user.user_id });
   return userType;
+}
+
+export async function logout() {
+  await clearSession();
+  const url = new URL("/login", process.env.PUBLIC_URL!);
+  return NextResponse.redirect(url, {
+    status: 303,
+  });
 }
