@@ -7,13 +7,12 @@ import {
   Avatar,
   Button,
   Card,
-  CopyButton,
   Group,
-  Skeleton,
   Space,
   Stack,
 } from "@mantine/core";
 import { UserPreferences } from "./UserPreferences";
+import { ICalCopyButton } from "@/components/ICalCopyButton";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;
