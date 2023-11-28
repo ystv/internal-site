@@ -93,9 +93,7 @@ function SignupSheet({
                   <tr
                     key={crew.crew_id}
                     className={`${
-                      isProducer
-                        ? "!font-extrabold "
-                        : ""
+                      isProducer ? "!font-extrabold " : ""
                     }divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold dark:divide-[--mantine-color-placeholder]`}
                   >
                     <td className="px-3">
