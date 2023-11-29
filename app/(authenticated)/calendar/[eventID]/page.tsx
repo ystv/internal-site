@@ -26,6 +26,8 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 import { ConversationsInfoResponse } from "@slack/web-api/dist/response";
+import { Suspense } from "react";
+import SlackChannelName from "@/components/slack/SlackChannelName";
 
 async function AttendeesView({
   event,
@@ -118,16 +120,6 @@ export default async function EventPage({
     notFound();
   }
 
-  let eventChannelInfo: ConversationsInfoResponse | null = null;
-  if (isSlackEnabled) {
-    const slackApp = await slackApiConnection();
-    if (event.slack_channel_id) {
-      eventChannelInfo = await slackApp.client.conversations.info({
-        channel: event.slack_channel_id,
-      });
-    }
-  }
-
   const me = await getCurrentUser();
   let allMembers;
   if (canManage(event, me)) {
@@ -195,8 +187,10 @@ export default async function EventPage({
           ) : (
             <DateTime val={event.end_date.toISOString()} format="datetime" />
           )}
-          {eventChannelInfo?.ok && (
-            <Text>Slack channel: #{eventChannelInfo.channel?.name}</Text>
+          {(isSlackEnabled && event.slack_channel_id) && (
+            <Suspense>
+              <SlackChannelName slackChannelID={event.slack_channel_id} />
+            </Suspense>
           )}
         </strong>
       </div>
