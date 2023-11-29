@@ -17,8 +17,9 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
-import { App } from "@slack/bolt";
 import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
+import { App } from "@slack/bolt";
+import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse"
 
 async function createEvent(
   data: unknown,
@@ -103,17 +104,36 @@ export default async function NewEventPage() {
     ]);
   }
   const allMembers = await getAllUsers();
-  const slackApp = await slackApiConnection();
 
-  const slackChannels = await slackApp.client.conversations.list({
-    team_id: process.env.SLACK_TEAM_ID,
-  });
+  let slackApp: App | null = null;
+  var publicSlackChannels: Channel[] = []
+
+  if (isSlackEnabled) {
+    slackApp = await slackApiConnection();
+    const slackChannels = await slackApp.client.conversations.list({
+      team_id: process.env.SLACK_TEAM_ID,
+    });
+  
+    slackChannels.channels?.map((channel) => {
+      if (!channel.is_private && !(channel.is_archived || channel.is_general)) {
+        publicSlackChannels.push(channel)
+      }
+    })
+
+    publicSlackChannels.sort((a, b) => {
+      if (a.name! > b.name!) {
+        return 1
+      }
+      return -1
+    })
+  }
+
 
   return (
     <div className="mx-auto max-w-xl">
       <h1 className="mb-4 mt-0 text-4xl font-bold">New Event</h1>
       <MembersProvider members={allMembers}>
-        <SlackChannelsProvider slackChannels={slackChannels.channels!}>
+        <SlackChannelsProvider slackChannels={publicSlackChannels}>
           <SlackEnabledProvider isSlackEnabled={isSlackEnabled}>
             <CreateEventForm
               action={createEvent}
