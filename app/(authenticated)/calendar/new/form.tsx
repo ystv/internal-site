@@ -16,6 +16,7 @@ import { identity } from "lodash";
 import { InputLabel } from "@mantine/core";
 import SlackChannelField from "@/components/SlackChannelField";
 import { useSlackEnabled } from "@/components/slack/SlackEnabledProvider";
+import { useCurrentUser } from "@/components/UserContext";
 
 export function CreateEventForm(props: {
   action: FormAction<{ id: number }>;
@@ -23,12 +24,13 @@ export function CreateEventForm(props: {
 }) {
   const router = useRouter();
   const isSlackEnabled = useSlackEnabled();
+  const user = useCurrentUser();
   return (
     <Form
       action={props.action}
       schema={schema}
       onSuccess={(res) => router.push(`/calendar/${res.id}`)}
-      initialValues={{ type: "show" }}
+      initialValues={{ type: "show", host: user.user_id }}
     >
       <TextField name="name" label="Name" required placeholder={"New Event"} />
       <TextAreaField name="description" label="Description" />
