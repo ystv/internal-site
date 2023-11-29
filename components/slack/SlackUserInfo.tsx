@@ -1,6 +1,8 @@
 import { setUserSlackID } from "@/features/people";
 import { mustGetCurrentUser } from "@/lib/auth/server";
-import slackConnect, { isSlackEnabled } from "@/lib/slack/slackConnect";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
 import {
   Avatar,
   Group,
@@ -23,7 +25,7 @@ export default async function SlackUserInfo({
   let slackApp: App | null = null;
 
   if (isSlackEnabled) {
-    slackApp = await slackConnect();
+    slackApp = await slackApiConnection();
     const slack_user = await slackApp.client.users.profile.get({
       user: slack_user_id,
     });

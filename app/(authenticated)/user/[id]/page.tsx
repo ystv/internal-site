@@ -19,7 +19,7 @@ import { ICalCopyButton } from "@/components/ICalCopyButton";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
 import { Suspense } from "react";
-import { isSlackEnabled } from "@/lib/slack/slackConnect";
+import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;

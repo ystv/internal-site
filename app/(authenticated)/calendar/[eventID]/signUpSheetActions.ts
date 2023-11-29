@@ -13,7 +13,9 @@ import { z } from "zod";
 import { SignupSheetSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
-import slackConnect, { isSlackEnabled } from "@/lib/slack/slackConnect";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
 
 export async function createSignUpSheet(
   eventID: number,
@@ -155,7 +157,7 @@ export async function signUpToRole(sheetID: number, crewID: number) {
 
   if (isSlackEnabled) {
     if (me.slack_user_id && sheet.events.slack_channel_id) {
-      const slackApp = await slackConnect();
+      const slackApp = await slackApiConnection();
 
       try {
         await slackApp.client.conversations.invite({

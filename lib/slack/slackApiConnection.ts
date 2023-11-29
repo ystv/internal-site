@@ -33,8 +33,8 @@ if (!app && isSlackEnabled) {
   (async () => await app.start())();
 }
 
-async function slackConnect() {
+async function slackApiConnection() {
   return app;
 }
 
-export default slackConnect;
+export default slackApiConnection;

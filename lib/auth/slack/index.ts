@@ -1,4 +1,6 @@
-import slackConnect, { isSlackEnabled } from "@/lib/slack/slackConnect";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
 import * as People from "@/features/people";
 import { jwtDecode } from "jwt-decode";
 import { mustGetCurrentUser } from "../server";
@@ -18,7 +20,7 @@ type TokenJson = {
 
 export async function saveSlackUserInfo(code: string) {
   if (isSlackEnabled) {
-    const slackApp = await slackConnect();
+    const slackApp = await slackApiConnection();
 
     const user = await mustGetCurrentUser();
 

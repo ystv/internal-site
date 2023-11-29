@@ -23,7 +23,9 @@ import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import { isBefore } from "date-fns";
 import invariant from "@/lib/invariant";
-import slackConnect, { isSlackEnabled } from "@/lib/slack/slackConnect";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
 
 export async function editEvent(
   eventID: number,
@@ -94,7 +96,7 @@ export async function updateAttendeeStatus(
   if (isSlackEnabled) {
     if (status === "attending" || status === "maybe_attending") {
       if (me.slack_user_id && evt.slack_channel_id) {
-        const slackApp = await slackConnect();
+        const slackApp = await slackApiConnection();
 
         try {
           await slackApp.client.conversations.invite({

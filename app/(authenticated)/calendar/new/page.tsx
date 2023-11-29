@@ -13,7 +13,9 @@ import { revalidatePath } from "next/cache";
 import { Forbidden } from "@/lib/auth/errors";
 import { getAllUsers } from "@/features/people";
 import { MembersProvider } from "@/components/FormFieldPreloadedData";
-import slackConnect, { isSlackEnabled } from "@/lib/slack/slackConnect";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
 import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
 import { App } from "@slack/bolt";
 import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
@@ -25,7 +27,7 @@ async function createEvent(
   const user = await getCurrentUser();
   let slackApp: App | null = null;
   if (isSlackEnabled) {
-    slackApp = await slackConnect();
+    slackApp = await slackApiConnection();
   }
   const payload = schema.safeParse(data);
   if (!payload.success) {
@@ -101,7 +103,7 @@ export default async function NewEventPage() {
     ]);
   }
   const allMembers = await getAllUsers();
-  const slackApp = await slackConnect();
+  const slackApp = await slackApiConnection();
 
   const slackChannels = await slackApp.client.conversations.list({
     team_id: process.env.SLACK_TEAM_ID,
