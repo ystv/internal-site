@@ -187,7 +187,7 @@ export default async function EventPage({
           ) : (
             <DateTime val={event.end_date.toISOString()} format="datetime" />
           )}
-          {(isSlackEnabled && event.slack_channel_id) && (
+          {isSlackEnabled && event.slack_channel_id && (
             <Suspense>
               <SlackChannelName slackChannelID={event.slack_channel_id} />
             </Suspense>

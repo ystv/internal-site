@@ -19,7 +19,7 @@ import slackApiConnection, {
 import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
 import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
 import { App } from "@slack/bolt";
-import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse"
+import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
 
 async function createEvent(
   data: unknown,
@@ -106,28 +106,27 @@ export default async function NewEventPage() {
   const allMembers = await getAllUsers();
 
   let slackApp: App | null = null;
-  var publicSlackChannels: Channel[] = []
+  var publicSlackChannels: Channel[] = [];
 
   if (isSlackEnabled) {
     slackApp = await slackApiConnection();
     const slackChannels = await slackApp.client.conversations.list({
       team_id: process.env.SLACK_TEAM_ID,
     });
-  
+
     slackChannels.channels?.map((channel) => {
       if (!channel.is_private && !(channel.is_archived || channel.is_general)) {
-        publicSlackChannels.push(channel)
+        publicSlackChannels.push(channel);
       }
-    })
+    });
 
     publicSlackChannels.sort((a, b) => {
       if (a.name! > b.name!) {
-        return 1
+        return 1;
       }
-      return -1
-    })
+      return -1;
+    });
   }
-
 
   return (
     <div className="mx-auto max-w-xl">
