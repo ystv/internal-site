@@ -11,8 +11,6 @@ import {
 } from "@mantine/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-// Copied from https://github.com/ystv/experimental-hypothetical-new-internal-site-idea/blob/master/app/(authenticated)/calendar/[eventID]/AddEditSignUpSheetForm.tsx#L51-L177
-
 /**
  * React component for a select input with custom options.
  *
