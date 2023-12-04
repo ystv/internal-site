@@ -37,6 +37,8 @@ export default function SlackChannelField(props: { parentName: string }) {
 
   return (
     <>
+      <input type="hidden" name={`slack_channel_id`} value={""} />
+      <input type="hidden" name={`slack_new_channel_name`} value={""} />
       <SelectWithCustomOption
         data={
           vals.map((v) => ({

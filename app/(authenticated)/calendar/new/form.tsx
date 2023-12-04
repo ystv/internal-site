@@ -55,8 +55,6 @@ export function CreateEventForm(props: {
       {/*<CheckBoxField name="private" label="Private Event" />*/}
       {isSlackEnabled && (
         <>
-          <input type="hidden" name={`slack_channel_id`} value={""} />
-          <input type="hidden" name={`slack_new_channel_name`} value={""} />
           <InputLabel>Slack Channel</InputLabel>
           <SlackChannelField parentName="slack" />
         </>
