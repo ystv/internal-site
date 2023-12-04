@@ -4,11 +4,11 @@ import invariant from "@/lib/invariant";
 import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
 import { createContext, useContext } from "react";
 
-const SlackChannelContext = createContext<Channel[] | null>(null);
+const SlackChannelContext = createContext<Promise<Channel[]> | null>(null);
 
 export function SlackChannelsProvider(props: {
   children: React.ReactNode;
-  slackChannels: Channel[];
+  slackChannels: Promise<Channel[]>;
 }) {
   return (
     <SlackChannelContext.Provider value={props.slackChannels}>
@@ -17,7 +17,7 @@ export function SlackChannelsProvider(props: {
   );
 }
 
-export function useSlackChannels(): Channel[] {
+export function useSlackChannels(): Promise<Channel[]> {
   const v = useContext(SlackChannelContext);
   invariant(
     v !== null,

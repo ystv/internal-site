@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { use, useMemo } from "react";
 import { useController } from "react-hook-form";
 import { useSlackChannels } from "@/components/slack/SlackChannelsProvider";
 import SelectWithCustomOption from "@/components/SelectWithCustomOption";
@@ -8,7 +8,8 @@ import { useForceUpdate } from "@mantine/hooks";
 import { InputError } from "@mantine/core";
 
 export default function SlackChannelField(props: { parentName: string }) {
-  const vals = useSlackChannels();
+  const slackChannels = useSlackChannels();
+  const vals = use(slackChannels);
   const forceUpdate = useForceUpdate();
   const selectController = useController({
     name: `${props.parentName}_channel_id`,

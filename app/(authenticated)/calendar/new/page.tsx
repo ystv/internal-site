@@ -94,6 +94,34 @@ async function createEvent(
   };
 }
 
+async function getSlackChannels(): Promise<Channel[]> {
+  var fetchedSlackChannels: Channel[] = [];
+
+  let slackApp: App | null = null;
+
+  if (isSlackEnabled) {
+    slackApp = await slackApiConnection();
+    const slackChannels = await slackApp.client.conversations.list({
+      team_id: process.env.SLACK_TEAM_ID,
+    });
+
+    slackChannels.channels?.map((channel) => {
+      if (!channel.is_private && !(channel.is_archived || channel.is_general)) {
+        fetchedSlackChannels.push(channel);
+      }
+    });
+
+    fetchedSlackChannels.sort((a, b) => {
+      if (a.name! > b.name!) {
+        return 1;
+      }
+      return -1;
+    });
+  }
+
+  return fetchedSlackChannels;
+}
+
 export default async function NewEventPage() {
   const permittedEventTypes = creatableEventTypes(
     (await getCurrentUser()).permissions,
@@ -105,28 +133,7 @@ export default async function NewEventPage() {
   }
   const allMembers = await getAllUsers();
 
-  let slackApp: App | null = null;
-  var publicSlackChannels: Channel[] = [];
-
-  if (isSlackEnabled) {
-    slackApp = await slackApiConnection();
-    const slackChannels = await slackApp.client.conversations.list({
-      team_id: process.env.SLACK_TEAM_ID,
-    });
-
-    slackChannels.channels?.map((channel) => {
-      if (!channel.is_private && !(channel.is_archived || channel.is_general)) {
-        publicSlackChannels.push(channel);
-      }
-    });
-
-    publicSlackChannels.sort((a, b) => {
-      if (a.name! > b.name!) {
-        return 1;
-      }
-      return -1;
-    });
-  }
+  var publicSlackChannels: Promise<Channel[]> = getSlackChannels();
 
   return (
     <div className="mx-auto max-w-xl">
