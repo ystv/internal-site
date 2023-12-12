@@ -20,8 +20,14 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
-import { Alert } from "@mantine/core";
+import { Alert, Text } from "@mantine/core";
 import { TbInfoCircle, TbAlertTriangle } from "react-icons/tb";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
+import { ConversationsInfoResponse } from "@slack/web-api/dist/response";
+import { Suspense } from "react";
+import SlackChannelName from "@/components/slack/SlackChannelName";
 
 async function AttendeesView({
   event,
@@ -113,6 +119,7 @@ export default async function EventPage({
   if (!event) {
     notFound();
   }
+
   const me = await getCurrentUser();
   let allMembers;
   if (canManage(event, me)) {
@@ -179,6 +186,11 @@ export default async function EventPage({
             <DateTime val={event.end_date.toISOString()} format="time" />
           ) : (
             <DateTime val={event.end_date.toISOString()} format="datetime" />
+          )}
+          {isSlackEnabled && event.slack_channel_id && (
+            <Suspense>
+              <SlackChannelName slackChannelID={event.slack_channel_id} />
+            </Suspense>
           )}
         </strong>
       </div>

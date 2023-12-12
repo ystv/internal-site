@@ -3,9 +3,23 @@ import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { notFound } from "next/navigation";
 import { getUserName } from "@/components/UserHelpers";
-import { Avatar, Button, Card, Group, Space, Stack } from "@mantine/core";
+import {
+  Avatar,
+  Button,
+  Card,
+  CopyButton,
+  Group,
+  Skeleton,
+  Space,
+  Stack,
+} from "@mantine/core";
 import { UserPreferences } from "./UserPreferences";
 import { ICalCopyButton } from "@/components/ICalCopyButton";
+
+import SlackLoginButton from "@/components/slack/SlackLoginButton";
+import SlackUserInfo from "@/components/slack/SlackUserInfo";
+import { Suspense } from "react";
+import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;
@@ -87,6 +101,36 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           </Stack>
         </Group>
       </Card>
+      <Space h={"md"} />
+      {isSlackEnabled && (
+        <>
+          {!user.slack_user_id ? (
+            <Card withBorder>
+              <h2 className="mt-0">Link your account to Slack</h2>
+              <Suspense>
+                <SlackLoginButton />
+              </Suspense>
+            </Card>
+          ) : (
+            <Card withBorder>
+              <h2 className="mt-0">Manage Slack link</h2>
+              <Suspense
+                fallback={
+                  <>
+                    <Card withBorder>
+                      <Group>
+                        <Skeleton height={38} circle />
+                      </Group>
+                    </Card>
+                  </>
+                }
+              >
+                <SlackUserInfo slack_user_id={user.slack_user_id} />
+              </Suspense>
+            </Card>
+          )}
+        </>
+      )}
     </div>
   );
 }

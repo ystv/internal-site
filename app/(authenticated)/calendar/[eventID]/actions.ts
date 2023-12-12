@@ -23,6 +23,9 @@ import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import { isBefore } from "date-fns";
 import invariant from "@/lib/invariant";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
 
 export async function editEvent(
   eventID: number,
@@ -88,6 +91,27 @@ export async function updateAttendeeStatus(
         root: "This event cannot be RSVP'd to",
       },
     };
+  }
+
+  if (isSlackEnabled) {
+    if (status === "attending" || status === "maybe_attending") {
+      if (me.slack_user_id && evt.slack_channel_id) {
+        const slackApp = await slackApiConnection();
+
+        try {
+          await slackApp.client.conversations.invite({
+            channel: evt.slack_channel_id,
+            users: me.slack_user_id,
+          });
+        } catch (e) {}
+
+        await slackApp.client.chat.postEphemeral({
+          channel: evt.slack_channel_id,
+          user: me.slack_user_id,
+          text: `You have been added to this channel as you expressed your interest in attending '${evt.name}'.`,
+        });
+      }
+    }
   }
 
   await updateEventAttendeeStatus(evt.event_id, me.user_id, status);

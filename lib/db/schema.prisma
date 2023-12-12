@@ -69,6 +69,7 @@ model User {
   events_events_updated_byTousers Event[]      @relation("events_updated_byTousers")
   role_members                    RoleMember[]
   hosted_events                   Event[]      @relation("event_host_user")
+  slack_user_id                   String       @default("")
 
   /// [UserPreferences]
   preferences Json @default("{}")
@@ -135,6 +136,7 @@ model Event {
   deleted_by          Int?
   host                Int
   adam_rms_project_id Int?
+  slack_channel_id    String    @default("")
 
   attendees       Attendee[]
   created_by_user User          @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)

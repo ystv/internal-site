@@ -7,13 +7,15 @@ import {
   DatePickerField,
   MemberSelect,
   SegmentedField,
-  SelectField,
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
 import { useRouter } from "next/navigation";
 import { EventType } from "@/features/calendar/types";
 import { identity } from "lodash";
+import { InputLabel } from "@mantine/core";
+import SlackChannelField from "@/components/SlackChannelField";
+import { useSlackEnabled } from "@/components/slack/SlackEnabledProvider";
 import { useCurrentUser } from "@/components/UserContext";
 
 export function CreateEventForm(props: {
@@ -21,6 +23,7 @@ export function CreateEventForm(props: {
   permittedEventTypes: EventType[];
 }) {
   const router = useRouter();
+  const isSlackEnabled = useSlackEnabled();
   const user = useCurrentUser();
   return (
     <Form
@@ -50,6 +53,13 @@ export function CreateEventForm(props: {
       </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="private" label="Private Event" />*/}
+      {isSlackEnabled && (
+        <>
+          <InputLabel>Slack Channel</InputLabel>
+          <SlackChannelField parentName="slack" />
+        </>
+      )}
+
       <br />
       <CheckBoxField name="tentative" label="Tentative Event" />
     </Form>

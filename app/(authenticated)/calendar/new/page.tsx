@@ -13,12 +13,23 @@ import { revalidatePath } from "next/cache";
 import { Forbidden } from "@/lib/auth/errors";
 import { getAllUsers } from "@/features/people";
 import { MembersProvider } from "@/components/FormFieldPreloadedData";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
+import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
+import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
+import { App } from "@slack/bolt";
+import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
 
 async function createEvent(
   data: unknown,
 ): Promise<FormResponse<{ id: number }>> {
   "use server";
   const user = await getCurrentUser();
+  let slackApp: App | null = null;
+  if (isSlackEnabled) {
+    slackApp = await slackApiConnection();
+  }
   const payload = schema.safeParse(data);
   if (!payload.success) {
     return zodErrorResponse(payload.error);
@@ -30,6 +41,37 @@ async function createEvent(
       `Calendar.${payload.data.type}.Admin` as Permission,
     ]);
   }
+
+  let slack_channel_id: string | undefined;
+
+  if (slackApp) {
+    if (payload.data.slack_channel_id && isSlackEnabled) {
+      const channel_info = await slackApp.client.conversations.info({
+        channel: payload.data.slack_channel_id,
+      });
+
+      if (channel_info.ok) {
+        slack_channel_id = payload.data.slack_channel_id;
+      }
+    } else if (payload.data.slack_new_channel_name) {
+      const new_channel = await slackApp.client.conversations.create({
+        name: payload.data.slack_new_channel_name,
+        team_id: process.env.SLACK_TEAM_ID,
+      });
+
+      if (new_channel.channel?.id) {
+        slack_channel_id = new_channel.channel?.id;
+      }
+    }
+
+    if (slack_channel_id && user.slack_user_id) {
+      await slackApp.client.conversations.invite({
+        channel: slack_channel_id,
+        users: user.slack_user_id,
+      });
+    }
+  }
+
   const evt = await Calendar.createEvent(
     {
       name: payload.data.name,
@@ -41,6 +83,7 @@ async function createEvent(
       is_private: payload.data.private,
       is_tentative: payload.data.tentative,
       host: payload.data.host,
+      slack_channel_id: slack_channel_id,
     },
     user.user_id,
   );
@@ -49,6 +92,34 @@ async function createEvent(
     ok: true,
     id: evt.event_id,
   };
+}
+
+async function getSlackChannels(): Promise<Channel[]> {
+  var fetchedSlackChannels: Channel[] = [];
+
+  let slackApp: App | null = null;
+
+  if (isSlackEnabled) {
+    slackApp = await slackApiConnection();
+    const slackChannels = await slackApp.client.conversations.list({
+      team_id: process.env.SLACK_TEAM_ID,
+    });
+
+    slackChannels.channels?.map((channel) => {
+      if (!channel.is_private && !(channel.is_archived || channel.is_general)) {
+        fetchedSlackChannels.push(channel);
+      }
+    });
+
+    fetchedSlackChannels.sort((a, b) => {
+      if (a.name! > b.name!) {
+        return 1;
+      }
+      return -1;
+    });
+  }
+
+  return fetchedSlackChannels;
 }
 
 export default async function NewEventPage() {
@@ -61,14 +132,21 @@ export default async function NewEventPage() {
     ]);
   }
   const allMembers = await getAllUsers();
+
+  var publicSlackChannels: Promise<Channel[]> = getSlackChannels();
+
   return (
     <div className="mx-auto max-w-xl">
       <h1 className="mb-4 mt-0 text-4xl font-bold">New Event</h1>
       <MembersProvider members={allMembers}>
-        <CreateEventForm
-          action={createEvent}
-          permittedEventTypes={permittedEventTypes}
-        />
+        <SlackChannelsProvider slackChannels={publicSlackChannels}>
+          <SlackEnabledProvider isSlackEnabled={isSlackEnabled}>
+            <CreateEventForm
+              action={createEvent}
+              permittedEventTypes={permittedEventTypes}
+            />
+          </SlackEnabledProvider>
+        </SlackChannelsProvider>
       </MembersProvider>
     </div>
   );

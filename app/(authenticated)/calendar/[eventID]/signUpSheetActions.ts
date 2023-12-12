@@ -13,6 +13,9 @@ import { z } from "zod";
 import { SignupSheetSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
 
 export async function createSignUpSheet(
   eventID: number,
@@ -151,6 +154,32 @@ export async function signUpToRole(sheetID: number, crewID: number) {
       },
     };
   }
+
+  if (isSlackEnabled) {
+    if (me.slack_user_id && sheet.events.slack_channel_id) {
+      const slackApp = await slackApiConnection();
+
+      try {
+        await slackApp.client.conversations.invite({
+          channel: sheet.events.slack_channel_id,
+          users: me.slack_user_id,
+        });
+      } catch (e) {}
+
+      await slackApp.client.chat.postEphemeral({
+        channel: sheet.events.slack_channel_id,
+        user: me.slack_user_id,
+        text: `You have been added to this channel as you signed up for the role of '${sheet.crews.find(
+          (crew_pos) => {
+            if (crew_pos.crew_id == crewID) {
+              return true;
+            }
+          },
+        )?.positions.name}' on '${sheet.events.name}'.`,
+      });
+    }
+  }
+
   revalidatePath(`/calendar/${sheet.events.event_id}`);
   return { ok: true };
 }
