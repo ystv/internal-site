@@ -43,9 +43,6 @@ Now we will go through the long process of adding the required scopes to the app
 - `chat:write`
 - `chat:write.public`
 - `groups:history`
-- `im:history`
-- `im:read`
-- `im:write`
 - `users.profile:read`
 - `users:read`
 - `users:read.email`
