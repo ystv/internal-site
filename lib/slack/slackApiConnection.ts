@@ -28,6 +28,7 @@ if (!app && isSlackEnabled) {
     signingSecret: process.env.SLACK_SIGNING_SECRET,
     socketMode: true,
     appToken: process.env.SLACK_APP_TOKEN,
+    redirectUri: `${process.env.PUBLIC_URL}/login/slack/callback`,
   });
 
   (async () => await app.start())();
