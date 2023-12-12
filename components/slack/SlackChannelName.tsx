@@ -22,7 +22,9 @@ export default async function SlackChannelName({
   return (
     <>
       {eventChannelInfo?.ok && (
-        <Text>Slack channel: #{eventChannelInfo.channel?.name}</Text>
+        <Text>Slack channel:&nbsp;
+          <a href={`https://ystv.slack.com/archives/${eventChannelInfo.channel?.id}`}>#{eventChannelInfo.channel?.name}</a>
+        </Text>
       )}
     </>
   );
