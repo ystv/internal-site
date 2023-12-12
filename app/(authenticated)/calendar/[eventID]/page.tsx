@@ -28,6 +28,7 @@ import slackApiConnection, {
 import { ConversationsInfoResponse } from "@slack/web-api/dist/response";
 import { Suspense } from "react";
 import SlackChannelName from "@/components/slack/SlackChannelName";
+import SlackLoginButton from "@/components/slack/SlackLoginButton";
 
 async function AttendeesView({
   event,
@@ -110,6 +111,30 @@ async function ShowView({
   return <SignupSheetsView event={event} me={me} />;
 }
 
+async function SlackBanner(props: { event: EventObjectType }) {
+  if (!props.event.slack_channel_id) {
+    return null;
+  }
+  const me = await getCurrentUser();
+  if (me.slack_user_id) {
+    return null;
+  }
+
+  const channelInfo = await (
+    await slackApiConnection()
+  ).client.conversations.info({
+    channel: props.event.slack_channel_id,
+  });
+
+  return (
+    <Alert variant="light" color="blue" title="Slack" icon={<TbInfoCircle />}>
+      This event has a Slack channel: #{channelInfo.channel?.name}.&nbsp;
+      Connect your Slack account to join it automatically.
+      <SlackLoginButton />
+    </Alert>
+  );
+}
+
 export default async function EventPage({
   params,
 }: {
@@ -137,20 +162,20 @@ export default async function EventPage({
           Unfortunately this event has been cancelled. If you have any
           questions, please contact the producer/host.
         </Alert>
+      ) : event.is_tentative ? (
+        <Alert
+          variant="light"
+          className="!bg-[#f3f3f4] !text-[--mantine-color-default-color] dark:!bg-[--mantine-color-gray-filled]"
+          title="Tentative Event"
+          icon={<TbInfoCircle />}
+        >
+          This event has not been confirmed by the producer/host yet. Please
+          check back later for updates.
+        </Alert>
       ) : (
-        <>
-          {event.is_tentative && (
-            <Alert
-              variant="light"
-              className="!bg-[#f3f3f4] !text-[--mantine-color-default-color] dark:!bg-[--mantine-color-gray-filled]"
-              title="Tentative Event"
-              icon={<TbInfoCircle />}
-            >
-              This event has not been confirmed by the producer/host yet. Please
-              check back later for updates.
-            </Alert>
-          )}
-        </>
+        <Suspense fallback={null}>
+          <SlackBanner event={event} />
+        </Suspense>
       )}
       <div
         className={
