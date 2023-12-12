@@ -29,18 +29,12 @@ export async function saveSlackUserInfo(code: string) {
         client_id: process.env.SLACK_CLIENT_ID || "",
         client_secret: process.env.SLACK_CLIENT_SECRET || "",
         code: code,
-      })
-      .then(async (tokenResponse) => {
-        const token = jwtDecode(tokenResponse.id_token!) as TokenJson;
-
-        const slackUser = await slackApp.client.users.profile.get({
-          user: token["https://slack.com/user_id"],
-        });
-
-        await People.setUserSlackID(
-          user.user_id,
-          token["https://slack.com/user_id"],
-        );
       });
+    const token = jwtDecode(tokenResponse.id_token!) as TokenJson;
+
+    await People.setUserSlackID(
+      user.user_id,
+      token["https://slack.com/user_id"],
+    );
   }
 }
