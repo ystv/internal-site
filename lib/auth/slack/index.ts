@@ -24,12 +24,12 @@ export async function saveSlackUserInfo(code: string) {
 
     const user = await mustGetCurrentUser();
 
-    const tokenResponse = await slackApp.client.openid.connect
-      .token({
-        client_id: process.env.SLACK_CLIENT_ID || "",
-        client_secret: process.env.SLACK_CLIENT_SECRET || "",
-        code: code,
-      });
+    const tokenResponse = await slackApp.client.openid.connect.token({
+      client_id: process.env.SLACK_CLIENT_ID || "",
+      client_secret: process.env.SLACK_CLIENT_SECRET || "",
+      code: code,
+      redirect_uri: `${process.env.PUBLIC_URL}/login/slack/callback`,
+    });
     const token = jwtDecode(tokenResponse.id_token!) as TokenJson;
 
     await People.setUserSlackID(
