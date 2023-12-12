@@ -30,7 +30,7 @@ if (!app && isSlackEnabled) {
     appToken: process.env.SLACK_APP_TOKEN,
     redirectUri: `${process.env.PUBLIC_URL}/login/slack/callback`,
     installerOptions: {
-      redirectUriPath: "/login/slack/install",
+      redirectUriPath: "/login/slack/callback",
     },
   });
 
