@@ -106,7 +106,7 @@ async function getSlackChannels(): Promise<Channel[]> {
     });
 
     slackChannels.channels?.map((channel) => {
-      if (!channel.is_private && !channel.is_archived) {
+      if (!(channel.is_private || channel.is_archived)) {
         fetchedSlackChannels.push(channel);
       }
     });
