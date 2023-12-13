@@ -59,6 +59,10 @@ async function createEvent(
         team_id: process.env.SLACK_TEAM_ID,
       });
 
+      if (!new_channel.ok) {
+        throw new Error("Channel creation error: " + new_channel.error);
+      }
+
       if (new_channel.channel?.id) {
         slack_channel_id = new_channel.channel?.id;
       }
@@ -103,6 +107,9 @@ async function getSlackChannels(): Promise<Channel[]> {
     slackApp = await slackApiConnection();
     const slackChannels = await slackApp.client.conversations.list({
       team_id: process.env.SLACK_TEAM_ID,
+      types: "public_channel",
+      exclude_archived: true,
+      limit: 1000,
     });
 
     slackChannels.channels?.map((channel) => {
