@@ -56,7 +56,7 @@ export default function SlackChannelField(props: { parentName: string }) {
             customController.field.onChange(newV);
           } else {
             selectController.field.onChange(newV);
-            customController.field.onChange("");
+            customController.field.onChange(null);
           }
         }}
         placeholder="Select a channel, or type a name to create one"

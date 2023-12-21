@@ -129,7 +129,8 @@ async function SlackBanner(props: { event: EventObjectType }) {
   return (
     <Alert variant="light" color="blue" title="Slack" icon={<TbInfoCircle />}>
       This event has a Slack channel: #{channelInfo.channel?.name}.&nbsp;
-      Connect your Slack account to join it automatically.<br />
+      Connect your Slack account to join it automatically.
+      <br />
       <SlackLoginButton />
     </Alert>
   );
