@@ -41,7 +41,7 @@ pipeline {
     stage('Push') {
       when {
         anyOf {
-          branch 'master'
+          branch 'main'
           tag 'v*'
         }
       }
@@ -49,7 +49,7 @@ pipeline {
         withDockerRegistry(credentialsId: 'docker-registry', url: 'https://registry.comp.ystv.co.uk') {
           sh "docker push registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}"
           script {
-            if (env.BRANCH_NAME == 'master') {
+            if (env.BRANCH_NAME == 'main') {
               sh "docker tag registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag} registry.comp.ystv.co.uk/ystv/calendar2023:latest"
               sh 'docker push registry.comp.ystv.co.uk/ystv/calendar2023:latest'
             }
@@ -60,7 +60,7 @@ pipeline {
 
     stage('Deploy to development') {
       when {
-        branch 'master'
+        branch 'main'
       }
       steps {
         build job: 'Deploy Nomad Job', parameters: [
