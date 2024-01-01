@@ -35,14 +35,14 @@ jobs:
       - run: yarn install --immutable --inline-builds
 
       - name: Migrate and seed database
-        run: npx prisma migrate deploy && npx prisma db seed
+        run: yarn prisma:migrateProd && yarn prisma:seed
 
       - name: Build application
-        run: npm run build
+        run: yarn build
 
       - name: Get Playwright version
         id: playwright-version
-        run: echo version=$(npm info @playwright/test version) >> $GITHUB_OUTPUT
+        run: echo version=$(yarn info --json @playwright/test | jq -r '.children.Version') >> $GITHUB_OUTPUT
 
       - name: Cache playwright binaries
         uses: actions/cache@v3
@@ -62,6 +62,7 @@ jobs:
 
       - name: Run Playwright tests
         run: npx playwright test
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:
