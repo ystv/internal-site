@@ -63,6 +63,7 @@ export default defineConfig({
     // Next will complain that `next start` doesn't work with `"output": "standalone"`. It does.
     command: process.env.CI ? "yarn start" : "yarn dev",
     env: {
+      NODE_ENV: "test",
       E2E_TEST: "true",
     },
     url: "http://127.0.0.1:3000",
