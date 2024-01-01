@@ -48,4 +48,8 @@ export const test = base.extend<{
   }
 });
 
+test.beforeEach(async ({ request }) => {
+  await request.post("/testing/resetDB");
+});
+
 export { expect } from "@playwright/test";
