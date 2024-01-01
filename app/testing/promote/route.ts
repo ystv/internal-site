@@ -23,15 +23,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   });
   const roleNames = roles.map((role) => role.roles.name);
   const rolesToAdd = payload.roles.filter((role) => !roleNames.includes(role));
-  const rolesToRemove = roleNames.filter((role) => !payload.roles.includes(role));
+  const rolesToRemove = roleNames.filter(
+    (role) => !payload.roles.includes(role),
+  );
   await prisma.roleMember.deleteMany({
     where: {
       user_id: me.user_id,
       roles: {
         name: {
           in: rolesToRemove,
-        }
-      }
+        },
+      },
     },
   });
   const roleIdsToAdd = await prisma.role.findMany({

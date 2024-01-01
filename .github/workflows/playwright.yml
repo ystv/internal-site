@@ -20,51 +20,51 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    
+
     env:
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: lts/*
-        cache: "yarn"
-        cache-dependency-path: "yarn.lock"
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
 
-    - run: yarn install --immutable --inline-builds
-  
-    - name: Migrate and seed database
-      run: npx prisma migrate deploy && npx prisma db seed
-    
-    - name: Build application
-      run: npm run build
-    
-    - name: Get Playwright version
-      id: playwright-version
-      run: echo version=$(npm info @playwright/test version) >> $GITHUB_OUTPUT
+      - run: yarn install --immutable --inline-builds
 
-    - name: Cache playwright binaries
-      uses: actions/cache@v3
-      id: playwright-cache
-      with:
-        path: |
-          ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+      - name: Migrate and seed database
+        run: npx prisma migrate deploy && npx prisma db seed
 
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-      if: steps.playwright-cache.outputs.cache-hit != 'true'
+      - name: Build application
+        run: npm run build
 
-    - name: Install Playwright OS dependencies
-      run: npx playwright install-deps
-      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo version=$(npm info @playwright/test version) >> $GITHUB_OUTPUT
 
-    - name: Run Playwright tests
-      run: npx playwright test
-    - uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      - name: Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+
+      - name: Install Playwright OS dependencies
+        run: npx playwright install-deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+
+      - name: Run Playwright tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

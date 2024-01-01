@@ -75,7 +75,9 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
   });
 }
 
-export async function TEST_ONLY_setSession(user: z.infer<typeof sessionSchema>) {
+export async function TEST_ONLY_setSession(
+  user: z.infer<typeof sessionSchema>,
+) {
   invariant(process.env.E2E_TEST === "true", "E2E test-only API");
   await setSession(user);
 }

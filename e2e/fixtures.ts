@@ -25,9 +25,9 @@ export const test = base.extend<{
   },
   async loggedInPage({ db, page, testUser }, use) {
     await db.role.createMany({
-      data: testUser.roles.map(role => ({
+      data: testUser.roles.map((role) => ({
         name: role.name,
-      }))
+      })),
     });
     await page.request.post("/testing/login", {
       failOnStatusCode: true,
@@ -39,13 +39,13 @@ export const test = base.extend<{
       await page.request.post("/testing/promote", {
         failOnStatusCode: true,
         data: {
-          roles: testUser.roles.map(role => role.name),
-        }
+          roles: testUser.roles.map((role) => role.name),
+        },
       });
     }
     await page.goto("/");
     await use(page);
-  }
+  },
 });
 
 test.beforeEach(async ({ request }) => {
