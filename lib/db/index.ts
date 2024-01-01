@@ -37,3 +37,11 @@ export const prisma = rawPrisma.$extends({
     },
   },
 });
+
+export async function resetDB() {
+  await prisma.$transaction([
+    prisma.event.deleteMany(),
+    prisma.user.deleteMany(),
+    prisma.position.deleteMany(),
+  ]);
+}

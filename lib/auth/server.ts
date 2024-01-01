@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
 import { cookies } from "next/headers";
+import invariant from "../invariant";
 
 export type UserType = User & {
   permissions: Permission[];
@@ -72,6 +73,11 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
+}
+
+export async function TEST_ONLY_setSession(user: z.infer<typeof sessionSchema>) {
+  invariant(process.env.E2E_TEST === "true", "E2E test-only API");
+  await setSession(user);
 }
 
 async function clearSession() {

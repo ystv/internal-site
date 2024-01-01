@@ -78,6 +78,7 @@
     "zod-form-data": "^2.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
     "@storybook/addon-essentials": "^7.0.27",
     "@storybook/addon-interactions": "^7.0.27",
     "@storybook/addon-links": "^7.0.27",
