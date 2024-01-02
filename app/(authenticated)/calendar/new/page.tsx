@@ -20,6 +20,7 @@ import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider"
 import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
 import { App } from "@slack/bolt";
 import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
+import { ConversationsInfoResponse } from "@slack/web-api/dist/response/ConversationsInfoResponse";
 
 async function createEvent(
   data: unknown,
@@ -45,8 +46,10 @@ async function createEvent(
   let slack_channel_id: string | undefined;
 
   if (slackApp) {
+    let channel_info: ConversationsInfoResponse | undefined;
+
     if (payload.data.slack_channel_id && isSlackEnabled) {
-      const channel_info = await slackApp.client.conversations.info({
+      channel_info = await slackApp.client.conversations.info({
         channel: payload.data.slack_channel_id,
       });
 
@@ -66,13 +69,37 @@ async function createEvent(
       if (new_channel.channel?.id) {
         slack_channel_id = new_channel.channel?.id;
       }
+
+      channel_info = await slackApp.client.conversations.info({
+        channel: slack_channel_id!,
+      });
     }
 
     if (slack_channel_id && user.slack_user_id) {
-      await slackApp.client.conversations.invite({
-        channel: slack_channel_id,
-        users: user.slack_user_id,
-      });
+      // Check if channel exists from previous API calls
+      if (channel_info?.ok) {
+        // If the bot isn't a member (channel exists already), join the channel
+        if (!channel_info.channel?.is_member) {
+          await slackApp.client.conversations.join({
+            channel: slack_channel_id,
+          });
+        }
+
+        // Check if the user creating the event is in the channel or not, add them if not
+        const channel_members = await slackApp.client.conversations.members({
+          channel: slack_channel_id,
+          limit: channel_info.channel?.num_members,
+        });
+
+        if (channel_members.ok) {
+          if (!channel_members.members?.includes(user.slack_user_id)) {
+            await slackApp.client.conversations.invite({
+              channel: slack_channel_id,
+              users: user.slack_user_id,
+            });
+          }
+        }
+      }
     }
   }
 
