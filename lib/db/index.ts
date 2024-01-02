@@ -1,5 +1,6 @@
 // import "server-only";
 import { PrismaClient } from "@prisma/client";
+import invariant from "../invariant";
 
 // Work around for hot reloading in development
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
@@ -38,7 +39,8 @@ export const prisma = rawPrisma.$extends({
   },
 });
 
-export async function resetDB() {
+export async function TEST_ONLY_resetDB() {
+  invariant(process.env.E2E_TEST === "true", "E2E test-only API");
   await prisma.$transaction([
     prisma.event.deleteMany(),
     prisma.user.deleteMany(),
