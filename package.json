@@ -91,6 +91,7 @@
     "@types/ws": "^8.5.9",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "dotenv-cli": "^7.2.1",
+    "dotenv-flow": "^4.1.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-storybook": "^0.6.12",
     "husky": "^8.0.3",

@@ -7965,6 +7965,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv-flow@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "dotenv-flow@npm:4.1.0"
+  dependencies:
+    dotenv: ^16.0.0
+  checksum: c63d89c92eaa39f67529f77c9101882ea020ef97750b52ef1c085b528fab1bc3dab87571edf14e850e56c758e3c4bb3ffa5cb3e0f573cd9ffef35b99fedcd099
+  languageName: node
+  linkType: hard
+
 "dotenv@npm:^16.0.0":
   version: 16.3.1
   resolution: "dotenv@npm:16.3.1"
@@ -10332,6 +10341,7 @@ __metadata:
     date-fns: ^2.30.0
     dayjs: ^1.11.10
     dotenv-cli: ^7.2.1
+    dotenv-flow: ^4.1.0
     eslint: 8.44.0
     eslint-config-next: ^14.0.1
     eslint-config-prettier: ^8.8.0

@@ -85,8 +85,8 @@ export async function TEST_ONLY_setSession(
 async function clearSession() {
   const { cookies } = await import("next/headers");
 
-  await cookies().delete(cookieName);
-  await cookies().delete("g_csrf_token");
+  cookies().delete(cookieName);
+  cookies().delete("g_csrf_token");
 }
 
 export async function getCurrentUserOrNull(

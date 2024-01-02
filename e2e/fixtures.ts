@@ -24,26 +24,58 @@ export const test = base.extend<{
     roles: [],
   },
   async loggedInPage({ db, page, testUser }, use) {
-    await db.role.createMany({
-      data: testUser.roles.map((role) => ({
-        name: role.name,
-      })),
-    });
-    await page.request.post("/testing/login", {
-      failOnStatusCode: true,
-      data: {
+    const user = await db.user.upsert({
+      where: {
         email: testUser.email,
+      },
+      update: {},
+      create: {
+        email: testUser.email,
+        username: testUser.email.replace(/@.+$/, ""),
+        first_name: "Test",
+        last_name: "User",
       },
     });
     if (testUser.roles.length > 0) {
-      await page.request.post("/testing/promote", {
-        failOnStatusCode: true,
-        data: {
-          roles: testUser.roles.map((role) => role.name),
-        },
-      });
+      await Promise.all(testUser.roles.map(role => db.$transaction(async $db => {
+        const roleRec = await $db.role.upsert({
+          where: {
+            name: role.name,
+          },
+          update: {},
+          create: {
+            name: role.name,
+          },
+        });
+        await db.rolePermission.deleteMany({
+          where: {
+            role_id: roleRec.role_id,
+          },
+        });
+        await db.rolePermission.createMany({
+          data: role.permissions.map(permission => ({
+            role_id: roleRec.role_id,
+            permission,
+          })),
+        });
+        await db.roleMember.upsert({
+          where: {
+            user_id_role_id: {
+              user_id: user.user_id,
+              role_id: roleRec.role_id,
+            },
+          },
+          update: {},
+          create: {
+            user_id: user.user_id,
+            role_id: roleRec.role_id,
+          },
+        });
+      })));
     }
-    await page.goto("/");
+    await page.goto("/login/test");
+    await page.getByRole("button", { name: testUser.email }).click();
+    await page.waitForLoadState("domcontentloaded");
     await use(page);
   },
 });
