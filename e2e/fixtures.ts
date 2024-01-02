@@ -37,41 +37,45 @@ export const test = base.extend<{
       },
     });
     if (testUser.roles.length > 0) {
-      await Promise.all(testUser.roles.map(role => db.$transaction(async $db => {
-        const roleRec = await $db.role.upsert({
-          where: {
-            name: role.name,
-          },
-          update: {},
-          create: {
-            name: role.name,
-          },
-        });
-        await db.rolePermission.deleteMany({
-          where: {
-            role_id: roleRec.role_id,
-          },
-        });
-        await db.rolePermission.createMany({
-          data: role.permissions.map(permission => ({
-            role_id: roleRec.role_id,
-            permission,
-          })),
-        });
-        await db.roleMember.upsert({
-          where: {
-            user_id_role_id: {
-              user_id: user.user_id,
-              role_id: roleRec.role_id,
-            },
-          },
-          update: {},
-          create: {
-            user_id: user.user_id,
-            role_id: roleRec.role_id,
-          },
-        });
-      })));
+      await Promise.all(
+        testUser.roles.map((role) =>
+          db.$transaction(async ($db) => {
+            const roleRec = await $db.role.upsert({
+              where: {
+                name: role.name,
+              },
+              update: {},
+              create: {
+                name: role.name,
+              },
+            });
+            await db.rolePermission.deleteMany({
+              where: {
+                role_id: roleRec.role_id,
+              },
+            });
+            await db.rolePermission.createMany({
+              data: role.permissions.map((permission) => ({
+                role_id: roleRec.role_id,
+                permission,
+              })),
+            });
+            await db.roleMember.upsert({
+              where: {
+                user_id_role_id: {
+                  user_id: user.user_id,
+                  role_id: roleRec.role_id,
+                },
+              },
+              update: {},
+              create: {
+                user_id: user.user_id,
+                role_id: roleRec.role_id,
+              },
+            });
+          }),
+        ),
+      );
     }
     await page.goto("/login/test");
     await page.getByRole("button", { name: testUser.email }).click();

@@ -6,7 +6,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 // @ts-ignore
 process.env.NODE_ENV = "test";
-require('dotenv-flow').config();
+require("dotenv-flow").config();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
