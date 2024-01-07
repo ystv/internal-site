@@ -49,6 +49,8 @@ async function createEvent(
     let channel_info: ConversationsInfoResponse | undefined;
 
     if (payload.data.slack_channel_id && isSlackEnabled) {
+
+      // Unless something goes horribly wrong slack_channel_id will always be valid
       channel_info = await slackApp.client.conversations.info({
         channel: payload.data.slack_channel_id,
       });
@@ -57,6 +59,7 @@ async function createEvent(
         slack_channel_id = payload.data.slack_channel_id;
       }
     } else if (payload.data.slack_new_channel_name) {
+      // Create a new channel from the given user input
       const new_channel = await slackApp.client.conversations.create({
         name: payload.data.slack_new_channel_name,
         team_id: process.env.SLACK_TEAM_ID,
@@ -70,6 +73,7 @@ async function createEvent(
         slack_channel_id = new_channel.channel?.id;
       }
 
+      // slack_channel_id is set here because if there was an error creating the channel it will exit before this point
       channel_info = await slackApp.client.conversations.info({
         channel: slack_channel_id!,
       });
