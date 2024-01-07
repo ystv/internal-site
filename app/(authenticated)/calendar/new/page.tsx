@@ -49,7 +49,6 @@ async function createEvent(
     let channel_info: ConversationsInfoResponse | undefined;
 
     if (payload.data.slack_channel_id && isSlackEnabled) {
-
       // Unless something goes horribly wrong slack_channel_id will always be valid
       channel_info = await slackApp.client.conversations.info({
         channel: payload.data.slack_channel_id,
