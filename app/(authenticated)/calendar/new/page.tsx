@@ -58,24 +58,30 @@ async function createEvent(
         slack_channel_id = payload.data.slack_channel_id;
       }
     } else if (payload.data.slack_new_channel_name) {
-      // Create a new channel from the given user input
-      const new_channel = await slackApp.client.conversations.create({
-        name: payload.data.slack_new_channel_name,
-        team_id: process.env.SLACK_TEAM_ID,
-      });
+      try {
+        // Create a new channel from the given user input
+        const new_channel = await slackApp.client.conversations.create({
+          name: payload.data.slack_new_channel_name,
+          team_id: process.env.SLACK_TEAM_ID,
+        });
 
-      if (!new_channel.ok) {
-        throw new Error("Channel creation error: " + new_channel.error);
+        if (!new_channel.ok) {
+          throw new Error("Channel creation error: " + new_channel.error);
+        }
+
+        if (new_channel.channel?.id) {
+          slack_channel_id = new_channel.channel?.id;
+        }
+
+        // slack_channel_id is set here because if there was an error creating the channel it will exit before this point
+        channel_info = await slackApp.client.conversations.info({
+          channel: slack_channel_id!,
+        });
+      } catch (error) {
+        throw new Error(
+          "The slack channel name may already be in use, please try a different name or contact comp team if you are 100% sure this isn't the case.",
+        );
       }
-
-      if (new_channel.channel?.id) {
-        slack_channel_id = new_channel.channel?.id;
-      }
-
-      // slack_channel_id is set here because if there was an error creating the channel it will exit before this point
-      channel_info = await slackApp.client.conversations.info({
-        channel: slack_channel_id!,
-      });
     }
 
     if (slack_channel_id && user.slack_user_id) {
