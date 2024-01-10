@@ -3,7 +3,7 @@ import { z } from "zod";
 /**
  * Available permissions. Should contain all the ones that users are expected
  * to have, along with some special ones:
- * * MEMBER - any logged in user
+ * * MEMBER - any logged-in user
  * * PUBLIC - open to the world with no authentication
  * * SuperUser - can do anything (don't use this unless you know what you're doing)
  */
