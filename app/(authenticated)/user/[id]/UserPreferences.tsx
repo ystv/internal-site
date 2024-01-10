@@ -24,7 +24,7 @@ interface PrefWrapperPassthroughProps<K extends keyof ReqPrefs> {
  * Represents a higher-order component that wraps a preference field and provides
  * optimistic updates while asynchronously saving user preferences.
  *
- * This shouldn't be rendered directly. Instead it should be wrapped in a component that
+ * This shouldn't be rendered directly. Instead, it should be wrapped in a component that
  * passes a renderField to render the actual field. This component should pass through
  * all the props in PrefWrapperPassthroughProps.
  *
