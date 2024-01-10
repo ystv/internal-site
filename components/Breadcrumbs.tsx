@@ -6,6 +6,7 @@ import { Anchor, Breadcrumbs } from "@mantine/core";
 
 const breadcrumbSegments: { [K: string]: string } = {
   calendar: "Calendar",
+  permissions: "Permissions",
 };
 
 export default function YSTVBreadcrumbs() {
