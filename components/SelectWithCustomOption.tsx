@@ -140,7 +140,7 @@ export default function SelectWithCustomOption(props: {
             <ComboboxOption value={"$null"}>None</ComboboxOption>
           )}
           {options}
-          {/* show the "create custom" option if the user has typed something and it doesn't match an existing item *exactly* */}
+          {/* show the "create custom" option if the user has typed something, and it doesn't match an existing item *exactly* */}
           {/* (they may want to create a new item that's a substring of a pre-existing one - see WEB-99) */}
           {(search?.trim().length ?? 0) > 0 &&
             !filtered.some((x) => x.label === search?.trim()) && (

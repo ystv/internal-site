@@ -296,7 +296,7 @@ export default function YSTVCalendar({
         weekNumberContent={(week) => {
           return getUoYWeekName(week.date);
         }}
-        weekNumberFormat={{ week: "long" }} //Do not delete this line, it is used to format the week number or it kicks up a fuss
+        weekNumberFormat={{ week: "long" }} //Do not delete this line, it is used to format the week number, or it kicks up a fuss
         height={"auto"}
         //////
         initialDate={selectedDate}
