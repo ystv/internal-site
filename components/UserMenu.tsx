@@ -10,6 +10,7 @@ import {
   VisuallyHidden,
 } from "@mantine/core";
 import { LuLaptop, LuMoon, LuSun } from "react-icons/lu";
+import {PermissionGate} from "@/components/UserContext";
 
 export function UserMenu({ userAvatar }: { userAvatar: string }) {
   const { setColorScheme, colorScheme } = useMantineColorScheme();
@@ -31,6 +32,12 @@ export function UserMenu({ userAvatar }: { userAvatar: string }) {
           Profile
         </Menu.Item>
         <Menu.Divider />
+        <PermissionGate required={"SuperUser"}>
+          <Menu.Item component="a" href="/admin">
+            Admin pages
+          </Menu.Item>
+          <Menu.Divider />
+        </PermissionGate>
         <Menu.Label>Theme</Menu.Label>
         <SegmentedControl
           value={colorScheme}
