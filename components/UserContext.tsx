@@ -7,7 +7,7 @@ import * as Sentry from "@sentry/nextjs";
 import { preferenceDefaults } from "@/features/people/preferences";
 
 const UserContext = createContext<UserType>(
-  null as unknown as UserType /* Bit naughty, but getCurrentUser ensures there's a user signed in */,
+  null as unknown as UserType /* A bit naughty, but getCurrentUser ensures there's a user signed in */,
 );
 
 export function UserProvider(props: {

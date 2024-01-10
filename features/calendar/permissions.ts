@@ -7,7 +7,7 @@ import { EventObjectType } from "@/features/calendar/events";
 
 /**
  * Which event types can a user with the given permissions administer,
- * whether or not they created it?
+ * whether they created it?
  * @param userPermissions
  */
 export function adminEventTypes(userPermissions: Permission[]): EventType[] {
