@@ -47,7 +47,7 @@ Now we will go through the long process of adding the required scopes to the app
 - `users:read`
 - `users:read.email`
 
-Sroll down slightly to `User Token Scopes` and add `team.read`.
+Scroll down slightly to `User Token Scopes` and add `team.read`.
 
 You can now scroll up to the top of the page and click `Install to Workspace`. Click `Allow` when prompted. This should take you back to the **OAuth & Permissions** page. Towards the top of the page you should see `Bot User OAuth Token`. Copy the value of this over to `SLACK_BOT_TOKEN`.
 
