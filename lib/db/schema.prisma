@@ -33,11 +33,12 @@ model RoleMember {
 }
 
 model RolePermission {
-  role_id    Int
-  permission String
-  roles      Role   @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  role_id       Int
+  permission_id Int
+  roles         Role       @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  permissions   Permission @relation(fields: [permission_id], references: [permission_id], onDelete: Cascade)
 
-  @@id([role_id, permission])
+  @@id([role_id, permission_id])
   @@map("role_permissions")
 }
 
