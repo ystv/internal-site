@@ -43,7 +43,7 @@ Edit your `.env.local` and add the Client ID on the `GOOGLE_CLIENT_ID=` line.
 
 ### Slack Integration (Optional)
 
-If you would like to setup the optional slack integration, head over to the [Slack Setup](/docs/setup_slack.md) docs to get started.
+If you would like to set up the optional slack integration, head over to the [Slack Setup](/docs/setup_slack.md) docs to get started.
 
 ## Running
 

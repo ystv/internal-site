@@ -1,14 +1,14 @@
 # Setup Slack Integration
 
-This will help you setup the slack integration for this project.
+This will help you set up the slack integration for this project.
 
 ## Getting started
 
 To start, you will need
 
-- To have followed the [README](/README.md) to setup the main calendar site.
+- To have followed the [README](/README.md) to set up the main calendar site.
 - A Slack account (obviously)
-- A Slack workspace to setup the integration for
+- A Slack workspace to set up the integration for
 
 ## Sidenote
 
