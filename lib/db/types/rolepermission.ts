@@ -1,14 +1,13 @@
 import * as z from "zod"
-import { CompleteRole, RoleModel, CompletePermission, PermissionModel } from "./index"
+import { CompleteRole, RoleModel } from "./index"
 
 export const _RolePermissionModel = z.object({
   role_id: z.number().int(),
-  permission_id: z.number().int(),
+  permission: z.string(),
 })
 
 export interface CompleteRolePermission extends z.infer<typeof _RolePermissionModel> {
   roles: CompleteRole
-  permissions: CompletePermission
 }
 
 /**
@@ -18,5 +17,4 @@ export interface CompleteRolePermission extends z.infer<typeof _RolePermissionMo
  */
 export const RolePermissionModel: z.ZodSchema<CompleteRolePermission> = z.lazy(() => _RolePermissionModel.extend({
   roles: RoleModel,
-  permissions: PermissionModel,
 }))

@@ -33,12 +33,14 @@ model RoleMember {
 }
 
 model RolePermission {
-  role_id       Int
-  permission_id Int
-  roles         Role       @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
-  permissions   Permission @relation(fields: [permission_id], references: [permission_id], onDelete: Cascade)
+  role_id    Int
+  // permission_id Int
+  permission String
+  roles      Role   @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  // permissions   Permission @relation(fields: [permission_id], references: [permission_id], onDelete: Cascade)
 
-  @@id([role_id, permission_id])
+  // @@id([role_id, permission_id])
+  @@id([role_id, permission])
   @@map("role_permissions")
 }
 
@@ -52,14 +54,14 @@ model Role {
   @@map("roles")
 }
 
-model Permission {
-  permission_id    Int              @id @default(autoincrement())
-  name             String           @unique
-  description      String           @default("")
-  role_permissions RolePermission[]
-
-  @@map("permissions")
-}
+// model Permission {
+//   permission_id    Int              @id @default(autoincrement())
+//   name             String           @unique
+//   description      String           @default("")
+//   role_permissions RolePermission[]
+//
+//   @@map("permissions")
+// }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments

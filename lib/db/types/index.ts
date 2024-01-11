@@ -1,7 +1,6 @@
 export * from "./rolemember"
 export * from "./rolepermission"
 export * from "./role"
-export * from "./permission"
 export * from "./user"
 export * from "./identity"
 export * from "./attendee"

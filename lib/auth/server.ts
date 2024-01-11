@@ -25,14 +25,16 @@ async function resolvePermissionsForUser(userID: number) {
       },
     },
     select: {
-      permissions: {
-        select: {
-          name: true,
-        },
-      },
+      permission: true,
+      // permissions: {
+      //   select: {
+      //     name: true,
+      //   },
+      // },
     },
   });
-  return result.map((r) => r.permissions.name as Permission);
+  // return result.map((r) => r.permissions.name as Permission);
+  return result.map((r) => r.permission as Permission);
 }
 
 /**
