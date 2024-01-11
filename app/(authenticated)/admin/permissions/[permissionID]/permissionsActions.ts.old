@@ -1,6 +1,6 @@
 "use server";
 
-import * as Permission from "@/features/permission";
+// import * as Permission from "@/features/permission";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { FormResponse } from "@/components/Form";
@@ -16,7 +16,7 @@ export async function editPermission(
     return zodErrorResponse(payload.error);
   }
 
-  await Permission.editPermission(permissionID, payload.data);
+  // await Permission.editPermission(permissionID, payload.data);
   revalidatePath(`/admin/permissions/${permissionID}`);
   return { ok: true } as const;
 }
@@ -24,7 +24,7 @@ export async function editPermission(
 export async function deletePermission(
   permissionID: number,
 ): Promise<FormResponse> {
-  await Permission.deletePermission(permissionID);
+  // await Permission.deletePermission(permissionID);
   revalidatePath(`/admin/permissions`);
   return { ok: true } as const;
 }

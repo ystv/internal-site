@@ -1,6 +1,6 @@
 "use server";
 
-import * as Permission from "@/features/permission";
+// import * as Permission from "@/features/permission";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { FormResponse } from "@/components/Form";
@@ -15,7 +15,7 @@ export async function addPermission(
     return zodErrorResponse(payload.error);
   }
 
-  await Permission.addPermission(payload.data);
+  // await Permission.addPermission(payload.data);
   revalidatePath(`/admin/permissions`);
   return { ok: true } as const;
 }

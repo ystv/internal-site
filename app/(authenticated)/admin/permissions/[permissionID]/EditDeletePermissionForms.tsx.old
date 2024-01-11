@@ -7,7 +7,7 @@ import Form, { FormResponse } from "@/components/Form";
 import { TextAreaField, TextField } from "@/components/FormFields";
 import { editPermission, deletePermission } from "./permissionsActions";
 import { PermissionSchema } from "@/app/(authenticated)/admin/permissions/schema";
-import { PermissionType } from "@/features/permission";
+// import { PermissionType } from "@/features/permission";
 import { useRouter } from "next/navigation";
 
 export function EditPermissionForm(props: {

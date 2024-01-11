@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { PermissionType } from "@/features/permission";
+// import { PermissionType } from "@/features/permission";
 
 export function PermissionRow({ permission }: { permission: string }) {
   const router = useRouter();
