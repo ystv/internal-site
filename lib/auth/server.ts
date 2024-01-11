@@ -16,20 +16,13 @@ export type UserType = User & {
 async function resolvePermissionsForUser(userID: number) {
   const result = await prisma.rolePermission.findMany({
     where: {
-      AND: [
-        {
-          roles: {
-            role_members: {
-              some: {
-                user_id: userID,
-              },
-            },
+      roles: {
+        role_members: {
+          some: {
+            user_id: userID,
           },
         },
-        {
-          permissions: {},
-        },
-      ],
+      },
     },
     select: {
       permissions: {
