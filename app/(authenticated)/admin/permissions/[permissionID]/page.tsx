@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import { getPermission } from "@/features/permission";
 import { Card, Group, Stack } from "@mantine/core";
+import { PermissionViews } from "@/app/(authenticated)/admin/permissions/[permissionID]/EditDeletePermissionForms";
 
 export default async function PermissionPage({
   params,
@@ -17,17 +18,13 @@ export default async function PermissionPage({
       <Card withBorder>
         <Group>
           <Stack gap={3}>
-            <h1 className={twMerge("text-4xl font-bold")}>
-              Role ({permission.name})
-            </h1>
-            <h4 className={twMerge("text-4xl font-bold")}>
-              {permission.permission_id}
-            </h4>
-            <h4 className={twMerge("text-4xl font-bold")}>{permission.name}</h4>
-            <h4 className={twMerge("text-4xl font-bold")}>
-              {permission.description}
-            </h4>
-            {JSON.stringify(permission)}
+            <h1 className={twMerge("text-4xl font-bold")}>{permission.name}</h1>
+            <PermissionViews permission={permission} />
+            Permission ID: {permission.permission_id}
+            <br />
+            Name: {permission.name}
+            <br />
+            Description: {permission.description}
           </Stack>
         </Group>
       </Card>
