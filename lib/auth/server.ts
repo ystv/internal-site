@@ -8,7 +8,6 @@ import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
-import { cookies } from "next/headers";
 
 export type UserType = User & {
   permissions: Permission[];
@@ -17,30 +16,30 @@ export type UserType = User & {
 async function resolvePermissionsForUser(userID: number) {
   const result = await prisma.rolePermission.findMany({
     where: {
-        AND: [
-                   {
-                    roles: {
-                        role_members: {
-                            some: {
-                                user_id: userID,
-                            },
-                        },
-                    },
-                },
-                {
-                    permissions: {}
-                }
-            ]
+      AND: [
+        {
+          roles: {
+            role_members: {
+              some: {
+                user_id: userID,
+              },
+            },
+          },
         },
+        {
+          permissions: {},
+        },
+      ],
+    },
+    select: {
+      permissions: {
         select: {
-            permissions: {
-                select: {
-                    name: true
-                }
-            }
-        }
-    });
-    return result.map((r) => r.permissions.name as Permission);
+          name: true,
+        },
+      },
+    },
+  });
+  return result.map((r) => r.permissions.name as Permission);
 }
 
 /**
