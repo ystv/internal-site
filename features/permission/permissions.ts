@@ -19,9 +19,11 @@ export async function getPermissions(): Promise<PermissionType[]> {
 }
 
 export async function getPermission(
-  id: number,
+  permissionID: number,
 ): Promise<PermissionType | null> {
-  return prisma.permission.findUnique({ where: { permission_id: id } });
+  return prisma.permission.findUnique({
+    where: { permission_id: permissionID },
+  });
 }
 
 export async function addPermission(permission: Prisma.PermissionCreateInput) {
@@ -35,13 +37,13 @@ export async function addPermission(permission: Prisma.PermissionCreateInput) {
 }
 
 export async function editPermission(
-  id: number,
+  permissionID: number,
   permission: Prisma.PermissionUpdateInput,
 ) {
   await prisma.$transaction([
     prisma.permission.update({
       where: {
-        permission_id: id,
+        permission_id: permissionID,
       },
       data: {
         name: permission.name,
@@ -51,6 +53,6 @@ export async function editPermission(
   ]);
 }
 
-export async function deletePermission(id: number) {
-  await prisma.permission.delete({ where: { permission_id: id } });
+export async function deletePermission(permissionID: number) {
+  await prisma.permission.delete({ where: { permission_id: permissionID } });
 }
