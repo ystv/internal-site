@@ -1,8 +1,9 @@
 name: Check Prettier
 
-on:
-  pull_request:
-    branches: [master, main]
+#on:
+#  pull_request:
+#    branches: [master, main]
+on: [push, pull_request]
 
 jobs:
   check-prettier:
