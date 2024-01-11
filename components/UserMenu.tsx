@@ -10,7 +10,7 @@ import {
   VisuallyHidden,
 } from "@mantine/core";
 import { LuLaptop, LuMoon, LuSun } from "react-icons/lu";
-import {PermissionGate} from "@/components/UserContext";
+import { PermissionGate } from "@/components/UserContext";
 
 export function UserMenu({ userAvatar }: { userAvatar: string }) {
   const { setColorScheme, colorScheme } = useMantineColorScheme();
