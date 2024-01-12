@@ -53,8 +53,25 @@ pipeline {
               sh "docker tag registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag} registry.comp.ystv.co.uk/ystv/calendar2023:latest"
               sh 'docker push registry.comp.ystv.co.uk/ystv/calendar2023:latest'
             }
+            if (env.CHANGE_ID) {
+              sh "docker tag registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag} registry.comp.ystv.co.uk/ystv/calendar2023:pr-${env.CHANGE_ID}"
+              sh "docker push registry.comp.ystv.co.uk/ystv/calendar2023:pr-${env.CHANGE_ID}"
+            }
           }
         }
+      }
+    }
+
+    stage('Deploy preview') {
+      when {
+        changeRequest target: 'master'
+      }
+      steps {
+        build job: 'Deploy Nomad Job', parameters: [
+          string(name: 'JOB_FILE', value: 'calendar-preview'),
+          string(name: 'META', value: "pr=${env.CHANGE_ID}"),
+          string(name: 'JOB_ID_KEY', value: "pr-deployments/calendar/${env.CHANGE_ID}")
+        ]
       }
     }
 
@@ -66,7 +83,13 @@ pipeline {
         build job: 'Deploy Nomad Job', parameters: [
           string(name: 'JOB_FILE', value: 'calendar-dev.nomad'),
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}")
-        ]
+        ], wait: true
+        pullRequest.comment("Deployed a preview of this PR to https://internal-pr-${env.CHANGE_ID}.dev.ystv.co.uk")
+        for (prevComment in pullRequest.comments) {
+          if (prevComment.user == 'jenkins-ystv[bot]' && prevComment.id != comment.id) {
+            pullRequest.deleteComment(prevComment.id)
+          }
+        }
       }
     }
 
