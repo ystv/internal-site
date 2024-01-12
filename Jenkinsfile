@@ -74,6 +74,14 @@ pipeline {
           string(name: 'JOB_ID_KEY', value: "pr-deployments/calendar/${env.CHANGE_ID}"),
           booleanParam(name: 'PARAMETERISED', value: true)
         ]
+        script {
+          pullRequest.comment("Deployed a preview of this PR to https://internal-pr-${env.CHANGE_ID}.dev.ystv.co.uk")
+          for (prevComment in pullRequest.comments) {
+            if (prevComment.user == 'jenkins-ystv[bot]' && prevComment.id != comment.id) {
+              pullRequest.deleteComment(prevComment.id)
+            }
+          }
+        }
       }
     }
 
@@ -86,14 +94,6 @@ pipeline {
           string(name: 'JOB_FILE', value: 'calendar-dev.nomad'),
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}")
         ], wait: true
-        script {
-          pullRequest.comment("Deployed a preview of this PR to https://internal-pr-${env.CHANGE_ID}.dev.ystv.co.uk")
-          for (prevComment in pullRequest.comments) {
-            if (prevComment.user == 'jenkins-ystv[bot]' && prevComment.id != comment.id) {
-              pullRequest.deleteComment(prevComment.id)
-            }
-          }
-        }
       }
     }
 
