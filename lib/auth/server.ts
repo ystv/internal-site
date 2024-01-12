@@ -69,6 +69,7 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
+    domain: process.env.COOKIE_DOMAIN,
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
