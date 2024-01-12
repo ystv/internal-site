@@ -71,7 +71,8 @@ pipeline {
         build job: 'Deploy Nomad Job', parameters: [
           string(name: 'JOB_FILE', value: 'calendar-preview'),
           string(name: 'META', value: "pr=${env.CHANGE_ID}"),
-          string(name: 'JOB_ID_KEY', value: "pr-deployments/calendar/${env.CHANGE_ID}")
+          string(name: 'JOB_ID_KEY', value: "pr-deployments/calendar/${env.CHANGE_ID}"),
+          booleanParam(name: 'PARAMETERISED', value: true)
         ]
       }
     }
