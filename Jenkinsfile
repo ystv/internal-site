@@ -75,7 +75,7 @@ pipeline {
           booleanParam(name: 'PARAMETERISED', value: true)
         ]
         script {
-          pullRequest.comment("Deployed a preview of this PR to https://internal-pr-${env.CHANGE_ID}.dev.ystv.co.uk")
+          pullRequest.comment("Deployed a preview of this PR to https://pr-${env.CHANGE_ID}-internal.dev.ystv.co.uk")
           for (prevComment in pullRequest.comments) {
             if (prevComment.user == 'jenkins-ystv[bot]' && prevComment.id != comment.id) {
               pullRequest.deleteComment(prevComment.id)
