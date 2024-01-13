@@ -1,4 +1,4 @@
-@Library('ystv-jenkins')
+@Library('ystv-jenkins@pull/1/head') // FIXME: change this once https://github.com/ystv/jenkins-library/pull/1 is merged
 
 def imageTag = ''
 pipeline {
@@ -47,19 +47,7 @@ pipeline {
         }
       }
       steps {
-        withDockerRegistry(credentialsId: 'docker-registry', url: 'https://registry.comp.ystv.co.uk') {
-          sh "docker push registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}"
-          script {
-            if (env.BRANCH_NAME == 'main') {
-              sh "docker tag registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag} registry.comp.ystv.co.uk/ystv/calendar2023:latest"
-              sh 'docker push registry.comp.ystv.co.uk/ystv/calendar2023:latest'
-            }
-            if (env.CHANGE_ID) {
-              sh "docker tag registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag} registry.comp.ystv.co.uk/ystv/calendar2023:pr-${env.CHANGE_ID}"
-              sh "docker push registry.comp.ystv.co.uk/ystv/calendar2023:pr-${env.CHANGE_ID}"
-            }
-          }
-        }
+        dockerPush image: 'registry.comp.ystv.co.uk/ystv/calendar2023', tag: imageTag
       }
     }
 
@@ -68,20 +56,7 @@ pipeline {
         changeRequest target: 'main'
       }
       steps {
-        build job: 'Deploy Nomad Job', parameters: [
-          string(name: 'JOB_FILE', value: 'calendar-preview'),
-          string(name: 'META', value: "pr=${env.CHANGE_ID}"),
-          string(name: 'JOB_ID_KEY', value: "pr-deployments/calendar/${env.CHANGE_ID}"),
-          booleanParam(name: 'PARAMETERISED', value: true)
-        ]
-        script {
-          def comment = pullRequest.comment("Deployed a preview of this PR to https://pr-${env.CHANGE_ID}-internal.dev.ystv.co.uk")
-          for (prevComment in pullRequest.comments) {
-            if (prevComment.user == 'jenkins-ystv[bot]' && prevComment.id != comment.id) {
-              pullRequest.deleteComment(prevComment.id)
-            }
-          }
-        }
+        deployPreview action: 'deploy', job: 'calendar-preview', urlSuffix: 'internal.dev.ystv.co.uk'
       }
     }
 
@@ -94,6 +69,7 @@ pipeline {
           string(name: 'JOB_FILE', value: 'calendar-dev.nomad'),
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}")
         ], wait: true
+        deployPreview action: 'cleanup'
       }
     }
 
