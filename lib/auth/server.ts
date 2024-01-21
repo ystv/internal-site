@@ -8,7 +8,6 @@ import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
-import { cookies } from "next/headers";
 
 export type UserType = User & {
   permissions: Permission[];
@@ -27,8 +26,14 @@ async function resolvePermissionsForUser(userID: number) {
     },
     select: {
       permission: true,
+      // permissions: {
+      //   select: {
+      //     name: true,
+      //   },
+      // },
     },
   });
+  // return result.map((r) => r.permissions.name as Permission);
   return result.map((r) => r.permission as Permission);
 }
 
