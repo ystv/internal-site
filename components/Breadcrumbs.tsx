@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Anchor, Breadcrumbs } from "@mantine/core";
 
 const breadcrumbSegments: { [K: string]: string } = {
+  admin: "Admin",
   calendar: "Calendar",
   roles: "Roles",
 };
