@@ -84,7 +84,7 @@ async function createEvent(
         return {
           ok: false,
           errors: {
-            root: "The slack channel name may already be in use, please try a different name or contact comp team if you are 100% sure this isn't the case.",
+            slack_channel: "The slack channel name may already be in use, please try a different name or contact comp team if you are 100% sure this isn't the case.",
           },
         };
       }
