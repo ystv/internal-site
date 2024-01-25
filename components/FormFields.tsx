@@ -297,3 +297,13 @@ export function ConditionalField<
   }, [shouldShow, props.childFieldName, ctx]);
   return shouldShow && props.children;
 }
+
+export function HiddenField<
+  TFields extends FieldValues,
+  TFieldName extends FieldPath<TFields> = FieldPath<TFields>,
+>(props: { name: TFieldName; value: string }) {
+  const ctx = useFormContext<TFields>();
+  return (
+    <input type="hidden" {...ctx.register(props.name)} value={props.value} />
+  );
+}
