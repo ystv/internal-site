@@ -20,7 +20,7 @@ export function QuotesPagination({
   total: number;
   pageSize: number;
 }) {
-  const totalPages = Math.ceil(total / pageSize)
+  const totalPages = Math.ceil(total / pageSize);
   return (
     <PaginationRoot
       total={totalPages}
