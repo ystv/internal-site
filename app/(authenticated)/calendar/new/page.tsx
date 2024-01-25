@@ -66,7 +66,10 @@ async function createEvent(
         });
 
         if (!new_channel.ok) {
-          throw new Error("Channel creation error: " + new_channel.error);
+          return {
+            ok: false,
+            errors: { root: "Channel creation error: " + new_channel.error },
+          };
         }
 
         if (new_channel.channel?.id) {
@@ -78,9 +81,12 @@ async function createEvent(
           channel: slack_channel_id!,
         });
       } catch (error) {
-        throw new Error(
-          "The slack channel name may already be in use, please try a different name or contact comp team if you are 100% sure this isn't the case.",
-        );
+        return {
+          ok: false,
+          errors: {
+            root: "The slack channel name may already be in use, please try a different name or contact comp team if you are 100% sure this isn't the case.",
+          },
+        };
       }
     }
 
