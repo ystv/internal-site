@@ -1,4 +1,4 @@
-@Library('ystv-jenkins@pull/1/head') // FIXME: change this once https://github.com/ystv/jenkins-library/pull/1 is merged
+@Library('ystv-jenkins')
 
 def imageTag = ''
 pipeline {
