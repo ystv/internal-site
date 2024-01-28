@@ -16,7 +16,8 @@
     "build-storybook": "storybook build",
     "prettify": "prettier --write .",
     "do": "SCRIPT=true dotenv -c ${NODE_ENV:-development} -- tsx scripts/$0.mts $*",
-    "postinstall": "yarn prisma:generate"
+    "postinstall": "yarn prisma:generate && husky init",
+    "prepare": "husky"
   },
   "prisma": {
     "seed": "tsx scripts/seed.mts"
@@ -92,8 +93,8 @@
     "dotenv-cli": "^7.2.1",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-storybook": "^0.6.12",
-    "husky": "^8.0.3",
-    "lint-staged": "^14.0.1",
+    "husky": "^9.0.6",
+    "lint-staged": "^15.2.0",
     "postcss": "^8.4.30",
     "postcss-preset-mantine": "^1.7.0",
     "postcss-simple-vars": "^7.0.1",
