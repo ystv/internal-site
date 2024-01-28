@@ -44,7 +44,7 @@ export function QuoteView(props: { data: Quote }) {
     />
   ) : (
     <div className="my-1 border-solid border-gray-400 px-4 py-2">
-      <p>{props.data.text}</p>
+      <p>{props.data.text.split("\n").map(line => <>{line}<br /></>)}</p>
       {props.data.context.length > 0 && (
         <p className="text-sm">— {props.data.context}</p>
       )}
