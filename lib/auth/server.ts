@@ -1,14 +1,13 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { Forbidden, NotLoggedIn } from "./errors";
-import { Permission } from "./permissions";
+import { Permission, hasPermission as hasPermissionBase } from "./permissions";
 import { User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
-import { cookies } from "next/headers";
 
 export type UserType = User & {
   permissions: Permission[];
@@ -29,7 +28,9 @@ async function resolvePermissionsForUser(userID: number) {
       permission: true,
     },
   });
-  return result.map((r) => r.permission as Permission);
+  return result
+    .map((r) => r.permission as Permission)
+    .concat("MEMBER", "PUBLIC");
 }
 
 /**
@@ -134,16 +135,7 @@ export async function mustGetCurrentUser(req?: NextRequest): Promise<UserType> {
 export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   const user = await getCurrentUser();
   const userPerms = await resolvePermissionsForUser(user.user_id);
-  for (const perm of perms) {
-    if (userPerms.includes(perm)) {
-      return true;
-    }
-  }
-  // noinspection RedundantIfStatementJS
-  if (userPerms.includes("SuperUser")) {
-    return true;
-  }
-  return false;
+  return hasPermissionBase({ permissions: userPerms }, ...perms);
 }
 
 export async function loginOrCreateUser(rawGoogleToken: string) {
