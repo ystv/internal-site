@@ -27,7 +27,7 @@ export default function YSTVBreadcrumbs() {
         // Building the path backwards so the complete path will exist
         let tempPath: string = "";
         for (let j = i; j >= 0; j--) {
-          tempPath = `/${part}` + tempPath;
+          tempPath = `/${parts1[j]}` + tempPath;
         }
         segments.push({ name: breadcrumbSegments[part], path: tempPath });
       }
