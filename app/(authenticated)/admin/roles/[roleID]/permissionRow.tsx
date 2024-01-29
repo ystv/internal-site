@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 // import {PermissionType} from "@/features/permission";
 
@@ -12,7 +12,7 @@ export function PermissionRow(
   },
   { key }: { key: string },
 ) {
-  const router = useRouter();
+  // const router = useRouter();
 
   return (
     <>
@@ -20,7 +20,7 @@ export function PermissionRow(
         key={key}
         className={`divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold dark:divide-[--mantine-color-placeholder]`}
         style={{ height: "40px" }}
-        onClick={() => router.push(`/admin/permissions/${permission}`)}
+        // onClick={() => router.push(`/admin/permissions/${permission}`)}
       >
         {permission}
       </li>
