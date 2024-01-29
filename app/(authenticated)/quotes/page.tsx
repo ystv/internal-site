@@ -1,33 +1,28 @@
 import * as Quotes from "@/features/quotes";
 import { requirePermission } from "@/lib/auth/server";
 import { AddQuote, QuoteView } from "./AddEditQuoteForm";
-import {
-  Pagination,
-  PaginationFirst,
-  PaginationItems,
-  PaginationLast,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationRoot,
-} from "@mantine/core";
-import Link from "next/link";
 import { QuotesPagination } from "./pagination";
+import { SearchQuotes } from "./search";
 
 const PAGE_SIZE = 25;
 
 export default async function QuotesPage(props: {
-  searchParams: { page?: string };
+  searchParams: { page?: string; search?: string };
 }) {
   await requirePermission("ManageQuotes");
   const page = parseInt(props.searchParams?.page || "1");
+  const search = props.searchParams?.search || "";
   const [quotes, total] = await Promise.all([
-    Quotes.getQuotes(page, PAGE_SIZE),
-    Quotes.getTotalQuotes(),
+    search
+      ? Quotes.searchQuotes(search, page, PAGE_SIZE)
+      : Quotes.getQuotes(page, PAGE_SIZE),
+    Quotes.getTotalQuotes(search),
   ]);
 
   return (
     <div>
       <h1>Quotes</h1>
+      <SearchQuotes />
       <p>
         Page {page} of {Math.ceil(total / PAGE_SIZE)}
       </p>

@@ -90,6 +90,6 @@ export function AddQuote() {
       </Button>
     </>
   ) : (
-    <button onClick={() => setVisible(true)}>Add Quote</button>
+    <Button onClick={() => setVisible(true)}>Add Quote</Button>
   );
 }
