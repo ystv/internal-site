@@ -20,9 +20,16 @@ export default function YSTVBreadcrumbs() {
     const parts = path.split("/");
     const segments = [];
     // Skip the first (because it's empty) and the last (because it's the current page)
-    for (const part of parts.slice(1, parts.length - 1)) {
+    let parts1 = parts.slice(1, parts.length - 1);
+    for (let i = 0; i < parts1.length; i++) {
+      let part = parts1[i]
       if (part in breadcrumbSegments) {
-        segments.push({ name: breadcrumbSegments[part], path: `/${part}` });
+        // Building the path backwards so the complete path will exist
+        let tempPath: string = "";
+        for (let j = i; j >= 0; j--) {
+          tempPath = `/${part}` + tempPath
+        }
+        segments.push({ name: breadcrumbSegments[part], path: tempPath });
       }
     }
     const result = [];
