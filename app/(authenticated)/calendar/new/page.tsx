@@ -57,18 +57,20 @@ async function createEvent(
       if (channel_info.ok) {
         slack_channel_id = payload.data.slack_channel_id;
       }
-    } else if (payload.data.slack_new_channel_name) {
+    } else if (payload.data.slack_channel_new_name) {
       try {
         // Create a new channel from the given user input
         const new_channel = await slackApp.client.conversations.create({
-          name: payload.data.slack_new_channel_name,
+          name: payload.data.slack_channel_new_name,
           team_id: process.env.SLACK_TEAM_ID,
         });
 
         if (!new_channel.ok) {
           return {
             ok: false,
-            errors: { root: "Channel creation error: " + new_channel.error },
+            errors: {
+              slack_channel: "Channel creation error: " + new_channel.error,
+            },
           };
         }
 
