@@ -10367,7 +10367,7 @@ __metadata:
     uoy-week-calendar: "https://github.com/chriscn/uoy-week-calendar"
     zod: ^3.22.4
     zod-form-data: ^2.0.1
-    zod-prisma: ^0.5.4
+    zod-prisma: ^0.5.0
   languageName: unknown
   linkType: soft
 
@@ -17279,7 +17279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-prisma@npm:^0.5.4":
+"zod-prisma@npm:^0.5.0":
   version: 0.5.4
   resolution: "zod-prisma@npm:0.5.4"
   dependencies:
