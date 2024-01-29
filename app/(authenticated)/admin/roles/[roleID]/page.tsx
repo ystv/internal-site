@@ -57,9 +57,7 @@ export default async function RolePage({
                         <UserRow user={user.users} key={user.users.user_id}/>
                     );
                 })
-            ) : (
-                <li>This role has no Users</li>
-            )}
+            ) : <li>This role has no Users</li>}
             </ul>
           </Stack>
         </Group>
