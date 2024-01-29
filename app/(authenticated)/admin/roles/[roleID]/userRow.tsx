@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import {getUserName} from "@/components/UserHelpers";
 
 export function UserRow(
   {
@@ -26,9 +27,7 @@ export function UserRow(
         style={{ height: "40px" }}
         onClick={() => router.push(`/admin/users/${user.user_id}`)}
       >
-        {user.first_name}{" "}
-        {user.nickname.length > 0 ? "(" + user.nickname + ")" : null}{" "}
-        {user.last_name}
+          {getUserName(user)}
       </li>
     </>
   );
