@@ -22,12 +22,12 @@ export default function YSTVBreadcrumbs() {
     // Skip the first (because it's empty) and the last (because it's the current page)
     let parts1 = parts.slice(1, parts.length - 1);
     for (let i = 0; i < parts1.length; i++) {
-      let part = parts1[i]
+      let part = parts1[i];
       if (part in breadcrumbSegments) {
         // Building the path backwards so the complete path will exist
         let tempPath: string = "";
         for (let j = i; j >= 0; j--) {
-          tempPath = `/${part}` + tempPath
+          tempPath = `/${part}` + tempPath;
         }
         segments.push({ name: breadcrumbSegments[part], path: tempPath });
       }

@@ -48,9 +48,7 @@ export async function getPermissionsForRole(
   });
 }
 
-export async function getUsersForRole(
-  roleID: number,
-): Promise<
+export async function getUsersForRole(roleID: number): Promise<
   | {
       users: {
         user_id: number;

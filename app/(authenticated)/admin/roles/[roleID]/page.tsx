@@ -39,25 +39,28 @@ export default async function RolePage({
             <br />
             <h3 className={twMerge("text-2xl font-bold")}>Permissions</h3>
             <ul>
-            {permissionsForRole != null && permissionsForRole.length > 0
-                ? permissionsForRole.map((permission) => {
+              {permissionsForRole != null && permissionsForRole.length > 0 ? (
+                permissionsForRole.map((permission) => {
                   return (
-                      <PermissionRow
-                          permission={permission.permission}
-                          key={permission.permission}
-                      />
+                    <PermissionRow
+                      permission={permission.permission}
+                      key={permission.permission}
+                    />
                   );
                 })
-                : <li>This role has no Permissions</li>}
+              ) : (
+                <li>This role has no Permissions</li>
+              )}
             </ul>
             <h3 className={twMerge("text-2xl font-bold")}>Users</h3>
             <ul>
-            {usersForRole != null && usersForRole.length > 0 ? (usersForRole.map((user) => {
-                    return (
-                        <UserRow user={user.users} key={user.users.user_id}/>
-                    );
+              {usersForRole != null && usersForRole.length > 0 ? (
+                usersForRole.map((user) => {
+                  return <UserRow user={user.users} key={user.users.user_id} />;
                 })
-            ) : <li>This role has no Users</li>}
+              ) : (
+                <li>This role has no Users</li>
+              )}
             </ul>
           </Stack>
         </Group>

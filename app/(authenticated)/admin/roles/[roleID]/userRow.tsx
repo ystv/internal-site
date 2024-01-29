@@ -2,17 +2,20 @@
 
 import { useRouter } from "next/navigation";
 
-export function UserRow({
-  user,
-}: {
-  user: {
-    user_id: number;
-    first_name: string;
-    last_name: string;
-    nickname: string;
-    avatar: string;
-  };
-}, {key}: {key: number}) {
+export function UserRow(
+  {
+    user,
+  }: {
+    user: {
+      user_id: number;
+      first_name: string;
+      last_name: string;
+      nickname: string;
+      avatar: string;
+    };
+  },
+  { key }: { key: number },
+) {
   const router = useRouter();
 
   return (
@@ -23,7 +26,9 @@ export function UserRow({
         style={{ height: "40px" }}
         onClick={() => router.push(`/admin/users/${user.user_id}`)}
       >
-        {user.first_name} {user.nickname.length > 0 ? ('(' + user.nickname + ')') : null} {user.last_name}
+        {user.first_name}{" "}
+        {user.nickname.length > 0 ? "(" + user.nickname + ")" : null}{" "}
+        {user.last_name}
       </li>
     </>
   );
