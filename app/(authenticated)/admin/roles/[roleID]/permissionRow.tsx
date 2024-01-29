@@ -16,14 +16,14 @@ export function PermissionRow(
 
   return (
     <>
-      <tr
+      <li
         key={key}
         className={`divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold dark:divide-[--mantine-color-placeholder]`}
         style={{ height: "40px" }}
         onClick={() => router.push(`/admin/permissions/${permission}`)}
       >
-        <td style={{ textAlign: "center" }}>{permission}</td>
-      </tr>
+        {permission}
+      </li>
     </>
   );
 }

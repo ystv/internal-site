@@ -22,9 +22,7 @@ export default async function RolePage({
   const permissionsForRole = await getPermissionsForRole(
     parseInt(params.roleID, 10),
   );
-  console.log(permissionsForRole != null);
   const usersForRole = await getUsersForRole(parseInt(params.roleID, 10));
-  console.log(usersForRole != null);
   return (
     <div>
       <Card withBorder>
@@ -40,42 +38,29 @@ export default async function RolePage({
             <br />
             <br />
             <h3 className={twMerge("text-2xl font-bold")}>Permissions</h3>
-            <script>console.log(1);</script>${permissionsForRole != null}
-            {/*{permissionsForRole != null ? (permissionsForRole.map((permission) => {*/}
-            {/*        console.log(permission.permission)*/}
-            {/*        return (*/}
-            {/*            // eslint-disable-next-line react/jsx-key*/}
-            {/*            <PermissionRow permission={permission.permission}/>*/}
-            {/*        );*/}
-            {/*    })*/}
-            {/*) : (*/}
-            {/*    <p>This role has no Permissions</p>*/}
-            {/*)}*/}
+            <ul>
             {permissionsForRole != null
-              ? permissionsForRole.map((permission) => {
+                ? permissionsForRole.map((permission) => {
                   return (
-                    <PermissionRow
-                      permission={permission.permission}
-                      key={permission.permission}
-                    />
+                      <PermissionRow
+                          permission={permission.permission}
+                          key={permission.permission}
+                      />
                   );
                 })
-              : null}
-            <script>console.log(2);</script>
-            <h3 className={twMerge("text-2xl font-bold")}>Users</h3>$
-            {usersForRole != null}
-            {/*{usersForRole != null ? (usersForRole.map((user) => {*/}
-            {/*        return (*/}
-            {/*            // eslint-disable-next-line react/jsx-key*/}
-            {/*            <div>*/}
-            {/*            <UserRow user={user.users}/>*/}
-            {/*            </div>*/}
-            {/*        );*/}
-            {/*    })*/}
-            {/*) : (*/}
-            {/*    <p>This role has no Users</p>*/}
-            {/*)}*/}
-            <script>console.log(3);</script>
+                : <li>This role has no Permissions</li>}
+            </ul>
+            <h3 className={twMerge("text-2xl font-bold")}>Users</h3>
+            <ul>
+            {usersForRole != null ? (usersForRole.map((user) => {
+                    return (
+                        <UserRow user={user.users} key={user.users.user_id}/>
+                    );
+                })
+            ) : (
+                <li>This role has no Users</li>
+            )}
+            </ul>
           </Stack>
         </Group>
       </Card>

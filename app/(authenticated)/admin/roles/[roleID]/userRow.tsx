@@ -2,8 +2,6 @@
 
 import { useRouter } from "next/navigation";
 
-// import {UserType} from "@/features/user";
-
 export function UserRow({
   user,
 }: {
@@ -14,22 +12,19 @@ export function UserRow({
     nickname: string;
     avatar: string;
   };
-}) {
+}, {key}: {key: number}) {
   const router = useRouter();
 
   return (
     <>
-      <tr
-        key={user.user_id}
+      <li
+        key={key}
         className={`divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold dark:divide-[--mantine-color-placeholder]`}
         style={{ height: "40px" }}
         onClick={() => router.push(`/admin/users/${user.user_id}`)}
       >
-        <td style={{ textAlign: "center" }}>{user.user_id}</td>
-        <td style={{ textAlign: "center" }}>{user.first_name}</td>
-        <td style={{ textAlign: "center" }}>{user.last_name}</td>
-        <td style={{ textAlign: "center" }}>{user.nickname}</td>
-      </tr>
+        {user.first_name} {user.nickname.length > 0 ? ('(' + user.nickname + ')') : null} {user.last_name}
+      </li>
     </>
   );
 }
