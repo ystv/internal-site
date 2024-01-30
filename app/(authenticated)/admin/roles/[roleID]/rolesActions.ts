@@ -26,3 +26,30 @@ export async function deleteRole(roleID: number): Promise<FormResponse> {
   revalidatePath(`/admin/roles`);
   return { ok: true } as const;
 }
+
+export async function addUserToRole(roleID: number, userID: number) {
+  await Role.addUserToRole(roleID, userID);
+  revalidatePath(`/admin/roles/` + roleID);
+  return { ok: true } as const;
+}
+
+export async function removeUserFromRole(roleID: number, userID: number) {
+  await Role.removeUserFromRole(roleID, userID);
+  revalidatePath(`/admin/roles/` + roleID);
+  return { ok: true } as const;
+}
+
+export async function addPermissionToRole(roleID: number, permission: string) {
+  await Role.addPermissionToRole(roleID, permission);
+  revalidatePath(`/admin/roles/` + roleID);
+  return { ok: true } as const;
+}
+
+export async function removePermissionFromRole(
+  roleID: number,
+  permission: string,
+) {
+  await Role.removePermissionFromRole(roleID, permission);
+  revalidatePath(`/admin/roles/` + roleID);
+  return { ok: true } as const;
+}
