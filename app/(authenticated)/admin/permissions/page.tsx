@@ -20,7 +20,6 @@ export default async function PermissionsPage() {
     }
     permissionsFromEnum.push(permissions1Val);
   }
-  console.log(permissionsFromEnum);
 
   return (
     <div>
