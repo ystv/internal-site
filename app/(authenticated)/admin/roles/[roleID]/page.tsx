@@ -9,6 +9,10 @@ import { Card, Group, Stack } from "@mantine/core";
 import { RoleViews } from "@/app/(authenticated)/admin/roles/[roleID]/EditDeleteRoleForms";
 import { UserRow } from "@/app/(authenticated)/admin/roles/[roleID]/userRow";
 import { PermissionRow } from "@/app/(authenticated)/admin/roles/[roleID]/permissionRow";
+import { getAllUsers } from "@/features/people";
+import { AddUserToRoleViews } from "@/app/(authenticated)/admin/roles/[roleID]/AddUserToRoleViews";
+import { AddPermissionsToRoleViews } from "@/app/(authenticated)/admin/roles/[roleID]/AddPermissionsToRoleViews";
+import { PermissionEnum } from "@/lib/auth/permissions";
 
 export default async function RolePage({
   params,
@@ -23,6 +27,20 @@ export default async function RolePage({
     parseInt(params.roleID, 10),
   );
   const usersForRole = await getUsersForRole(parseInt(params.roleID, 10));
+  const users = await getAllUsers();
+  let permissions1 = Object.values(PermissionEnum)[1].values;
+
+  let permissions: string[] = [];
+
+  for (const permissions1Val of permissions1) {
+    if (
+      (permissions1Val as string) === "PUBLIC" ||
+      (permissions1Val as string) === "MEMBER"
+    ) {
+      continue;
+    }
+    permissions.push(permissions1Val);
+  }
   return (
     <div>
       <Card withBorder>
@@ -52,6 +70,12 @@ export default async function RolePage({
                 <li>This role has no Permissions</li>
               )}
             </ul>
+            <h4 className={twMerge("text-xl font-bold")}>Add Permission</h4>
+            <AddPermissionsToRoleViews
+              role={role}
+              permissions={permissions}
+              permissionsAlreadyInRole={permissionsForRole}
+            />
             <h3 className={twMerge("text-2xl font-bold")}>Users</h3>
             <ul>
               {usersForRole != null && usersForRole.length > 0 ? (
