@@ -111,3 +111,30 @@ export async function editRole(roleID: number, role: Prisma.RoleUpdateInput) {
 export async function deleteRole(roleID: number) {
   await prisma.role.delete({ where: { role_id: roleID } });
 }
+
+export async function addPermissionToRole(roleID: number, permission: string) {
+  await prisma.rolePermission.create({
+    data: { role_id: roleID, permission: permission },
+  });
+}
+
+export async function removePermissionFromRole(
+  roleID: number,
+  permission: string,
+) {
+  await prisma.rolePermission.delete({
+    where: { role_id_permission: { role_id: roleID, permission: permission } },
+  });
+}
+
+export async function addUserToRole(roleID: number, userID: number) {
+  await prisma.roleMember.create({
+    data: { role_id: roleID, user_id: userID },
+  });
+}
+
+export async function removeUserFromRole(roleID: number, userID: number) {
+  await prisma.roleMember.delete({
+    where: { user_id_role_id: { role_id: roleID, user_id: userID } },
+  });
+}
