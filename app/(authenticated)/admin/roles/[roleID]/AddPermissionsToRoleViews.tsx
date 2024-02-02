@@ -44,7 +44,6 @@ export function AddPermissionsToRoleViews({
         value={null}
         isCustomValue={false}
         onChange={(selectedPermission) => {
-          console.log(selectedPermission);
           addPermissionToRole(role.role_id, selectedPermission);
         }}
       />

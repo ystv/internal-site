@@ -83,7 +83,6 @@ export function AddUserToRoleViews({
         value={null}
         isCustomValue={false}
         onChange={(selectedUser) => {
-          console.log(selectedUser);
           addUserToRole(role.role_id, parseInt(selectedUser));
         }}
       />
