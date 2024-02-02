@@ -1,6 +1,5 @@
 "use client";
 
-
 // import {PermissionType} from "@/features/permission";
 
 import { useRouter } from "next/navigation";
@@ -51,29 +50,32 @@ export function PermissionRow({
   return (
     <>
       <li
-          key={key}
-          className={`divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold dark:divide-[--mantine-color-placeholder]`}
-          style={{height: "40px"}}
+        key={key}
+        className={`divide-x-2 divide-y-0 divide-dashed divide-gray-200 text-sm font-semibold dark:divide-[--mantine-color-placeholder]`}
+        style={{ height: "40px" }}
       >
         {/*<a onClick={() => router.push(`/admin/permissions/${permission}`)}>*/}
-          {permission}{/*}</a>*/}    -&nbsp;
-          <Button variant="danger" onClick={() => setRemoveOpen(true)}>
-            Remove {permission}
-          </Button>
-          <Modal
-              opened={isRemoveOpen}
-              onClose={() => setRemoveOpen(false)}
-              size={"95%"}
-          >
-            <RemovePermissionFromRoleForm
-                action={async () => removePermissionFromRole(role.role_id, permission)}
-                onSuccess={() => router.push(`/admin/roles/` + role.role_id)}
-                permission={permission}
-                role={role.name}
-            />
-            <br/>
-          </Modal>
+        {permission}
+        {/*}</a>*/} -&nbsp;
+        <Button variant="danger" onClick={() => setRemoveOpen(true)}>
+          Remove {permission}
+        </Button>
+        <Modal
+          opened={isRemoveOpen}
+          onClose={() => setRemoveOpen(false)}
+          size={"95%"}
+        >
+          <RemovePermissionFromRoleForm
+            action={async () =>
+              removePermissionFromRole(role.role_id, permission)
+            }
+            onSuccess={() => router.push(`/admin/roles/` + role.role_id)}
+            permission={permission}
+            role={role.name}
+          />
+          <br />
+        </Modal>
       </li>
     </>
-);
+  );
 }
