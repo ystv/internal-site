@@ -95,6 +95,12 @@ export default async function RolePage({
                 <li>This role has no Users</li>
               )}
             </ul>
+            <h4 className={twMerge("text-xl font-bold")}>Add User</h4>
+            <AddUserToRoleViews
+              role={role}
+              users={tempUsers}
+              usersAlreadyInRole={usersForRole}
+            />
           </Stack>
         </Group>
       </Card>
