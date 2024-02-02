@@ -81,7 +81,13 @@ export default async function RolePage({
             <ul>
               {usersForRole != null && usersForRole.length > 0 ? (
                 usersForRole.map((user) => {
-                  return <UserRow user={user.users} key={user.users.user_id} />;
+                  return (
+                    <UserRow
+                      user={user.users}
+                      role={role}
+                      key={user.users.user_id}
+                    />
+                  );
                 })
               ) : (
                 <li>This role has no Users</li>
