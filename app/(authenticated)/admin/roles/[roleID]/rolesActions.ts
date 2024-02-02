@@ -6,6 +6,7 @@ import { z } from "zod";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { RoleSchema } from "@/app/(authenticated)/admin/roles/schema";
+import { ExposedUser } from "@/features/people";
 
 export async function editRole(
   roleID: number,
@@ -52,4 +53,45 @@ export async function removePermissionFromRole(
   await Role.removePermissionFromRole(roleID, permission);
   revalidatePath(`/admin/roles/` + roleID);
   return { ok: true } as const;
+}
+
+export async function exposedUserToLocalStruct(users: ExposedUser[]) {
+  let usersReturning: {
+    users: {
+      user_id: number;
+      first_name: string;
+      last_name: string;
+      nickname: string;
+      avatar: string;
+    };
+  }[] = [];
+  users.map((u) => {
+    let tempNickname: string = "",
+      tempAvatar: string = "";
+    if (u.nickname != undefined) {
+      tempNickname = u.nickname;
+    }
+    if (u.avatar != undefined) {
+      tempAvatar = u.avatar;
+    }
+    let tempUser: {
+      users: {
+        user_id: number;
+        first_name: string;
+        last_name: string;
+        nickname: string;
+        avatar: string;
+      };
+    } = {
+      users: {
+        user_id: u.user_id,
+        first_name: u.first_name,
+        last_name: u.last_name,
+        nickname: tempNickname,
+        avatar: tempAvatar,
+      },
+    };
+    usersReturning.push(tempUser);
+  });
+  return usersReturning;
 }
