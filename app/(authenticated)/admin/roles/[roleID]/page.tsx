@@ -13,6 +13,7 @@ import { getAllUsers } from "@/features/people";
 import { AddUserToRoleViews } from "@/app/(authenticated)/admin/roles/[roleID]/AddUserToRoleViews";
 import { AddPermissionsToRoleViews } from "@/app/(authenticated)/admin/roles/[roleID]/AddPermissionsToRoleViews";
 import { PermissionEnum } from "@/lib/auth/permissions";
+import { exposedUserToLocalStruct } from "@/app/(authenticated)/admin/roles/[roleID]/rolesActions";
 
 export default async function RolePage({
   params,
@@ -41,6 +42,7 @@ export default async function RolePage({
     }
     permissions.push(permissions1Val);
   }
+  let tempUsers = await exposedUserToLocalStruct(users);
   return (
     <div>
       <Card withBorder>
