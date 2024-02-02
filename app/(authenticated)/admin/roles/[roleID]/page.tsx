@@ -62,6 +62,7 @@ export default async function RolePage({
                   return (
                     <PermissionRow
                       permission={permission.permission}
+                      role={role}
                       key={permission.permission}
                     />
                   );
