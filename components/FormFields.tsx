@@ -279,7 +279,7 @@ export function SearchedMemberSelect(props: {
     name: props.name,
   });
 
-  const [value, isCustom] = useMemo<[string | null, boolean]>(() => {
+  const [value] = useMemo<[string | null, boolean]>(() => {
     if (typeof selectController.field.value === "string") {
       return [selectController.field.value, false];
     }
