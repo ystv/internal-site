@@ -17,7 +17,7 @@ import {
   CheckBoxField,
   ConditionalField,
   DatePickerField,
-  MemberSelect,
+  SearchedMemberSelect,
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
@@ -51,7 +51,7 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
         condition={(t) => t !== "show"}
         childFieldName="host"
       >
-        <MemberSelect name="host" label="Host" />
+        <SearchedMemberSelect name="host" label="Host" />
       </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="is_private" label="Private Event" />*/}

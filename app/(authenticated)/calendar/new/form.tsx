@@ -6,6 +6,7 @@ import {
   ConditionalField,
   DatePickerField,
   MemberSelect,
+  SearchedMemberSelect,
   SegmentedField,
   TextAreaField,
   TextField,
@@ -49,7 +50,7 @@ export function CreateEventForm(props: {
         condition={(t) => t !== "show"}
         childFieldName="host"
       >
-        <MemberSelect name="host" label="Host" />
+        <SearchedMemberSelect name="host" label="Host" />
       </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="private" label="Private Event" />*/}

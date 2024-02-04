@@ -17,6 +17,7 @@ import {
   Box,
   SegmentedControl,
   Input,
+  InputLabel,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useMembers } from "@/components/FormFieldPreloadedData";
@@ -24,6 +25,7 @@ import { getUserName } from "@/components/UserHelpers";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import { FieldPath } from "react-hook-form/dist/types/path";
+import SelectOption from "./SelectOption";
 
 export function TextField(props: {
   name: string;
@@ -263,6 +265,43 @@ export function MemberSelect(props: {
         getUserName(user).toLocaleLowerCase().includes(q)
       }
     />
+  );
+}
+
+export function SearchedMemberSelect(props: {
+  name: string;
+  label?: string;
+  nullable?: boolean;
+}) {
+  const members = useMembers();
+
+  const selectController = useController({
+    name: props.name,
+  });
+
+  const value = useMemo<string | null>(() => {
+    if (typeof selectController.field.value === "string") {
+      return selectController.field.value;
+    }
+    if (selectController.field.value === null) {
+      return null;
+    }
+    return selectController.field.value.toString(10);
+  }, selectController.field.value);
+  return (
+    <>
+      {props.label && <InputLabel>{props.label}</InputLabel>}
+      <SelectOption
+        data={members.map((v) => ({
+          label: getUserName(v),
+          value: v.user_id.toString(10),
+        }))}
+        value={value}
+        onChange={(newV) => {
+          selectController.field.onChange(newV);
+        }}
+      />
+    </>
   );
 }
 
