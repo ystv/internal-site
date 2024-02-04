@@ -57,7 +57,7 @@ export function CreateEventForm(props: {
       {isSlackEnabled && (
         <>
           <InputLabel>Slack Channel</InputLabel>
-          <SlackChannelField parentName="slack" />
+          <SlackChannelField parentName="slack_channel" />
         </>
       )}
 
