@@ -116,6 +116,11 @@ export default function SelectOption(props: {
       </ComboboxTarget>
       <ComboboxDropdown>
         <ComboboxOptions className="max-h-64 overflow-scroll">
+          {!props.allowNone && options.length === 0 && (
+            <ComboboxOption disabled value={"$null"} className="!opacity-100">
+              Invalid Search
+            </ComboboxOption>
+          )}
           {props.allowNone && (!search || search.trim().length === 0) && (
             <ComboboxOption value={"$null"}>None</ComboboxOption>
           )}

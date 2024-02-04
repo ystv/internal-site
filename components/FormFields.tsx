@@ -279,15 +279,15 @@ export function SearchedMemberSelect(props: {
     name: props.name,
   });
 
-  const [value] = useMemo<[string | null, boolean]>(() => {
+  const value = useMemo<string | null>(() => {
     if (typeof selectController.field.value === "string") {
-      return [selectController.field.value, false];
+      return selectController.field.value;
     }
     if (selectController.field.value === null) {
-      return [null, false];
+      return null;
     }
-    return [selectController.field.value.toString(10), false];
-  }, [selectController.field.value]);
+    return selectController.field.value.toString(10);
+  }, selectController.field.value);
   return (
     <>
       {props.label && <InputLabel>{props.label}</InputLabel>}
