@@ -38,7 +38,7 @@ export default function SlackChannelField(props: { parentName: string }) {
 
   return (
     <>
-      {ctx.formState.errors[`${props.parentName}`] && (
+      {ctx.formState.errors[props.parentName] && (
         <span className="block font-semibold text-red-500">
           {(ctx.formState.errors.slack_channel?.message as string) ?? ""}
         </span>
