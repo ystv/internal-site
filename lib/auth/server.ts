@@ -133,16 +133,14 @@ export async function mustGetCurrentUser(req?: NextRequest): Promise<UserType> {
 
 /**
  * Checks if the currently signed-in user has at least one of the given permissions.
- * @param perms
+ * @param perm
  */
-export async function hasPermission(...perms: Permission[]): Promise<boolean> {
+export async function hasPermission(perm: Permission): Promise<boolean> {
   const user = await getCurrentUser();
   const userPerms = await resolvePermissionsForUser(user.user_id);
-  if (userPerms.includes("SuperUser")) {
-    return true;
-  }
-  for (const perm of perms) {
-    if (userPerms.includes(perm)) {
+  const allowedPermissions = sufficientPermissionsFor(perm);
+  for (const userPerm in userPerms) {
+    if (allowedPermissions[userPerm]) {
       return true;
     }
   }
