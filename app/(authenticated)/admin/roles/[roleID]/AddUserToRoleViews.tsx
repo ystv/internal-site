@@ -3,8 +3,12 @@
 import { RoleType, UserType } from "@/features/role";
 import { getUserName } from "@/components/UserHelpers";
 import SelectWithCustomOption from "@/components/SelectWithCustomOption";
-import { addUserToRole } from "@/app/(authenticated)/admin/roles/[roleID]/rolesActions";
+import {
+  addUserToRole,
+  exposedUserToUserType,
+} from "@/app/(authenticated)/admin/roles/[roleID]/rolesActions";
 import { useTransition } from "react";
+import { ExposedUser } from "@/features/people";
 
 export function AddUserToRoleViews({
   role,
@@ -12,24 +16,19 @@ export function AddUserToRoleViews({
   usersAlreadyInRole,
 }: {
   role: RoleType;
-  users:
-    | {
-        users: UserType;
-      }[]
-    | null;
+  users: ExposedUser[];
   usersAlreadyInRole: UserType[];
 }) {
-  let usersNotInRole: {
-    users: UserType;
-  }[] = [];
-  if (users != null && usersAlreadyInRole != null) {
+  let tempUsers: UserType[] = exposedUserToUserType(users);
+  let usersNotInRole: UserType[] = [];
+  if (tempUsers.length > 0 && usersAlreadyInRole != null) {
     if (usersAlreadyInRole.length == 0) {
-      usersNotInRole = users;
+      usersNotInRole = tempUsers;
     } else {
-      for (let tempPAll of users) {
+      for (const tempPAll of tempUsers) {
         let exists = false;
-        for (let tempPExist of usersAlreadyInRole) {
-          if (tempPAll.users.user_id == tempPExist.user_id) {
+        for (const tempPExist of usersAlreadyInRole) {
+          if (tempPAll.user_id == tempPExist.user_id) {
             exists = true;
           }
         }
@@ -45,8 +44,8 @@ export function AddUserToRoleViews({
       User:{" "}
       <SelectWithCustomOption
         data={usersNotInRole.map((p) => ({
-          label: getUserName(p.users),
-          value: p.users.user_id.toString(),
+          label: getUserName(p),
+          value: p.user_id.toString(),
         }))}
         value={null}
         isCustomValue={false}
