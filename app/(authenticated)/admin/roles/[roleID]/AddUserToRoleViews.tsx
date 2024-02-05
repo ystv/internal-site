@@ -35,14 +35,14 @@ export function AddUserToRoleViews({
     | null;
 }) {
   let usersNotInRole: {
-      users: {
-        user_id: number;
-        first_name: string;
-        last_name: string;
-        nickname: string;
-        avatar: string;
-      };
-    }[] = [];
+    users: {
+      user_id: number;
+      first_name: string;
+      last_name: string;
+      nickname: string;
+      avatar: string;
+    };
+  }[] = [];
   if (users != null && usersAlreadyInRole != null) {
     if (usersAlreadyInRole.length == 0) {
       usersNotInRole = users;

@@ -27,7 +27,7 @@ export default async function RolePage({
   const [permissionsForRole, usersForRole, users] = await Promise.all([
     getPermissionsForRole(parseInt(params.roleID, 10)),
     getUsersForRole(parseInt(params.roleID, 10)),
-    getAllUsers()
+    getAllUsers(),
   ]);
   let permissions1 = Object.values(PermissionEnum)[1].values;
 

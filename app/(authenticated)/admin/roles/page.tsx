@@ -39,9 +39,7 @@ export default async function RolesPage() {
               }
             >
               {roles.map((role) => {
-                return (
-                  <RoleRow key={role.role_id} role={role} />
-                );
+                return <RoleRow key={role.role_id} role={role} />;
               })}
             </tbody>
           </table>
