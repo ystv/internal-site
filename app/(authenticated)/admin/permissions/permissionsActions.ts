@@ -6,12 +6,12 @@ import { z } from "zod";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { PermissionSchema } from "@/app/(authenticated)/admin/permissions/schema";
-import {requirePermission} from "@/lib/auth/server";
+import { requirePermission } from "@/lib/auth/server";
 
 export async function addPermission(
   form: z.infer<typeof PermissionSchema>,
 ): Promise<FormResponse> {
-  await requirePermission("ManageMembers.Permissions")
+  await requirePermission("ManageMembers.Permissions");
   const payload = PermissionSchema.safeParse(form);
   if (!payload.success) {
     return zodErrorResponse(payload.error);
