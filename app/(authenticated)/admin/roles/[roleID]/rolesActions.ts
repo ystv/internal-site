@@ -6,8 +6,6 @@ import { z } from "zod";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { RoleSchema } from "@/app/(authenticated)/admin/roles/schema";
-import { ExposedUser } from "@/features/people";
-import { UserType } from "@/features/role";
 import { requirePermission } from "@/lib/auth/server";
 
 export async function editRole(
