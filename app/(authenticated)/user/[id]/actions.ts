@@ -15,10 +15,7 @@ export async function changePreference<
 ): Promise<FormResponse> {
   const me = await getCurrentUser();
   if (userID !== me.user_id) {
-    await requirePermission(
-      "ManageMembers.Members.Admin",
-      "ManageMembers.Admin",
-    );
+    await requirePermission("ManageMembers.Members.Admin");
   }
 
   await People.setUserPreference(userID, key, value);
