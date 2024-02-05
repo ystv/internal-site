@@ -56,10 +56,8 @@ export async function removePermissionFromRole(
   return { ok: true } as const;
 }
 
-export async function exposedUserToLocalStruct(users: ExposedUser[]) {
-  let usersReturning: {
-    users: UserType;
-  }[] = [];
+export function exposedUserToUserType(users: ExposedUser[]): UserType[] {
+  let usersReturning: UserType[] = [];
   users.map((u) => {
     let tempNickname: string = "",
       tempAvatar: string = "";
@@ -69,16 +67,12 @@ export async function exposedUserToLocalStruct(users: ExposedUser[]) {
     if (u.avatar != undefined) {
       tempAvatar = u.avatar;
     }
-    let tempUser: {
-      users: UserType;
-    } = {
-      users: {
-        user_id: u.user_id,
-        first_name: u.first_name,
-        last_name: u.last_name,
-        nickname: tempNickname,
-        avatar: tempAvatar,
-      },
+    let tempUser: UserType = {
+      user_id: u.user_id,
+      first_name: u.first_name,
+      last_name: u.last_name,
+      nickname: tempNickname,
+      avatar: tempAvatar,
     };
     usersReturning.push(tempUser);
   });
