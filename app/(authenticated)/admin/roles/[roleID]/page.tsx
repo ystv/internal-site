@@ -24,11 +24,11 @@ export default async function RolePage({
   if (!role) {
     notFound();
   }
-  const permissionsForRole = await getPermissionsForRole(
-    parseInt(params.roleID, 10),
-  );
-  const usersForRole = await getUsersForRole(parseInt(params.roleID, 10));
-  const users = await getAllUsers();
+  const [permissionsForRole, usersForRole, users] = await Promise.all([
+    getPermissionsForRole(parseInt(params.roleID, 10)),
+    getUsersForRole(parseInt(params.roleID, 10)),
+    getAllUsers()
+  ]);
   let permissions1 = Object.values(PermissionEnum)[1].values;
 
   let permissions: string[] = [];
