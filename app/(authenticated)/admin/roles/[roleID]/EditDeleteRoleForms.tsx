@@ -4,34 +4,12 @@ import { useState } from "react";
 import { Button, Modal } from "@mantine/core";
 import { z } from "zod";
 import Form, { FormResponse } from "@/components/Form";
-import { TextAreaField, TextField } from "@/components/FormFields";
-import { editRole, deleteRole } from "./rolesActions";
+import { deleteRole } from "./rolesActions";
 import { RoleSchema } from "@/app/(authenticated)/admin/roles/schema";
 import { RoleType } from "@/features/role";
 import { useRouter } from "next/navigation";
-
-export function EditRoleForm(props: {
-  action: (data: z.infer<typeof RoleSchema>) => Promise<FormResponse>;
-  onSuccess: () => void;
-  role: RoleType;
-}) {
-  return (
-    <Form
-      action={props.action}
-      onSuccess={props.onSuccess}
-      schema={RoleSchema}
-      submitLabel={"Edit"}
-      initialValues={{
-        name: props.role.name,
-        description: props.role.description?.toString(),
-      }}
-    >
-      <h1 className={"mb-2 mt-0 text-4xl font-bold"}>Edit Role</h1>
-      <TextField name="name" label="Name" required />
-      <TextAreaField name="description" label="Description" />
-    </Form>
-  );
-}
+import { addRole } from "@/app/(authenticated)/admin/roles/rolesActions";
+import { AddOrEdit, AddOrEditRoleForm } from "@/components/RoleForm";
 
 export function DeleteRoleForm(props: {
   action: (data: z.infer<typeof RoleSchema>) => Promise<FormResponse>;
@@ -77,10 +55,11 @@ export function RoleViews({ role }: { role: RoleType }) {
         onClose={() => setEditOpen(false)}
         size={"95%"}
       >
-        <EditRoleForm
-          action={async (form) => editRole(role.role_id, form)}
+        <AddOrEditRoleForm
+          action={async (form) => addRole(form)}
           onSuccess={() => setEditOpen(false)}
           role={role}
+          addOrEdit={AddOrEdit.Edit}
         />
         <br />
       </Modal>
