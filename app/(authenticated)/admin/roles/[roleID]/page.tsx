@@ -34,19 +34,9 @@ export default async function RolePage({
   tempUsersForRole?.map((u) => {
     usersForRole.push(u.users);
   });
-  let permissions1 = Object.values(PermissionEnum)[1].values;
-
-  let permissions: string[] = [];
-
-  for (const permissions1Val of permissions1) {
-    if (
-      (permissions1Val as string) === "PUBLIC" ||
-      (permissions1Val as string) === "MEMBER"
-    ) {
-      continue;
-    }
-    permissions.push(permissions1Val);
-  }
+  const permissions: string[] = PermissionEnum.options.filter(
+    (x) => x !== "PUBLIC" && x !== "MEMBER",
+  );
   let tempUsers = await exposedUserToLocalStruct(users);
   return (
     <div>
