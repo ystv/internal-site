@@ -1,9 +1,29 @@
-import { requirePermission } from "@/lib/auth/server";
+import { hasPermission } from "@/lib/auth/server";
 import { Button, Card, Group, Space, Stack } from "@mantine/core";
 import Link from "next/link";
+import { ForbiddenAny } from "@/lib/auth/errors";
 
 export default async function AdminPage() {
-  await requirePermission("SuperUser");
+  const [
+    userListPermission,
+    userAddPermission,
+    permissionsPermission,
+    rolePermission,
+  ] = await Promise.all([
+    hasPermission("ManageMembers.Members.List"),
+    hasPermission("ManageMembers.Members.Add"),
+    hasPermission("ManageMembers.Permissions"),
+    hasPermission("ManageMembers.Groups"),
+  ]);
+  if (
+    !userAddPermission &&
+    !userListPermission &&
+    !permissionsPermission &&
+    !rolePermission
+  ) {
+    new ForbiddenAny("No admin permissions");
+  }
+  // Will figure out the user add in a bit
   return (
     <div>
       <Card withBorder>
