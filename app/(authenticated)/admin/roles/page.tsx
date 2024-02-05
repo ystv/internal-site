@@ -5,7 +5,7 @@ import { RoleRow } from "@/app/(authenticated)/admin/roles/roleRow";
 import { AddRoleView } from "@/app/(authenticated)/admin/roles/AddRoleForm";
 
 export default async function RolesPage() {
-  await requirePermission("SuperUser");
+  await requirePermission("ManageMembers.Groups");
   let roles = await getRoles();
 
   return (
