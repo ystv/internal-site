@@ -14,7 +14,6 @@ import { getAllUsers } from "@/features/people";
 import { AddUserToRoleViews } from "@/app/(authenticated)/admin/roles/[roleID]/AddUserToRoleViews";
 import { AddPermissionsToRoleViews } from "@/app/(authenticated)/admin/roles/[roleID]/AddPermissionsToRoleViews";
 import { PermissionEnum } from "@/lib/auth/permissions";
-import { exposedUserToLocalStruct } from "@/app/(authenticated)/admin/roles/[roleID]/rolesActions";
 
 export default async function RolePage({
   params,
@@ -37,7 +36,6 @@ export default async function RolePage({
   const permissions: string[] = PermissionEnum.options.filter(
     (x) => x !== "PUBLIC" && x !== "MEMBER",
   );
-  let tempUsers = await exposedUserToLocalStruct(users);
   return (
     <div>
       <Card withBorder>
@@ -87,7 +85,7 @@ export default async function RolePage({
             <h4 className={twMerge("text-xl font-bold")}>Add User</h4>
             <AddUserToRoleViews
               role={role}
-              users={tempUsers}
+              users={users}
               usersAlreadyInRole={usersForRole}
             />
           </Stack>
