@@ -26,11 +26,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   if (params.id === "me") {
     user = People.SecureUserModel.parse(await getCurrentUser());
   } else {
-    await requirePermission(
-      "ManageMembers.Members.List",
-      "ManageMembers.Members.Admin",
-      "ManageMembers.Admin",
-    );
+    await requirePermission("ManageMembers.Members.List");
     const dbUser = await People.getUser(parseInt(params.id, 10));
     if (!dbUser) {
       notFound();
