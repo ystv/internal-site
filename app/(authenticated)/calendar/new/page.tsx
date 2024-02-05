@@ -10,7 +10,7 @@ import {
 import * as Calendar from "@/features/calendar/events";
 import { Permission } from "@/lib/auth/permissions";
 import { revalidatePath } from "next/cache";
-import { Forbidden } from "@/lib/auth/errors";
+import { Forbidden, ForbiddenAny } from "@/lib/auth/errors";
 import { getAllUsers } from "@/features/people";
 import { MembersProvider } from "@/components/FormFieldPreloadedData";
 import slackApiConnection, {
@@ -35,11 +35,7 @@ async function createEvent(
     return zodErrorResponse(payload.error);
   }
   if (!canCreate(payload.data.type, user)) {
-    throw new Forbidden([
-      "Calendar.Admin",
-      `Calendar.${payload.data.type}.Creator` as Permission,
-      `Calendar.${payload.data.type}.Admin` as Permission,
-    ]);
+    throw new Forbidden(`Calendar.${payload.data.type}.Creator` as Permission);
   }
 
   let slack_channel_id: string | undefined;
@@ -134,9 +130,9 @@ export default async function NewEventPage() {
     (await getCurrentUser()).permissions,
   );
   if (permittedEventTypes.length === 0) {
-    throw new Forbidden([
-      "Calendar.Admin or Calendar.{Show,Meeting,Social}.{Creator,Admin}" as any,
-    ]);
+    throw new ForbiddenAny(
+      "Calendar.Admin or Calendar.{Show,Meeting,Social}.{Creator,Admin}",
+    );
   }
   const allMembers = await getAllUsers();
 
