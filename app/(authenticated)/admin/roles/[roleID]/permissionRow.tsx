@@ -69,7 +69,7 @@ export function PermissionRow({
             action={async () =>
               removePermissionFromRole(role.role_id, permission)
             }
-            onSuccess={() => router.push(`/admin/roles/` + role.role_id)}
+            onSuccess={() => router.push(`/admin/roles/${role.role_id}`)}
             permission={permission}
             role={role.name}
           />

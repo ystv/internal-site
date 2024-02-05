@@ -71,7 +71,7 @@ export function UserRow({
         >
           <RemoveUserFromRoleForm
             action={async () => removeUserFromRole(role.role_id, user.user_id)}
-            onSuccess={() => router.push(`/admin/roles/` + role.role_id)}
+            onSuccess={() => router.push(`/admin/roles/${role.role_id}`)}
             user={getUserName(user)}
             role={role.name}
           />
