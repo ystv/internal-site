@@ -26,7 +26,7 @@ export function DeleteRoleForm(props: {
       <h2 className={"mb-2 mt-0 text-2xl font-bold"}>
         Are you sure you want to delete this?
         <br />
-        Unintended consequences can occur.
+        Any users with this role may lose access to certain features.
       </h2>
     </Form>
   );
