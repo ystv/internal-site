@@ -11,7 +11,7 @@ export default async function AdminPage() {
           <Stack gap={3}>
             <h2 className="my-0">Admin pages</h2>
             <h4 className="my-0 text-[--mantine-color-placeholder]">
-              Here you can view and control the users, roles and permissions.
+              Here you can view and control the backend functions.
             </h4>
           </Stack>
         </Group>
