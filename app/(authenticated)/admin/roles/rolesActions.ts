@@ -6,10 +6,12 @@ import { z } from "zod";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { RoleSchema } from "@/app/(authenticated)/admin/roles/schema";
+import {requirePermission} from "@/lib/auth/server";
 
 export async function addRole(
   form: z.infer<typeof RoleSchema>,
 ): Promise<FormResponse> {
+  await requirePermission("ManageMembers.Groups")
   const payload = RoleSchema.safeParse(form);
   if (!payload.success) {
     return zodErrorResponse(payload.error);
