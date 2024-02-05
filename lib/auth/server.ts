@@ -138,14 +138,13 @@ export async function mustGetCurrentUser(req?: NextRequest): Promise<UserType> {
 export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   const user = await getCurrentUser();
   const userPerms = await resolvePermissionsForUser(user.user_id);
+  if (userPerms.includes("SuperUser")) {
+    return true;
+  }
   for (const perm of perms) {
     if (userPerms.includes(perm)) {
       return true;
     }
-  }
-  // noinspection RedundantIfStatementJS
-  if (userPerms.includes("SuperUser")) {
-    return true;
   }
   return false;
 }
