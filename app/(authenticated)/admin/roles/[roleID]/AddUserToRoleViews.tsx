@@ -4,6 +4,7 @@ import { RoleType, UserType } from "@/features/role";
 import { getUserName } from "@/components/UserHelpers";
 import SelectWithCustomOption from "@/components/SelectWithCustomOption";
 import { addUserToRole } from "@/app/(authenticated)/admin/roles/[roleID]/rolesActions";
+import { useTransition } from "react";
 
 export function AddUserToRoleViews({
   role,
@@ -38,6 +39,7 @@ export function AddUserToRoleViews({
       }
     }
   }
+  const [isPending, startTransition] = useTransition();
   return (
     <>
       User:{" "}
@@ -48,9 +50,14 @@ export function AddUserToRoleViews({
         }))}
         value={null}
         isCustomValue={false}
-        onChange={(selectedUser) => {
-          addUserToRole(role.role_id, parseInt(selectedUser));
-        }}
+        onChange={(selectedUser) =>
+          startTransition(async () => {
+            await addUserToRole(role.role_id, parseInt(selectedUser));
+          })
+        }
+        // onChange={(selectedUser) => {
+        //   addUserToRole(role.role_id, parseInt(selectedUser));
+        // }}
       />
     </>
   );

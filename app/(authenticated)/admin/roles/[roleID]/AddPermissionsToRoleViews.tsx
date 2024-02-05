@@ -3,6 +3,7 @@
 import { RoleType } from "@/features/role";
 import SelectWithCustomOption from "@/components/SelectWithCustomOption";
 import { addPermissionToRole } from "@/app/(authenticated)/admin/roles/[roleID]/rolesActions";
+import { useTransition } from "react";
 
 export function AddPermissionsToRoleViews({
   role,
@@ -33,6 +34,7 @@ export function AddPermissionsToRoleViews({
       }
     }
   }
+  const [isPending, startTransition] = useTransition();
   return (
     <>
       Permission:{" "}
@@ -43,9 +45,14 @@ export function AddPermissionsToRoleViews({
         }))}
         value={null}
         isCustomValue={false}
-        onChange={(selectedPermission) => {
-          addPermissionToRole(role.role_id, selectedPermission);
-        }}
+        onChange={(selectedPermission) =>
+          startTransition(async () => {
+            await addPermissionToRole(role.role_id, selectedPermission);
+          })
+        }
+        // onChange={(selectedPermission) => {
+        //   addPermissionToRole(role.role_id, selectedPermission);
+        // }}
       />
     </>
   );
