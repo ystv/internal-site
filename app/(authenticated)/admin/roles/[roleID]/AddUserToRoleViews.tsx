@@ -16,11 +16,7 @@ export function AddUserToRoleViews({
         users: UserType;
       }[]
     | null;
-  usersAlreadyInRole:
-    | {
-        users: UserType;
-      }[]
-    | null;
+  usersAlreadyInRole: UserType[];
 }) {
   let usersNotInRole: {
     users: UserType;
@@ -32,7 +28,7 @@ export function AddUserToRoleViews({
       for (let tempPAll of users) {
         let exists = false;
         for (let tempPExist of usersAlreadyInRole) {
-          if (tempPAll.users.user_id == tempPExist.users.user_id) {
+          if (tempPAll.users.user_id == tempPExist.user_id) {
             exists = true;
           }
         }

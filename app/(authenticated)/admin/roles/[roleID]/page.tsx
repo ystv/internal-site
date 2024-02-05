@@ -4,6 +4,7 @@ import {
   getRole,
   getPermissionsForRole,
   getUsersForRole,
+  UserType,
 } from "@/features/role";
 import { Card, Group, Stack } from "@mantine/core";
 import { RoleViews } from "@/app/(authenticated)/admin/roles/[roleID]/EditDeleteRoleForms";
@@ -24,11 +25,15 @@ export default async function RolePage({
   if (!role) {
     notFound();
   }
-  const [permissionsForRole, usersForRole, users] = await Promise.all([
+  let usersForRole: UserType[] = [];
+  const [permissionsForRole, tempUsersForRole, users] = await Promise.all([
     getPermissionsForRole(parseInt(params.roleID, 10)),
     getUsersForRole(parseInt(params.roleID, 10)),
     getAllUsers(),
   ]);
+  tempUsersForRole?.map((u) => {
+    usersForRole.push(u.users);
+  });
   let permissions1 = Object.values(PermissionEnum)[1].values;
 
   let permissions: string[] = [];
@@ -81,15 +86,9 @@ export default async function RolePage({
             />
             <h3 className={twMerge("text-2xl font-bold")}>Users</h3>
             <ul>
-              {usersForRole != null && usersForRole.length > 0 ? (
+              {usersForRole.length > 0 ? (
                 usersForRole.map((user) => {
-                  return (
-                    <UserRow
-                      user={user.users}
-                      role={role}
-                      key={user.users.user_id}
-                    />
-                  );
+                  return <UserRow user={user} role={role} key={user.user_id} />;
                 })
               ) : (
                 <li>This role has no Users</li>
