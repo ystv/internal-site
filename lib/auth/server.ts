@@ -139,12 +139,12 @@ export async function hasPermission(perm: Permission): Promise<boolean> {
   const user = await getCurrentUser();
   const userPerms = await resolvePermissionsForUser(user.user_id);
   const allowedPermissions = sufficientPermissionsFor(perm);
-  let valid: boolean = false
-  userPerms.forEach(userPerm => {
+  let valid: boolean = false;
+  userPerms.forEach((userPerm) => {
     if (allowedPermissions[userPerm]) {
       valid = true;
     }
-  })
+  });
   return valid;
 }
 
