@@ -4,11 +4,10 @@ import { useState } from "react";
 import { Button, Modal } from "@mantine/core";
 import { z } from "zod";
 import Form, { FormResponse } from "@/components/Form";
-import { deleteRole } from "./rolesActions";
+import { deleteRole, editRole } from "./rolesActions";
 import { RoleSchema } from "@/app/(authenticated)/admin/roles/schema";
 import { RoleType } from "@/features/role";
 import { useRouter } from "next/navigation";
-import { addRole } from "@/app/(authenticated)/admin/roles/rolesActions";
 import { AddOrEdit, AddOrEditRoleForm } from "@/components/RoleForm";
 
 export function DeleteRoleForm(props: {
@@ -56,7 +55,7 @@ export function RoleViews({ role }: { role: RoleType }) {
         size={"95%"}
       >
         <AddOrEditRoleForm
-          action={async (form) => addRole(form)}
+          action={async (form) => editRole(role.role_id, form)}
           onSuccess={() => setEditOpen(false)}
           role={role}
           addOrEdit={AddOrEdit.Edit}
