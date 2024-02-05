@@ -4,7 +4,7 @@ import { PermissionRow } from "@/app/(authenticated)/admin/permissions/permissio
 import { PermissionEnum } from "@/lib/auth/permissions";
 
 export default async function PermissionsPage() {
-  await requirePermission("SuperUser");
+  await requirePermission("ManageMembers.Permissions");
   // let permissions = await getPermissions();
 
   let permissions1 = Object.values(PermissionEnum)[1].values;
