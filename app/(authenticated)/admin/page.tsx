@@ -41,6 +41,7 @@ export default async function AdminPage() {
         <Stack gap={0}>
           <h2 className="mt-0">Please select from the following:</h2>
           <div className={"flex items-end justify-between"}>
+            {!userListPermission && userAddPermission ? null : null}
             {userListPermission ? (
               <>
                 <Button component={Link} href="/admin/users" fz="md">
