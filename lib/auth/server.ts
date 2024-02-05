@@ -41,10 +41,10 @@ async function resolvePermissionsForUser(userID: number) {
  * Ensures that the currently signed-in user has at least one of the given permissions,
  * or throws an error (to the closest error boundary).
  * Must only be called from pages, not from API endpoints (use the auth meta system there instead).
- * @param perms
+ * @param perm
  */
-export async function requirePermission(...perms: Permission[]) {
-  if (!(await hasPermission(...perms))) throw new Forbidden(perms);
+export async function requirePermission(perm: Permission) {
+  if (!(await hasPermission(perm))) throw new Forbidden(perm);
 }
 
 const cookieName = "ystv-calendar-session";
