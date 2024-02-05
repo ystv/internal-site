@@ -14,6 +14,14 @@ export interface RoleType {
   description: string | null;
 }
 
+export interface UserType {
+  user_id: number;
+  first_name: string;
+  last_name: string;
+  nickname: string;
+  avatar: string;
+}
+
 export async function getRoles(): Promise<RoleType[]> {
   return prisma.role.findMany();
 }
@@ -50,13 +58,7 @@ export async function getPermissionsForRole(
 
 export async function getUsersForRole(roleID: number): Promise<
   | {
-      users: {
-        user_id: number;
-        first_name: string;
-        last_name: string;
-        nickname: string;
-        avatar: string;
-      };
+      users: UserType;
     }[]
   | null
 > {

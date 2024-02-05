@@ -7,6 +7,7 @@ import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { RoleSchema } from "@/app/(authenticated)/admin/roles/schema";
 import { ExposedUser } from "@/features/people";
+import { UserType } from "@/features/role";
 
 export async function editRole(
   roleID: number,
@@ -57,13 +58,7 @@ export async function removePermissionFromRole(
 
 export async function exposedUserToLocalStruct(users: ExposedUser[]) {
   let usersReturning: {
-    users: {
-      user_id: number;
-      first_name: string;
-      last_name: string;
-      nickname: string;
-      avatar: string;
-    };
+    users: UserType;
   }[] = [];
   users.map((u) => {
     let tempNickname: string = "",
@@ -75,13 +70,7 @@ export async function exposedUserToLocalStruct(users: ExposedUser[]) {
       tempAvatar = u.avatar;
     }
     let tempUser: {
-      users: {
-        user_id: number;
-        first_name: string;
-        last_name: string;
-        nickname: string;
-        avatar: string;
-      };
+      users: UserType;
     } = {
       users: {
         user_id: u.user_id,
