@@ -42,26 +42,14 @@ export function AddUserToRoleViews({
         nickname: string;
         avatar: string;
       };
-    }[] = [],
-    usersInRoleTemp: {
-      users: {
-        user_id: number;
-        first_name: string;
-        last_name: string;
-        nickname: string;
-        avatar: string;
-      };
     }[] = [];
-  usersAlreadyInRole?.map((p) => {
-    usersInRoleTemp.push(p);
-  });
-  if (users != null) {
-    if (usersInRoleTemp.length == 0) {
+  if (users != null && usersAlreadyInRole != null) {
+    if (usersAlreadyInRole.length == 0) {
       usersNotInRole = users;
     } else {
       for (let tempPAll of users) {
         let exists = false;
-        for (let tempPExist of usersInRoleTemp) {
+        for (let tempPExist of usersAlreadyInRole) {
           if (tempPAll.users.user_id == tempPExist.users.user_id) {
             exists = true;
           }
