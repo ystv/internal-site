@@ -43,8 +43,7 @@ export default async function PermissionsPage() {
             >
               {permissionsFromEnum.map((permission) => {
                 return (
-                  // eslint-disable-next-line react/jsx-key
-                  <PermissionRow permission={permission} />
+                  <PermissionRow key={permission} permission={permission} />
                 );
               })}
             </tbody>

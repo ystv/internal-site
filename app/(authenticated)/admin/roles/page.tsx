@@ -40,8 +40,7 @@ export default async function RolesPage() {
             >
               {roles.map((role) => {
                 return (
-                  // eslint-disable-next-line react/jsx-key
-                  <RoleRow role={role} />
+                  <RoleRow key={role.role_id} role={role} />
                 );
               })}
             </tbody>
