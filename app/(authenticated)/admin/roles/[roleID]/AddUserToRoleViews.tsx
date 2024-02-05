@@ -1,6 +1,6 @@
 "use client";
 
-import { RoleType } from "@/features/role";
+import { RoleType, UserType } from "@/features/role";
 import { getUserName } from "@/components/UserHelpers";
 import SelectWithCustomOption from "@/components/SelectWithCustomOption";
 import { addUserToRole } from "@/app/(authenticated)/admin/roles/[roleID]/rolesActions";
@@ -13,35 +13,17 @@ export function AddUserToRoleViews({
   role: RoleType;
   users:
     | {
-        users: {
-          user_id: number;
-          first_name: string;
-          last_name: string;
-          nickname: string;
-          avatar: string;
-        };
+        users: UserType;
       }[]
     | null;
   usersAlreadyInRole:
     | {
-        users: {
-          user_id: number;
-          first_name: string;
-          last_name: string;
-          nickname: string;
-          avatar: string;
-        };
+        users: UserType;
       }[]
     | null;
 }) {
   let usersNotInRole: {
-    users: {
-      user_id: number;
-      first_name: string;
-      last_name: string;
-      nickname: string;
-      avatar: string;
-    };
+    users: UserType;
   }[] = [];
   if (users != null && usersAlreadyInRole != null) {
     if (usersAlreadyInRole.length == 0) {
