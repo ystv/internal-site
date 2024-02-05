@@ -3,12 +3,32 @@
 import { RoleType, UserType } from "@/features/role";
 import { getUserName } from "@/components/UserHelpers";
 import SelectWithCustomOption from "@/components/SelectWithCustomOption";
-import {
-  addUserToRole,
-  exposedUserToUserType,
-} from "@/app/(authenticated)/admin/roles/[roleID]/rolesActions";
+import { addUserToRole } from "@/app/(authenticated)/admin/roles/[roleID]/rolesActions";
 import { useTransition } from "react";
 import { ExposedUser } from "@/features/people";
+
+export function exposedUserToUserType(users: ExposedUser[]): UserType[] {
+  let usersReturning: UserType[] = [];
+  users.map((u) => {
+    let tempNickname: string = "",
+      tempAvatar: string = "";
+    if (u.nickname != undefined) {
+      tempNickname = u.nickname;
+    }
+    if (u.avatar != undefined) {
+      tempAvatar = u.avatar;
+    }
+    let tempUser: UserType = {
+      user_id: u.user_id,
+      first_name: u.first_name,
+      last_name: u.last_name,
+      nickname: tempNickname,
+      avatar: tempAvatar,
+    };
+    usersReturning.push(tempUser);
+  });
+  return usersReturning;
+}
 
 export function AddUserToRoleViews({
   role,
