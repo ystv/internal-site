@@ -13,6 +13,7 @@ interface NavLink {
   requiredPermissions: Permission[];
 }
 
+// TODO: Once we add more than two links, we should make this responsive
 const links: NavLink[] = [
   {
     label: "Calendar",
