@@ -2,6 +2,7 @@ import { hasPermission } from "@/lib/auth/server";
 import { Button, Card, Group, Space, Stack } from "@mantine/core";
 import Link from "next/link";
 import { ForbiddenAny } from "@/lib/auth/errors";
+import { PermissionGate } from "@/components/UserContext";
 
 export default async function AdminPage() {
   const [
@@ -41,30 +42,24 @@ export default async function AdminPage() {
         <Stack gap={0}>
           <h2 className="mt-0">Please select from the following:</h2>
           <div className={"flex items-end justify-between"}>
-            {!userListPermission && userAddPermission ? null : null}
-            {userListPermission ? (
-              <>
-                <Button component={Link} href="/admin/users" fz="md">
-                  Users
-                </Button>
-                <Space h={"md"} />
-              </>
-            ) : null}
-            {rolePermission ? (
-              <>
-                <Button component={Link} href="/admin/roles" fz="md">
-                  Roles
-                </Button>
-                <Space h={"md"} />
-              </>
-            ) : null}
-            {permissionsPermission ? (
-              <>
-                <Button component={Link} href="/admin/permissions" fz="md">
-                  Permissions
-                </Button>
-              </>
-            ) : null}
+            {!userListPermission && userAddPermission ? null : null} {/*This is going to be worked on soon*/}
+            <PermissionGate required={["ManageMembers.Members.List"]}>
+              <Button component={Link} href="/admin/users" fz="md">
+                Users
+              </Button>
+              <Space h={"md"} />
+            </PermissionGate>
+            <PermissionGate required={["ManageMembers.Groups"]}>
+              <Button component={Link} href="/admin/roles" fz="md">
+                Roles
+              </Button>
+              <Space h={"md"} />
+            </PermissionGate>
+            <PermissionGate required={["ManageMembers.Permissions"]}>
+              <Button component={Link} href="/admin/permissions" fz="md">
+                Permissions
+              </Button>
+            </PermissionGate>
           </div>
         </Stack>
       </Card>
