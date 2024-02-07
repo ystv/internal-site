@@ -63,10 +63,10 @@ export default async function RolePage({
                   );
                 })
               ) : (
-                <li>This role has no Permissions</li>
+                <li>This role has no permissions</li>
               )}
             </ul>
-            <h4 className={twMerge("text-xl font-bold")}>Add Permission</h4>
+            <h4 className={twMerge("text-xl font-bold")}>Add permission</h4>
             <AddPermissionsToRoleViews
               role={role}
               permissions={permissions}
@@ -79,10 +79,10 @@ export default async function RolePage({
                   return <UserRow user={user} role={role} key={user.user_id} />;
                 })
               ) : (
-                <li>This role has no Users</li>
+                <li>This role has no users</li>
               )}
             </ul>
-            <h4 className={twMerge("text-xl font-bold")}>Add User</h4>
+            <h4 className={twMerge("text-xl font-bold")}>Add user</h4>
             <AddUserToRoleViews
               role={role}
               users={users}

@@ -32,9 +32,7 @@ export function AddOrEditRoleForm(props: {
         description: description,
       }}
     >
-      <h1 className={"mb-2 mt-0 text-4xl font-bold"}>
-        {props.addOrEdit} Role
-      </h1>
+      <h1 className={"mb-2 mt-0 text-4xl font-bold"}>{props.addOrEdit} role</h1>
       <TextField name="name" label="Name" required placeholder={"Role name"} />
       <TextAreaField name="description" label="Description" />
     </Form>
