@@ -14,18 +14,17 @@ export function AddPermissionsToRoleViews({
   permissions: string[];
   permissionsAlreadyInRole: { permission: string }[] | null;
 }) {
-  let permissionsNotInRole: string[] = [],
-    permissionsInRoleTemp: string[] = [];
-  permissionsAlreadyInRole?.map((p) => {
-    permissionsInRoleTemp.push(p.permission);
-  });
-  if (permissionsInRoleTemp.length == 0) {
+  let permissionsNotInRole: string[] = [];
+  if (
+    permissionsAlreadyInRole == null ||
+    permissionsAlreadyInRole.length == 0
+  ) {
     permissionsNotInRole = permissions;
   } else {
     for (let tempPAll of permissions) {
       let exists = false;
-      for (let tempPExist of permissionsInRoleTemp) {
-        if (tempPAll == tempPExist) {
+      for (let tempPExist of permissionsAlreadyInRole) {
+        if (tempPAll == tempPExist.permission) {
           exists = true;
         }
       }
