@@ -4,7 +4,7 @@ import { PermissionRow } from "@/app/(authenticated)/admin/permissions/permissio
 import { PermissionEnum } from "@/lib/auth/permissions";
 
 export default async function PermissionsPage() {
-  await requirePermission("SuperUser");
+  await requirePermission("ManageMembers.Permissions");
   // let permissions = await getPermissions();
 
   let permissions1 = Object.values(PermissionEnum)[1].values;
@@ -20,7 +20,6 @@ export default async function PermissionsPage() {
     }
     permissionsFromEnum.push(permissions1Val);
   }
-  console.log(permissionsFromEnum);
 
   return (
     <div>
@@ -44,8 +43,7 @@ export default async function PermissionsPage() {
             >
               {permissionsFromEnum.map((permission) => {
                 return (
-                  // eslint-disable-next-line react/jsx-key
-                  <PermissionRow permission={permission} />
+                  <PermissionRow key={permission} permission={permission} />
                 );
               })}
             </tbody>

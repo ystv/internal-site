@@ -139,15 +139,54 @@ export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   const user = await getCurrentUser();
   const userPerms = await resolvePermissionsForUser(user.user_id);
   for (const perm of perms) {
-    if (userPerms.includes(perm)) {
+    const allowedPermissions = sufficientPermissionsFor(perm);
+    let valid: boolean = false;
+    userPerms.forEach((userPerm) => {
+      if (allowedPermissions[userPerm]) {
+        valid = true;
+      }
+    });
+    if (valid) {
       return true;
     }
   }
-  // noinspection RedundantIfStatementJS
-  if (userPerms.includes("SuperUser")) {
-    return true;
-  }
+
   return false;
+}
+
+function sufficientPermissionsFor(perm: Permission): Record<string, boolean> {
+  const permMap: Record<string, boolean> = {};
+  permMap[perm] = true;
+  // This switch is designed to have multiple fallthrough statements, this is intentional.
+  switch (perm) {
+    case "ManageMembers.Members.List":
+    case "ManageMembers.Members.Add":
+      permMap["ManageMembers.Members.Admin"] = true;
+    case "ManageMembers.Permissions":
+    case "ManageMembers.Groups":
+    case "ManageMembers.Members.Admin":
+      permMap["ManageMembers.Admin"] = true;
+      break;
+    case "Calendar.Social.Creator":
+      permMap["Calendar.Social.Admin"] = true;
+    case "Calendar.Social.Admin":
+      permMap["Calendar.Admin"] = true;
+      break;
+    case "Calendar.Show.Creator":
+      permMap["Calendar.Show.Admin"] = true;
+    case "Calendar.Show.Admin":
+      permMap["Calendar.Admin"] = true;
+      break;
+    case "Calendar.Meeting.Creator":
+      permMap["Calendar.Meeting.Admin"] = true;
+    case "Calendar.Meeting.Admin":
+    case "CalendarIntegration.Admin":
+      permMap["Calendar.Admin"] = true;
+      break;
+  }
+
+  permMap["SuperUser"] = true;
+  return permMap;
 }
 
 export async function loginOrCreateUser(rawGoogleToken: string) {

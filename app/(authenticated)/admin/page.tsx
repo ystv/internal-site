@@ -1,9 +1,30 @@
-import { requirePermission } from "@/lib/auth/server";
+import { hasPermission } from "@/lib/auth/server";
 import { Button, Card, Group, Space, Stack } from "@mantine/core";
 import Link from "next/link";
+import { Forbidden } from "@/lib/auth/errors";
+import { PermissionGate } from "@/components/UserContext";
 
 export default async function AdminPage() {
-  await requirePermission("SuperUser");
+  const [
+    userListPermission,
+    userAddPermission,
+    permissionsPermission,
+    rolePermission,
+  ] = await Promise.all([
+    hasPermission("ManageMembers.Members.List"),
+    hasPermission("ManageMembers.Members.Add"),
+    hasPermission("ManageMembers.Permissions"),
+    hasPermission("ManageMembers.Groups"),
+  ]);
+  if (
+    !userAddPermission &&
+    !userListPermission &&
+    !permissionsPermission &&
+    !rolePermission
+  ) {
+    new Forbidden(["No admin permissions" as any]);
+  }
+  // Will figure out the user add in a bit
   return (
     <div>
       <Card withBorder>
@@ -11,7 +32,7 @@ export default async function AdminPage() {
           <Stack gap={3}>
             <h2 className="my-0">Admin pages</h2>
             <h4 className="my-0 text-[--mantine-color-placeholder]">
-              Here you can view and control the users, roles and permissions.
+              Here you can view and control the backend functions.
             </h4>
           </Stack>
         </Group>
@@ -21,17 +42,25 @@ export default async function AdminPage() {
         <Stack gap={0}>
           <h2 className="mt-0">Please select from the following:</h2>
           <div className={"flex items-end justify-between"}>
-            <Button component={Link} href="/admin/users" fz="md">
-              Users
-            </Button>
-            <Space h={"md"} />
-            <Button component={Link} href="/admin/roles" fz="md">
-              Roles
-            </Button>
-            <Space h={"md"} />
-            <Button component={Link} href="/admin/permissions" fz="md">
-              Permissions
-            </Button>
+            {!userListPermission && userAddPermission ? null : null}{" "}
+            {/*This is going to be worked on soon*/}
+            <PermissionGate required={["ManageMembers.Members.List"]}>
+              <Button component={Link} href="/admin/users" fz="md">
+                Users
+              </Button>
+              <Space h={"md"} />
+            </PermissionGate>
+            <PermissionGate required={["ManageMembers.Groups"]}>
+              <Button component={Link} href="/admin/roles" fz="md">
+                Roles
+              </Button>
+              <Space h={"md"} />
+            </PermissionGate>
+            <PermissionGate required={["ManageMembers.Permissions"]}>
+              <Button component={Link} href="/admin/permissions" fz="md">
+                Permissions
+              </Button>
+            </PermissionGate>
           </div>
         </Stack>
       </Card>

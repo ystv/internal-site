@@ -36,9 +36,7 @@ async function createEvent(
   }
   if (!canCreate(payload.data.type, user)) {
     throw new Forbidden([
-      "Calendar.Admin",
       `Calendar.${payload.data.type}.Creator` as Permission,
-      `Calendar.${payload.data.type}.Admin` as Permission,
     ]);
   }
 
