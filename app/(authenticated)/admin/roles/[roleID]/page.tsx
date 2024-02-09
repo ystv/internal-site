@@ -23,15 +23,14 @@ export default async function RolePage({
   if (!role) {
     notFound();
   }
-  let usersForRole: UserType[] = [];
-  const [permissionsForRole, tempUsersForRole, users] = await Promise.all([
+  let [permissionsForRole, usersForRole, users] = await Promise.all([
     getPermissionsForRole(parseInt(params.roleID, 10)),
     getUsersForRole(parseInt(params.roleID, 10)),
     getAllUsers(),
   ]);
-  tempUsersForRole?.map((u) => {
-    usersForRole.push(u.users);
-  });
+  if (usersForRole == null) {
+    usersForRole = [];
+  }
   const permissions: string[] = PermissionEnum.options.filter(
     (x) => x !== "PUBLIC" && x !== "MEMBER",
   );
@@ -75,7 +74,7 @@ export default async function RolePage({
             <ul>
               {usersForRole.length > 0 ? (
                 usersForRole.map((user) => {
-                  return <UserRow user={user} role={role} key={user.user_id} />;
+                  return <UserRow user={user.users} role={role} key={user.users.user_id} />;
                 })
               ) : (
                 <li>This role has no users</li>

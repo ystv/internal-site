@@ -14,7 +14,7 @@ export function AddUserToRoleViews({
 }: {
   role: RoleType;
   users: ExposedUser[];
-  usersAlreadyInRole: UserType[];
+  usersAlreadyInRole: {users: UserType}[];
 }) {
   let usersNotInRole: ExposedUser[] = [];
   if (users != undefined && users.length > 0 && usersAlreadyInRole != null) {
@@ -24,7 +24,7 @@ export function AddUserToRoleViews({
       for (const tempPAll of users) {
         let exists = false;
         for (const tempPExist of usersAlreadyInRole) {
-          if (tempPAll.user_id == tempPExist.user_id) {
+          if (tempPAll.user_id == tempPExist.users.user_id) {
             exists = true;
           }
         }
