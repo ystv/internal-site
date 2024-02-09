@@ -7,29 +7,6 @@ import { addUserToRole } from "@/app/(authenticated)/admin/roles/[roleID]/rolesA
 import { useTransition } from "react";
 import { ExposedUser } from "@/features/people";
 
-export function exposedUserToUserType(users: ExposedUser[]): UserType[] {
-  let usersReturning: UserType[] = [];
-  users.map((u) => {
-    let tempNickname: string = "",
-      tempAvatar: string = "";
-    if (u.nickname != undefined) {
-      tempNickname = u.nickname;
-    }
-    if (u.avatar != undefined) {
-      tempAvatar = u.avatar;
-    }
-    let tempUser: UserType = {
-      user_id: u.user_id,
-      first_name: u.first_name,
-      last_name: u.last_name,
-      nickname: tempNickname,
-      avatar: tempAvatar,
-    };
-    usersReturning.push(tempUser);
-  });
-  return usersReturning;
-}
-
 export function AddUserToRoleViews({
   role,
   users,
@@ -39,13 +16,12 @@ export function AddUserToRoleViews({
   users: ExposedUser[];
   usersAlreadyInRole: UserType[];
 }) {
-  let tempUsers: UserType[] = exposedUserToUserType(users);
-  let usersNotInRole: UserType[] = [];
-  if (tempUsers.length > 0 && usersAlreadyInRole != null) {
+  let usersNotInRole: ExposedUser[] = [];
+  if (users != undefined && users.length > 0 && usersAlreadyInRole != null) {
     if (usersAlreadyInRole.length == 0) {
-      usersNotInRole = tempUsers;
+      usersNotInRole = users;
     } else {
-      for (const tempPAll of tempUsers) {
+      for (const tempPAll of users) {
         let exists = false;
         for (const tempPExist of usersAlreadyInRole) {
           if (tempPAll.user_id == tempPExist.user_id) {
