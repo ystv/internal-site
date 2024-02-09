@@ -1,7 +1,7 @@
 import { hasPermission } from "@/lib/auth/server";
 import { Button, Card, Group, Space, Stack } from "@mantine/core";
 import Link from "next/link";
-import { ForbiddenAny } from "@/lib/auth/errors";
+import { Forbidden } from "@/lib/auth/errors";
 import { PermissionGate } from "@/components/UserContext";
 
 export default async function AdminPage() {
@@ -22,7 +22,7 @@ export default async function AdminPage() {
     !permissionsPermission &&
     !rolePermission
   ) {
-    new ForbiddenAny("No admin permissions");
+    new Forbidden(["No admin permissions" as any]);
   }
   // Will figure out the user add in a bit
   return (

@@ -13,13 +13,7 @@ export function isNotLoggedIn(err: Error): err is NotLoggedIn {
 }
 
 export class Forbidden extends Error {
-  constructor(required: Permission) {
-    super(`Missing required permission: ${required}`);
-  }
-}
-
-export class ForbiddenAny extends Error {
-  constructor(required: any) {
-    super(`Missing required permission: ${required}`);
+  constructor(required: Permission[]) {
+    super(`Missing required permission: ${required.join(", ")}`);
   }
 }
