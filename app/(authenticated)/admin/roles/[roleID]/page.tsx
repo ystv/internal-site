@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { twMerge } from "tailwind-merge";
 import {
   getRole,
   getPermissionsForRole,
@@ -41,7 +40,7 @@ export default async function RolePage({
       <Card withBorder>
         <Group>
           <Stack gap={3}>
-            <h1 className={twMerge("text-4xl font-bold")}>{role.name}</h1>
+            <h1 className={"text-4xl font-bold"}>{role.name}</h1>
             <RoleViews role={role} />
             Role ID: {role.role_id}
             <br />
@@ -50,7 +49,7 @@ export default async function RolePage({
             Description: {role.description}
             <br />
             <br />
-            <h3 className={twMerge("text-2xl font-bold")}>Permissions</h3>
+            <h3 className={"text-2xl font-bold"}>Permissions</h3>
             <ul>
               {permissionsForRole != null && permissionsForRole.length > 0 ? (
                 permissionsForRole.map((permission) => {
@@ -66,13 +65,13 @@ export default async function RolePage({
                 <li>This role has no permissions</li>
               )}
             </ul>
-            <h4 className={twMerge("text-xl font-bold")}>Add permission</h4>
+            <h4 className={"text-xl font-bold"}>Add permission</h4>
             <AddPermissionsToRoleViews
               role={role}
               permissions={permissions}
               permissionsAlreadyInRole={permissionsForRole}
             />
-            <h3 className={twMerge("text-2xl font-bold")}>Users</h3>
+            <h3 className={"text-2xl font-bold"}>Users</h3>
             <ul>
               {usersForRole.length > 0 ? (
                 usersForRole.map((user) => {
@@ -82,7 +81,7 @@ export default async function RolePage({
                 <li>This role has no users</li>
               )}
             </ul>
-            <h4 className={twMerge("text-xl font-bold")}>Add user</h4>
+            <h4 className={"text-xl font-bold"}>Add user</h4>
             <AddUserToRoleViews
               role={role}
               users={users}
