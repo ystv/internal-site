@@ -138,14 +138,20 @@ export async function mustGetCurrentUser(req?: NextRequest): Promise<UserType> {
 export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   const user = await getCurrentUser();
   const userPerms = await resolvePermissionsForUser(user.user_id);
-  const allowedPermissions = sufficientPermissionsFor(perm);
-  let valid: boolean = false;
-  userPerms.forEach((userPerm) => {
-    if (allowedPermissions[userPerm]) {
-      valid = true;
+  for (const perm of perms) {
+    const allowedPermissions = sufficientPermissionsFor(perm);
+    let valid: boolean = false;
+    userPerms.forEach((userPerm) => {
+      if (allowedPermissions[userPerm]) {
+        valid = true;
+      }
+    });
+    if (valid) {
+      return true;
     }
-  });
-  return valid;
+  }
+
+  return false;
 }
 
 function sufficientPermissionsFor(perm: Permission): Record<string, boolean> {
