@@ -45,13 +45,20 @@ export function TextField(props: {
   );
 }
 
-export function TextAreaField(props: { name: string; label: string }) {
+export function TextAreaField(props: {
+  name: string;
+  label: string;
+  autosize?: boolean;
+  minRows?: number;
+}) {
   const ctx = useFormContext();
   return (
     <Textarea
       {...ctx.register(props.name)}
       label={props.label}
       error={ctx.formState.errors[props.name]?.message as string}
+      autosize={props.autosize ?? false}
+      minRows={props.minRows ?? 2}
     />
   );
 }

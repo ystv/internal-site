@@ -34,7 +34,7 @@ export function CreateEventForm(props: {
       initialValues={{ type: "show", host: user.user_id }}
     >
       <TextField name="name" label="Name" required placeholder={"New Event"} />
-      <TextAreaField name="description" label="Description" />
+      <TextAreaField name="description" label="Description" autosize />
       <DatePickerField name="startDate" label="Start" required />
       <DatePickerField name="endDate" label="End" required />
       <TextField name="location" label="Location" />
