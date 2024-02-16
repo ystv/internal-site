@@ -32,7 +32,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body className={inter.className}>
         <MantineProvider theme={theme} defaultColorScheme="auto">
