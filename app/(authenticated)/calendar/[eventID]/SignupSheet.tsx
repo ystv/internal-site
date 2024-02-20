@@ -5,7 +5,7 @@ import { useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
-import { Button, Modal, Paper } from "@mantine/core";
+import { ActionIcon, Button, Menu, Modal, Paper } from "@mantine/core";
 import {
   canManage,
   canManageSignUpSheet,
@@ -15,6 +15,7 @@ import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]
 import { CrewType, SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventObjectType } from "@/features/calendar/events";
 import { ExposedUser } from "@/features/people";
+import { LuMoreVertical } from "react-icons/lu";
 import {
   createSignUpSheet,
   deleteSignUpSheet,
@@ -38,15 +39,60 @@ function SignupSheet({
   );
   const readOnly = event.is_cancelled;
   const [isEditOpen, setEditOpen] = useState(false);
+  const [isCloneOpen, setCloneOpen] = useState(false);
   const [signUpCrew, setSignUpCrew] = useState<CrewType | null>(null);
+
+  const sheetWithoutCrew = useMemo(() => {
+    const result = { ...sheet };
+    sheet.crews = sheet.crews.map((x) => ({
+      ...x,
+      user_id: null,
+      custom_crew_member_name: null,
+    }));
+    return result;
+  }, [sheet]);
+
   return (
     <>
       <Paper
         shadow="sm"
         radius="md"
         withBorder
-        className="flex-grow-1 w-full p-[var(--mantine-spacing-md)] md:w-[calc(50%-theme(gap.4)/2)] lg:flex-grow-0 lg:p-[var(--mantine-spacing-xl)]"
+        className="flex-grow-1 relative w-full p-[var(--mantine-spacing-md)] md:w-[calc(50%-theme(gap.4)/2)] lg:flex-grow-0 lg:p-[var(--mantine-spacing-xl)]"
       >
+        {canManageSignUpSheet(event, sheet, me) && (
+          <Menu>
+            <Menu.Target>
+              <ActionIcon
+                aria-label="Manage"
+                variant="outline"
+                className="!absolute right-4 top-4"
+              >
+                <LuMoreVertical />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item onClick={() => setEditOpen(true)}>Edit</Menu.Item>
+              <Menu.Item onClick={() => setCloneOpen(true)}>
+                Duplicate
+              </Menu.Item>
+              <Menu.Item
+                variant="danger"
+                onClick={async () => {
+                  if (
+                    confirm(
+                      `Are you sure you want to delete the list "${sheet.title}"? This action cannot be undone.`,
+                    )
+                  ) {
+                    await deleteSignUpSheet(sheet.signup_id);
+                  }
+                }}
+              >
+                Delete
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        )}
         <h2 className={"m-0"}>{sheet.title}</h2>
         <strong className={"text-sm font-extrabold"}>
           Arrive at{" "}
@@ -173,32 +219,6 @@ function SignupSheet({
               })}
           </tbody>
         </table>
-
-        {canManageSignUpSheet(event, sheet, me) && (
-          <>
-            <br />
-            <div className={"flex justify-end gap-1"}>
-              <Button
-                variant="danger"
-                size="small"
-                onClick={async () => {
-                  if (
-                    confirm(
-                      `Are you sure you want to delete the list "${sheet.title}"? This action cannot be undone.`,
-                    )
-                  ) {
-                    await deleteSignUpSheet(sheet.signup_id);
-                  }
-                }}
-              >
-                Delete List
-              </Button>
-              <Button size="small" onClick={() => setEditOpen(true)}>
-                Edit List
-              </Button>
-            </div>
-          </>
-        )}
       </Paper>
       <Modal
         opened={isEditOpen}
@@ -206,12 +226,26 @@ function SignupSheet({
         size={"95%"}
       >
         <AddEditSignUpSheetForm
+          mode="edit"
           action={async (data) => editSignUpSheet(sheet.signup_id, data)}
           onSuccess={() => setEditOpen(false)}
           initialValues={sheet}
           submitLabel="Save"
         />
         <br />
+      </Modal>
+      <Modal
+        opened={isCloneOpen}
+        onClose={() => setCloneOpen(false)}
+        size={"95%"}
+      >
+        <AddEditSignUpSheetForm
+          mode="clone"
+          action={async (data) => createSignUpSheet(event.event_id, data)}
+          onSuccess={() => setCloneOpen(false)}
+          initialValues={sheetWithoutCrew}
+          submitLabel="Create"
+        />
       </Modal>
       <Modal opened={signUpCrew !== null} onClose={() => setSignUpCrew(null)}>
         {signUpCrew !== null && (
@@ -329,6 +363,7 @@ export function SignupSheetsView({
         size={"95%"}
       >
         <AddEditSignUpSheetForm
+          mode="create"
           action={async (sheet) => createSignUpSheet(event.event_id, sheet)}
           onSuccess={() => setCreateOpen(false)}
           initialValues={{
