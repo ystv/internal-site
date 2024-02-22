@@ -117,12 +117,6 @@ function CrewMemberField(props: { parentName: string }) {
 }
 
 export function AddEditSignUpSheetForm(props: {
-  // NB: this form is used in three cases:
-  // - creating a brand new sign-up sheet
-  // - cloning an existing one
-  // - editing an existing one
-  // In the first case there'll be no initialValues.
-  mode: "create" | "clone" | "edit";
   action: (data: z.infer<typeof SignupSheetSchema>) => Promise<FormResponse>;
   initialValues?: Partial<z.infer<typeof SignupSheetSchema>>;
   onSuccess: () => void;
@@ -138,12 +132,7 @@ export function AddEditSignUpSheetForm(props: {
       submitLabel={props.submitLabel}
     >
       <h1 className={"mb-2 mt-0 text-4xl font-bold"}>
-        {props.mode === "create"
-          ? "New"
-          : props.mode === "clone"
-          ? "Duplicate"
-          : "Edit"}{" "}
-        List
+        {props.initialValues ? "Edit" : "New"} List
       </h1>
       <TextField
         name="title"
