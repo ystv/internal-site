@@ -131,7 +131,7 @@ function SignupSheet({
                           fullWidth
                           component={"div"}
                           className={
-                            "!flex !h-auto min-h-[var(--button-height)] !cursor-default !select-text items-center !text-left !text-[--mantine-color-default-color] active:!transform-none"
+                            "!flex min-h-[var(--button-height)] !cursor-default !select-text items-center !text-left !text-[--mantine-color-default-color] active:!transform-none"
                           }
                           justify={"left"}
                           disabled={readOnly}

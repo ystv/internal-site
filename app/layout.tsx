@@ -32,17 +32,25 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body className={inter.className}>
-        <MantineProvider theme={theme} defaultColorScheme="light">
+        <MantineProvider theme={theme} defaultColorScheme="auto">
           <ModalsProvider>
             <PublicURLProvider value={process.env.PUBLIC_URL!}>
               <DebugModeProvider value={debugMode}>
                 {children}
                 <DebugIndicator />
                 <footer className="mt-8 text-center text-sm text-gray-500">
-                  Calendar version {process.env.NEXT_PUBLIC_RELEASE}.
+                  Calendar version {process.env.NEXT_PUBLIC_RELEASE}. Built and
+                  maintained by the{" "}
+                  <a
+                    href="https://ystv.slack.com/archives/C05UATQKUMA"
+                    className="underline"
+                  >
+                    YSTV Computing Team
+                  </a>
+                  .
                 </footer>
               </DebugModeProvider>
             </PublicURLProvider>

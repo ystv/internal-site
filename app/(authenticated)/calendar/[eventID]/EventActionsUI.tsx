@@ -17,7 +17,7 @@ import {
   CheckBoxField,
   ConditionalField,
   DatePickerField,
-  MemberSelect,
+  SearchedMemberSelect,
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
@@ -28,6 +28,8 @@ import { Button, Menu, Modal, Select, Text } from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import { useRouter } from "next/navigation";
 import { PermissionGate } from "@/components/UserContext";
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import type { Project } from "@/lib/adamrms";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -49,13 +51,60 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
         condition={(t) => t !== "show"}
         childFieldName="host"
       >
-        <MemberSelect name="host" label="Host" />
+        <SearchedMemberSelect name="host" label="Host" />
       </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="is_private" label="Private Event" />*/}
       <br />
       <CheckBoxField name="is_tentative" label="Tentative Event" />
     </Form>
+  );
+}
+
+function AdamRMSLinkModal(props: { eventID: number; candidates: Project[] }) {
+  const [isPending, startTransition] = useTransition();
+  const modals = useModals();
+  return (
+    <form
+      action={(data) => {
+        startTransition(async () => {
+          const res = await linkAdamRMSProject(
+            props.eventID,
+            parseInt(data.get("projectID") as string, 10),
+          );
+          if (res.ok) {
+            modals.closeAll();
+          } else {
+            modals.openModal({
+              id: "link-adamrms-error",
+              title: "Error",
+              children: (
+                <>
+                  <Text>{res.errors?.root}</Text>
+                  <Button
+                    onClick={() => modals.closeModal("link-adamrms-error")}
+                  >
+                    Close
+                  </Button>
+                </>
+              ),
+            });
+          }
+        });
+      }}
+    >
+      <Select
+        name="projectID"
+        label="Project"
+        data={props.candidates.map((proj) => ({
+          value: proj.projects_id.toString(10),
+          label: proj.projects_name,
+        }))}
+      />
+      <Button type="submit" disabled={isPending}>
+        Link
+      </Button>
+    </form>
   );
 }
 
@@ -147,54 +196,15 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         modals.openModal({
           title: "Link AdamRMS Project",
           children: (
-            <form
-              action={(data) => {
-                startTransition(async () => {
-                  const res = await linkAdamRMSProject(
-                    props.event.event_id,
-                    parseInt(data.get("projectID") as string, 10),
-                  );
-                  if (res.ok) {
-                    modals.closeAll();
-                  } else {
-                    modals.openModal({
-                      id: "link-adamrms-error",
-                      title: "Error",
-                      children: (
-                        <>
-                          <Text>{res.errors?.root}</Text>
-                          <Button
-                            onClick={() =>
-                              modals.closeModal("link-adamrms-error")
-                            }
-                          >
-                            Close
-                          </Button>
-                        </>
-                      ),
-                    });
-                  }
-                });
-              }}
-            >
-              <Select
-                name="projectID"
-                label="Project"
-                data={candidates.candidates!.map((proj) => ({
-                  value: proj.projects_id.toString(10),
-                  label: proj.projects_name,
-                }))}
-              />
-              {/* TODO: this isPending is captured in the closure so doesn't update */}
-              <Button type="submit" disabled={isPending}>
-                Link
-              </Button>
-            </form>
+            <AdamRMSLinkModal
+              eventID={props.event.event_id}
+              candidates={candidates.candidates!}
+            />
           ),
         });
       });
     },
-    [modals, isPending, props.event.event_id],
+    [modals, props.event.event_id],
   );
 
   return (

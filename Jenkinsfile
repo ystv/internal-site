@@ -41,32 +41,35 @@ pipeline {
     stage('Push') {
       when {
         anyOf {
-          branch 'master'
+          branch 'main'
           tag 'v*'
+          changeRequest target: 'main'
         }
       }
       steps {
-        withDockerRegistry(credentialsId: 'docker-registry', url: 'https://registry.comp.ystv.co.uk') {
-          sh "docker push registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}"
-          script {
-            if (env.BRANCH_NAME == 'master') {
-              sh "docker tag registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag} registry.comp.ystv.co.uk/ystv/calendar2023:latest"
-              sh 'docker push registry.comp.ystv.co.uk/ystv/calendar2023:latest'
-            }
-          }
-        }
+        dockerPush image: 'registry.comp.ystv.co.uk/ystv/calendar2023', tag: imageTag
+      }
+    }
+
+    stage('Deploy preview') {
+      when {
+        changeRequest target: 'main'
+      }
+      steps {
+        deployPreview action: 'deploy', job: 'calendar-preview', urlSuffix: 'internal.dev.ystv.co.uk'
       }
     }
 
     stage('Deploy to development') {
       when {
-        branch 'master'
+        branch 'main'
       }
       steps {
         build job: 'Deploy Nomad Job', parameters: [
           string(name: 'JOB_FILE', value: 'calendar-dev.nomad'),
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}")
-        ]
+        ], wait: true
+        deployPreview action: 'cleanup'
       }
     }
 

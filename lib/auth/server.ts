@@ -71,6 +71,7 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
     sameSite: "lax",
     secure:
       process.env.NODE_ENV === "production" && process.env.E2E_TEST !== "true",
+    domain: process.env.COOKIE_DOMAIN,
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
