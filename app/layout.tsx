@@ -42,11 +42,15 @@ export default async function RootLayout({
                 {children}
                 <DebugIndicator />
                 <footer className="mt-8 text-center text-sm text-gray-500">
-                  Calendar version {process.env.NEXT_PUBLIC_RELEASE}.{" "}
-                  Built and maintained by the{" "}
-                  <a href="https://ystv.slack.com/archives/C05UATQKUMA" className="underline">
+                  Calendar version {process.env.NEXT_PUBLIC_RELEASE}. Built and
+                  maintained by the{" "}
+                  <a
+                    href="https://ystv.slack.com/archives/C05UATQKUMA"
+                    className="underline"
+                  >
                     YSTV Computing Team
-                  </a>.
+                  </a>
+                  .
                 </footer>
               </DebugModeProvider>
             </PublicURLProvider>
