@@ -329,12 +329,15 @@ export function SignupSheetsView({
             No crew lists have been added yet.
           </h2>
         ))}
-      {canManage(event, me) && !event.is_cancelled && (
-        <div className={"mx-auto text-right"}>
-          <Button onClick={() => setCreateOpen(true)}>Add Crew List</Button>
-          <br />
-        </div>
-      )}
+      {canManage(event, me) &&
+        !event.is_cancelled &&
+        /* Expanded empty state above - avoid duplicate button */
+        event.created_by !== me.user_id && (
+          <div className={"mx-auto text-right"}>
+            <Button onClick={() => setCreateOpen(true)}>Add Crew List</Button>
+            <br />
+          </div>
+        )}
       {event.signup_sheets.length != 0 && <br />}
       <div className="flex flex-row flex-wrap gap-4">
         {event.signup_sheets.map((ss) => (
