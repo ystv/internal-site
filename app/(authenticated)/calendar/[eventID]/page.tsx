@@ -20,7 +20,7 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
-import { Alert, Text } from "@mantine/core";
+import { Alert, Space, Text } from "@mantine/core";
 import { TbInfoCircle, TbAlertTriangle } from "react-icons/tb";
 import slackApiConnection, {
   isSlackEnabled,
@@ -110,7 +110,12 @@ async function CheckWithTechPrompt({
   if (!slack) {
     return null;
   }
-  return <CheckWithTechPromptContents eventID={event.event_id} />;
+  return (
+    <>
+      <CheckWithTechPromptContents eventID={event.event_id} />
+      <Space h={"lg"} />
+    </>
+  );
 }
 
 async function ShowView({
