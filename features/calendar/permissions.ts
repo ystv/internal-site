@@ -28,7 +28,7 @@ export function adminEventTypes(userPermissions: Permission[]): EventType[] {
       permittedEventTypes.push("social");
     }
   }
-  return permittedEventTypes;
+  return Array.from(new Set(permittedEventTypes));
 }
 
 /**
@@ -48,7 +48,7 @@ export function creatableEventTypes(
   if (userPermissions.includes("Calendar.Social.Creator")) {
     base.push("social");
   }
-  return base;
+  return Array.from(new Set(base));
 }
 
 /**
