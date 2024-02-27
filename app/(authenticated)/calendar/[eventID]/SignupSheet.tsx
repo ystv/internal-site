@@ -308,6 +308,7 @@ export function SignupSheetsView({
   return (
     <>
       {event.signup_sheets.length === 0 &&
+        !event.is_cancelled &&
         (event.created_by === me.user_id ? (
           <Alert
             variant="light"
