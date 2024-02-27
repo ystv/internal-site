@@ -5,7 +5,7 @@ import { useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
-import { Button, Modal, Paper } from "@mantine/core";
+import { Alert, Button, Modal, Paper } from "@mantine/core";
 import {
   canManage,
   canManageSignUpSheet,
@@ -22,6 +22,7 @@ import {
   removeSelfFromRole,
   signUpToRole,
 } from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
+import { TbCalendarCheck } from "react-icons/tb";
 
 function SignupSheet({
   event,
@@ -306,17 +307,37 @@ export function SignupSheetsView({
   const [isCreateOpen, setCreateOpen] = useState(false);
   return (
     <>
-      {event.signup_sheets.length === 0 && (
-        <h2 className={"py-8 text-center"}>
-          No crew lists have been added yet.
-        </h2>
-      )}
-      {canManage(event, me) && !event.is_cancelled && (
-        <div className={"mx-auto text-right"}>
-          <Button onClick={() => setCreateOpen(true)}>Add Crew List</Button>
-          <br />
-        </div>
-      )}
+      {event.signup_sheets.length === 0 &&
+        !event.is_cancelled &&
+        (event.created_by === me.user_id ? (
+          <Alert
+            variant="light"
+            color="blue"
+            title="Event Created"
+            icon={<TbCalendarCheck />}
+          >
+            <strong>Your event has been created! What&apos;s next?</strong>
+            <p>
+              Next, add a crew sheet so people can sign up. If you&apos;re not
+              yet ready to have crew, you can lock it, but add at least the
+              producer (you!) so people know who to contact.
+            </p>
+            <Button onClick={() => setCreateOpen(true)}>Add Crew List</Button>
+          </Alert>
+        ) : (
+          <h2 className={"py-8 text-center"}>
+            No crew lists have been added yet.
+          </h2>
+        ))}
+      {canManage(event, me) &&
+        !event.is_cancelled &&
+        /* Expanded empty state above - avoid duplicate button */
+        event.created_by !== me.user_id && (
+          <div className={"mx-auto text-right"}>
+            <Button onClick={() => setCreateOpen(true)}>Add Crew List</Button>
+            <br />
+          </div>
+        )}
       {event.signup_sheets.length != 0 && <br />}
       <div className="flex flex-row flex-wrap gap-4">
         {event.signup_sheets.map((ss) => (
