@@ -29,6 +29,8 @@ import { ConversationsInfoResponse } from "@slack/web-api/dist/response";
 import { Suspense } from "react";
 import SlackChannelName from "@/components/slack/SlackChannelName";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
+import { CheckWithTechPromptContents } from "./CheckWithTech";
+import { C } from "@fullcalendar/core/internal-common";
 
 async function AttendeesView({
   event,
@@ -86,6 +88,31 @@ async function AttendeesView({
   );
 }
 
+async function CheckWithTechPrompt({
+  event,
+  me,
+}: {
+  event: EventObjectType;
+  me: UserType;
+}) {
+  if (me.user_id !== event.host) {
+    return null;
+  }
+  if (event.adam_rms_project_id) {
+    // assume already checked
+    return null;
+  }
+  if (event.signup_sheets.length === 0) {
+    // signup sheets take priority
+    return null;
+  }
+  const slack = await slackApiConnection();
+  if (!slack) {
+    return null;
+  }
+  return <CheckWithTechPromptContents eventID={event.event_id} />;
+}
+
 async function ShowView({
   event,
   me,
@@ -103,6 +130,7 @@ async function ShowView({
     return (
       <CrewPositionsProvider positions={positions}>
         <MembersProvider members={members}>
+          <CheckWithTechPrompt event={event} me={me} />
           <SignupSheetsView event={event} me={me} />
         </MembersProvider>
       </CrewPositionsProvider>
