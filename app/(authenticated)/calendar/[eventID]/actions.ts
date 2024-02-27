@@ -269,3 +269,30 @@ export async function deleteEvent(eventID: number) {
   revalidatePath("/calendar");
   return { ok: true };
 }
+
+export async function doCheckWithTech(
+  eventID: number,
+  memo: string,
+  isConfident: boolean,
+) {
+  const me = await mustGetCurrentUser();
+  const event = await Calendar.getEvent(eventID);
+  invariant(event, "Event does not exist");
+
+  if (!canManage(event, me)) {
+    return {
+      ok: false,
+      errors: {
+        root: "You do not have permission to do this.",
+      },
+    };
+  }
+
+  if (isConfident) {
+    await Calendar.postCheckWithTech(eventID, memo);
+  } else {
+    await Calendar.postTechHelpRequest(eventID, memo);
+  }
+
+  return { ok: true };
+}
