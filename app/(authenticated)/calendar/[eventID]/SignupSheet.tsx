@@ -23,6 +23,7 @@ import {
   signUpToRole,
 } from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
 import { TbCalendarCheck } from "react-icons/tb";
+import dayjs from "dayjs";
 
 function SignupSheet({
   event,
@@ -309,6 +310,7 @@ export function SignupSheetsView({
     <>
       {event.signup_sheets.length === 0 &&
         !event.is_cancelled &&
+        dayjs(event.start_date).isAfter(new Date()) &&
         (event.created_by === me.user_id ? (
           <Alert
             variant="light"
