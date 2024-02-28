@@ -1,4 +1,5 @@
 import * as z from "zod"
+import { CheckWithTechStatus } from "@prisma/client"
 import { CompleteAttendee, AttendeeModel, CompleteUser, UserModel, CompleteSignupSheet, SignupSheetModel } from "./index"
 
 export const _EventModel = z.object({
@@ -21,6 +22,7 @@ export const _EventModel = z.object({
   host: z.number().int(),
   adam_rms_project_id: z.number().int().nullish(),
   slack_channel_id: z.string(),
+  check_with_tech_status: z.nativeEnum(CheckWithTechStatus).nullish(),
 })
 
 export interface CompleteEvent extends z.infer<typeof _EventModel> {
