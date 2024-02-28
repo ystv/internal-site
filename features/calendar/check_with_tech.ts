@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth/server";
 import slackApiConnection from "@/lib/slack/slackApiConnection";
 import { getEvent } from "./events";
 import dayjs from "dayjs";
+import { prisma } from "@/lib/db";
 
 export async function postCheckWithTech(eventID: number, memo: string) {
   const slack = await slackApiConnection();
@@ -20,7 +21,7 @@ export async function postCheckWithTech(eventID: number, memo: string) {
   const lines = [
     `*#check-with-tech request from ${user}*`,
     event.name,
-    dayjs(event.start_date).format("dddd, MMMM D, YYYY") +
+    dayjs(event.start_date).format("dddd, MMMM D, YYYY h:mma") +
       " - " +
       (dayjs(event.end_date).isSame(event.start_date, "day")
         ? dayjs(event.end_date).format("h:mma")
@@ -34,6 +35,11 @@ export async function postCheckWithTech(eventID: number, memo: string) {
     channel: process.env.SLACK_CHECK_WITH_TECH_CHANNEL ?? "#check-with-tech",
     text: lines.join("\n"),
     mrkdwn: true,
+  });
+
+  await prisma.event.update({
+    where: { event_id: eventID },
+    data: { check_with_tech_status: "Requested" },
   });
 }
 
@@ -54,7 +60,7 @@ export async function postTechHelpRequest(eventID: number, memo: string) {
   const lines = [
     `*${user} needs help with their production*`,
     event.name,
-    dayjs(event.start_date).format("dddd, MMMM D, YYYY") +
+    dayjs(event.start_date).format("dddd, MMMM D, YYYY h:mma") +
       " - " +
       (dayjs(event.end_date).isSame(event.start_date, "day")
         ? dayjs(event.end_date).format("h:mma")

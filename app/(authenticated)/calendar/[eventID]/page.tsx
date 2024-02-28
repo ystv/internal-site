@@ -98,7 +98,7 @@ async function CheckWithTechPrompt({
   if (me.user_id !== event.host) {
     return null;
   }
-  if (event.adam_rms_project_id) {
+  if (event.adam_rms_project_id || event.check_with_tech_status) {
     // assume already checked
     return null;
   }

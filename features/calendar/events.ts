@@ -3,6 +3,7 @@ import { produce } from "immer";
 import { prisma } from "@/lib/db";
 import {
   Attendee,
+  CheckWithTechStatus,
   Crew,
   Event,
   Position,
@@ -44,6 +45,7 @@ export interface EventObjectType {
   host: number;
   host_user: ExposedUser;
   slack_channel_id: string | null;
+  check_with_tech_status: CheckWithTechStatus | null;
 }
 
 export interface EventCreateUpdateFields {
