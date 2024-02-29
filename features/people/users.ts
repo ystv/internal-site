@@ -62,6 +62,17 @@ export async function setUserPreference<
   });
 }
 
+export async function setUserNickname<
+  K extends keyof PrismaJson.UserPreferences,
+>(userID: number, nickname: string | undefined) {
+  await prisma.$transaction(async ($db) => {
+    await $db.user.update({
+      where: { user_id: userID },
+      data: { nickname },
+    });
+  });
+}
+
 export async function setUserSlackID(userID: number, slackID: string) {
   await prisma.$transaction(async ($db) => {
     await $db.user.update({

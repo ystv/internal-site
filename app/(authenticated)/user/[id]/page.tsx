@@ -2,12 +2,10 @@ import { getCurrentUser, logout, requirePermission } from "@/lib/auth/server";
 import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { notFound } from "next/navigation";
-import { getUserName } from "@/components/UserHelpers";
 import {
   Avatar,
   Button,
   Card,
-  CopyButton,
   Group,
   Skeleton,
   Space,
@@ -20,6 +18,26 @@ import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
 import { Suspense } from "react";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
+import { NicknameEdit } from "@/components/NicknameEditButton";
+import { FormResponse } from "@/components/Form";
+import { zfd } from "zod-form-data";
+import { z } from "zod";
+import { zodErrorResponse } from "@/components/FormServerHelpers";
+
+async function setNickname(
+  data: unknown,
+): Promise<FormResponse<{ newNickname: string | null }>> {
+  "use server";
+  const user = await getCurrentUser();
+  const payload = zfd
+    .formData({ nickname: z.string().nullable() })
+    .safeParse(data);
+  if (!payload.success) {
+    return zodErrorResponse(payload.error);
+  }
+  People.setUserNickname(user.user_id, payload.data.nickname ?? undefined);
+  return { ok: true, newNickname: payload.data.nickname };
+}
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;
@@ -48,7 +66,14 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             </>
           )}
           <Stack gap={3}>
-            <h2 className="my-0">{getUserName(user)}</h2>
+            <NicknameEdit
+              nickname={user.nickname}
+              user={user}
+              action={async (data) => {
+                "use server";
+                return setNickname(data);
+              }}
+            />
             <h4 className="my-0 text-[--mantine-color-placeholder]">
               {user.email}
             </h4>
