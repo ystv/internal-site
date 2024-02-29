@@ -36,7 +36,7 @@ export function NicknameEdit(props: {
             toggleModal(true);
           }}
         >
-          <h2 className="my-0">"{nickname}"</h2>
+          <h2 className="my-0">&quot;{nickname}&quot;</h2>
           {!nickname && (
             <HoverCard>
               <HoverCardTarget>
