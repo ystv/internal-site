@@ -334,7 +334,8 @@ export function SignupSheetsView({
       {canManage(event, me) &&
         !event.is_cancelled &&
         /* Expanded empty state above - avoid duplicate button */
-        event.created_by !== me.user_id && (
+        (event.signup_sheets.length !== 0 ||
+          event.created_by !== me.user_id) && (
           <div className={"mx-auto text-right"}>
             <Button onClick={() => setCreateOpen(true)}>Add Crew List</Button>
             <br />
