@@ -31,6 +31,7 @@ import SlackChannelName from "@/components/slack/SlackChannelName";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import { CheckWithTechPromptContents } from "./CheckWithTech";
 import { C } from "@fullcalendar/core/internal-common";
+import dayjs from "dayjs";
 
 async function AttendeesView({
   event,
@@ -100,6 +101,10 @@ async function CheckWithTechPrompt({
   }
   if (event.adam_rms_project_id || event.check_with_tech_status) {
     // assume already checked
+    return null;
+  }
+  if (dayjs(event.start_date).isBefore(new Date())) {
+    // no point checking something in the past
     return null;
   }
   if (event.signup_sheets.length === 0) {
