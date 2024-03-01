@@ -294,7 +294,7 @@ export function SearchedMemberSelect(props: {
       return null;
     }
     return selectController.field.value.toString(10);
-  }, selectController.field.value);
+  }, [selectController.field.value]);
   return (
     <>
       {props.label && <InputLabel>{props.label}</InputLabel>}
