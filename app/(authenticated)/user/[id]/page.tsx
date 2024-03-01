@@ -69,10 +69,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             <NicknameEdit
               nickname={user.nickname}
               user={user}
-              action={async (data) => {
-                "use server";
-                return setNickname(data);
-              }}
+              action={setNickname}
             />
             <h4 className="my-0 text-[--mantine-color-placeholder]">
               {user.email}

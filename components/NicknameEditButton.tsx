@@ -79,6 +79,7 @@ export function NicknameEdit(props: {
           }}
           schema={zfd.formData({ nickname: z.string().nullable() })}
           initialValues={{ nickname: nickname }}
+          submitLabel="Update"
         >
           <TextField name="nickname" label="New Nickname" required />
         </Form>
