@@ -149,7 +149,7 @@ async function SlackBanner(props: { event: EventObjectType }) {
     return null;
   }
   const me = await getCurrentUser();
-  if (me.slack_user_id) {
+  if (me.identities.some((x) => x.provider === "slack")) {
     return null;
   }
 

@@ -2,15 +2,18 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { Forbidden, NotLoggedIn } from "./errors";
 import { Permission } from "./permissions";
-import { User } from "@prisma/client";
+import { Identity, User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
-import { cookies } from "next/headers";
 
-export type UserType = User & {
+export interface UserWithIdentities extends User {
+  identities: Identity[];
+}
+
+export type UserType = UserWithIdentities & {
   permissions: Permission[];
 };
 
@@ -99,6 +102,7 @@ export async function getCurrentUserOrNull(
   // (See below for why we don't store the user object in the session.)
   const user = await prisma.user.findUnique({
     where: { user_id: session.userID },
+    include: { identities: true },
   });
   if (!user) {
     return "User not found";
