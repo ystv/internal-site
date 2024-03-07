@@ -26,7 +26,6 @@ import invariant from "@/lib/invariant";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { cache } from "react";
 
 export async function editEvent(
   eventID: number,
