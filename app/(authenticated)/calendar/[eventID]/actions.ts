@@ -26,6 +26,7 @@ import invariant from "@/lib/invariant";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
+import { cache } from "react";
 
 export async function editEvent(
   eventID: number,
@@ -295,4 +296,8 @@ export async function doCheckWithTech(
   }
 
   return { ok: true };
+}
+
+export async function equipmentListTemplates() {
+  return await Calendar.getEquipmentListTemplates();
 }

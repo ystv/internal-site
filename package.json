@@ -12,6 +12,7 @@
     "prisma:migrateDev": "dotenv -c ${NODE_ENV:-development} -- prisma migrate dev --schema ./lib/db/schema.prisma",
     "prisma:migrateProd": "dotenv -c ${NODE_ENV:-development} -- prisma migrate deploy --schema ./lib/db/schema.prisma",
     "prisma:seed": "dotenv -c ${NODE_ENV:-development} -- prisma db seed",
+    "prisma:studio": "dotenv -c ${NODE_ENV:-development} -- prisma studio",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prettify": "prettier --write .",
@@ -20,7 +21,8 @@
     "prepare": "husky"
   },
   "prisma": {
-    "seed": "tsx scripts/seed.mts"
+    "seed": "tsx scripts/seed.mts",
+    "schema": "lib/db/schema.prisma"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.8",

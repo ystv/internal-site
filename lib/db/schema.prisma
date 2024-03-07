@@ -195,3 +195,13 @@ model Quote {
 
   @@map("quotes")
 }
+
+model EquipmentListTemplate {
+  equipment_list_template_id Int     @id @default(autoincrement())
+  name                       String
+  description                String  @default("")
+  items                      String
+  archived                   Boolean @default(false)
+
+  @@map("equipment_list_templates")
+}
