@@ -10134,6 +10134,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hls.js@npm:^1.5.7":
+  version: 1.5.7
+  resolution: "hls.js@npm:1.5.7"
+  checksum: 2591fbcdb247c06806154974b8957b78f841b33ca3b0823ea30773d554c6f13ccdf6da3c24c764fbed898dfdd54234769ebd868a5b98196671a4852c77f06e2c
+  languageName: node
+  linkType: hard
+
 "hmac-drbg@npm:^1.0.1":
   version: 1.0.1
   resolution: "hmac-drbg@npm:1.0.1"
@@ -10387,6 +10394,7 @@ __metadata:
     fetch-cookie: ^2.1.0
     fs: ^0.0.1-security
     google-auth-library: ^9.0.0
+    hls.js: ^1.5.7
     husky: ^9.0.6
     ical-generator: ^5.0.1
     immer: ^10.0.2

@@ -59,6 +59,7 @@
     "fetch-cookie": "^2.1.0",
     "fs": "^0.0.1-security",
     "google-auth-library": "^9.0.0",
+    "hls.js": "^1.5.7",
     "ical-generator": "^5.0.1",
     "immer": "^10.0.2",
     "jwt-decode": "^4.0.0",
