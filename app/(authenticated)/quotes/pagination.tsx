@@ -20,6 +20,7 @@ export function QuotesPagination({
       <Pagination
         total={totalPages}
         value={page}
+        withEdges
         onChange={(page) => {
           router.push(`/quotes?page=${page}`);
         }}
