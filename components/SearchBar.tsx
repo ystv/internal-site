@@ -9,8 +9,8 @@ export function SearchBar(props: {
   label?: string;
   withClear?: boolean;
 }) {
-  const [searchQueryState, setSearchQueryState] = useState<string | undefined>(
-    props.default,
+  const [searchQueryState, setSearchQueryState] = useState<string>(
+    props.default ?? "",
   );
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function SearchBar(props: {
     return () => clearTimeout(delayInputTimeoutId);
   }, [searchQueryState, props.delay]);
 
-  const isSearchEmpty = searchQueryState == undefined || searchQueryState == "";
+  const isSearchEmpty = searchQueryState == "";
 
   return (
     <TextInput
@@ -34,7 +34,7 @@ export function SearchBar(props: {
           </Tooltip>
         )
       }
-      defaultValue={props.default}
+      // defaultValue={props.default}
       onChange={async (event) => {
         setSearchQueryState(event.currentTarget.value);
       }}
