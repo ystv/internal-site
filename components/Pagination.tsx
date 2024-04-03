@@ -5,52 +5,57 @@ import {
   Pagination,
   Text,
 } from "@mantine/core";
+import React, { createContext, useContext } from "react";
 
-export function PageControls(props: {
-  setPage: (page: number) => void;
-  totalPages: number;
-  currentPage: number;
-}) {
+/**
+ * Relies on PaginationContext
+ */
+export function PageControls() {
+  const pagination = usePaginationContext();
+
   return (
     <Pagination
       withEdges
       siblings={1}
       boundaries={0}
-      onChange={props.setPage}
-      total={props.totalPages}
-      value={props.currentPage}
+      onChange={pagination.page.set}
+      total={pagination.page.total}
+      value={pagination.page.current}
     />
   );
 }
 
-export function CountControls(props: {
-  values: string[];
-  current: string | number;
-  setCount: (count: number) => void;
-  currentRange?: string | undefined;
-  total?: number | undefined;
-}) {
+/**
+ * Relies on PaginationContext
+ */
+export function CountControls() {
+  const pagination = usePaginationContext();
+
   return (
     <Group>
-      {props.currentRange != undefined && (
+      {pagination.count.range != undefined && (
         <>
           <Text>
-            Showing {props.currentRange}{" "}
-            {props.total != undefined && <>of {props.total}</>}
+            Showing {pagination.count.range}{" "}
+            {pagination.totalItems != undefined && (
+              <>of {pagination.totalItems}</>
+            )}
           </Text>
         </>
       )}
       <InputLabel ml={"auto"}>Show</InputLabel>
       <NativeSelect
         value={
-          props.values.includes(`${props.current}`) ? props.current : "custom"
+          pagination.count.values.includes(`${pagination.count.current}`)
+            ? pagination.count.current
+            : "custom"
         }
         onChange={async (event) => {
           const newCount = Number(event.currentTarget.value);
-          props.setCount(newCount);
+          pagination.count.set(newCount);
         }}
       >
-        {props.values.map((selectValue) => {
+        {pagination.count.values.map((selectValue) => {
           return (
             <option value={selectValue} key={selectValue}>
               {selectValue}
@@ -59,12 +64,61 @@ export function CountControls(props: {
         })}
         {/* Allows custom count values to be entered 
               without showing them in the list */}
-        {!props.values.includes(`${props.current}`) && (
+        {!pagination.count.values.includes(`${pagination.count.current}`) && (
           <option value={"custom"} hidden>
-            {props.current}
+            {pagination.count.current}
           </option>
         )}
       </NativeSelect>
     </Group>
   );
 }
+
+type TPaginationContext = {
+  page: {
+    current: number;
+    set: (page: number) => void;
+    total: number;
+  };
+  count: {
+    current: number;
+    set: (count: number) => void;
+    values: string[];
+    range?: string | undefined;
+  };
+  totalItems?: number;
+};
+
+const PaginationContext = createContext<TPaginationContext>(
+  null as unknown as TPaginationContext,
+);
+
+export function PaginationProvider(props: {
+  children: React.ReactNode;
+  page: {
+    current: number;
+    set: (page: number) => void;
+    total: number;
+  };
+  count: {
+    current: number;
+    set: (count: number) => void;
+    values: string[];
+    range?: string | undefined;
+  };
+  totalItems?: number;
+}) {
+  return (
+    <PaginationContext.Provider
+      value={{
+        page: props.page,
+        count: props.count,
+        totalItems: props.totalItems,
+      }}
+    >
+      {props.children}
+    </PaginationContext.Provider>
+  );
+}
+
+export const usePaginationContext = () => useContext(PaginationContext);

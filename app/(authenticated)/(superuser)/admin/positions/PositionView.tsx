@@ -28,7 +28,11 @@ import { FaEdit, FaPlus } from "react-icons/fa";
 import { MdDeleteForever, MdMoreHoriz } from "react-icons/md";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { CountControls, PageControls } from "@/components/Pagination";
+import {
+  CountControls,
+  PageControls,
+  PaginationProvider,
+} from "@/components/Pagination";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { SearchBar } from "@/components/SearchBar";
@@ -113,161 +117,157 @@ export function PositionView(props: {
   // Wrapped in ScrollArea to avoid jerky scrolling on page change
   return (
     <ScrollArea>
-      <Modal
-        opened={createModalOpened}
-        onClose={closeCreateModal}
-        title={"Create Position"}
+      <PaginationProvider
+        count={{
+          current: searchParamsState.count,
+          set(count) {
+            updateState({ count });
+          },
+          values: ["10", "25", "50", "100"],
+          range: currentRange,
+        }}
+        page={{
+          current: positionsContext.page,
+          set(page) {
+            updateState({ page });
+          },
+          total: Math.ceil(positionsContext.total / searchParamsState.count),
+        }}
+        totalItems={positionsContext.total}
       >
-        <CreatePositionForm
-          action={props.createPosition}
-          onSuccess={(): void => {
-            updatePositions();
-            closeCreateModal();
-          }}
-        />
-      </Modal>
-      <Modal
-        opened={editModalOpened}
-        onClose={closeEditModal}
-        title={"Edit Position"}
-      >
-        <UpdatePositionForm
-          action={props.updatePosition}
-          onSuccess={(): void => {
-            updatePositions();
-            closeEditModal();
-            setSelectedPosition(undefined);
-          }}
-          selectedPosition={selectedPosition}
-        />
-      </Modal>
-      <Stack>
-        <SearchBar
-          default={validSearchParams.query}
-          onChange={(query) => {
-            updateState({
-              query: query !== "" ? query : undefined,
-            });
-          }}
-          label="Search by Name"
-          withClear
-        />
-        <Group>
-          <Button leftSection={<FaPlus />} onClick={openCreateModal}>
-            Create Position
-          </Button>
-        </Group>
-        {positionsContext.total > 0 ? (
-          <>
-            <CountControls
-              current={searchParamsState.count}
-              setCount={(count) => updateState({ count: count })}
-              values={["10", "25", "50", "100"]}
-              currentRange={currentRange}
-              total={positionsContext.total}
-            />
-            <Center w={"max"}>
-              <PageControls
-                setPage={(page) => updateState({ page })}
-                currentPage={positionsContext.page}
-                totalPages={Math.ceil(
-                  positionsContext.total / searchParamsState.count,
-                )}
-              />
-            </Center>
-          </>
-        ) : (
-          <Text>No results</Text>
-        )}
-        {positionsContext.positions.map((position) => {
-          return (
-            <Card key={position.position_id} withBorder>
-              <Group>
-                <Text>{position.name}</Text>
-                <Stack gap={0}>
-                  <Text size="sm">{position.brief_description}</Text>
-                  <Text size="xs" c={"dimmed"}>
-                    {position.full_description}
-                  </Text>
-                </Stack>
-                <Menu position="left">
-                  <Menu.Target>
-                    <ActionIcon ml={"auto"}>
-                      <MdMoreHoriz />
-                    </ActionIcon>
-                  </Menu.Target>
-                  <Menu.Dropdown miw={150} right={10} mr={10}>
-                    <Menu.Item
-                      onClick={() => {
-                        setSelectedPosition(position);
-                        openEditModal();
-                      }}
-                    >
-                      <Group>
-                        <FaEdit />
-                        Edit
-                      </Group>
-                    </Menu.Item>
-                    <Menu.Item
-                      aria-label="Delete position"
-                      color="red"
-                      onClick={() => {
-                        openDeleteModal({
-                          onCancel: () => {},
-                          onConfirm: async () => {
-                            const deletedPosition = await props.deletePosition({
-                              position_id: position.position_id,
-                            });
+        <Modal
+          opened={createModalOpened}
+          onClose={closeCreateModal}
+          title={"Create Position"}
+        >
+          <CreatePositionForm
+            action={props.createPosition}
+            onSuccess={(): void => {
+              updatePositions();
+              closeCreateModal();
+            }}
+          />
+        </Modal>
+        <Modal
+          opened={editModalOpened}
+          onClose={closeEditModal}
+          title={"Edit Position"}
+        >
+          <UpdatePositionForm
+            action={props.updatePosition}
+            onSuccess={(): void => {
+              updatePositions();
+              closeEditModal();
+              setSelectedPosition(undefined);
+            }}
+            selectedPosition={selectedPosition}
+          />
+        </Modal>
+        <Stack>
+          <SearchBar
+            default={validSearchParams.query}
+            onChange={(query) => {
+              updateState({
+                query: query !== "" ? query : undefined,
+              });
+            }}
+            label="Search by Name"
+            withClear
+          />
+          <Group>
+            <Button leftSection={<FaPlus />} onClick={openCreateModal}>
+              Create Position
+            </Button>
+          </Group>
+          {positionsContext.total > 0 ? (
+            <>
+              <CountControls />
+              <Center w={"max"}>
+                <PageControls />
+              </Center>
+            </>
+          ) : (
+            <Text>No results</Text>
+          )}
+          {positionsContext.positions.map((position) => {
+            return (
+              <Card key={position.position_id} withBorder>
+                <Group>
+                  <Text>{position.name}</Text>
+                  <Stack gap={0}>
+                    <Text size="sm">{position.brief_description}</Text>
+                    <Text size="xs" c={"dimmed"}>
+                      {position.full_description}
+                    </Text>
+                  </Stack>
+                  <Menu position="left">
+                    <Menu.Target>
+                      <ActionIcon ml={"auto"}>
+                        <MdMoreHoriz />
+                      </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown miw={150} right={10} mr={10}>
+                      <Menu.Item
+                        onClick={() => {
+                          setSelectedPosition(position);
+                          openEditModal();
+                        }}
+                      >
+                        <Group>
+                          <FaEdit />
+                          Edit
+                        </Group>
+                      </Menu.Item>
+                      <Menu.Item
+                        aria-label="Delete position"
+                        color="red"
+                        onClick={() => {
+                          openDeleteModal({
+                            onCancel: () => {},
+                            onConfirm: async () => {
+                              const deletedPosition =
+                                await props.deletePosition({
+                                  position_id: position.position_id,
+                                });
 
-                            if (!deletedPosition.ok) {
-                              notifications.show({
-                                message: "Unable to delete position",
-                                color: "red",
-                              });
-                            } else {
-                              updatePositions();
-                              notifications.show({
-                                message: `Successfully deleted "${position.name}"`,
-                                color: "green",
-                              });
-                            }
-                          },
-                          positionName: position.name,
-                        });
-                      }}
-                    >
-                      <Group>
-                        <MdDeleteForever />
-                        Delete
-                      </Group>
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
-              </Group>
-            </Card>
-          );
-        })}
-        {positionsContext.total > 0 && (
-          <>
-            <CountControls
-              current={searchParamsState.count.toString()}
-              setCount={(count) => updateState({ count: count })}
-              values={["10", "25", "50", "100"]}
-              currentRange={currentRange}
-              total={positionsContext.total}
-            />
-            <Center w={"max"}>
-              <PageControls
-                setPage={(page) => updateState({ page })}
-                currentPage={positionsContext.page}
-                totalPages={Math.ceil(
-                  positionsContext.total / searchParamsState.count,
-                )}
-              />
-            </Center>
-          </>
-        )}
-      </Stack>
+                              if (!deletedPosition.ok) {
+                                notifications.show({
+                                  message: "Unable to delete position",
+                                  color: "red",
+                                });
+                              } else {
+                                updatePositions();
+                                notifications.show({
+                                  message: `Successfully deleted "${position.name}"`,
+                                  color: "green",
+                                });
+                              }
+                            },
+                            positionName: position.name,
+                          });
+                        }}
+                      >
+                        <Group>
+                          <MdDeleteForever />
+                          Delete
+                        </Group>
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </Group>
+              </Card>
+            );
+          })}
+          {positionsContext.total > 0 && (
+            <>
+              <CountControls />
+              <Center w={"max"}>
+                <PageControls />
+              </Center>
+            </>
+          )}
+        </Stack>
+      </PaginationProvider>
     </ScrollArea>
   );
 }
