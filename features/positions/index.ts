@@ -34,8 +34,6 @@ export async function fetchPositions(data: {
 
   const skipValue = data.count * (data.page - 1);
 
-  // console.log("skipValue", skipValue >= 0 ? skipValue : "wtf");
-
   return {
     positions: await prisma.position.findMany({
       where: {
@@ -67,7 +65,6 @@ export async function createPosition(
     return zodErrorResponse(safeData.error);
   }
 
-  console.log(safeData.data.name);
   const createdPosition = await prisma.position.create({
     data: {
       name: safeData.data.name,

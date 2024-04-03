@@ -1,6 +1,6 @@
 "use client";
 
-import Form, { FormResponse } from "@/components/Form";
+import { FormResponse } from "@/components/Form";
 import { usePositions } from "@/components/PositionsContext";
 import {
   ActionIcon,
@@ -8,34 +8,33 @@ import {
   Card,
   Center,
   Group,
+  Menu,
   Modal,
+  ScrollArea,
   Stack,
   Text,
-  TextInput,
 } from "@mantine/core";
 import { Position } from "@prisma/client";
-import { redirect, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
-  getSearchParamsString,
-  useValidSearchParams,
-  useRevalidateClientSearchParams,
   searchParamsSchema,
-  useUpdateClientSearchParams,
   createPositionSchema,
   deletePositionSchema,
   updatePositionSchema,
 } from "./schema";
-import { router } from "@trpc/server";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
-import { FaEdit } from "react-icons/fa";
-import { MdDeleteForever } from "react-icons/md";
+import { FaEdit, FaPlus } from "react-icons/fa";
+import { MdDeleteForever, MdMoreHoriz } from "react-icons/md";
 import { z } from "zod";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { CountControls, PageControls } from "@/components/Pagination";
 import { useDisclosure } from "@mantine/hooks";
-import { TextAreaField, TextField } from "@/components/FormFields";
 import { modals } from "@mantine/modals";
+import { SearchBar } from "@/components/SearchBar";
+import { CreatePositionForm, UpdatePositionForm } from "./form";
+import { useValidSearchParams } from "@/lib/searchParams/validate";
+import { getSearchParamsString } from "@/lib/searchParams/util";
 
 export function PositionView(props: {
   createPosition: (
@@ -47,7 +46,7 @@ export function PositionView(props: {
   deletePosition: (
     data: z.infer<typeof deletePositionSchema>,
   ) => Promise<FormResponse>;
-  updateCountPageSearch: (
+  fetchPositions: (
     data: z.infer<typeof searchParamsSchema>,
   ) => Promise<
     FormResponse<{ positions: Position[]; page: number; total: number }>
@@ -65,44 +64,23 @@ export function PositionView(props: {
     getSearchParams,
   );
 
-  // Used for displaying items in current view
   const currentRange = useCurrentRange();
 
   const [searchParamsState, setSearchParamsState] = useState(validSearchParams);
 
-  // Search bar state
-  const [searchQueryState, setSearchQueryState] = useState<string | undefined>(
-    validSearchParams.query,
-  );
-
   // Push search params changes to router on state change
   useEffect(() => {
     const newSearchParamsString = getSearchParamsString(searchParamsState);
-    if (getSearchParams.toString() != newSearchParamsString) {
+    if (
+      getSearchParamsString(Object.fromEntries(getSearchParams.entries())) !=
+      newSearchParamsString
+    ) {
       router.push(`${pathname}?${newSearchParamsString}`);
       updatePositions();
     }
   }, [searchParamsState]);
 
-  // Update search params state on positions page change
-  useEffect(() => {
-    setSearchParamsState({
-      ...searchParamsState,
-      page: positionsContext.page,
-    });
-  }, [positionsContext.page]);
-
-  // Delay update searchParams on query change to avoid spamming requests
-  useEffect(() => {
-    const delayInputTimeoutId = setTimeout(() => {
-      setSearchParamsState({
-        ...searchParamsState,
-        query: searchQueryState !== "" ? searchQueryState : undefined,
-      });
-    }, 500);
-    return () => clearTimeout(delayInputTimeoutId);
-  }, [searchQueryState, 500]);
-
+  // States for modals
   const [
     createModalOpened,
     { open: openCreateModal, close: closeCreateModal },
@@ -114,8 +92,7 @@ export function PositionView(props: {
   >();
 
   async function updatePositions() {
-    const updatedPositions =
-      await props.updateCountPageSearch(searchParamsState);
+    const updatedPositions = await props.fetchPositions(searchParamsState);
 
     if (updatedPositions.ok) {
       positionsContext.updateContext(
@@ -126,104 +103,72 @@ export function PositionView(props: {
     }
   }
 
+  function updateState(state: Partial<z.infer<typeof searchParamsSchema>>) {
+    setSearchParamsState({
+      ...searchParamsState,
+      ...state,
+    });
+  }
+
+  // Wrapped in ScrollArea to avoid jerky scrolling on page change
   return (
-    <>
+    <ScrollArea>
       <Modal
         opened={createModalOpened}
         onClose={closeCreateModal}
         title={"Create Position"}
       >
-        <Form
+        <CreatePositionForm
           action={props.createPosition}
-          onSuccess={(res): void => {
+          onSuccess={(): void => {
             updatePositions();
             closeCreateModal();
           }}
-          schema={z.object({
-            name: z.string(),
-            brief_description: z.string().optional(),
-            full_description: z.string().optional(),
-          })}
-        >
-          <TextField name="name" label="Name" required />
-          <TextAreaField
-            name="brief_description"
-            label="Brief Description"
-            autosize
-            minRows={1}
-          />
-          <TextAreaField
-            name="full_description"
-            label="Full Description"
-            autosize
-          />
-        </Form>
+        />
       </Modal>
       <Modal
         opened={editModalOpened}
         onClose={closeEditModal}
         title={"Edit Position"}
       >
-        <Form
-          action={(data) => {
-            if (!selectedPosition) {
-              throw new Error("No selected position");
-            }
-            return props.updatePosition({
-              position_id: selectedPosition.position_id,
-              ...data,
-            });
-          }}
-          onSuccess={(res): void => {
+        <UpdatePositionForm
+          action={props.updatePosition}
+          onSuccess={(): void => {
             updatePositions();
             closeEditModal();
             setSelectedPosition(undefined);
           }}
-          schema={updatePositionSchema.omit({ position_id: true })}
-          initialValues={{
-            name: selectedPosition?.name,
-            brief_description: selectedPosition?.brief_description,
-            full_description: selectedPosition?.full_description,
-          }}
-        >
-          <TextField name="name" label="Name" required />
-          <TextAreaField
-            name="brief_description"
-            label="Brief Description"
-            autosize
-            minRows={1}
-          />
-          <TextAreaField
-            name="full_description"
-            label="Full Description"
-            autosize
-          />
-        </Form>
+          selectedPosition={selectedPosition}
+        />
       </Modal>
       <Stack>
-        <TextInput
-          defaultValue={validSearchParams.query}
-          onChange={async (event) => {
-            setSearchQueryState(event.currentTarget.value);
+        <SearchBar
+          default={validSearchParams.query}
+          onChange={(query) => {
+            updateState({
+              query: query !== "" ? query : undefined,
+            });
           }}
+          label="Search by Name"
+          withClear
         />
         <Group>
-          <Button onClick={openCreateModal}>Create Position</Button>
+          <Button leftSection={<FaPlus />} onClick={openCreateModal}>
+            Create Position
+          </Button>
         </Group>
         {positionsContext.total > 0 ? (
           <>
             <CountControls
-              current={searchParamsState.count.toString()}
-              setCount={(count) =>
-                setSearchParamsState({ ...searchParamsState, count: count })
-              }
+              current={searchParamsState.count}
+              setCount={(count) => updateState({ count: count })}
               values={["10", "25", "50", "100"]}
               currentRange={currentRange}
               total={positionsContext.total}
             />
             <Center w={"max"}>
               <PageControls
-                setPage={positionsContext.setPage}
+                setPage={(page) => updateState({ page })}
                 currentPage={positionsContext.page}
                 totalPages={Math.ceil(
                   positionsContext.total / searchParamsState.count,
@@ -245,45 +190,59 @@ export function PositionView(props: {
                     {position.full_description}
                   </Text>
                 </Stack>
-                <ActionIcon
-                  onClick={() => {
-                    setSelectedPosition(position);
-                    openEditModal();
-                  }}
-                  ml={"auto"}
-                >
-                  <FaEdit />
-                </ActionIcon>
-                <ActionIcon
-                  aria-label="Delete position"
-                  color="red"
-                  onClick={() => {
-                    openDeleteModal({
-                      onCancel: () => {},
-                      onConfirm: async () => {
-                        const deletedPosition = await props.deletePosition({
-                          position_id: position.position_id,
-                        });
+                <Menu position="left">
+                  <Menu.Target>
+                    <ActionIcon ml={"auto"}>
+                      <MdMoreHoriz />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown miw={150} right={10} mr={10}>
+                    <Menu.Item
+                      onClick={() => {
+                        setSelectedPosition(position);
+                        openEditModal();
+                      }}
+                    >
+                      <Group>
+                        <FaEdit />
+                        Edit
+                      </Group>
+                    </Menu.Item>
+                    <Menu.Item
+                      aria-label="Delete position"
+                      color="red"
+                      onClick={() => {
+                        openDeleteModal({
+                          onCancel: () => {},
+                          onConfirm: async () => {
+                            const deletedPosition = await props.deletePosition({
+                              position_id: position.position_id,
+                            });
 
-                        if (!deletedPosition.ok) {
-                          notifications.show({
-                            message: "Unable to delete position",
-                            color: "red",
-                          });
-                        } else {
-                          updatePositions();
-                          notifications.show({
-                            message: `Successfully deleted "${position.name}"`,
-                            color: "green",
-                          });
-                        }
-                      },
-                      positionName: position.name,
-                    });
-                  }}
-                >
-                  <MdDeleteForever />
-                </ActionIcon>
+                            if (!deletedPosition.ok) {
+                              notifications.show({
+                                message: "Unable to delete position",
+                                color: "red",
+                              });
+                            } else {
+                              updatePositions();
+                              notifications.show({
+                                message: `Successfully deleted "${position.name}"`,
+                                color: "green",
+                              });
+                            }
+                          },
+                          positionName: position.name,
+                        });
+                      }}
+                    >
+                      <Group>
+                        <MdDeleteForever />
+                        Delete
+                      </Group>
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               </Group>
             </Card>
           );
@@ -292,16 +251,14 @@ export function PositionView(props: {
           <>
             <CountControls
               current={searchParamsState.count.toString()}
-              setCount={(count) =>
-                setSearchParamsState({ ...searchParamsState, count: count })
-              }
+              setCount={(count) => updateState({ count: count })}
               values={["10", "25", "50", "100"]}
               currentRange={currentRange}
               total={positionsContext.total}
             />
             <Center w={"max"}>
               <PageControls
-                setPage={positionsContext.setPage}
+                setPage={(page) => updateState({ page })}
                 currentPage={positionsContext.page}
                 totalPages={Math.ceil(
                   positionsContext.total / searchParamsState.count,
@@ -311,7 +268,7 @@ export function PositionView(props: {
           </>
         )}
       </Stack>
-    </>
+    </ScrollArea>
   );
 }
 
@@ -336,11 +293,17 @@ const openDeleteModal = (props: {
     onConfirm: props.onConfirm,
   });
 
-function useCurrentRange(): string {
+/**
+ * @returns A string in the format `[start] - [end]` representing the range of currently displayed items
+ */
+function useCurrentRange(): `${number} - ${number}` {
   const positionsContext = usePositions();
   const count = Number(useSearchParams().get("count")) as number;
-  return `${(positionsContext.page - 1) * count + 1} - ${((endIndex: number) =>
-    positionsContext.total < endIndex ? positionsContext.total : endIndex)(
-    positionsContext.page * count,
-  )}`;
+  const endIndex = positionsContext.page * count;
+
+  const start = (positionsContext.page - 1) * count + 1;
+  const end =
+    positionsContext.total < endIndex ? positionsContext.total : endIndex;
+
+  return `${start} - ${end}`;
 }
