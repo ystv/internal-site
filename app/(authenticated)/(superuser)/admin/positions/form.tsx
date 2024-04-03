@@ -3,6 +3,7 @@ import { createPositionSchema, updatePositionSchema } from "./schema";
 import { z } from "zod";
 import { TextAreaField, TextField } from "@/components/FormFields";
 import { Position } from "@prisma/client";
+import { notifications } from "@mantine/notifications";
 
 export function CreatePositionForm(props: {
   action: (data: z.infer<typeof createPositionSchema>) => Promise<FormResponse>;
@@ -46,7 +47,13 @@ export function UpdatePositionForm(props: {
           ...data,
         });
       }}
-      onSuccess={props.onSuccess}
+      onSuccess={() => {
+        notifications.show({
+          message: `Successfully updated "${props.selectedPosition?.name}"`,
+          color: "green",
+        });
+        props.onSuccess();
+      }}
       schema={updatePositionSchema.omit({ position_id: true })}
       initialValues={{
         name: props.selectedPosition?.name,

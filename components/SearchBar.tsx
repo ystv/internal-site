@@ -34,7 +34,6 @@ export function SearchBar(props: {
           </Tooltip>
         )
       }
-      // defaultValue={props.default}
       onChange={async (event) => {
         setSearchQueryState(event.currentTarget.value);
       }}

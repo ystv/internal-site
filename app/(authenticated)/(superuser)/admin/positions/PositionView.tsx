@@ -39,6 +39,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { CreatePositionForm, UpdatePositionForm } from "./form";
 import { useValidSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
+import { PositionCard } from "./PositionCard";
 
 export function PositionView(props: {
   createPosition: (
@@ -191,71 +192,16 @@ export function PositionView(props: {
           )}
           {positionsContext.positions.map((position) => {
             return (
-              <Card key={position.position_id} withBorder>
-                <Group>
-                  <Text>{position.name}</Text>
-                  <Stack gap={0}>
-                    <Text size="sm">{position.brief_description}</Text>
-                    <Text size="xs" c={"dimmed"}>
-                      {position.full_description}
-                    </Text>
-                  </Stack>
-                  <Menu position="left">
-                    <Menu.Target>
-                      <ActionIcon ml={"auto"}>
-                        <MdMoreHoriz />
-                      </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown miw={150} right={10} mr={10}>
-                      <Menu.Item
-                        onClick={() => {
-                          setSelectedPosition(position);
-                          openEditModal();
-                        }}
-                      >
-                        <Group>
-                          <FaEdit />
-                          Edit
-                        </Group>
-                      </Menu.Item>
-                      <Menu.Item
-                        aria-label="Delete position"
-                        color="red"
-                        onClick={() => {
-                          openDeleteModal({
-                            onCancel: () => {},
-                            onConfirm: async () => {
-                              const deletedPosition =
-                                await props.deletePosition({
-                                  position_id: position.position_id,
-                                });
-
-                              if (!deletedPosition.ok) {
-                                notifications.show({
-                                  message: "Unable to delete position",
-                                  color: "red",
-                                });
-                              } else {
-                                updatePositions();
-                                notifications.show({
-                                  message: `Successfully deleted "${position.name}"`,
-                                  color: "green",
-                                });
-                              }
-                            },
-                            positionName: position.name,
-                          });
-                        }}
-                      >
-                        <Group>
-                          <MdDeleteForever />
-                          Delete
-                        </Group>
-                      </Menu.Item>
-                    </Menu.Dropdown>
-                  </Menu>
-                </Group>
-              </Card>
+              <PositionCard
+                key={position.position_id}
+                deleteAction={props.deletePosition}
+                editAction={() => {
+                  setSelectedPosition(position);
+                  openEditModal();
+                }}
+                onDeleteSuccess={updatePositions}
+                position={position}
+              />
             );
           })}
           {positionsContext.total > 0 && (

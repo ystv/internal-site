@@ -26,11 +26,7 @@ export default async function PositionPage({
     searchParams,
   );
 
-  const initialPositionsData = await fetchPositions({
-    count: validSearchParams.count,
-    page: validSearchParams.page,
-    query: validSearchParams.query,
-  });
+  const initialPositionsData = await fetchPositions(validSearchParams);
 
   if (validSearchParams.page != initialPositionsData.page) {
     redirect(
