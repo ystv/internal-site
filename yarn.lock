@@ -10416,7 +10416,7 @@ __metadata:
     ts-node: ^10.9.1
     tsx: ^3.12.10
     typescript: 5.1.6
-    uoy-week-calendar: "https://github.com/chriscn/uoy-week-calendar"
+    uoy-week-calendar: "https://github.com/chriscn/uoy-week-calendar#edfe3865e34df8ae907eea6ac3b1c579bdd69abe"
     zod: ^3.21.4
     zod-form-data: ^2.0.1
     zod-prisma: ^0.5.4
@@ -16732,9 +16732,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uoy-week-calendar@https://github.com/chriscn/uoy-week-calendar":
+"uoy-week-calendar@https://github.com/chriscn/uoy-week-calendar#edfe3865e34df8ae907eea6ac3b1c579bdd69abe":
   version: 0.1.0
-  resolution: "uoy-week-calendar@https://github.com/chriscn/uoy-week-calendar.git#commit=8eb4a5e455840bb8c8312e416f41cccbd5aa18e2"
+  resolution: "uoy-week-calendar@https://github.com/chriscn/uoy-week-calendar.git#commit=edfe3865e34df8ae907eea6ac3b1c579bdd69abe"
   dependencies:
     dayjs: ^1.11.7
     hash.js: ^1.1.7
@@ -16742,7 +16742,7 @@ __metadata:
     nodemon: ^2.0.20
     ts-node: ^10.9.1
     typescript: ^4.9.4
-  checksum: b0de1dee23e54dc67c23381711d652845a0718bacd673319d0b54017cb3348d9b3c6498e82273b89d36ec2aea3853de0ad33d978e9aa455c6326bffa5c350635
+  checksum: 3f5a405e826ae803896239f9afa43810fda34cbd349a0d6f4bae422b649008206819f820a8eddba3706f0d2bc8f8d45e7aa51659221140d79a02ce16992a5ef5
   languageName: node
   linkType: hard
 
