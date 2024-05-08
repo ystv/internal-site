@@ -49,15 +49,40 @@ export async function findOrCreateUserFromGoogleToken(rawToken: string) {
   const claims = await verifyGoogleToken(rawToken);
   const user = await prisma.user.findFirst({
     where: {
-      identities: {
-        some: {
+      OR: [
+        {
+          identities: {
+            some: {
+              provider: "google",
+              provider_key: claims.sub,
+            },
+          },
+        },
+        {
+          email: claims.email,
+        },
+      ],
+    },
+    include: {
+      identities: true,
+    },
+  });
+  if (user) {
+    await prisma.identity.upsert({
+      where: {
+        provider_provider_key: {
           provider: "google",
           provider_key: claims.sub,
         },
       },
-    },
-  });
-  if (user) {
+      update: {},
+      create: {
+        provider: "google",
+        provider_key: claims.sub,
+        user_id: user.user_id,
+      },
+    });
+
     return user;
   }
   return prisma.user.create({

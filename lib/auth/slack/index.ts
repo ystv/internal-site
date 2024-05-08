@@ -48,20 +48,47 @@ export async function saveSlackUserInfo(userInfo: SlackTokenJson) {
 }
 
 export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
+  console.log(userInfo["email"]);
   const user = await prisma.user.findFirst({
     where: {
-      identities: {
-        some: {
+      OR: [
+        {
+          identities: {
+            some: {
+              provider: "slack",
+              provider_key: userInfo["https://slack.com/user_id"],
+            },
+          },
+        },
+        {
+          email: {
+            equals: userInfo.email,
+          },
+        },
+      ],
+    },
+    include: {
+      identities: true,
+    },
+  });
+  if (user) {
+    await prisma.identity.upsert({
+      where: {
+        provider_provider_key: {
           provider: "slack",
           provider_key: userInfo["https://slack.com/user_id"],
         },
       },
-    },
-  });
-  if (user) {
+      update: {},
+      create: {
+        provider: "slack",
+        provider_key: userInfo["https://slack.com/user_id"],
+        user_id: user.user_id,
+      },
+    });
+
     return user;
   }
-  console.log(userInfo);
   return prisma.user.create({
     data: {
       first_name: userInfo.given_name!,
@@ -72,7 +99,7 @@ export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
       identities: {
         create: {
           provider: "slack",
-          provider_key: userInfo.sub,
+          provider_key: userInfo["https://slack.com/user_id"],
         },
       },
     },
