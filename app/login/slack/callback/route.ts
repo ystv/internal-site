@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { saveSlackUserInfo } from "@/lib/auth/slack";
+import { getSlackUserInfo, saveSlackUserInfo } from "@/lib/auth/slack";
+import {
+  getCurrentUserOrNull,
+  loginOrCreateUserSlack,
+} from "@/lib/auth/server";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const searchParams = req.nextUrl.searchParams;
@@ -15,7 +19,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  await saveSlackUserInfo(code);
+  const slackUserInfo = await getSlackUserInfo(code);
+  let user = await getCurrentUserOrNull(req);
+  if (typeof user === "string") {
+    user = await loginOrCreateUserSlack(slackUserInfo);
+  }
+
+  await saveSlackUserInfo(slackUserInfo);
 
   const url = new URL("/user/me", process.env.PUBLIC_URL!);
   return NextResponse.redirect(url, {

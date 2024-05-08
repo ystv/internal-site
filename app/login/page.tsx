@@ -2,6 +2,8 @@ import Image from "next/image";
 import BG from "./login-bg.png";
 import { GoogleLoginButton } from "./GoogleLoginButton";
 import invariant from "@/lib/invariant";
+import SlackLoginButton from "@/components/slack/SlackLoginButton";
+import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 
 export default function GoogleSignInPage(props: {
   searchParams: { error?: string };
@@ -22,6 +24,7 @@ export default function GoogleSignInPage(props: {
             <p className="text-danger">{props.searchParams.error}</p>
           )}
         <GoogleLoginButton clientID={process.env.GOOGLE_CLIENT_ID!} />
+        {isSlackEnabled && <SlackLoginButton />}
       </div>
     </div>
   );

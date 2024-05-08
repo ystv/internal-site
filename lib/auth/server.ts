@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
 import { cookies } from "next/headers";
+import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
 
 export type UserType = User & {
   permissions: Permission[];
@@ -146,8 +147,22 @@ export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   return false;
 }
 
-export async function loginOrCreateUser(rawGoogleToken: string) {
+export async function loginOrCreateUserGoogle(rawGoogleToken: string) {
   const user = await findOrCreateUserFromGoogleToken(rawGoogleToken);
+  const permissions = await resolvePermissionsForUser(user.user_id);
+  const userType = {
+    ...user,
+    permissions,
+  } satisfies UserType;
+  // We don't store the full user object in the session because then it wouldn't
+  // pick up user info or permission changes without signing out and back in.
+  // It also makes the session token shorter.
+  await setSession({ userID: user.user_id });
+  return userType;
+}
+
+export async function loginOrCreateUserSlack(rawSlackToken: SlackTokenJson) {
+  const user = await findOrCreateUserFromSlackToken(rawSlackToken);
   const permissions = await resolvePermissionsForUser(user.user_id);
   const userType = {
     ...user,
