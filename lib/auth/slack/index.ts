@@ -37,16 +37,6 @@ export async function getSlackUserInfo(code: string) {
   return token;
 }
 
-export async function saveSlackUserInfo(userInfo: SlackTokenJson) {
-  invariant(isSlackEnabled, "Slack is not enabled");
-  const user = await mustGetCurrentUser();
-
-  await People.setUserSlackID(
-    user.user_id,
-    userInfo["https://slack.com/user_id"],
-  );
-}
-
 export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
   console.log(userInfo["email"]);
   const user = await prisma.user.findFirst({

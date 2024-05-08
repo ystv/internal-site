@@ -1,4 +1,4 @@
-import { setUserSlackID } from "@/features/people";
+import { removeSlackLink } from "@/features/people";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import slackApiConnection, {
   isSlackEnabled,
@@ -13,9 +13,9 @@ import {
   HoverCard,
 } from "@mantine/core";
 import { redirect } from "next/navigation";
-import { AiFillDelete } from "react-icons/ai";
 import SlackLogoutButton from "./SlackLogoutButton";
 import { App } from "@slack/bolt";
+import { notifications } from "@mantine/notifications";
 
 export default async function SlackUserInfo({
   slack_user_id,
@@ -47,16 +47,17 @@ export default async function SlackUserInfo({
               {slack_user.profile?.email}
             </Text>
           </Stack>
-          <form
+          <SlackLogoutButton
             action={async () => {
               "use server";
-              setUserSlackID(cal_user.user_id, "");
-              redirect("/user/me");
+              const removeSuccess = await removeSlackLink(cal_user.user_id);
+              if (removeSuccess) {
+                redirect("/user/me");
+              } else {
+                return false;
+              }
             }}
-            className="ml-auto"
-          >
-            <SlackLogoutButton />
-          </form>
+          />
         </Group>
       </Card>
     );
