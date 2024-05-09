@@ -26,7 +26,9 @@ async function WrappedBanner() {
           background: `linear-gradient(90deg, #dd4602, #e3830a, #2a8323, #008397, #2847cd, #7722a6, #aa006d)`,
           // @ts-expect-error lolcss
           "-webkit-background-clip": "text",
+          backgroundClip: "text",
           "-webkit-text-fill-color": "transparent",
+          textFillColor: "transparent",
         },
         // message: {
         //   background: `linear-gradient(90deg, #dd4602, #e3830a, #2a8323, #008397, #2847cd, #7722a6, #aa006d)`,
@@ -36,7 +38,7 @@ async function WrappedBanner() {
       }}
       title="YSTV Wrapped"
     >
-      <Link href="/wrapped">
+      <Link href="/wrapped" style={{ WebkitTextFillColor: "white" }}>
         Your YSTV Wrapped for 2023/24 is available. <strong>Watch now</strong>
       </Link>
     </Alert>
