@@ -1,17 +1,7 @@
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import { notFound } from "next/navigation";
 import { createHash } from "node:crypto";
-
-export async function hasWrapped(email: string) {
-  const emailHash = createHash("sha256").update(email).digest("hex");
-  const res = await fetch(
-    `https://cdn.ystv.co.uk/wrapped2024/${emailHash}.mp4`,
-    {
-      method: "HEAD",
-    },
-  );
-  return res.status === 200;
-}
+import { hasWrapped } from "./util";
 
 export default async function WrappedPage() {
   const user = await mustGetCurrentUser();

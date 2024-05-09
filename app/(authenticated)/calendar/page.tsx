@@ -8,7 +8,7 @@ import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
 import { TbArticle, TbCalendarEvent, TbClipboardList } from "react-icons/tb";
 import invariant from "@/lib/invariant";
 import { add, set, setDay } from "date-fns";
-import { hasWrapped } from "../wrapped/page";
+import { hasWrapped } from "../wrapped/util";
 import { Suspense } from "react";
 
 async function WrappedBanner() {

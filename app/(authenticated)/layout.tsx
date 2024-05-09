@@ -6,9 +6,6 @@ import { mustGetCurrentUser } from "@/lib/auth/server";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 import * as Sentry from "@sentry/nextjs";
 import { UserMenu } from "@/components/UserMenu";
-import { hasWrapped } from "./wrapped/page";
-import { Alert } from "@mantine/core";
-import { Suspense } from "react";
 
 export default async function AuthenticatedLayout({
   children,
