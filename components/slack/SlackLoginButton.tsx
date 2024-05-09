@@ -12,7 +12,7 @@ export default async function SlackLoginButton() {
         alignItems: "center",
         color: "var(--mantine-color-text)",
         backgroundColor: "var(--mantine-color-default-hover)",
-        border: "1px solid #ddd",
+        border: "1px solid var(--mantine-color-default-border)",
         borderRadius: 4,
         display: "inline-flex",
         fontFamily: "Lato, sans-serif",
