@@ -42,6 +42,15 @@ export default async function AuthenticatedLayout({
         {children}
       </main>
       <br />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            body {
+              transition: background-color 0.5s;
+            }
+          `,
+        }}
+      />
     </UserProvider>
   );
 }
