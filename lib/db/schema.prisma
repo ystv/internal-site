@@ -84,6 +84,7 @@ model Identity {
   provider_key String
 
   @@unique([provider, provider_key])
+  @@unique([user_id, provider])
   @@map("identities")
 }
 
