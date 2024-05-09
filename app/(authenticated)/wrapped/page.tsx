@@ -24,6 +24,16 @@ export default async function WrappedPage() {
           maxHeight: "calc(100vh - 120px)",
         }}
       />
+      <a
+        href={
+          fileURL +
+          "?response-content-disposition=" +
+          encodeURIComponent("attachment; filename=wrapped.mp4")
+        }
+        download
+      >
+        Download
+      </a>
       <style
         dangerouslySetInnerHTML={{
           __html: `body { background-color: black; }`,
