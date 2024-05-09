@@ -99,5 +99,8 @@ export async function findOrCreateUserFromGoogleToken(rawToken: string) {
         },
       },
     },
+    include: {
+      identities: true,
+    },
   });
 }

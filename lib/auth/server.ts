@@ -11,7 +11,11 @@ import { decode, encode } from "../sessionSecrets";
 import { cookies } from "next/headers";
 import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
 
-export type UserType = User & {
+export interface UserWithIdentities extends User {
+  identities: Identity[];
+}
+
+export type UserType = UserWithIdentities & {
   permissions: Permission[];
 };
 

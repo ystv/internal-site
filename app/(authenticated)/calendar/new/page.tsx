@@ -26,7 +26,7 @@ async function createEvent(
   data: unknown,
 ): Promise<FormResponse<{ id: number }>> {
   "use server";
-  const user = await getCurrentUser();
+  const me = await getCurrentUser();
   let slackApp: App | null = null;
   if (isSlackEnabled) {
     slackApp = await slackApiConnection();
@@ -35,7 +35,7 @@ async function createEvent(
   if (!payload.success) {
     return zodErrorResponse(payload.error);
   }
-  if (!canCreate(payload.data.type, user)) {
+  if (!canCreate(payload.data.type, me)) {
     throw new Forbidden([
       "Calendar.Admin",
       `Calendar.${payload.data.type}.Creator` as Permission,
@@ -93,7 +93,8 @@ async function createEvent(
       }
     }
 
-    if (slack_channel_id && user.slack_user_id) {
+    const slackUser = me.identities.find((i) => i.provider === "slack");
+    if (slack_channel_id && slackUser) {
       // Check if channel exists from previous API calls
       if (channel_info?.ok) {
         // If the bot isn't a member (channel exists already), join the channel
@@ -110,10 +111,10 @@ async function createEvent(
         });
 
         if (channel_members.ok) {
-          if (!channel_members.members?.includes(user.slack_user_id)) {
+          if (!channel_members.members?.includes(slackUser.provider_key)) {
             await slackApp.client.conversations.invite({
               channel: slack_channel_id,
-              users: user.slack_user_id,
+              users: slackUser.provider_key,
             });
           }
         }
@@ -134,7 +135,7 @@ async function createEvent(
       host: payload.data.host,
       slack_channel_id: slack_channel_id,
     },
-    user.user_id,
+    me.user_id,
   );
   revalidatePath("calendar");
   return {

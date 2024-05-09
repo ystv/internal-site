@@ -17,16 +17,19 @@ export const ExposedUserModel = z.object({
 
 export type ExposedUser = z.infer<typeof ExposedUserModel>;
 
+const IdentitySchema = z.object({
+  provider: z.enum(["google", "slack"]),
+  provider_key: z.string(),
+});
+
 /**
  * Additional fields that we can expose to the current user or admins, but
  * not everyone.
  */
 export const SecureUserModel = ExposedUserModel.extend({
   preferences: UserPreferencesSchema,
+  identities: z.array(IdentitySchema), // this is okay - the only thign stored is IDs
   email: z.string(),
-  identities: z.array(
-    z.object({ provider: z.string(), provider_key: z.string() }),
-  ),
 });
 
 export type SecureUser = z.infer<typeof SecureUserModel>;

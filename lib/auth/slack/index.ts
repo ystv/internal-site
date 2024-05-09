@@ -93,5 +93,8 @@ export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
         },
       },
     },
+    include: {
+      identities: true,
+    },
   });
 }
