@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { OAuth2Client } from "google-auth-library";
+import { SlackTokenJson } from "../slack";
 
 const Google = new OAuth2Client();
 
@@ -24,7 +25,7 @@ const permissibleDomains = new Set(
   process.env.GOOGLE_PERMITTED_DOMAINS?.split(",") ?? [],
 );
 
-export async function verifyToken(
+export async function verifyGoogleToken(
   rawToken: string,
 ): Promise<GoogleTokenClaims> {
   const ticket = await Google.verifyIdToken({
@@ -45,18 +46,43 @@ export async function verifyToken(
 }
 
 export async function findOrCreateUserFromGoogleToken(rawToken: string) {
-  const claims = await verifyToken(rawToken);
+  const claims = await verifyGoogleToken(rawToken);
   const user = await prisma.user.findFirst({
     where: {
-      identities: {
-        some: {
+      OR: [
+        {
+          identities: {
+            some: {
+              provider: "google",
+              provider_key: claims.sub,
+            },
+          },
+        },
+        {
+          email: claims.email,
+        },
+      ],
+    },
+    include: {
+      identities: true,
+    },
+  });
+  if (user) {
+    await prisma.identity.upsert({
+      where: {
+        provider_provider_key: {
           provider: "google",
           provider_key: claims.sub,
         },
       },
-    },
-  });
-  if (user) {
+      update: {},
+      create: {
+        provider: "google",
+        provider_key: claims.sub,
+        user_id: user.user_id,
+      },
+    });
+
     return user;
   }
   return prisma.user.create({
