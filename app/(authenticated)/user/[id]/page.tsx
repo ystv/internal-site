@@ -104,7 +104,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       <Space h={"md"} />
       {isSlackEnabled && (
         <>
-          {!user.identities.find((id) => id.provider == "slack") ? (
+          {!user.slack_user_id ? (
             <Card withBorder>
               <h2 className="mt-0">Link your account to Slack</h2>
               <Suspense>
@@ -125,12 +125,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                   </>
                 }
               >
-                <SlackUserInfo
-                  slack_user_id={
-                    user.identities.find((id) => id.provider == "slack")
-                      ?.provider_key!
-                  }
-                />
+                <SlackUserInfo slack_user_id={user.slack_user_id} />
               </Suspense>
             </Card>
           )}

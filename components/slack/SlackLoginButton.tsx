@@ -7,12 +7,12 @@ export default async function SlackLoginButton() {
         process.env.SLACK_CLIENT_ID
       }&redirect_uri=${encodeURIComponent(
         process.env.PUBLIC_URL! + "/login/slack/callback",
-      )}&scope=openid profile email`}
+      )}`}
       style={{
         alignItems: "center",
         color: "var(--mantine-color-text)",
         backgroundColor: "var(--mantine-color-default-hover)",
-        border: "1px solid var(--mantine-color-default-border)",
+        border: "1px solid #ddd",
         borderRadius: 4,
         display: "inline-flex",
         fontFamily: "Lato, sans-serif",

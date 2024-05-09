@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { string, z } from "zod";
+import { z } from "zod";
 import { UserPreferencesSchema } from "@/lib/db/preferences";
 
 /**
@@ -23,10 +23,8 @@ export type ExposedUser = z.infer<typeof ExposedUserModel>;
  */
 export const SecureUserModel = ExposedUserModel.extend({
   preferences: UserPreferencesSchema,
+  slack_user_id: z.string().optional(),
   email: z.string(),
-  identities: z.array(
-    z.object({ provider: z.string(), provider_key: z.string() }),
-  ),
 });
 
 export type SecureUser = z.infer<typeof SecureUserModel>;
@@ -64,25 +62,11 @@ export async function setUserPreference<
   });
 }
 
-export async function removeSlackLink(user_id: number): Promise<boolean> {
-  return await prisma.$transaction(async ($db) => {
-    const num_identities = await $db.identity.count({
-      where: {
-        user_id: user_id,
-      },
+export async function setUserSlackID(userID: number, slackID: string) {
+  await prisma.$transaction(async ($db) => {
+    await $db.user.update({
+      where: { user_id: userID },
+      data: { slack_user_id: slackID },
     });
-
-    if (num_identities <= 1) {
-      return false;
-    }
-
-    await $db.identity.deleteMany({
-      where: {
-        user_id: user_id,
-        provider: "slack",
-      },
-    });
-
-    return true;
   });
 }
