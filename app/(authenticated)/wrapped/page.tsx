@@ -31,6 +31,7 @@ export default async function WrappedPage() {
           encodeURIComponent("attachment; filename=wrapped.mp4")
         }
         download
+        className="font-bold text-white"
       >
         Download
       </a>
