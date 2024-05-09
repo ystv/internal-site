@@ -4,10 +4,44 @@ import { PermissionGate } from "@/components/UserContext";
 import { listEvents, listVacantEvents } from "@/features/calendar/events";
 import { Alert, Button } from "@mantine/core";
 import { Permission } from "@/lib/auth/permissions";
-import { getCurrentUser } from "@/lib/auth/server";
+import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
 import { TbArticle, TbCalendarEvent, TbClipboardList } from "react-icons/tb";
 import invariant from "@/lib/invariant";
 import { add, set, setDay } from "date-fns";
+import { hasWrapped } from "../wrapped/page";
+import { Suspense } from "react";
+
+async function WrappedBanner() {
+  const user = await mustGetCurrentUser();
+  if (!hasWrapped(user.email)) {
+    return null;
+  }
+  return (
+    <Alert
+      styles={{
+        root: {
+          backgroundColor: "black",
+        },
+        body: {
+          background: `linear-gradient(90deg, #dd4602, #e3830a, #2a8323, #008397, #2847cd, #7722a6, #aa006d)`,
+          // @ts-expect-error lolcss
+          "-webkit-background-clip": "text",
+          "-webkit-text-fill-color": "transparent",
+        },
+        // message: {
+        //   background: `linear-gradient(90deg, #dd4602, #e3830a, #2a8323, #008397, #2847cd, #7722a6, #aa006d)`,
+        //   "-webkit-background-clip": "text",
+        //   "-webkit-text-fill-color": "transparent",
+        // },
+      }}
+      title="YSTV Wrapped"
+    >
+      <Link href="/wrapped">
+        Your YSTV Wrapped for 2023/24 is available. <strong>Watch now</strong>
+      </Link>
+    </Alert>
+  );
+}
 
 function dateRangeForView(
   year: number,
@@ -103,6 +137,9 @@ export default async function CalendarPage({
 
   return (
     <>
+      <Suspense fallback={null}>
+        <WrappedBanner />
+      </Suspense>
       {vacantEventsCount > 0 && (
         <Alert
           variant={"outline"}
