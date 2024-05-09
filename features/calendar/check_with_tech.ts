@@ -17,8 +17,9 @@ export async function postCheckWithTech(eventID: number, memo: string) {
     throw new Error("Event not found");
   }
   const me = await getCurrentUser();
-  const user = me.slack_user_id
-    ? `<@${me.slack_user_id}>`
+  const slackUser = me.identities.find((x) => x.provider === "slack");
+  const user = slackUser
+    ? `<@${slackUser.provider_key}>`
     : `${me.first_name} ${me.last_name}`;
 
   const lines = [
@@ -60,8 +61,9 @@ export async function postTechHelpRequest(eventID: number, memo: string) {
     throw new Error("Event not found");
   }
   const me = await getCurrentUser();
-  const user = me.slack_user_id
-    ? `<@${me.slack_user_id}>`
+  const slackUser = me.identities.find((x) => x.provider === "slack");
+  const user = slackUser
+    ? `<@${slackUser.provider_key}>`
     : `${me.first_name} ${me.last_name}`;
 
   const lines = [

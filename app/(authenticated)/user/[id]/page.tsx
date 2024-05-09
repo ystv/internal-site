@@ -38,6 +38,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
     user = People.SecureUserModel.parse(dbUser);
   }
   const prefs = People.preferenceDefaults(user.preferences);
+  const slackUser = user.identities.find((i) => i.provider === "slack");
   return (
     <div>
       <Card withBorder>
@@ -104,7 +105,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       <Space h={"md"} />
       {isSlackEnabled && (
         <>
-          {!user.slack_user_id ? (
+          {!slackUser ? (
             <Card withBorder>
               <h2 className="mt-0">Link your account to Slack</h2>
               <Suspense>
@@ -125,7 +126,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                   </>
                 }
               >
-                <SlackUserInfo slack_user_id={user.slack_user_id} />
+                <SlackUserInfo slack_user_id={slackUser.provider_key} />
               </Suspense>
             </Card>
           )}

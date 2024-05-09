@@ -25,7 +25,6 @@ import { TbInfoCircle, TbAlertTriangle } from "react-icons/tb";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { ConversationsInfoResponse } from "@slack/web-api/dist/response";
 import { Suspense } from "react";
 import SlackChannelName from "@/components/slack/SlackChannelName";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
@@ -154,7 +153,7 @@ async function SlackBanner(props: { event: EventObjectType }) {
     return null;
   }
   const me = await getCurrentUser();
-  if (me.slack_user_id) {
+  if (me.identities.find((x) => x.provider === "slack")) {
     return null;
   }
 
