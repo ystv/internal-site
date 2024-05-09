@@ -38,6 +38,7 @@ model RolePermission {
   roles      Role   @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
 
   @@id([role_id, permission])
+  @@unique([role_id, permission])
   @@map("role_permissions")
 }
 

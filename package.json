@@ -79,6 +79,7 @@
     "zod-form-data": "^2.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
     "@storybook/addon-essentials": "^7.0.27",
     "@storybook/addon-interactions": "^7.0.27",
     "@storybook/addon-links": "^7.0.27",
@@ -91,6 +92,7 @@
     "@types/ws": "^8.5.9",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "dotenv-cli": "^7.2.1",
+    "dotenv-flow": "^4.1.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-storybook": "^0.6.12",
     "husky": "^9.0.6",

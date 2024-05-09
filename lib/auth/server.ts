@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
 import { cookies } from "next/headers";
+import invariant from "../invariant";
 
 export type UserType = User & {
   permissions: Permission[];
@@ -68,18 +69,26 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
   cookies().set(cookieName, payload, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure:
+      process.env.NODE_ENV === "production" && process.env.E2E_TEST !== "true",
     domain: process.env.COOKIE_DOMAIN,
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
 }
 
+export async function TEST_ONLY_setSession(
+  user: z.infer<typeof sessionSchema>,
+) {
+  invariant(process.env.E2E_TEST === "true", "E2E test-only API");
+  await setSession(user);
+}
+
 async function clearSession() {
   const { cookies } = await import("next/headers");
 
-  await cookies().delete(cookieName);
-  await cookies().delete("g_csrf_token");
+  cookies().delete(cookieName);
+  cookies().delete("g_csrf_token");
 }
 
 export async function getCurrentUserOrNull(
