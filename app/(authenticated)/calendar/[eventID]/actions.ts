@@ -297,3 +297,7 @@ export async function doCheckWithTech(
 
   return { ok: true };
 }
+
+export async function equipmentListTemplates() {
+  return await Calendar.getEquipmentListTemplates();
+}

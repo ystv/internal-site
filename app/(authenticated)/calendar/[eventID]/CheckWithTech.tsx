@@ -1,10 +1,40 @@
 "use client";
 
 import { Alert, Button, ButtonGroup, Modal, Textarea } from "@mantine/core";
-import { useState, useTransition } from "react";
+import { Suspense, cache, use, useState, useTransition } from "react";
 import { TbBrandSlack, TbTool } from "react-icons/tb";
-import { doCheckWithTech } from "./actions";
+import { doCheckWithTech, equipmentListTemplates } from "./actions";
 import { notifications } from "@mantine/notifications";
+
+const _getEquipmentListTemplates = cache(equipmentListTemplates);
+
+function SelectTemplate(props: {
+  done: (title: string, memo: string) => void;
+}) {
+  const templates = use(_getEquipmentListTemplates());
+
+  return (
+    <div className="grid grid-cols-3">
+      {templates.map((template) => (
+        <div key={template.equipment_list_template_id}>
+          <h3>{template.name}</h3>
+          <p>{template.description}</p>
+          <Button
+            onClick={() =>
+              props.done(
+                template.name,
+                /* lazy */ template.items.replace(/\\n/g, "\n"),
+              )
+            }
+            variant="light"
+          >
+            Use
+          </Button>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function PostMessage(props: {
   eventID: number;
@@ -12,13 +42,41 @@ function PostMessage(props: {
   done: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [showTemplatePopup, setShowTemplatePopup] = useState(false);
   const [memo, setMemo] = useState("");
   return (
     <>
+      <Button
+        onClick={() => setShowTemplatePopup(true)}
+        variant="light"
+        className="mb-4"
+      >
+        Use template
+      </Button>
+      <Modal
+        opened={showTemplatePopup}
+        onClose={() => setShowTemplatePopup(false)}
+      >
+        <Suspense fallback={<p>Loading templates...</p>}>
+          <SelectTemplate
+            done={(title, items) => {
+              setShowTemplatePopup(false);
+              setMemo(`# ${title}\n\n${items}`);
+            }}
+          />
+        </Suspense>
+      </Modal>
       <Textarea
         label="Notes"
         value={memo}
-        onChange={(e) => setMemo(e.target.value)}
+        onChange={(e) =>
+          setMemo((old) => {
+            if (old.startsWith("#") && !old.includes("(modified)")) {
+              return e.target.value.replace(/^(# .+)$/m, "$1 (modified)");
+            }
+            return e.target.value;
+          })
+        }
         rows={5}
       />
       <p>

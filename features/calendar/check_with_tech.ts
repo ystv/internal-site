@@ -91,3 +91,11 @@ export async function postTechHelpRequest(eventID: number, memo: string) {
     mrkdwn: true,
   });
 }
+
+export async function getEquipmentListTemplates() {
+  return await prisma.equipmentListTemplate.findMany({
+    where: {
+      archived: false,
+    },
+  });
+}
