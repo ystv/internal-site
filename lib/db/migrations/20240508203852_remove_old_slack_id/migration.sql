@@ -6,7 +6,7 @@
 */
 
 INSERT INTO "identities" ("user_id", "provider", "provider_key")
-SELECT "user_id", 'slack', "slack_user_id" FROM "users" WHERE "slack_user_id" IS NOT NULL;
+SELECT "user_id", 'slack', "slack_user_id" FROM "users" WHERE "slack_user_id" IS NOT NULL AND "slack_user_id" <> '';
 
 -- AlterTable
 ALTER TABLE "users" DROP COLUMN "slack_user_id";
