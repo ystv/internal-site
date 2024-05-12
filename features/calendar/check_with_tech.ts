@@ -2,9 +2,11 @@ import { getCurrentUser } from "@/lib/auth/server";
 import slackApiConnection from "@/lib/slack/slackApiConnection";
 import { getEvent } from "./events";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { prisma } from "@/lib/db";
 
+dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export async function postCheckWithTech(eventID: number, memo: string) {
