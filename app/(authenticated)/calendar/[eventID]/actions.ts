@@ -27,8 +27,6 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 
-dayjs.extend(timezone);
-
 export async function editEvent(
   eventID: number,
   payload: z.infer<typeof EditEventSchema>,
