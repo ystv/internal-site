@@ -21,7 +21,8 @@
     "prepare": "husky"
   },
   "prisma": {
-    "seed": "tsx scripts/seed.mts"
+    "seed": "tsx scripts/seed.mts",
+    "schema": "lib/db/schema.prisma"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.8",
