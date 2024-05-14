@@ -86,7 +86,7 @@ export async function postTechHelpRequest(eventID: number, memo: string) {
   ];
 
   await slack.client.chat.postMessage({
-    channel: process.env.SLACK_TECH_HELP_CHANNEL ?? "#tech",
+    channel: process.env.SLACK_TECH_HELP_CHANNEL ?? "#check-with-tech",
     text: lines.join("\n"),
     mrkdwn: true,
   });
