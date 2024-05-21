@@ -54,7 +54,7 @@ export function QuoteView(props: { data: Quote }) {
         {props.data.context.length > 0 && (
           <p className="text-sm">— {props.data.context}</p>
         )}
-        <Group>
+        <Group gap={"xs"}>
           <Button
             onClick={() => setIsEditing(true)}
             disabled={isPending}
