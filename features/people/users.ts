@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { z } from "zod";
+import { string, z } from "zod";
 import { UserPreferencesSchema } from "@/lib/db/preferences";
 
 /**
@@ -17,13 +17,18 @@ export const ExposedUserModel = z.object({
 
 export type ExposedUser = z.infer<typeof ExposedUserModel>;
 
+const IdentitySchema = z.object({
+  provider: z.enum(["google", "slack"]),
+  provider_key: z.string(),
+});
+
 /**
  * Additional fields that we can expose to the current user or admins, but
  * not everyone.
  */
 export const SecureUserModel = ExposedUserModel.extend({
   preferences: UserPreferencesSchema,
-  slack_user_id: z.string().optional(),
+  identities: z.array(IdentitySchema), // this is okay - the only thign stored is IDs
   email: z.string(),
 });
 
@@ -62,11 +67,25 @@ export async function setUserPreference<
   });
 }
 
-export async function setUserSlackID(userID: number, slackID: string) {
-  await prisma.$transaction(async ($db) => {
-    await $db.user.update({
-      where: { user_id: userID },
-      data: { slack_user_id: slackID },
+export async function removeSlackLink(user_id: number): Promise<boolean> {
+  return await prisma.$transaction(async ($db) => {
+    const num_identities = await $db.identity.count({
+      where: {
+        user_id: user_id,
+      },
     });
+
+    if (num_identities <= 1) {
+      return false;
+    }
+
+    await $db.identity.deleteMany({
+      where: {
+        user_id: user_id,
+        provider: "slack",
+      },
+    });
+
+    return true;
   });
 }

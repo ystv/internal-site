@@ -69,7 +69,6 @@ model User {
   events_events_updated_byTousers Event[]      @relation("events_updated_byTousers")
   role_members                    RoleMember[]
   hosted_events                   Event[]      @relation("event_host_user")
-  slack_user_id                   String       @default("")
 
   /// [UserPreferences]
   preferences Json @default("{}")
@@ -85,6 +84,7 @@ model Identity {
   provider_key String
 
   @@unique([provider, provider_key])
+  @@unique([user_id, provider])
   @@map("identities")
 }
 
@@ -194,4 +194,14 @@ model Quote {
   deleted_at DateTime? @db.Timestamptz(6)
 
   @@map("quotes")
+}
+
+model EquipmentListTemplate {
+  equipment_list_template_id Int     @id @default(autoincrement())
+  name                       String
+  description                String  @default("")
+  items                      String
+  archived                   Boolean @default(false)
+
+  @@map("equipment_list_templates")
 }

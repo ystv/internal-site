@@ -95,19 +95,20 @@ export async function updateAttendeeStatus(
 
   if (isSlackEnabled) {
     if (status === "attending" || status === "maybe_attending") {
-      if (me.slack_user_id && evt.slack_channel_id) {
+      const slackUser = me.identities.find((x) => x.provider == "slack");
+      if (slackUser && evt.slack_channel_id) {
         const slackApp = await slackApiConnection();
 
         try {
           await slackApp.client.conversations.invite({
             channel: evt.slack_channel_id,
-            users: me.slack_user_id,
+            users: slackUser.provider_key,
           });
         } catch (e) {}
 
         await slackApp.client.chat.postEphemeral({
           channel: evt.slack_channel_id,
-          user: me.slack_user_id,
+          user: slackUser.provider_key,
           text: `You have been added to this channel as you expressed your interest in attending '${evt.name}'.`,
         });
       }
@@ -295,4 +296,8 @@ export async function doCheckWithTech(
   }
 
   return { ok: true };
+}
+
+export async function equipmentListTemplates() {
+  return await Calendar.getEquipmentListTemplates();
 }
