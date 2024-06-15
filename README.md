@@ -1,6 +1,7 @@
 # YSTV Calendar
 
-This is the repo for https://internal.ystv.co.uk. (Don't question the name.)
+This is the repo for https://internal.ystv.co.uk.
+Formerly known as `experimental-hypothetical-new-internal-site-idea`.
 
 ## Getting Started
 
@@ -15,7 +16,7 @@ To set up a local copy of the new calendar, you will need
 Then, clone this repository:
 
 ```sh
-git clone git@github.com:ystv/experimental-hypothetical-new-internal-site-idea.git
+git clone git@github.com:ystv/internal-site.git
 ```
 
 In the new folder, copy the `.env` file to `.env.local`.
