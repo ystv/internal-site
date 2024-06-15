@@ -1,6 +1,7 @@
 import { createPositionSchema } from "@/app/(authenticated)/(superuser)/admin/positions/schema";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
+import { requirePermission } from "@/lib/auth/server";
 import { prisma } from "@/lib/db";
 import { Position } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -12,6 +13,9 @@ export async function fetchPositions(data: {
   query?: string;
 }) {
   "use server";
+
+  requirePermission("Admin.Positions.Admin");
+
   const totalMatching = await prisma.position.count({
     where: {
       is_custom: false,
@@ -59,6 +63,8 @@ export async function createPosition(
 ): Promise<FormResponse<{ position: Position }>> {
   "use server";
 
+  requirePermission("Admin.Positions.Admin");
+
   const safeData = createPositionSchema.safeParse(data);
 
   if (!safeData.success) {
@@ -80,6 +86,9 @@ export async function deletePosition(
   data: unknown,
 ): Promise<FormResponse<{ position_id: number }>> {
   "use server";
+
+  requirePermission("Admin.Positions.Admin");
+
   const dataSchema = z.object({ position_id: z.number() });
 
   const safeData = dataSchema.safeParse(data);
@@ -104,6 +113,9 @@ export async function updatePosition(
   data: unknown,
 ): Promise<FormResponse<{ position: Position }>> {
   "use server";
+
+  requirePermission("Admin.Positions.Admin");
+
   const dataSchema = z.object({
     position_id: z.number(),
     name: z.string(),
@@ -138,6 +150,9 @@ export async function searchPositions(
   data: unknown,
 ): Promise<FormResponse<{ positions: Position[] }>> {
   "use server";
+
+  requirePermission("Admin.Positions.Admin");
+
   const dataSchema = z.object({
     query: z.string().optional(),
     // count: z.number(),

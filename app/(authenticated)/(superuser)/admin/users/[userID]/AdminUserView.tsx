@@ -97,11 +97,11 @@ export function AdminUserView(props: {
                 {props.user.email}
               </Text>
             </Stack>
-            <ActionIcon onClick={openEditModal} ml={"auto"}>
-              <Tooltip label={"Edit User Info"}>
+            <Tooltip label={"Edit User Info"}>
+              <ActionIcon onClick={openEditModal} ml={"auto"}>
                 <FaEdit />
-              </Tooltip>
-            </ActionIcon>
+              </ActionIcon>
+            </Tooltip>
           </Group>
         </Card>
         <Card withBorder>

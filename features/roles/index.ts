@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/auth/server";
 import { prisma } from "@/lib/db";
 import { getTsQuery } from "@/lib/search";
 import { Prisma, Role } from "@prisma/client";
@@ -9,6 +10,8 @@ export async function fetchRoles(data: {
   query?: string;
 }) {
   "use server";
+
+  requirePermission("Admin.Roles.Admin");
 
   let totalMatching: number;
 
