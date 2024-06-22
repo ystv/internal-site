@@ -4,7 +4,8 @@ import Script from "next/script";
 import HLSPlayer from "./HlsPlayer";
 
 export function WebcamView(props: { webcam: string }) {
-  const webcamURL = `https://webcam.ystv.co.uk/${props.webcam}/s.m3u8`;
+  // const webcamURL = `https://webcam.ystv.co.uk/${props.webcam}/s.m3u8`;
+  const webcamURL = `https://webcam.moir.xyz/api/stream.m3u8?src=${props.webcam}`;
 
   const video = document.getElementById(props.webcam);
 
