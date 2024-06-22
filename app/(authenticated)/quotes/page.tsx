@@ -2,6 +2,8 @@ import * as Quotes from "@/features/quotes";
 import { requirePermission } from "@/lib/auth/server";
 import { AddQuote, QuoteView } from "./AddEditQuoteForm";
 import {
+  Center,
+  Group,
   Pagination,
   PaginationFirst,
   PaginationItems,
@@ -9,6 +11,7 @@ import {
   PaginationNext,
   PaginationPrevious,
   PaginationRoot,
+  Stack,
 } from "@mantine/core";
 import Link from "next/link";
 import { QuotesPagination } from "./pagination";
@@ -28,16 +31,24 @@ export default async function QuotesPage(props: {
   return (
     <div>
       <h1>Quotes</h1>
-      <p>
-        Page {page} of {Math.ceil(total / PAGE_SIZE)}
-      </p>
-      <AddQuote />
-      <div className="space-y-4">
+      <Stack>
+        {total > 0 ? (
+          <p>
+            Page {page} of {Math.ceil(total / PAGE_SIZE)}
+          </p>
+        ) : (
+          <>
+            <p>No quotes just yet...</p>
+          </>
+        )}
+        <AddQuote />
+        {/* <Group>
+        </Group> */}
         {quotes.map((quote) => (
           <QuoteView key={quote.quote_id} data={quote} />
         ))}
-      </div>
-      <QuotesPagination page={page} total={total} pageSize={PAGE_SIZE} />
+        <QuotesPagination page={page} total={total} pageSize={PAGE_SIZE} />
+      </Stack>
     </div>
   );
 }
