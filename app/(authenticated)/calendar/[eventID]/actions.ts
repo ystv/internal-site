@@ -243,7 +243,25 @@ export async function reinstateEvent(eventID: number) {
     };
   }
 
-  await Calendar.reinstateEvent(eventID);
+  const result = await Calendar.reinstateEvent(eventID);
+  if (!result.ok) {
+    switch (result.error) {
+      case "kit_clash":
+        return {
+          ok: false,
+          errors: {
+            root: "Reinstating this production would result in a kit clash. Please contact the Tech Team.",
+          },
+        };
+      default:
+        return {
+          ok: false,
+          errors: {
+            root: "An unknown error occurred (" + result.error + ")",
+          },
+        };
+    };
+  }
 
   revalidatePath(`/calendar/${event.event_id}`);
   revalidatePath("/calendar");
