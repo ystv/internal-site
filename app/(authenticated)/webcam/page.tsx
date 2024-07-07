@@ -1,22 +1,24 @@
 import { WebcamView } from "@/components/WebcamView";
-import { Center, Group, Stack } from "@mantine/core";
+import { fetchWebcamFeeds } from "@/features/webcams";
+import { Center, Group, Loader, Stack } from "@mantine/core";
+import { Suspense } from "react";
+import { WebcamGrid } from "./WebcamGrid";
+import { addWebcam, editWebcam, removeWebcam } from "./actions";
 
 export default function WebcamPage() {
+  const webcamFeeds = fetchWebcamFeeds();
+
   return (
     <Center>
       <Stack>
-        {/* <Group>
-          <WebcamView webcam="control1" />
-          <WebcamView webcam="studio1" />
-        </Group>
-        <Group>
-          <WebcamView webcam="studio2" />
-          <WebcamView webcam="tech1" />
-        </Group> */}
-        <Group>
-          <WebcamView webcam="driveway_camera" />
-          <WebcamView webcam="garden_camera" />
-        </Group>
+        <Suspense fallback={<Loader />}>
+          <WebcamGrid
+            webcams={webcamFeeds}
+            addWebcam={addWebcam}
+            editWebcam={editWebcam}
+            removeWebcam={removeWebcam}
+          />
+        </Suspense>
       </Stack>
     </Center>
   );
