@@ -10,6 +10,7 @@
     "start": "next start",
     "startSocket": "tsx server.ts",
     "lint": "next lint",
+    "test": "lint-staged",
     "prisma:generate": "dotenv -c ${NODE_ENV:-development} -- prisma generate --schema ./lib/db/schema.prisma",
     "prisma:pull": "dotenv -c ${NODE_ENV:-development} -- prisma db pull --schema ./lib/db/schema.prisma",
     "prisma:migrateDev": "dotenv -c ${NODE_ENV:-development} -- prisma migrate dev --schema ./lib/db/schema.prisma",
@@ -114,7 +115,7 @@
     "storybook": "^7.0.27",
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.1",
-    "tsx": "^3.12.10",
+    "tsx": "^4.16.2",
     "zod-prisma": "^0.5.4"
   },
   "packageManager": "yarn@3.6.1",
