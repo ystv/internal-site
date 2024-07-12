@@ -19,6 +19,7 @@ ENV VERSION=$VERSION
 RUN yarn run build
 
 FROM base
+COPY --from=build /app/dist /app/dist
 COPY --from=build /app/.next/standalone /app
 COPY --from=build /app/public /app/public
 COPY --from=build /app/.next/static /app/.next/static
@@ -30,4 +31,4 @@ COPY --from=build /app/scripts /app/scripts
 WORKDIR /app
 ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
-ENTRYPOINT ["node", "server.js"]
+ENTRYPOINT ["node", "dist/server/index.js"]

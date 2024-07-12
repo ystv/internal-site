@@ -2,12 +2,11 @@ import { createServer } from "node:http";
 import next from "next";
 import { Server, Socket } from "socket.io";
 import { encode as b64Encode, decode as b64Decode } from "base64-arraybuffer";
-import { prisma } from "./lib/db";
+import { prisma } from "../lib/db";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { decode } from "./lib/sessionSecrets";
+import { decode } from "../lib/sessionSecrets";
 import { z } from "zod";
 import * as crypto from "crypto";
-import { User } from "@prisma/client";
 import { ExtendedError } from "socket.io/dist/namespace";
 
 const dev = process.env.NODE_ENV !== "production";
@@ -52,8 +51,24 @@ app.prepare().then(() => {
       );
     });
 
-    socket.onAny((eventName, ...args) => {
+    socket.onAny((eventName, value, ...args) => {
       console.log("Catch-all: ", eventName);
+
+      const eventNameString = eventName as string;
+
+      if (eventNameString.startsWith("userUpdate:id:")) {
+        if (isServerSocket(socket)) {
+          console.log(eventName.split(":")[2] as number);
+
+          io.in(`userOnly:id:${eventName.split(":")[2]}`).emit(`userUpdate:me`);
+        }
+      } else if (eventNameString.startsWith("signupSheetUpdate:")) {
+        console.log("Updating Sheet!");
+
+        io.in("authenticatedUsers").emit(
+          `signupSheetUpdate:${eventName.split(":")[1]}`,
+        );
+      }
     });
 
     // socket.onAnyOutgoing((eventName, ...args) => {
@@ -84,6 +99,12 @@ function parseCookie(cookie: string | undefined) {
       acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
       return acc;
     }, {});
+}
+
+function isServerSocket(socket: TSocket) {
+  return (
+    socket.data.auth.authenticated == true && socket.data.auth.isClient == false
+  );
 }
 
 async function authenticateSocket(
@@ -134,6 +155,9 @@ async function authenticateSocket(
         isClient: true,
         user: user,
       };
+
+      socket.join(`userOnly:id:${user.user_id}`);
+      socket.join(`authenticatedUsers`);
       return next();
     } else {
       socket.data.auth = {
