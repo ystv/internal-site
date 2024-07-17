@@ -8,6 +8,7 @@ import { decode } from "../lib/sessionSecrets";
 import { z } from "zod";
 import * as crypto from "crypto";
 import { ExtendedError } from "socket.io/dist/namespace";
+import { authenticateSocket } from "./auth";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -16,16 +17,21 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
-// let key: CryptoKey | null = null;
-
-type TSocket = Socket<
+export type TSocket = Socket<
   DefaultEventsMap,
   DefaultEventsMap,
   DefaultEventsMap,
   any
 >;
 
-var io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
+export type TServer = Server<
+  DefaultEventsMap,
+  DefaultEventsMap,
+  DefaultEventsMap,
+  any
+>;
+
+var io: TServer;
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
@@ -36,7 +42,7 @@ app.prepare().then(() => {
 
   io.on("connection", async (socket) => {
     console.log("New Connection! ", socket.id);
-    // console.log(socket.data.auth);
+    console.log(socket.data.auth);
 
     socket.on("ping", (value) => {
       console.log("Hello!");
@@ -90,7 +96,7 @@ app.prepare().then(() => {
     });
 });
 
-function parseCookie(cookie: string | undefined) {
+export function parseCookie(cookie: string | undefined) {
   if (cookie == undefined) return {};
   return cookie
     .split(";")
@@ -105,74 +111,6 @@ function isServerSocket(socket: TSocket) {
   return (
     socket.data.auth.authenticated == true && socket.data.auth.isClient == false
   );
-}
-
-async function authenticateSocket(
-  socket: TSocket,
-  next: (err?: ExtendedError | undefined) => void,
-) {
-  if (Object.hasOwn(socket.data, "auth")) {
-    console.log("Auth exists, skipping");
-    return next();
-  }
-
-  if (Object.hasOwn(socket.handshake.auth, "secret")) {
-    if (
-      socket.handshake.auth.secret === process.env.SESSION_SECRET &&
-      socket.handshake.headers["user-agent"] == "node-XMLHttpRequest"
-    ) {
-      socket.data.auth = {
-        authenticated: true,
-        isClient: false,
-      };
-      return next();
-    } else {
-      socket.disconnect();
-      return next(new Error("Unauthenticated"));
-    }
-  }
-
-  const cookie = parseCookie(socket.client.request.headers.cookie);
-
-  const sessionCookie: string | undefined = cookie["ystv-calendar-session"];
-
-  if (sessionCookie) {
-    const session = z
-      .object({
-        userID: z.number(),
-      })
-      .parse(await decode(sessionCookie));
-
-    const user = await prisma.user.findFirst({
-      where: {
-        user_id: session.userID,
-      },
-    });
-
-    if (user !== null) {
-      socket.data.auth = {
-        authenticated: true,
-        isClient: true,
-        user: user,
-      };
-
-      socket.join(`userOnly:id:${user.user_id}`);
-      socket.join(`authenticatedUsers`);
-      return next();
-    } else {
-      socket.data.auth = {
-        authenticated: false,
-      };
-      return next();
-    }
-  } else {
-    socket.data.auth = {
-      authenticated: false,
-    };
-    return next();
-  }
-
-  return next();
 }
 
 // async function decode(tok: string) {

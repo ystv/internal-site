@@ -5,6 +5,7 @@ import { getCurrentUser, requirePermission } from "@/lib/auth/server";
 import * as People from "@/features/people";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { revalidatePath } from "next/cache";
+import { socket } from "@/lib/socket/server";
 
 export async function changePreference<
   K extends keyof PrismaJson.UserPreferences,
@@ -21,8 +22,23 @@ export async function changePreference<
     );
   }
 
+  socket.emit(`userUpdate:id:${userID}`);
   await People.setUserPreference(userID, key, value);
   revalidatePath(`/user/${userID}`);
   revalidatePath("/user/me");
   return { ok: true };
+}
+
+export async function fetchPreferences(userID: number) {
+  const me = await getCurrentUser();
+  if (userID !== me.user_id) {
+    await requirePermission(
+      "ManageMembers.Members.Admin",
+      "ManageMembers.Admin",
+    );
+  }
+
+  return People.preferenceDefaults(
+    (await People.fetchUserPreferences(userID))?.preferences || {},
+  );
 }

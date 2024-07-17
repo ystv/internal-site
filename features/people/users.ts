@@ -67,6 +67,17 @@ export async function setUserPreference<
   });
 }
 
+export async function fetchUserPreferences(userID: number) {
+  return await prisma.user.findUnique({
+    where: {
+      user_id: userID,
+    },
+    select: {
+      preferences: true,
+    },
+  });
+}
+
 export async function removeSlackLink(user_id: number): Promise<boolean> {
   return await prisma.$transaction(async ($db) => {
     const num_identities = await $db.identity.count({
