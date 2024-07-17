@@ -17,14 +17,12 @@ export function useCreateSocket(): TSocket {
   const [transport, setTransport] = useState("N/A");
 
   useEffect(() => {
-    console.log("Socket re-rendered");
-
     if (socket.connected) {
       onConnect();
     }
 
     function onConnect() {
-      console.log("Connected: ", socket.id);
+      console.log("Socket connected: ", socket.id);
       setIsConnected(true);
       setTransport(socket.io.engine.transport.name);
 
@@ -34,6 +32,7 @@ export function useCreateSocket(): TSocket {
     }
 
     function onDisconnect() {
+      console.log("Socket disconnected: ", socket.id);
       setIsConnected(false);
       setTransport("N/A");
     }

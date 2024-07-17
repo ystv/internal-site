@@ -9,7 +9,6 @@ export async function authenticateSocket(
   next: (err?: ExtendedError | undefined) => void,
 ) {
   if (Object.hasOwn(socket.data, "auth")) {
-    console.log("Auth exists, skipping");
     return next();
   }
 
