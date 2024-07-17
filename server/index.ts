@@ -8,7 +8,7 @@ import { decode } from "../lib/sessionSecrets";
 import { z } from "zod";
 import * as crypto from "crypto";
 import { ExtendedError } from "socket.io/dist/namespace";
-import { authenticateSocket } from "./auth";
+import { authenticateSocket, isServerSocket } from "./auth";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -41,31 +41,25 @@ app.prepare().then(() => {
   io.use(authenticateSocket);
 
   io.on("connection", async (socket) => {
-    console.log(socket.data.auth);
-
-    socket.on("ping", (value) => {
-      console.log(io.engine.clientsCount);
-      io.emit("pong", value);
-    });
-
-    socket.on("message:send", (value) => {
-      io.emit(
-        "message:receive",
-        `${socket.data.auth.user?.first_name ?? "unknown"}: ${value}`,
-      );
-    });
-
     socket.onAny((eventName, value, ...args) => {
-      const eventNameString = eventName as string;
+      const eventNameParse = parseEventName(eventName);
 
-      if (eventNameString.startsWith("userUpdate:id:")) {
-        if (isServerSocket(socket)) {
-          io.in(`userOnly:id:${eventName.split(":")[2]}`).emit(`userUpdate:me`);
-        }
-      } else if (eventNameString.startsWith("signupSheetUpdate:")) {
-        io.in("authenticatedUsers").emit(
-          `signupSheetUpdate:${eventName.split(":")[1]}`,
-        );
+      switch (eventNameParse) {
+        case "userUpdate":
+          if (isServerSocket(socket)) {
+            io.in(`userOnly:id:${eventName.split(":")[2]}`).emit(
+              `userUpdate:me`,
+            );
+          }
+
+          break;
+        case "signupSheetUpdate":
+          io.in("authenticatedUsers").emit(
+            `signupSheetUpdate:${eventName.split(":")[1]}`,
+          );
+          break;
+        default:
+          break;
       }
     });
 
@@ -84,19 +78,24 @@ app.prepare().then(() => {
     });
 });
 
-export function parseCookie(cookie: string | undefined) {
-  if (cookie == undefined) return {};
-  return cookie
-    .split(";")
-    .map((value) => value.split("="))
-    .reduce((acc: any, v) => {
-      acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
-      return acc;
-    }, {});
+function parseEventName(
+  eventNameAny: any,
+): z.infer<typeof socketEventNames> | undefined {
+  const eventNameString = z.string().safeParse(eventNameAny);
+
+  if (!eventNameString.success) {
+    return undefined;
+  }
+
+  const eventName = socketEventNames.safeParse(
+    eventNameString.data.split(":")[0],
+  );
+
+  if (!eventName.success) {
+    return undefined;
+  }
+
+  return eventName.data;
 }
 
-function isServerSocket(socket: TSocket) {
-  return (
-    socket.data.auth.authenticated == true && socket.data.auth.isClient == false
-  );
-}
+const socketEventNames = z.enum(["userUpdate", "signupSheetUpdate"]);

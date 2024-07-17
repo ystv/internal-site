@@ -1,7 +1,7 @@
 import { prisma } from "../lib/db";
 import { decode } from "../lib/sessionSecrets";
 import { z } from "zod";
-import { TSocket, parseCookie } from ".";
+import { TSocket } from ".";
 import { ExtendedError } from "socket.io/dist/namespace";
 
 export async function authenticateSocket(
@@ -69,4 +69,21 @@ export async function authenticateSocket(
   }
 
   return next();
+}
+
+export function parseCookie(cookie: string | undefined) {
+  if (cookie == undefined) return {};
+  return cookie
+    .split(";")
+    .map((value) => value.split("="))
+    .reduce((acc: any, v) => {
+      acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+      return acc;
+    }, {});
+}
+
+export function isServerSocket(socket: TSocket) {
+  return (
+    socket.data.auth.authenticated == true && socket.data.auth.isClient == false
+  );
 }

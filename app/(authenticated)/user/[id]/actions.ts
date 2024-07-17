@@ -22,7 +22,7 @@ export async function changePreference<
     );
   }
 
-  socket.emit(`userUpdate:id:${userID}`);
+  socket.emit(`userUpdate:${userID}`);
   await People.setUserPreference(userID, key, value);
   revalidatePath(`/user/${userID}`);
   revalidatePath("/user/me");
