@@ -28,17 +28,3 @@ export async function changePreference<
   revalidatePath("/user/me");
   return { ok: true };
 }
-
-export async function fetchPreferences(userID: number) {
-  const me = await getCurrentUser();
-  if (userID !== me.user_id) {
-    await requirePermission(
-      "ManageMembers.Members.Admin",
-      "ManageMembers.Admin",
-    );
-  }
-
-  return People.preferenceDefaults(
-    (await People.fetchUserPreferences(userID))?.preferences || {},
-  );
-}

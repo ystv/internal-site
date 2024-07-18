@@ -15,7 +15,7 @@ import {
   useState,
   useTransition,
 } from "react";
-import { changePreference, fetchPreferences } from "./actions";
+import { changePreference } from "./actions";
 import { notifications } from "@mantine/notifications";
 import { useWebsocket } from "@/components/WebsocketProvider";
 
@@ -96,39 +96,13 @@ function SegmentedPreference<K extends "timeFormat" | "icalFilter">(
 }
 
 export function UserPreferences(props: { value: ReqPrefs; userID: number }) {
-  const [preferences, setPreferences] = useState(props.value);
-
-  const { socket, isConnected, transport } = useWebsocket();
-
-  useEffect(() => {
-    async function onMeUpdate(value: any) {
-      notifications.show({
-        message: "You've been updated!",
-      });
-
-      const updatedPreferences = await fetchPreferences(props.userID);
-
-      console.log(updatedPreferences);
-
-      if (updatedPreferences !== null && updatedPreferences !== preferences) {
-        setPreferences(updatedPreferences);
-      }
-    }
-
-    socket.on("userUpdate:me", onMeUpdate);
-
-    return () => {
-      socket.off("userUpdate:me", onMeUpdate);
-    };
-  }, []);
-
   return (
     <Stack>
       <SegmentedPreference
         label="Time Format"
         field="timeFormat"
         values={["12hr", "24hr"]}
-        prefs={preferences}
+        prefs={props.value}
         userID={props.userID}
       />
       <Divider className="border-[--mantine-color-dark-4]" />
@@ -139,7 +113,7 @@ export function UserPreferences(props: { value: ReqPrefs; userID: number }) {
           { label: "Only Mine", value: "only-mine" },
           { label: "All Events", value: "all" },
         ]}
-        prefs={preferences}
+        prefs={props.value}
         userID={props.userID}
       />
     </Stack>
