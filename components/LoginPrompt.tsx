@@ -20,7 +20,7 @@ export function LoginPrompt() {
           <Center>
             <Stack>
               <Text size="xl" fw={700}>
-                You aren't logged in.
+                You aren&apos;t logged in.
               </Text>
               <Text size="md">Redirecting to login in 3 seconds...</Text>
               <Button onClick={doLoginRedirect}>Redirect Now</Button>
