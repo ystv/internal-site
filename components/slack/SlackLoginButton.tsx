@@ -1,12 +1,32 @@
-import Link from "next/link";
+"use client";
 
-export default async function SlackLoginButton() {
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { usePublicURL } from "../PublicURLContext";
+
+export default function SlackLoginButton(props: {
+  slackClientID: string;
+  redirect?: string;
+}) {
+  const publicURL = usePublicURL();
+  const searchParams = useSearchParams();
+
+  const loginRedirect = searchParams.get("redirect");
+
   return (
     <Link
       href={`https://slack.com/openid/connect/authorize?scope=openid&response_type=code&client_id=${
-        process.env.SLACK_CLIENT_ID
+        props.slackClientID
       }&redirect_uri=${encodeURIComponent(
-        process.env.PUBLIC_URL! + "/login/slack/callback",
+        publicURL +
+          "/login/slack/callback" +
+          `${
+            props.redirect
+              ? "?redirect=" + props.redirect
+              : loginRedirect
+              ? "?redirect=" + loginRedirect
+              : ""
+          }`,
       )}&scope=openid profile email`}
       style={{
         alignItems: "center",
