@@ -9,6 +9,12 @@ import { z } from "zod";
 import * as crypto from "crypto";
 import { ExtendedError } from "socket.io/dist/namespace";
 import { authenticateSocket, isServerSocket } from "./auth";
+import {
+  App,
+  LinkSharedEvent,
+  LinkUnfurls,
+  MessageAttachment,
+} from "@slack/bolt";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -16,6 +22,13 @@ const port = 3000;
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
+
+const slackApp = new App({
+  token: process.env.SLACK_BOT_TOKEN,
+  appToken: process.env.SLACK_APP_TOKEN,
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  socketMode: true,
+});
 
 export type TSocket = Socket<
   DefaultEventsMap,
@@ -77,6 +90,115 @@ app.prepare().then(() => {
       console.log(`> Ready on http://${hostname}:${port}`);
     });
 });
+
+slackApp.message("hello", async ({ message, body, say }) => {
+  // say() sends a message to the channel where the event was triggered
+  await say(`Hey there!`);
+});
+
+slackApp.event("link_shared", async ({ event, client, logger }) => {
+  // Proudly stolen from Expedia
+  // https://github.com/ExpediaGroup/insights-explorer/blob/0ec611f903e15857d29993543b61e3618c416b5e/packages/slackbot/src/app.ts#L43C3-L58C4
+  const tuples = await Promise.all(
+    event.links.map(async (link) => ({ link, unfurl: await getUnfurl(link) })),
+  );
+
+  const unfurls = tuples
+    .filter(({ unfurl }) => unfurl !== undefined)
+    .reduce<LinkUnfurls>((accumulator, { link, unfurl }) => {
+      accumulator[link.url] = unfurl!;
+      return accumulator;
+    }, {});
+
+  if (Object.keys(unfurls).length > 0) {
+    client.chat.unfurl({
+      ts: event.message_ts,
+      channel: event.channel,
+      unfurls,
+    });
+  }
+});
+
+(async () => {
+  // Start your app
+  await slackApp.start();
+
+  console.log("⚡️ Bolt app is running!");
+})();
+
+async function getUnfurl({
+  url,
+  domain,
+}: {
+  url: string;
+  domain: string;
+}): Promise<MessageAttachment> {
+  const trailingPath = url.substring(
+    url.indexOf(domain) + domain.length,
+    url.length,
+  );
+
+  let route: string;
+
+  if (trailingPath.includes("?")) {
+    route = trailingPath.substring(0, trailingPath.indexOf("?"));
+  } else {
+    route = trailingPath;
+  }
+
+  if (route.startsWith("/calendar/")) {
+    const event = await prisma.event.findFirst({
+      where: {
+        event_id: Number(route.split("/")[2]),
+      },
+    });
+
+    if (event) {
+      return {
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `*${event.name}*`,
+            },
+
+            fields: [
+              {
+                type: "mrkdwn",
+                text: "*Start Time*",
+              },
+              {
+                type: "mrkdwn",
+                text: "*End Time*",
+              },
+              {
+                type: "plain_text",
+                text: event.start_date.toLocaleString(),
+              },
+              {
+                type: "plain_text",
+                text: event.end_date.toLocaleString(),
+              },
+            ],
+          },
+        ],
+      };
+    }
+  }
+
+  return {
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Event not found",
+        },
+      },
+    ],
+  };
+}
 
 function parseEventName(
   eventNameAny: any,
