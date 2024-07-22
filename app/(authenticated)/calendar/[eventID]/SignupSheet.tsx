@@ -1,21 +1,37 @@
 "use client";
 
 import { isBefore, isSameDay } from "date-fns";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
-import { Alert, Button, Modal, Paper } from "@mantine/core";
+import {
+  Alert,
+  Button,
+  Card,
+  Checkbox,
+  Group,
+  List,
+  Modal,
+  Paper,
+  Stack,
+  Text,
+} from "@mantine/core";
 import {
   canManage,
   canManageSignUpSheet,
 } from "@/features/calendar/permissions";
 import { DateTime } from "@/components/DateTimeHelpers";
 import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]/AddEditSignUpSheetForm";
-import { CrewType, SignUpSheetType } from "@/features/calendar/signup_sheets";
+import {
+  CrewType,
+  SignUpSheetType,
+  SignUpSheetWithEvent,
+} from "@/features/calendar/signup_sheets";
 import { EventObjectType } from "@/features/calendar/events";
 import { ExposedUser } from "@/features/people";
 import {
+  checkRoleClashes,
   createSignUpSheet,
   deleteSignUpSheet,
   editSignUpSheet,
@@ -242,6 +258,28 @@ export function MyRoleSignUpModal({
   me?: ExposedUser;
   buttonless?: boolean;
 }) {
+  const [clashes, setClashes] = useState<SignUpSheetWithEvent[] | undefined>(
+    undefined,
+  );
+
+  const [acceptClashes, setAcceptClashes] = useState<boolean>(false);
+
+  useEffect(() => {
+    async function updateClashes() {
+      const clashesResponse = await checkRoleClashes(crew.crew_id);
+
+      if (clashesResponse) {
+        setClashes(clashesResponse?.clashSheets);
+      }
+    }
+
+    updateClashes();
+
+    return () => {
+      setClashes(undefined);
+    };
+  }, [crew]);
+
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   return (
@@ -273,22 +311,77 @@ export function MyRoleSignUpModal({
               Drop Out
             </Button>
           ) : (
-            <Button
-              size="large"
-              loading={isPending}
-              onClick={() => {
-                startTransition(async () => {
-                  const res = await signUpToRole(sheet.signup_id, crew.crew_id);
-                  if (!res.ok) {
-                    setError(res.errors!.root as string);
-                    return;
+            <Stack>
+              {clashes && clashes.length > 0 && (
+                <>
+                  <Text fw={700}>
+                    This role clashes with some of your other roles:
+                  </Text>
+                  <Stack>
+                    {clashes.map((clash) => {
+                      return (
+                        <Card key={clash.signup_id}>
+                          <Stack gap={"xs"}>
+                            <Group>
+                              <Stack gap={0}>
+                                <Text fw={700}>{clash.events.name}</Text>
+                                <Text size="xs">{clash.title}</Text>
+                              </Stack>
+                              <Text size="xs" ml={"auto"}>
+                                {dayjs(clash.arrival_time).format(
+                                  "DD/MM HH:mm",
+                                )}{" "}
+                                - {dayjs(clash.end_time).format("DD/MM HH:mm")}
+                              </Text>
+                            </Group>
+                            <Text size="sm" fw={600}>
+                              Role{clash.crews.length > 1 && "s"}:
+                            </Text>
+                            <List size="sm">
+                              {clash.crews.map((crew) => {
+                                return (
+                                  <List.Item key={crew.crew_id}>
+                                    {crew.positions.name}
+                                  </List.Item>
+                                );
+                              })}
+                            </List>
+                          </Stack>
+                        </Card>
+                      );
+                    })}
+                  </Stack>
+                </>
+              )}
+              {clashes && clashes?.length !== 0 && (
+                <Checkbox
+                  label={"Accept clashes"}
+                  onChange={(event) =>
+                    setAcceptClashes(event.currentTarget.checked)
                   }
-                  onSuccess();
-                });
-              }}
-            >
-              Sign Up
-            </Button>
+                />
+              )}
+              <Button
+                size="large"
+                loading={isPending || !clashes}
+                onClick={() => {
+                  startTransition(async () => {
+                    const res = await signUpToRole(
+                      sheet.signup_id,
+                      crew.crew_id,
+                    );
+                    if (!res.ok) {
+                      setError(res.errors!.root as string);
+                      return;
+                    }
+                    onSuccess();
+                  });
+                }}
+                disabled={clashes?.length !== 0 && !acceptClashes}
+              >
+                Sign Up
+              </Button>
+            </Stack>
           )}
         </div>
       )}

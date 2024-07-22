@@ -235,3 +235,17 @@ export async function removeSelfFromRole(sheetID: number, crewID: number) {
   revalidatePath(`/calendar/${sheet.events.event_id}`);
   return { ok: true };
 }
+
+export async function checkRoleClashes(
+  crewID: number,
+): Promise<{ clashSheets: Calendar.SignUpSheetWithEvent[] } | undefined> {
+  const me = await getCurrentUser();
+  const crewRole = await Calendar.getCrewRole(crewID);
+
+  if (!crewRole) return undefined;
+  const sheet = crewRole.signup_sheets;
+
+  const clashes = await Calendar.getClashingSheets(me, sheet);
+
+  return { clashSheets: clashes };
+}
