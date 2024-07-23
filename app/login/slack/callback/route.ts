@@ -23,7 +23,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   let user = await getCurrentUserOrNull(req);
   user = await loginOrCreateUserSlack(slackUserInfo);
 
-  const url = new URL(redirect ?? "/user/me", process.env.PUBLIC_URL!);
+  var url = new URL(redirect ?? "/user/me", process.env.PUBLIC_URL!);
+
+  if (url.href.startsWith(process.env.PUBLIC_URL!))
+    url = new URL(process.env.PUBLIC_URL ?? "/");
+
   return NextResponse.redirect(url, {
     status: 303,
   });
