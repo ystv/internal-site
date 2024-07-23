@@ -50,13 +50,11 @@ export function GoogleLoginButton(props: {
         }&ux_mode=redirect&login_uri=${encodeURIComponent(
           publicURL +
             "/login/google/callback" +
-            `${
               props.redirect
                 ? "?redirect=" + props.redirect
                 : loginRedirect
                 ? "?redirect=" + loginRedirect
-                : ""
-            }`,
+                : "",
         )}&ui_mode=card&context=signin${
           props.hostedDomain ? `&hosted_domain=${props.hostedDomain}` : ""
         }&g_csrf_token=${gCsrfCookie}&origin=${encodeURIComponent(publicURL)}`}
