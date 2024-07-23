@@ -328,10 +328,15 @@ export function MyRoleSignUpModal({
                                 <Text size="xs">{clash.title}</Text>
                               </Stack>
                               <Text size="xs" ml={"auto"}>
-                                {dayjs(clash.arrival_time).format(
-                                  "DD/MM HH:mm",
-                                )}{" "}
-                                - {dayjs(clash.end_time).format("DD/MM HH:mm")}
+                                <DateTime
+                                  val={clash.arrival_time.toISOString()}
+                                  format="datetime"
+                                />{" "}
+                                -{" "}
+                                <DateTime
+                                  val={clash.end_time.toISOString()}
+                                  format="datetime"
+                                />
                               </Text>
                             </Group>
                             <Text size="sm" fw={600}>
