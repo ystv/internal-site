@@ -1,7 +1,8 @@
 "use client";
 
-import { Button, Card, Center, Stack, Text } from "@mantine/core";
+import { LoadingOverlay } from "@mantine/core";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export function LoginPrompt() {
   const router = useRouter();
@@ -11,23 +12,15 @@ export function LoginPrompt() {
     router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
   }
 
+  useEffect(() => {
+    doLoginRedirect();
+  }, []);
+
   setTimeout(doLoginRedirect, 3000);
 
   return (
-    <>
-      <Center my={200}>
-        <Card>
-          <Center>
-            <Stack>
-              <Text size="xl" fw={700}>
-                You aren&apos;t logged in.
-              </Text>
-              <Text size="md">Redirecting to login in 3 seconds...</Text>
-              <Button onClick={doLoginRedirect}>Redirect Now</Button>
-            </Stack>
-          </Center>
-        </Card>
-      </Center>
-    </>
+    <div className="fixed left-0 right-0 top-0 h-screen w-screen">
+      <LoadingOverlay visible />
+    </div>
   );
 }
