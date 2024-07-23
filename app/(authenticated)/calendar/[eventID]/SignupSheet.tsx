@@ -1,7 +1,14 @@
 "use client";
 
 import { isBefore, isSameDay } from "date-fns";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import {
+  Suspense,
+  use,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
@@ -9,9 +16,11 @@ import {
   Alert,
   Button,
   Card,
+  Center,
   Checkbox,
   Group,
   List,
+  Loader,
   Modal,
   Paper,
   Stack,
@@ -41,6 +50,10 @@ import {
 import { TbCalendarCheck } from "react-icons/tb";
 import dayjs from "dayjs";
 
+interface CrewTypeWithClashPromise extends CrewType {
+  clashes?: Promise<SignUpSheetWithEvent[]>;
+}
+
 function SignupSheet({
   event,
   me,
@@ -56,7 +69,9 @@ function SignupSheet({
   );
   const readOnly = event.is_cancelled;
   const [isEditOpen, setEditOpen] = useState(false);
-  const [signUpCrew, setSignUpCrew] = useState<CrewType | null>(null);
+  const [signUpCrew, setSignUpCrew] = useState<CrewTypeWithClashPromise | null>(
+    null,
+  );
   return (
     <>
       <Paper
@@ -173,7 +188,12 @@ function SignupSheet({
                         </Button>
                       ) : (
                         <Button
-                          onClick={() => setSignUpCrew(crew)}
+                          onClick={() =>
+                            setSignUpCrew({
+                              ...crew,
+                              clashes: checkRoleClashes(crew.crew_id),
+                            })
+                          }
                           variant={"outline"}
                           fullWidth
                           className={
@@ -233,12 +253,20 @@ function SignupSheet({
       </Modal>
       <Modal opened={signUpCrew !== null} onClose={() => setSignUpCrew(null)}>
         {signUpCrew !== null && (
-          <MyRoleSignUpModal
-            sheet={sheet}
-            crew={signUpCrew}
-            me={me}
-            onSuccess={() => setSignUpCrew(null)}
-          />
+          <Suspense
+            fallback={
+              <Center>
+                <Loader />
+              </Center>
+            }
+          >
+            <MyRoleSignUpModal
+              sheet={sheet}
+              crew={signUpCrew}
+              me={me}
+              onSuccess={() => setSignUpCrew(null)}
+            />
+          </Suspense>
         )}
       </Modal>
     </>
@@ -253,32 +281,14 @@ export function MyRoleSignUpModal({
   buttonless,
 }: {
   sheet?: SignUpSheetType;
-  crew: CrewType;
+  crew: CrewTypeWithClashPromise;
   onSuccess?: () => void;
   me?: ExposedUser;
   buttonless?: boolean;
 }) {
-  const [clashes, setClashes] = useState<SignUpSheetWithEvent[] | undefined>(
-    undefined,
-  );
+  const clashes = crew.clashes ? use(crew.clashes) : undefined;
 
   const [acceptClashes, setAcceptClashes] = useState<boolean>(false);
-
-  useEffect(() => {
-    async function updateClashes() {
-      const clashesResponse = await checkRoleClashes(crew.crew_id);
-
-      if (clashesResponse) {
-        setClashes(clashesResponse?.clashSheets);
-      }
-    }
-
-    updateClashes();
-
-    return () => {
-      setClashes(undefined);
-    };
-  }, [crew]);
 
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -312,52 +322,7 @@ export function MyRoleSignUpModal({
             </Button>
           ) : (
             <Stack>
-              {clashes && clashes.length > 0 && (
-                <>
-                  <Text fw={700}>
-                    This role clashes with some of your other roles:
-                  </Text>
-                  <Stack>
-                    {clashes.map((clash) => {
-                      return (
-                        <Card key={clash.signup_id}>
-                          <Stack gap={"xs"}>
-                            <Group>
-                              <Stack gap={0}>
-                                <Text fw={700}>{clash.events.name}</Text>
-                                <Text size="xs">{clash.title}</Text>
-                              </Stack>
-                              <Text size="xs" ml={"auto"}>
-                                <DateTime
-                                  val={clash.arrival_time.toISOString()}
-                                  format="datetime"
-                                />{" "}
-                                -{" "}
-                                <DateTime
-                                  val={clash.end_time.toISOString()}
-                                  format="datetime"
-                                />
-                              </Text>
-                            </Group>
-                            <Text size="sm" fw={600}>
-                              Role{clash.crews.length > 1 && "s"}:
-                            </Text>
-                            <List size="sm">
-                              {clash.crews.map((crew) => {
-                                return (
-                                  <List.Item key={crew.crew_id}>
-                                    {crew.positions.name}
-                                  </List.Item>
-                                );
-                              })}
-                            </List>
-                          </Stack>
-                        </Card>
-                      );
-                    })}
-                  </Stack>
-                </>
-              )}
+              <ClashesView clashes={clashes} />
               {clashes && clashes?.length !== 0 && (
                 <Checkbox
                   label={"Accept clashes"}
@@ -391,6 +356,61 @@ export function MyRoleSignUpModal({
         </div>
       )}
     </div>
+  );
+}
+
+function ClashesView({
+  clashes,
+}: {
+  clashes: SignUpSheetWithEvent[] | undefined;
+}) {
+  return (
+    <>
+      {clashes && clashes.length > 0 && (
+        <>
+          <Text fw={700}>This role clashes with some of your other roles:</Text>
+          <Stack>
+            {clashes.map((clash) => {
+              return (
+                <Card key={clash.signup_id}>
+                  <Stack gap={"xs"}>
+                    <Group>
+                      <Stack gap={0}>
+                        <Text fw={700}>{clash.events.name}</Text>
+                        <Text size="xs">{clash.title}</Text>
+                      </Stack>
+                      <Text size="xs" ml={"auto"}>
+                        <DateTime
+                          val={clash.arrival_time.toISOString()}
+                          format="datetime"
+                        />{" "}
+                        -{" "}
+                        <DateTime
+                          val={clash.end_time.toISOString()}
+                          format="datetime"
+                        />
+                      </Text>
+                    </Group>
+                    <Text size="sm" fw={600}>
+                      Role{clash.crews.length > 1 && "s"}:
+                    </Text>
+                    <List size="sm">
+                      {clash.crews.map((crew) => {
+                        return (
+                          <List.Item key={crew.crew_id}>
+                            {crew.positions.name}
+                          </List.Item>
+                        );
+                      })}
+                    </List>
+                  </Stack>
+                </Card>
+              );
+            })}
+          </Stack>
+        </>
+      )}
+    </>
   );
 }
 
