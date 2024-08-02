@@ -1,14 +1,7 @@
 "use client";
 
 import { isBefore, isSameDay } from "date-fns";
-import {
-  Suspense,
-  use,
-  useEffect,
-  useMemo,
-  useState,
-  useTransition,
-} from "react";
+import { Suspense, useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
@@ -49,10 +42,7 @@ import {
 } from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
 import { TbCalendarCheck } from "react-icons/tb";
 import dayjs from "dayjs";
-
-interface CrewTypeWithClashPromise extends CrewType {
-  clashes?: Promise<SignUpSheetWithEvent[]>;
-}
+import { useQuery } from "@tanstack/react-query";
 
 function SignupSheet({
   event,
@@ -69,9 +59,7 @@ function SignupSheet({
   );
   const readOnly = event.is_cancelled;
   const [isEditOpen, setEditOpen] = useState(false);
-  const [signUpCrew, setSignUpCrew] = useState<CrewTypeWithClashPromise | null>(
-    null,
-  );
+  const [signUpCrew, setSignUpCrew] = useState<CrewType | null>(null);
   return (
     <>
       <Paper
@@ -188,12 +176,7 @@ function SignupSheet({
                         </Button>
                       ) : (
                         <Button
-                          onClick={() =>
-                            setSignUpCrew({
-                              ...crew,
-                              clashes: checkRoleClashes(crew.crew_id),
-                            })
-                          }
+                          onClick={() => setSignUpCrew(crew)}
                           variant={"outline"}
                           fullWidth
                           className={
@@ -281,12 +264,15 @@ export function MyRoleSignUpModal({
   buttonless,
 }: {
   sheet?: SignUpSheetType;
-  crew: CrewTypeWithClashPromise;
+  crew: CrewType;
   onSuccess?: () => void;
   me?: ExposedUser;
   buttonless?: boolean;
 }) {
-  const clashes = crew.clashes ? use(crew.clashes) : undefined;
+  const clashes = useQuery({
+    queryKey: ["clashes", crew.crew_id],
+    queryFn: () => checkRoleClashes(crew.crew_id),
+  });
 
   const [acceptClashes, setAcceptClashes] = useState<boolean>(false);
 
@@ -322,8 +308,18 @@ export function MyRoleSignUpModal({
             </Button>
           ) : (
             <Stack>
-              <ClashesView clashes={clashes} />
-              {clashes && clashes?.length !== 0 && (
+              {clashes.isFetching && (
+                <Center>
+                  <Stack>
+                    <Text>Checking for clashes...</Text>
+                    <Center>
+                      <Loader />
+                    </Center>
+                  </Stack>
+                </Center>
+              )}
+              <ClashesView clashes={clashes.data} />
+              {clashes.data && clashes.data.length !== 0 && (
                 <Checkbox
                   label={"Accept clashes"}
                   onChange={(event) =>
@@ -347,7 +343,7 @@ export function MyRoleSignUpModal({
                     onSuccess();
                   });
                 }}
-                disabled={clashes?.length !== 0 && !acceptClashes}
+                disabled={clashes.data?.length !== 0 && !acceptClashes}
               >
                 Sign Up
               </Button>
