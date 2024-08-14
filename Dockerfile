@@ -20,6 +20,7 @@ RUN yarn run build
 
 FROM base
 COPY --from=build /app/dist /app/dist
+COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/.next/standalone /app
 COPY --from=build /app/public /app/public
 COPY --from=build /app/.next/static /app/.next/static
