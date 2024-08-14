@@ -8,9 +8,16 @@ import {
   Divider,
   InputLabel,
 } from "@mantine/core";
-import { ReactNode, useOptimistic, useTransition } from "react";
+import {
+  ReactNode,
+  useEffect,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
 import { changePreference } from "./actions";
 import { notifications } from "@mantine/notifications";
+import { useWebsocket } from "@/components/WebsocketProvider";
 
 type ReqPrefs = Required<PrismaJson.UserPreferences>;
 

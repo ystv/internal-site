@@ -6,7 +6,7 @@ import Form from "@/components/Form";
 import { addQuote, deletQuote, editQuote } from "./actions";
 import { HiddenField, TextAreaField, TextField } from "@/components/FormFields";
 import { useState, useTransition } from "react";
-import { Button } from "@mantine/core";
+import { Button, Card, Group, Text } from "@mantine/core";
 import { Quote } from "@prisma/client";
 
 export function AddEditQuoteForm(props: {
@@ -43,40 +43,76 @@ export function QuoteView(props: { data: Quote }) {
       onSuccess={() => setIsEditing(false)}
     />
   ) : (
-    <div className="my-1 border-solid border-gray-400 px-4 py-2">
-      <p>
+    <>
+      <Card withBorder key={Math.random()}>
         {props.data.text.split("\n").map((line) => (
-          <>
+          <Text key={line}>
             {line}
             <br />
-          </>
+          </Text>
         ))}
-      </p>
-      {props.data.context.length > 0 && (
-        <p className="text-sm">— {props.data.context}</p>
-      )}
-      <Button
-        onClick={() => setIsEditing(true)}
-        disabled={isPending}
-        size="compact-xs"
-      >
-        Edit
-      </Button>
-      <Button
-        variant="danger"
-        disabled={isPending}
-        onClick={() => {
-          if (confirm("You sure boss?")) {
-            startTransition(async () => {
-              await deletQuote(props.data.quote_id);
-            });
-          }
-        }}
-        size="compact-xs"
-      >
-        Delet
-      </Button>
-    </div>
+        {props.data.context.length > 0 && (
+          <p className="text-sm">— {props.data.context}</p>
+        )}
+        <Group gap={"xs"}>
+          <Button
+            onClick={() => setIsEditing(true)}
+            disabled={isPending}
+            size="compact-xs"
+          >
+            Edit
+          </Button>
+          <Button
+            variant="danger"
+            disabled={isPending}
+            onClick={() => {
+              if (confirm("You sure boss?")) {
+                startTransition(async () => {
+                  await deletQuote(props.data.quote_id);
+                });
+              }
+            }}
+            size="compact-xs"
+          >
+            Delet
+          </Button>
+        </Group>
+      </Card>
+      {/* <div className="my-1 border-solid border-gray-400 px-4 py-2">
+        <p>
+          {props.data.text.split("\n").map((line) => (
+            <>
+              {line}
+              <br />
+            </>
+          ))}
+        </p>
+        {props.data.context.length > 0 && (
+          <p className="text-sm">— {props.data.context}</p>
+        )}
+        <Button
+          onClick={() => setIsEditing(true)}
+          disabled={isPending}
+          size="compact-xs"
+        >
+          Edit
+        </Button>
+        <Button
+          variant="danger"
+          disabled={isPending}
+          onClick={() => {
+            if (confirm("You sure boss?")) {
+              startTransition(async () => {
+                await deletQuote(props.data.quote_id);
+              });
+            }
+          }}
+          size="compact-xs"
+        >
+          Delet
+        </Button>
+      </div> */}
+    </>
   );
 }
 
@@ -90,6 +126,8 @@ export function AddQuote() {
       </Button>
     </>
   ) : (
-    <button onClick={() => setVisible(true)}>Add Quote</button>
+    <Group>
+      <Button onClick={() => setVisible(true)}>Add Quote</Button>
+    </Group>
   );
 }
