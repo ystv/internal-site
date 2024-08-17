@@ -21,8 +21,6 @@ var io: TServer;
 
 validateEnv();
 
-env;
-
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 

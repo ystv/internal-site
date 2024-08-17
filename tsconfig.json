@@ -31,9 +31,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "lib/db/seed.mts",
-    "lib/db/json.d.ts",
-    "lib/env.ts"
+    "lib/db/seed.mts"
   ],
   "exclude": ["node_modules", "dist", ".next", "out", "next.config.js"],
   "ts-node": {
