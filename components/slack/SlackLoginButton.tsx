@@ -1,12 +1,13 @@
+import { env } from "@/lib/env";
 import Link from "next/link";
 
 export default async function SlackLoginButton() {
   return (
     <Link
       href={`https://slack.com/openid/connect/authorize?scope=openid&response_type=code&client_id=${
-        process.env.SLACK_CLIENT_ID
+        env.SLACK_CLIENT_ID
       }&redirect_uri=${encodeURIComponent(
-        process.env.PUBLIC_URL! + "/login/slack/callback",
+        env.PUBLIC_URL! + "/login/slack/callback",
       )}&scope=openid profile email`}
       style={{
         alignItems: "center",

@@ -10,6 +10,7 @@ import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
 import { cookies } from "next/headers";
 import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
+import { env } from "../env";
 
 export interface UserWithIdentities extends User {
   identities: Identity[];
@@ -73,8 +74,8 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
   cookies().set(cookieName, payload, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    domain: process.env.COOKIE_DOMAIN,
+    secure: env.NODE_ENV === "production",
+    domain: env.COOKIE_DOMAIN,
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
@@ -190,7 +191,7 @@ export async function loginOrCreateUserSlack(rawSlackToken: SlackTokenJson) {
 
 export async function logout() {
   await clearSession();
-  const url = new URL("/login", process.env.PUBLIC_URL!);
+  const url = new URL("/login", env.PUBLIC_URL!);
   return NextResponse.redirect(url, {
     status: 303,
   });
