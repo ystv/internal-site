@@ -3,6 +3,7 @@ import { decode } from "../lib/sessionSecrets";
 import { z } from "zod";
 import { TSocket } from ".";
 import { ExtendedError } from "socket.io/dist/namespace";
+import { env } from "../lib/env";
 
 export async function authenticateSocket(
   socket: TSocket,
@@ -14,7 +15,7 @@ export async function authenticateSocket(
 
   if (Object.hasOwn(socket.handshake.auth, "secret")) {
     if (
-      socket.handshake.auth.secret === process.env.SESSION_SECRET &&
+      socket.handshake.auth.secret === env.SESSION_SECRET &&
       socket.handshake.headers["user-agent"] == "node-XMLHttpRequest"
     ) {
       socket.data.auth = {

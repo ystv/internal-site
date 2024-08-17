@@ -1,37 +1,27 @@
 import { createServer } from "node:http";
 import next from "next";
 import { Server, Socket } from "socket.io";
-import { encode as b64Encode, decode as b64Decode } from "base64-arraybuffer";
-import { prisma } from "../lib/db";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { decode } from "../lib/sessionSecrets";
 import { z } from "zod";
-import * as crypto from "crypto";
-import { ExtendedError } from "socket.io/dist/namespace";
 import { authenticateSocket, isServerSocket } from "./auth";
+import { env, validateEnv } from "../lib/env.js";
 
-const dev = process.env.NODE_ENV !== "production";
+const dev = env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
-export type TSocket = Socket<
-  DefaultEventsMap,
-  DefaultEventsMap,
-  DefaultEventsMap,
-  any
->;
+export type TSocket = Socket;
 
-export type TServer = Server<
-  DefaultEventsMap,
-  DefaultEventsMap,
-  DefaultEventsMap,
-  any
->;
+export type TServer = Server;
 
 var io: TServer;
+
+validateEnv();
+
+env;
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
