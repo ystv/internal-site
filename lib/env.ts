@@ -18,10 +18,7 @@ const envModel = z.object({
   ADAMRMS_BASE: z.string().optional(),
   ADAMRMS_PROJECT_TYPE_ID: z.string().optional(),
   SESSION_SECRET: z.string(),
-  SLACK_ENABLED: z.preprocess(
-    (enabled) => (enabled === "true" ? true : false),
-    z.boolean(),
-  ),
+  SLACK_ENABLED: z.enum(["true", "false"]).default("false"),
   SLACK_BOT_TOKEN: slackEnvType,
   SLACK_APP_TOKEN: slackEnvType,
   SLACK_SIGNING_SECRET: slackEnvType,

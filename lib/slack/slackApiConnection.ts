@@ -7,7 +7,7 @@ declare global {
 
 let app = global.slack;
 
-export const isSlackEnabled = env.SLACK_ENABLED == true;
+export const isSlackEnabled = env.SLACK_ENABLED === "true";
 
 if (!app && isSlackEnabled) {
   app = global.slack = new App({
