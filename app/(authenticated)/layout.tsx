@@ -7,7 +7,7 @@ import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 import * as Sentry from "@sentry/nextjs";
 import { UserMenu } from "@/components/UserMenu";
 import { QueryProvider } from "@/components/QueryProvider";
-import { useCreateSocket } from "@/lib/socket";
+import { WebsocketProvider } from "@/components/WebsocketProvider";
 
 export default async function AuthenticatedLayout({
   children,
@@ -61,4 +61,5 @@ export default async function AuthenticatedLayout({
         </QueryProvider>
       </UserProvider>
     </WebsocketProvider>
+  );
 }
