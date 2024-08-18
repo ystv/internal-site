@@ -40,7 +40,7 @@ export function validateEnv(
     console.error("Error: Bad env configuration");
     for (const error of envResult.error.issues) {
       console.error(
-        `   variable ${error.path.join(" ")} ${error.code}, ${error.message}`,
+        `   variable ${error.path.join(".")} ${error.code}, ${error.message}`,
       );
     }
     exit(1);
