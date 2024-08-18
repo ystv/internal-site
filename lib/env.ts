@@ -4,7 +4,7 @@ import { z } from "zod";
 const slackEnvType =
   process.env.SLACK_ENABLED == "true" ? z.string() : z.string().optional();
 
-const envModel = z.object({
+const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
@@ -31,9 +31,11 @@ const envModel = z.object({
   COOKIE_DOMAIN: z.string().default(new URL(process.env.PUBLIC_URL ?? "").host),
 });
 
-export function validateEnv(env?: any) {
-  if (process.env.SKIP_ENV_VALIDATION === "1") return env;
-  const envResult = envModel.safeParse(process.env);
+export function validateEnv(
+  env?: any,
+): NodeJS.ProcessEnv | z.infer<typeof envSchema> {
+  if (process.env.SKIP_ENV_VALIDATION === "1") return process.env;
+  const envResult = envSchema.safeParse(env ?? process.env);
   if (!envResult.success) {
     console.error("Error: Bad env configuration");
     for (const error of envResult.error.issues) {
@@ -43,10 +45,7 @@ export function validateEnv(env?: any) {
     }
     exit(1);
   }
-  return env ? envModel.parse(env) : undefined;
+  return envResult.data;
 }
 
-export const env =
-  process.env.SKIP_ENV_VALIDATION == "1"
-    ? process.env
-    : validateEnv(process.env);
+export const env = validateEnv();

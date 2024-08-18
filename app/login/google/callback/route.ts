@@ -19,7 +19,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   await loginOrCreateUserGoogle(idToken);
 
-  const url = new URL("/calendar", env.PUBLIC_URL!);
+  const url = new URL("/calendar", env.PUBLIC_URL);
   return NextResponse.redirect(url, {
     status: 303,
   });

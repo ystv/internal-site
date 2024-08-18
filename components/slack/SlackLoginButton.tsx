@@ -7,7 +7,7 @@ export default async function SlackLoginButton() {
       href={`https://slack.com/openid/connect/authorize?scope=openid&response_type=code&client_id=${
         env.SLACK_CLIENT_ID
       }&redirect_uri=${encodeURIComponent(
-        env.PUBLIC_URL! + "/login/slack/callback",
+        env.PUBLIC_URL + "/login/slack/callback",
       )}&scope=openid profile email`}
       style={{
         alignItems: "center",

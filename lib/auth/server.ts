@@ -191,7 +191,7 @@ export async function loginOrCreateUserSlack(rawSlackToken: SlackTokenJson) {
 
 export async function logout() {
   await clearSession();
-  const url = new URL("/login", env.PUBLIC_URL!);
+  const url = new URL("/login", env.PUBLIC_URL);
   return NextResponse.redirect(url, {
     status: 303,
   });
