@@ -16,6 +16,7 @@ import { zodErrorResponse } from "@/components/FormServerHelpers";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
+import { socket } from "@/lib/socket/server";
 
 export async function createSignUpSheet(
   eventID: number,
@@ -51,6 +52,18 @@ export async function createSignUpSheet(
   return { ok: true } as const;
 }
 
+export async function fetchSignUpSheet(
+  sheetID: number,
+): Promise<Calendar.SignUpSheetType | undefined> {
+  const me = await getCurrentUser();
+
+  const sheet = await Calendar.getSignUpSheet(sheetID);
+  if (!sheet) {
+    return undefined;
+  }
+  return sheet;
+}
+
 export async function editSignUpSheet(
   sheetID: number,
   data: z.infer<typeof SignupSheetSchema>,
@@ -81,6 +94,7 @@ export async function editSignUpSheet(
 
   await updateSignUpSheet(sheetID, payload.data);
   revalidatePath(`/calendar/${sheet.events.event_id}`);
+  socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
   return { ok: true } as const;
 }
 
@@ -106,6 +120,7 @@ export async function deleteSignUpSheet(sheetID: number) {
 
   await Calendar.deleteSignUpSheet(sheetID);
   revalidatePath(`/calendar/${sheet.events.event_id}`);
+  socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
   return { ok: true } as const;
 }
 
@@ -182,6 +197,7 @@ export async function signUpToRole(sheetID: number, crewID: number) {
   }
 
   revalidatePath(`/calendar/${sheet.events.event_id}`);
+  socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
   return { ok: true };
 }
 
@@ -233,6 +249,7 @@ export async function removeSelfFromRole(sheetID: number, crewID: number) {
     };
   }
   revalidatePath(`/calendar/${sheet.events.event_id}`);
+  socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
   return { ok: true };
 }
 

@@ -5,6 +5,7 @@ import { getCurrentUser, requirePermission } from "@/lib/auth/server";
 import * as People from "@/features/people";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { revalidatePath } from "next/cache";
+import { socket } from "@/lib/socket/server";
 
 export async function changePreference<
   K extends keyof PrismaJson.UserPreferences,
@@ -21,6 +22,7 @@ export async function changePreference<
     );
   }
 
+  socket.emit(`userUpdate:${userID}`);
   await People.setUserPreference(userID, key, value);
   revalidatePath(`/user/${userID}`);
   revalidatePath("/user/me");
