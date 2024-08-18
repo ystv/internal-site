@@ -1,3 +1,4 @@
+import { exit } from "process";
 import { z } from "zod";
 
 const slackEnvType =
@@ -30,16 +31,22 @@ const envModel = z.object({
   COOKIE_DOMAIN: z.string().default(new URL(process.env.PUBLIC_URL ?? "").host),
 });
 
-export function validateEnv() {
-  if (process.env.SKIP_ENV_VALIDATION === "1") return;
+export function validateEnv(env?: any) {
+  if (process.env.SKIP_ENV_VALIDATION === "1") return env;
   const envResult = envModel.safeParse(process.env);
   if (!envResult.success) {
-    throw new Error(envResult.error.errors[0].message);
+    console.error("Error: Bad env configuration");
+    for (const error of envResult.error.issues) {
+      console.error(
+        `   variable ${error.path.join(" ")} ${error.code}, ${error.message}`,
+      );
+    }
+    exit(1);
   }
-  return;
+  return env ? envModel.parse(env) : undefined;
 }
 
 export const env =
   process.env.SKIP_ENV_VALIDATION == "1"
     ? process.env
-    : envModel.parse(process.env);
+    : validateEnv(process.env);
