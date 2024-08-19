@@ -1,4 +1,5 @@
 import { loginOrCreateUserGoogle } from "@/lib/auth/server";
+import { env } from "@/lib/env";
 import { RedirectType } from "next/dist/client/components/redirect";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   await loginOrCreateUserGoogle(idToken);
 
-  const url = new URL("/calendar", process.env.PUBLIC_URL!);
+  const url = new URL("/calendar", env.PUBLIC_URL);
   return NextResponse.redirect(url, {
     status: 303,
   });

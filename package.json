@@ -6,7 +6,7 @@
     "dev": "nodemon",
     "devSSL": "next dev --experimental-https",
     "build": "next build && tsc --project tsconfig.server.json",
-    "start": "NODE_ENV=production node dist/server/server.js",
+    "start": "NODE_ENV=production node dist/server/index.js",
     "lint": "next lint",
     "test": "lint-staged",
     "prisma:generate": "dotenv -c ${NODE_ENV:-development} -- prisma generate --schema ./lib/db/schema.prisma",

@@ -5,6 +5,7 @@ import {
   getCurrentUserOrNull,
   loginOrCreateUserSlack,
 } from "@/lib/auth/server";
+import { env } from "@/lib/env";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const searchParams = req.nextUrl.searchParams;
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   let user = await getCurrentUserOrNull(req);
   user = await loginOrCreateUserSlack(slackUserInfo);
 
-  const url = new URL("/user/me", process.env.PUBLIC_URL!);
+  const url = new URL("/user/me", env.PUBLIC_URL);
   return NextResponse.redirect(url, {
     status: 303,
   });

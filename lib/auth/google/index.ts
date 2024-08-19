@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { OAuth2Client } from "google-auth-library";
 import { SlackTokenJson } from "../slack";
+import { env } from "@/lib/env";
 
 const Google = new OAuth2Client();
 
@@ -22,7 +23,7 @@ interface GoogleTokenClaims {
 }
 
 const permissibleDomains = new Set(
-  process.env.GOOGLE_PERMITTED_DOMAINS?.split(",") ?? [],
+  env.GOOGLE_PERMITTED_DOMAINS?.split(",") ?? [],
 );
 
 export async function verifyGoogleToken(
@@ -30,7 +31,7 @@ export async function verifyGoogleToken(
 ): Promise<GoogleTokenClaims> {
   const ticket = await Google.verifyIdToken({
     idToken: rawToken,
-    audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+    audience: env.GOOGLE_CLIENT_ID,
   });
   const payload = ticket.getPayload();
   if (!payload) {
