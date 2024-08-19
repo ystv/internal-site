@@ -1,3 +1,4 @@
 .header {
   background: var(--mantine-color-dark-5);
+  border-color: var(--mantine-color-dark-6);
 }
