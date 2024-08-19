@@ -19,7 +19,7 @@ Then, clone this repository:
 git clone git@github.com:ystv/internal-site.git
 ```
 
-In the new folder, copy the `.env.example` file to `.env.local` (and `.env`, for prisma).
+In the new folder, copy the `.env.example` file to `.env`.
 
 Then run `yarn` to install all the dependencies.
 
@@ -40,11 +40,11 @@ Go to "OAuth Consent Screen" and fill out all the information (it doesn't matter
 Then go to "Credentials".
 Create an OAuth Client ID, select "Web Application" as the type, and copy the Client ID.
 
-Edit your `.env.local` and add the Client ID on the `GOOGLE_CLIENT_ID=` line.
+Edit your `.env.local` and add the Client ID on the `GOOGLE_CLIENT_ID=` line. You should also set `GOOGLE_PERMITTED_DOMAINS=` to `york.ac.uk`.
 
 Also add `http://localhost` and `http://localhost:3000` to both the "Authorised JavaScript origins" and "Authorised redirect URIs" sections (Or whatever origin/domain your instance will be hosted on).
 
-Also ensure to set the `SESSION_SECRET` in `.env.local`, this can be whatever random string you'd like.
+Also ensure to set the `SESSION_SECRET` in `.env`, this can be whatever random string you'd like in development.
 
 ### Slack Integration (Optional)
 
