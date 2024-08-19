@@ -2,19 +2,29 @@ import Image from "next/image";
 import Logo from "@/app/_assets/logo.png";
 import Link from "next/link";
 import { UserProvider } from "@/components/UserContext";
-import { mustGetCurrentUser } from "@/lib/auth/server";
+import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 import * as Sentry from "@sentry/nextjs";
 import { UserMenu } from "@/components/UserMenu";
 import { WebsocketProvider } from "@/components/WebsocketProvider";
-import { useCreateSocket } from "@/lib/socket";
+import { NotLoggedIn } from "@/lib/auth/errors";
+import { redirect } from "next/navigation";
 
 export default async function AuthenticatedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await mustGetCurrentUser();
+  let user;
+  try {
+    user = await getCurrentUser();
+  } catch (e) {
+    if (e instanceof NotLoggedIn) {
+      redirect("/login");
+    }
+    throw e;
+  }
+
   Sentry.setUser({
     id: user.user_id,
     username: user.username,
