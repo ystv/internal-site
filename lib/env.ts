@@ -14,6 +14,7 @@ const envSchema = z.object({
     .refine((str) => !str.endsWith("/"), "PUBLIC_URL must not end with a '/'"),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_PERMITTED_DOMAINS: z.string(),
+  GOOGLE_API_KEY: z.string().optional(),
   ADAMRMS_EMAIL: z.string().optional(),
   ADAMRMS_PASSWORD: z.string().optional(),
   ADAMRMS_BASE: z.string().optional(),
@@ -28,7 +29,10 @@ const envSchema = z.object({
   SLACK_TEAM_ID: z.string().optional(),
   SLACK_CHECK_WITH_TECH_CHANNEL: z.string().default("#check-with-tech"),
   SLACK_TECH_HELP_CHANNEL: z.string().default("#check-with-tech"),
-  COOKIE_DOMAIN: z.string().default(new URL(process.env.PUBLIC_URL ?? "").host),
+  COOKIE_DOMAIN: z
+    .string()
+    .default(new URL(process.env.PUBLIC_URL ?? "localhost").host),
+  YOUTUBE_CHANNEL_ID: z.string().optional(),
 });
 
 export function validateEnv(
