@@ -75,6 +75,8 @@ model User {
   check_with_tech_confirmed CheckWithTech[] @relation("confirmed")
   check_with_tech_submitted CheckWithTech[] @relation("submitted")
 
+  newsItems NewsItem[]
+
   @@map("users")
 }
 
@@ -240,4 +242,12 @@ model WebcamFeed {
   stream_url String
 
   @@map("webcam_feeds")
+model NewsItem {
+  id        Int       @id @default(autoincrement())
+  author_id Int
+  author    User      @relation(fields: [author_id], references: [user_id])
+  time      DateTime
+  expires   DateTime?
+  title     String
+  content   String
 }
