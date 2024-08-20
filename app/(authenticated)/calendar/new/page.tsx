@@ -21,6 +21,7 @@ import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
 import { App } from "@slack/bolt";
 import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
 import { ConversationsInfoResponse } from "@slack/web-api/dist/response/ConversationsInfoResponse";
+import { env } from "@/lib/env";
 
 async function createEvent(
   data: unknown,
@@ -62,7 +63,7 @@ async function createEvent(
         // Create a new channel from the given user input
         const new_channel = await slackApp.client.conversations.create({
           name: payload.data.slack_channel_new_name,
-          team_id: process.env.SLACK_TEAM_ID,
+          team_id: env.SLACK_TEAM_ID,
         });
 
         if (!new_channel.ok) {
@@ -152,7 +153,7 @@ async function getSlackChannels(): Promise<Channel[]> {
   if (isSlackEnabled) {
     slackApp = await slackApiConnection();
     const slackChannels = await slackApp.client.conversations.list({
-      team_id: process.env.SLACK_TEAM_ID,
+      team_id: env.SLACK_TEAM_ID,
       types: "public_channel",
       exclude_archived: true,
       limit: 1000,

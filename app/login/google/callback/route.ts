@@ -1,4 +1,5 @@
 import { loginOrCreateUserGoogle } from "@/lib/auth/server";
+import { env } from "@/lib/env";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -18,11 +19,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   await loginOrCreateUserGoogle(idToken);
 
-  var url = new URL(redirect ?? "/calendar", process.env.PUBLIC_URL!);
-
-  if (!url.href.startsWith(process.env.PUBLIC_URL!))
-    url = new URL(process.env.PUBLIC_URL!);
-
+  const url = new URL("/calendar", env.PUBLIC_URL!);
   return NextResponse.redirect(url, {
     status: 303,
   });

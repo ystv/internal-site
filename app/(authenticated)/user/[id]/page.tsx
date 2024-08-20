@@ -27,6 +27,7 @@ import { Suspense } from "react";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { hasWrapped } from "../../wrapped/util";
 import Link from "next/link";
+import { env } from "@/lib/env";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;
@@ -95,7 +96,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
               <p>Add this URL as a new calendar in Google Calendar:</p>
               {await (async () => {
                 const link = `${
-                  process.env.PUBLIC_URL
+                  env.PUBLIC_URL
                 }/iCal/${await Calendar.encodeUserID(user.user_id)}`;
 
                 return (
