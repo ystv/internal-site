@@ -1,6 +1,6 @@
 import Image from "next/image";
 import BG from "./login-bg.png";
-import { GoogleLoginButton } from "../../components/google/GoogleLoginButton";
+import { GoogleLoginButton } from "@/components/google/GoogleLoginButton";
 import invariant from "@/lib/invariant";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
