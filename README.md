@@ -13,6 +13,10 @@ To set up a local copy of the new calendar, you will need
 - Git - https://git-scm.com/downloads
   - You will also need to configure authentication - https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github#authenticating-with-the-command-line
 
+If you wish to setup SSL for local development you will also need
+
+- mkcert - https://github.com/FiloSottile/mkcert
+
 Then, clone this repository:
 
 ```sh
@@ -44,7 +48,15 @@ Edit your `.env.local` and add the Client ID on the `GOOGLE_CLIENT_ID=` line.
 
 ### Slack Integration (Optional)
 
-If you would like to setup the optional slack integration, head over to the [Slack Setup](/docs/setup_slack.md) docs to get started.
+If you would like to setup the optional slack integration, head over to the [Slack Setup](/docs/setup_slack.md) docs to get started. You will also need to have setup localhost SSL to be able to sign in.
+
+### Localhost ssl
+
+To install the local root CA and generate the certificates:
+
+```bash
+yarn ssl:install && yarn ssl:generate
+```
 
 ## Running
 
@@ -54,7 +66,13 @@ Finally, run the development server:
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+or for SSL
+
+```bash
+yarn devSSL
+```
+
+Open [http://localhost:3000](http://localhost:3000) or [https://localhost:3000](https://localhost:3000) with your browser to see the result.
 
 To get admin permissions, sign in once with Google, then run `yarn do promoteUser <your email>`.
 
