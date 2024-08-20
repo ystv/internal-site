@@ -12,6 +12,7 @@ import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 import { Notifications } from "@mantine/notifications";
+import { env } from "@/lib/env";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,7 +38,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <MantineProvider theme={theme} defaultColorScheme="auto">
           <ModalsProvider>
-            <PublicURLProvider value={process.env.PUBLIC_URL!}>
+            <PublicURLProvider value={env.PUBLIC_URL!}>
               <DebugModeProvider value={debugMode}>
                 {children}
                 <DebugIndicator />

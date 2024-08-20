@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import { mustGetCurrentUser } from "../server";
 import invariant from "@/lib/invariant";
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 
 export type SlackTokenJson = {
   iss: string;
@@ -28,10 +29,10 @@ export async function getSlackUserInfo(code: string) {
   invariant(isSlackEnabled, "Slack is not enabled");
   const slackApp = await slackApiConnection();
   const tokenResponse = await slackApp.client.openid.connect.token({
-    client_id: process.env.SLACK_CLIENT_ID || "",
-    client_secret: process.env.SLACK_CLIENT_SECRET || "",
+    client_id: env.SLACK_CLIENT_ID || "",
+    client_secret: env.SLACK_CLIENT_SECRET || "",
     code: code,
-    redirect_uri: `${process.env.PUBLIC_URL}/login/slack/callback`,
+    redirect_uri: `${env.PUBLIC_URL}/login/slack/callback`,
   });
   const token = jwtDecode(tokenResponse.id_token!) as SlackTokenJson;
   return token;

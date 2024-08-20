@@ -1,4 +1,9 @@
-import { getCurrentUser, logout, requirePermission } from "@/lib/auth/server";
+import {
+  getCurrentUser,
+  logout,
+  mustGetCurrentUser,
+  requirePermission,
+} from "@/lib/auth/server";
 import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { notFound } from "next/navigation";
@@ -20,6 +25,9 @@ import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
 import { Suspense } from "react";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
+import { hasWrapped } from "../../wrapped/util";
+import Link from "next/link";
+import { env } from "@/lib/env";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;
@@ -88,7 +96,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
               <p>Add this URL as a new calendar in Google Calendar:</p>
               {await (async () => {
                 const link = `${
-                  process.env.PUBLIC_URL
+                  env.PUBLIC_URL
                 }/iCal/${await Calendar.encodeUserID(user.user_id)}`;
 
                 return (
@@ -101,6 +109,12 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             </Stack>
           </Stack>
         </Group>
+      </Card>
+      <Space h={"md"} />
+      <Card withBorder>
+        <Suspense fallback={<Skeleton height={38} animate />}>
+          <Wrapped />
+        </Suspense>
       </Card>
       <Space h={"md"} />
       {isSlackEnabled && (
@@ -133,5 +147,26 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         </>
       )}
     </div>
+  );
+}
+
+async function Wrapped() {
+  const me = await mustGetCurrentUser();
+  const has2024 = await hasWrapped(me.email, 2024);
+  if (!has2024) {
+    return null;
+  }
+  return (
+    <Group>
+      <div>
+        <h2 className="mt-0">YSTV Wrapped</h2>
+        <p className="my-1">Watch back previous years&apos; YSTV Wrapped.</p>
+        <ul>
+          <li>
+            <Link href="/wrapped?year=2024">YSTV Wrapped 2024</Link>
+          </li>
+        </ul>
+      </div>
+    </Group>
   );
 }

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import * as AdamRMS from "@/lib/adamrms";
+import { env } from "@/lib/env";
 
 export async function addProjectToAdamRMS(
   eventID: number,
@@ -41,7 +42,7 @@ export async function addProjectToAdamRMS(
   });
   await AdamRMS.newQuickProjectComment(
     projectId,
-    `This project is linked to the Calendar event "${event.name}" (${process.env.PUBLIC_URL}/calendar/${event.event_id}).`,
+    `This project is linked to the Calendar event "${event.name}" (${env.PUBLIC_URL}/calendar/${event.event_id}).`,
   );
 }
 
@@ -95,7 +96,7 @@ export async function linkAdamRMS(eventID: number, projectID: number) {
   });
   await AdamRMS.newQuickProjectComment(
     projectID,
-    `This project is linked to the Calendar event "${event.name}" (${process.env.PUBLIC_URL}/calendar/${event.event_id}).`,
+    `This project is linked to the Calendar event "${event.name}" (${env.PUBLIC_URL}/calendar/${event.event_id}).`,
   );
   return { ok: true };
 }

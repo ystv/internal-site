@@ -5,11 +5,12 @@ import invariant from "@/lib/invariant";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { Center, Stack } from "@mantine/core";
+import { env } from "@/lib/env";
 
 export default function GoogleSignInPage(props: {
   searchParams: { error?: string };
 }) {
-  invariant(process.env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID not set");
+  invariant(env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID not set");
 
   const gCsrfCookie = crypto.randomUUID();
 
@@ -36,8 +37,8 @@ export default function GoogleSignInPage(props: {
         <Center>
           <Stack>
             <GoogleLoginButton
-              clientID={process.env.GOOGLE_CLIENT_ID!}
-              hostedDomain={process.env.GOOGLE_PERMITTED_DOMAINS}
+              clientID={env.GOOGLE_CLIENT_ID!}
+              hostedDomain={env.GOOGLE_PERMITTED_DOMAINS}
               gCsrfToken={gCsrfCookie}
             />
             {isSlackEnabled && <SlackLoginButton />}

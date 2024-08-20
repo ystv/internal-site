@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -36,13 +37,13 @@ export async function postCheckWithTech(eventID: number, memo: string) {
         : dayjs(event.end_date)
             .tz("Europe/London")
             .format("dddd, MMMM D, YYYY h:mma")),
-    `${process.env.PUBLIC_URL}/calendar/${eventID}`,
+    `${env.PUBLIC_URL}/calendar/${eventID}`,
     event.location,
     memo,
   ];
 
   await slack.client.chat.postMessage({
-    channel: process.env.SLACK_CHECK_WITH_TECH_CHANNEL ?? "#check-with-tech",
+    channel: env.SLACK_CHECK_WITH_TECH_CHANNEL ?? "#check-with-tech",
     text: lines.join("\n"),
     mrkdwn: true,
   });
@@ -80,13 +81,13 @@ export async function postTechHelpRequest(eventID: number, memo: string) {
         : dayjs(event.end_date)
             .tz("Europe/London")
             .format("dddd, MMMM D, YYYY h:mma")),
-    `${process.env.PUBLIC_URL}/calendar/${eventID}`,
+    `${env.PUBLIC_URL}/calendar/${eventID}`,
     event.location,
     memo,
   ];
 
   await slack.client.chat.postMessage({
-    channel: process.env.SLACK_TECH_HELP_CHANNEL ?? "#check-with-tech",
+    channel: env.SLACK_TECH_HELP_CHANNEL ?? "#check-with-tech",
     text: lines.join("\n"),
     mrkdwn: true,
   });

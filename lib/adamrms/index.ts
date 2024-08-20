@@ -1,5 +1,6 @@
 import invariant from "@/lib/invariant";
 import { login, makeRequest } from "./client";
+import { env } from "../env";
 
 async function findIDOfUser(email: string): Promise<number | null> {
   const usersSearchResult = (await makeRequest("/instances/users.php", "GET", {
@@ -37,13 +38,13 @@ export async function listProjects() {
 export async function createProject(
   name: string,
   projectManagerEmail: string,
-  projectTypeID = parseInt(process.env.ADAMRMS_PROJECT_TYPE_ID!),
+  projectTypeID = parseInt(env.ADAMRMS_PROJECT_TYPE_ID!),
 ) {
   // Find the project manager by searching the list of users
   // It's not guaranteed to exist, so fall back to our login email (which is guaranteed to exist)
   let userID = await findIDOfUser(projectManagerEmail);
   if (userID === null) {
-    userID = await findIDOfUser(process.env.ADAMRMS_EMAIL!);
+    userID = await findIDOfUser(env.ADAMRMS_EMAIL!);
     if (userID === null) {
       throw new Error("Could not find user ID of PM user or our own user");
     }

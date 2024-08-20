@@ -1,7 +1,7 @@
 "use client";
 
 import { isBefore, isSameDay } from "date-fns";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
@@ -19,11 +19,13 @@ import {
   createSignUpSheet,
   deleteSignUpSheet,
   editSignUpSheet,
+  fetchSignUpSheet,
   removeSelfFromRole,
   signUpToRole,
 } from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
 import { TbCalendarCheck } from "react-icons/tb";
 import dayjs from "dayjs";
+import { useWebsocket } from "@/components/WebsocketProvider";
 
 function SignupSheet({
   event,
@@ -34,9 +36,30 @@ function SignupSheet({
   sheet: SignUpSheetType;
   me: UserType;
 }) {
+  const [sheetState, setSheetState] = useState(sheet);
+
+  const { socket, isConnected, transport } = useWebsocket();
+
+  useEffect(() => {
+    async function onSheetUpdate(value: any) {
+      const res = await fetchSignUpSheet(sheet.signup_id);
+
+      if (res) {
+        setSheetState(res);
+      }
+    }
+
+    socket.on(`signupSheetUpdate:${sheet.signup_id}`, onSheetUpdate);
+
+    return () => {
+      socket.off(`signupSheetUpdate:${sheet.signup_id}`, onSheetUpdate);
+    };
+  }, []);
+
   const locked = useMemo(
-    () => sheet.unlock_date && isBefore(new Date(), sheet.unlock_date),
-    [sheet.unlock_date],
+    () =>
+      sheetState.unlock_date && isBefore(new Date(), sheetState.unlock_date),
+    [sheetState.unlock_date],
   );
   const readOnly = event.is_cancelled;
   const [isEditOpen, setEditOpen] = useState(false);
@@ -49,23 +72,30 @@ function SignupSheet({
         withBorder
         className="flex-grow-1 w-full p-[var(--mantine-spacing-md)] md:w-[calc(50%-theme(gap.4)/2)] lg:flex-grow-0 lg:p-[var(--mantine-spacing-xl)]"
       >
-        <h2 className={"m-0"}>{sheet.title}</h2>
+        <h2 className={"m-0"}>{sheetState.title}</h2>
         <strong className={"text-sm font-extrabold"}>
           Arrive at{" "}
-          <DateTime val={sheet.arrival_time.toISOString()} format="time" />
+          <DateTime val={sheetState.arrival_time.toISOString()} format="time" />
         </strong>
         <br />
         <strong className={"text-sm font-extrabold"}>
           Broadcast at{" "}
-          <DateTime val={sheet.start_time.toISOString()} format="datetime" /> -{" "}
-          {isSameDay(sheet.start_time, sheet.end_time) ? (
-            <DateTime val={sheet.end_time.toISOString()} format="time" />
+          <DateTime
+            val={sheetState.start_time.toISOString()}
+            format="datetime"
+          />{" "}
+          -{" "}
+          {isSameDay(sheetState.start_time, sheetState.end_time) ? (
+            <DateTime val={sheetState.end_time.toISOString()} format="time" />
           ) : (
-            <DateTime val={sheet.end_time.toISOString()} format="datetime" />
+            <DateTime
+              val={sheetState.end_time.toISOString()}
+              format="datetime"
+            />
           )}
         </strong>
         <div className={"max-w-prose text-sm"}>
-          {sheet.description.split(/(\r\n|\r|\n)/g).map((p, idx) => (
+          {sheetState.description.split(/(\r\n|\r|\n)/g).map((p, idx) => (
             <p key={idx}>{p}</p>
           ))}
         </div>
@@ -74,7 +104,7 @@ function SignupSheet({
             <strong>
               Crew lists unlock on{" "}
               <DateTime
-                val={sheet.unlock_date!.toISOString()}
+                val={sheetState.unlock_date!.toISOString()}
                 format="datetime"
               />
             </strong>
@@ -86,7 +116,7 @@ function SignupSheet({
               "divide-x-0 divide-y-2 divide-dashed divide-gray-200 dark:divide-[--mantine-color-placeholder]"
             }
           >
-            {sheet.crews
+            {sheetState.crews
               .sort((a, b) => a.ordering - b.ordering)
               .map((crew, index) => {
                 const isProducer = crew.positions.admin;
@@ -176,7 +206,7 @@ function SignupSheet({
           </tbody>
         </table>
 
-        {canManageSignUpSheet(event, sheet, me) && (
+        {canManageSignUpSheet(event, sheetState, me) && (
           <>
             <br />
             <div className={"flex justify-end gap-1"}>
@@ -186,10 +216,10 @@ function SignupSheet({
                 onClick={async () => {
                   if (
                     confirm(
-                      `Are you sure you want to delete the list "${sheet.title}"? This action cannot be undone.`,
+                      `Are you sure you want to delete the list "${sheetState.title}"? This action cannot be undone.`,
                     )
                   ) {
-                    await deleteSignUpSheet(sheet.signup_id);
+                    await deleteSignUpSheet(sheetState.signup_id);
                   }
                 }}
               >
@@ -208,9 +238,9 @@ function SignupSheet({
         size={"95%"}
       >
         <AddEditSignUpSheetForm
-          action={async (data) => editSignUpSheet(sheet.signup_id, data)}
+          action={async (data) => editSignUpSheet(sheetState.signup_id, data)}
           onSuccess={() => setEditOpen(false)}
-          initialValues={sheet}
+          initialValues={sheetState}
           submitLabel="Save"
         />
         <br />
@@ -218,7 +248,7 @@ function SignupSheet({
       <Modal opened={signUpCrew !== null} onClose={() => setSignUpCrew(null)}>
         {signUpCrew !== null && (
           <MyRoleSignUpModal
-            sheet={sheet}
+            sheet={sheetState}
             crew={signUpCrew}
             me={me}
             onSuccess={() => setSignUpCrew(null)}
