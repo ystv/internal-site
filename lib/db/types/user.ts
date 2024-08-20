@@ -15,6 +15,7 @@ export const _UserModel = z.object({
   last_name: z.string(),
   nickname: z.string(),
   avatar: z.string(),
+  joined_on: z.date(),
   /**
    * [UserPreferences]
    */
