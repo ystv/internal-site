@@ -23,7 +23,7 @@ Then, clone this repository:
 git clone git@github.com:ystv/internal-site.git
 ```
 
-In the new folder, copy the `.env` file to `.env.local`.
+In the new folder, copy the `.env.example` file to `.env`.
 
 Then run `yarn` to install all the dependencies.
 
@@ -33,9 +33,9 @@ You will also need to set up the following:
 
 Once you have PostgreSQL installed, run `createdb calendar_2023`.
 
-Now run `yarn prisma:migrateDev` to set up the database tables.
+Now run `yarn prisma db push` to set up the database tables.
 If you get a permissions error, check your PostgreSQL authentication settings - you should have a `local all all peer` line in your pg_hba.conf.
-You may also need to run `yarn prisma:seed` to set up initial data.
+You may also need to run `yarn prisma db seed` to set up initial data.
 
 ### Google OAuth Keys
 
@@ -44,7 +44,11 @@ Go to "OAuth Consent Screen" and fill out all the information (it doesn't matter
 Then go to "Credentials".
 Create an OAuth Client ID, select "Web Application" as the type, and copy the Client ID.
 
-Edit your `.env.local` and add the Client ID on the `GOOGLE_CLIENT_ID=` line.
+Edit your `.env.local` and add the Client ID on the `GOOGLE_CLIENT_ID=` line. You should also set `GOOGLE_PERMITTED_DOMAINS=` to `york.ac.uk`.
+
+Also add `http://localhost` and `http://localhost:3000` to both the "Authorised JavaScript origins" and "Authorised redirect URIs" sections (Or whatever origin/domain your instance will be hosted on).
+
+Also ensure to set the `SESSION_SECRET` in `.env`, this can be whatever random string you'd like in development.
 
 ### Slack Integration (Optional)
 
