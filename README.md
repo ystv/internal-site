@@ -55,7 +55,7 @@ If you would like to setup the optional slack integration, head over to the [Sla
 To install the local root CA and generate the certificates:
 
 ```bash
-yarn ssl:install && yarn ssl:generate
+yarn ssl:generateCerts
 ```
 
 ## Running
