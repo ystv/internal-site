@@ -37,7 +37,9 @@ export default function GoogleSignInPage(props: {
               clientID={env.GOOGLE_CLIENT_ID!}
               hostedDomain={env.GOOGLE_PERMITTED_DOMAINS}
             />
-            {isSlackEnabled && <SlackLoginButton />}
+            {isSlackEnabled && (
+              <SlackLoginButton slackClientID={process.env.SLACK_CLIENT_ID!} />
+            )}
           </Stack>
         </Center>
       </div>

@@ -1,11 +1,11 @@
 import { loginOrCreateUserGoogle } from "@/lib/auth/server";
 import { env } from "@/lib/env";
-import { RedirectType } from "next/dist/client/components/redirect";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const searchParams = req.nextUrl.searchParams;
+  const redirect = searchParams.get("redirect");
+
   const dataRaw = await req.formData();
   const idToken = dataRaw.get("credential");
   if (typeof idToken !== "string" || idToken === null) {
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   await loginOrCreateUserGoogle(idToken);
 
-  const url = new URL("/calendar", env.PUBLIC_URL);
+  const url = new URL("/calendar", env.PUBLIC_URL!);
   return NextResponse.redirect(url, {
     status: 303,
   });
