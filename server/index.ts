@@ -11,7 +11,7 @@ import { env, validateEnv } from "../lib/env.js";
 import { readFileSync } from "node:fs";
 
 const dev = env.NODE_ENV !== "production";
-const doSSL = env.DEV_SSL == "true";
+const doSSL = env.DEV_SSL === "true";
 const hostname = "localhost";
 const port = 3000;
 // when using middleware `hostname` and `port` must be provided below
