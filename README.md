@@ -54,7 +54,7 @@ Also ensure to set the `SESSION_SECRET` in `.env`, this can be whatever random s
 
 If you would like to setup the optional slack integration, head over to the [Slack Setup](/docs/setup_slack.md) docs to get started. You will also need to have setup localhost SSL to be able to sign in.
 
-### Localhost ssl
+### Localhost ssl (Optional but required for slack integration)
 
 To install the local root CA and generate the certificates:
 
@@ -83,11 +83,9 @@ To get admin permissions, sign in once with Google, then run `yarn do promoteUse
 ## Structure
 
 - app/ - pages
-<!-- TODO - https://linear.app/ystv/issue/WEB-101/api-time
-- app/api/ - api routes (trpc and REST)
-  -->
 - features/ - business logic functinality
 - lib/ - low level utilities (auth, db, etc.)
+- server/ - custom server that handles socket.io communication
 
 ## Development
 
