@@ -1,12 +1,17 @@
-import { createServer } from "node:http";
+import { createServer as createHttpsServer } from "node:https";
+import {
+  createServer as createHttpServer,
+  Server as HttpServer,
+} from "node:http";
 import next from "next";
 import { Server, Socket } from "socket.io";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { z } from "zod";
 import { authenticateSocket, isServerSocket } from "./auth";
 import { env, validateEnv } from "../lib/env.js";
+import { readFileSync } from "node:fs";
 
 const dev = env.NODE_ENV !== "production";
+const doSSL = env.DEV_SSL === "true";
 const hostname = "localhost";
 const port = 3000;
 // when using middleware `hostname` and `port` must be provided below
@@ -14,15 +19,23 @@ const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
 export type TSocket = Socket;
-
 export type TServer = Server;
 
 var io: TServer;
 
 validateEnv();
 
-app.prepare().then(() => {
-  const httpServer = createServer(handler);
+app.prepare().then(async () => {
+  let httpServer: HttpServer;
+
+  if (doSSL) {
+    const cert = await readFileSync(process.cwd() + "/certificates/cert.pem");
+    const key = await readFileSync(process.cwd() + "/certificates/key.pem");
+
+    httpServer = createHttpsServer({ key: key, cert: cert }, handler);
+  } else {
+    httpServer = createHttpServer(handler);
+  }
 
   io = new Server(httpServer);
 
@@ -62,7 +75,7 @@ app.prepare().then(() => {
       process.exit(1);
     })
     .listen(port, () => {
-      console.log(`> Ready on http://${hostname}:${port}`);
+      console.log(`> Ready on http${doSSL ? "s" : ""}://${hostname}:${port}`);
     });
 });
 

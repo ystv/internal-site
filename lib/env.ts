@@ -29,6 +29,7 @@ const envSchema = z.object({
   SLACK_CHECK_WITH_TECH_CHANNEL: z.string().default("#check-with-tech"),
   SLACK_TECH_HELP_CHANNEL: z.string().default("#check-with-tech"),
   COOKIE_DOMAIN: z.string().default(new URL(process.env.PUBLIC_URL ?? "").host),
+  DEV_SSL: z.string().optional(), // Used to decide whether or not to use https in a dev environment
 });
 
 export function validateEnv(
