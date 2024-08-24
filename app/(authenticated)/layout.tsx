@@ -54,6 +54,17 @@ export default async function AuthenticatedLayout({
           {children}
         </main>
         <br />
+        <footer className="mt-8 text-center text-sm text-gray-500">
+          Calendar version {process.env.NEXT_PUBLIC_RELEASE}. Built and
+          maintained by the{" "}
+          <a
+            href="https://ystv.slack.com/archives/C05UATQKUMA"
+            className="underline"
+          >
+            YSTV Computing Team
+          </a>
+          . <Link href="/report">Got an idea or found something broken?</Link>
+        </footer>
         <style
           dangerouslySetInnerHTML={{
             __html: `

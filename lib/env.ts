@@ -28,8 +28,12 @@ const envSchema = z.object({
   SLACK_TEAM_ID: z.string().optional(),
   SLACK_CHECK_WITH_TECH_CHANNEL: z.string().default("#check-with-tech"),
   SLACK_TECH_HELP_CHANNEL: z.string().default("#check-with-tech"),
-  COOKIE_DOMAIN: z.string().default(new URL(process.env.PUBLIC_URL ?? "").host),
   DEV_SSL: z.string().optional(), // Used to decide whether or not to use https in a dev environment
+  SLACK_USER_REPORTS_CHANNEL: z.string().default("#dev-calendar"),
+  SENTRY_PROJECT_ID: z.string().optional(),
+  COOKIE_DOMAIN: z
+    .string()
+    .default(new URL(process.env.PUBLIC_URL ?? "localhost").host),
 });
 
 export function validateEnv(
