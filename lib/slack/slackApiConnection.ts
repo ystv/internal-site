@@ -21,7 +21,7 @@ if (!app && isSlackEnabled) {
     },
   });
 
-  app.action("user_report__search_sentry", async ({ ack }) => ack());
+  app.action("user_feedback__search_sentry", async ({ ack }) => ack());
 
   (async () => await app.start())();
 }

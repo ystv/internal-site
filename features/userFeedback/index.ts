@@ -75,13 +75,13 @@ export async function submit(type: "bug" | "feature", description: string) {
           url: `https://ystv.sentry.io/issues/?project=${
             env.SENTRY_PROJECT_ID
           }&query=user.email%3A${encodeURIComponent(me.email)}&statsPeriod=7d`,
-          action_id: "user_report__search_sentry",
+          action_id: "user_feedback__search_sentry",
         },
       ],
     });
   }
   await slack.client.chat.postMessage({
-    channel: env.SLACK_USER_REPORTS_CHANNEL!,
+    channel: env.SLACK_USER_FEEDBACK_CHANNEL!,
     blocks,
   });
 }
