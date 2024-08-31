@@ -2,15 +2,21 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { Forbidden, NotLoggedIn } from "./errors";
 import { Permission } from "./permissions";
-import { User } from "@prisma/client";
+import { Identity, User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
 import { cookies } from "next/headers";
+import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
+import { env } from "../env";
 
-export type UserType = User & {
+export interface UserWithIdentities extends User {
+  identities: Identity[];
+}
+
+export type UserType = UserWithIdentities & {
   permissions: Permission[];
 };
 
@@ -68,8 +74,8 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
   cookies().set(cookieName, payload, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    domain: process.env.COOKIE_DOMAIN,
+    secure: env.NODE_ENV === "production",
+    domain: env.COOKIE_DOMAIN,
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
@@ -99,6 +105,13 @@ export async function getCurrentUserOrNull(
   // (See below for why we don't store the user object in the session.)
   const user = await prisma.user.findUnique({
     where: { user_id: session.userID },
+    include: {
+      identities: {
+        where: {
+          provider: "slack",
+        },
+      },
+    },
   });
   if (!user) {
     return "User not found";
@@ -107,7 +120,9 @@ export async function getCurrentUserOrNull(
   const userType = {
     ...user,
     permissions,
-  } satisfies UserType;
+  } satisfies UserType & {
+    identities: Identity[];
+  };
   return userType;
 }
 
@@ -146,8 +161,22 @@ export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   return false;
 }
 
-export async function loginOrCreateUser(rawGoogleToken: string) {
+export async function loginOrCreateUserGoogle(rawGoogleToken: string) {
   const user = await findOrCreateUserFromGoogleToken(rawGoogleToken);
+  const permissions = await resolvePermissionsForUser(user.user_id);
+  const userType = {
+    ...user,
+    permissions,
+  } satisfies UserType;
+  // We don't store the full user object in the session because then it wouldn't
+  // pick up user info or permission changes without signing out and back in.
+  // It also makes the session token shorter.
+  await setSession({ userID: user.user_id });
+  return userType;
+}
+
+export async function loginOrCreateUserSlack(rawSlackToken: SlackTokenJson) {
+  const user = await findOrCreateUserFromSlackToken(rawSlackToken);
   const permissions = await resolvePermissionsForUser(user.user_id);
   const userType = {
     ...user,
@@ -162,7 +191,7 @@ export async function loginOrCreateUser(rawGoogleToken: string) {
 
 export async function logout() {
   await clearSession();
-  const url = new URL("/login", process.env.PUBLIC_URL!);
+  const url = new URL("/login", env.PUBLIC_URL);
   return NextResponse.redirect(url, {
     status: 303,
   });

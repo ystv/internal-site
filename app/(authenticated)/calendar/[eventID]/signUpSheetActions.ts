@@ -16,6 +16,7 @@ import { zodErrorResponse } from "@/components/FormServerHelpers";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
+import { socket } from "@/lib/socket/server";
 
 export async function createSignUpSheet(
   eventID: number,
@@ -51,6 +52,18 @@ export async function createSignUpSheet(
   return { ok: true } as const;
 }
 
+export async function fetchSignUpSheet(
+  sheetID: number,
+): Promise<Calendar.SignUpSheetType | undefined> {
+  const me = await getCurrentUser();
+
+  const sheet = await Calendar.getSignUpSheet(sheetID);
+  if (!sheet) {
+    return undefined;
+  }
+  return sheet;
+}
+
 export async function editSignUpSheet(
   sheetID: number,
   data: z.infer<typeof SignupSheetSchema>,
@@ -81,6 +94,7 @@ export async function editSignUpSheet(
 
   await updateSignUpSheet(sheetID, payload.data);
   revalidatePath(`/calendar/${sheet.events.event_id}`);
+  socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
   return { ok: true } as const;
 }
 
@@ -106,6 +120,7 @@ export async function deleteSignUpSheet(sheetID: number) {
 
   await Calendar.deleteSignUpSheet(sheetID);
   revalidatePath(`/calendar/${sheet.events.event_id}`);
+  socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
   return { ok: true } as const;
 }
 
@@ -156,19 +171,20 @@ export async function signUpToRole(sheetID: number, crewID: number) {
   }
 
   if (isSlackEnabled) {
-    if (me.slack_user_id && sheet.events.slack_channel_id) {
+    const slackUser = me.identities.find((i) => i.provider === "slack");
+    if (slackUser && sheet.events.slack_channel_id) {
       const slackApp = await slackApiConnection();
 
       try {
         const invitiationResponse = await slackApp.client.conversations.invite({
           channel: sheet.events.slack_channel_id,
-          users: me.slack_user_id,
+          users: slackUser.provider_key,
         });
 
         if (invitiationResponse.ok) {
           await slackApp.client.chat.postEphemeral({
             channel: sheet.events.slack_channel_id,
-            user: me.slack_user_id,
+            user: slackUser.provider_key,
             text: `You have been added to this channel as you signed up for the role of '${sheet.crews.find(
               (crew_pos) => {
                 if (crew_pos.crew_id == crewID) {
@@ -183,6 +199,7 @@ export async function signUpToRole(sheetID: number, crewID: number) {
   }
 
   revalidatePath(`/calendar/${sheet.events.event_id}`);
+  socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
   return { ok: true };
 }
 
@@ -234,5 +251,6 @@ export async function removeSelfFromRole(sheetID: number, crewID: number) {
     };
   }
   revalidatePath(`/calendar/${sheet.events.event_id}`);
+  socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
   return { ok: true };
 }

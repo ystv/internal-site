@@ -18,6 +18,14 @@ const nextConfig = {
         hostname: "*.googleusercontent.com",
         protocol: "https",
       },
+      {
+        hostname: "secure.gravatar.com",
+        protocol: "https",
+      },
+      {
+        hostname: "*.slack-edge.com",
+        protocol: "https",
+      },
     ],
   },
   env: {

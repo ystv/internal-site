@@ -5,9 +5,10 @@ import { listEvents, listVacantEvents } from "@/features/calendar/events";
 import { Alert, Button } from "@mantine/core";
 import { Permission } from "@/lib/auth/permissions";
 import { getCurrentUser } from "@/lib/auth/server";
-import { TbArticle, TbCalendarEvent, TbClipboardList } from "react-icons/tb";
+import { TbArticle, TbCalendarEvent } from "react-icons/tb";
 import invariant from "@/lib/invariant";
-import { add, set, setDay } from "date-fns";
+import { add, setDay } from "date-fns";
+import { Suspense } from "react";
 
 function dateRangeForView(
   year: number,

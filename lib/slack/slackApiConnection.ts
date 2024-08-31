@@ -1,4 +1,5 @@
 import { App } from "@slack/bolt";
+import { env } from "../env";
 
 declare global {
   var slack: App; // This must be a `var` and not a `let / const`
@@ -6,29 +7,15 @@ declare global {
 
 let app = global.slack;
 
-function checkEnabled() {
-  if (
-    process.env.SLACK_ENABLED?.toLowerCase() === "true" &&
-    process.env.SLACK_BOT_TOKEN &&
-    process.env.SLACK_APP_TOKEN &&
-    process.env.SLACK_SIGNING_SECRET &&
-    process.env.SLACK_CLIENT_ID &&
-    process.env.SLACK_CLIENT_SECRET
-  ) {
-    return true;
-  }
-  return false;
-}
-
-export const isSlackEnabled = checkEnabled();
+export const isSlackEnabled = env.SLACK_ENABLED === "true";
 
 if (!app && isSlackEnabled) {
   app = global.slack = new App({
-    token: process.env.SLACK_BOT_TOKEN,
-    signingSecret: process.env.SLACK_SIGNING_SECRET,
+    token: env.SLACK_BOT_TOKEN,
+    signingSecret: env.SLACK_SIGNING_SECRET,
     socketMode: true,
-    appToken: process.env.SLACK_APP_TOKEN,
-    redirectUri: `${process.env.PUBLIC_URL}/login/slack/callback`,
+    appToken: env.SLACK_APP_TOKEN,
+    redirectUri: `${env.PUBLIC_URL}/login/slack/callback`,
     installerOptions: {
       redirectUriPath: "/login/slack/callback",
     },
