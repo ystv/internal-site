@@ -14,6 +14,10 @@ export async function doHandleUserReport(
   if (!data.success) {
     return zodErrorResponse(data.error);
   }
-  await Feedback.submit(data.data.type, data.data.description);
-  return { ok: true };
+
+  return await Feedback.submit(
+    data.data.type,
+    data.data.description,
+    data.data.path,
+  );
 }

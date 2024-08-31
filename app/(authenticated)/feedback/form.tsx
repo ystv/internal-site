@@ -2,23 +2,36 @@
 
 import Form, { FormResponse } from "@/components/Form";
 import { UserReportSchema } from "./schema";
-import { SelectField, TextAreaField } from "@/components/FormFields";
+import {
+  HiddenField,
+  SelectField,
+  TextAreaField,
+} from "@/components/FormFields";
 import { identity } from "lodash";
-import { useState } from "react";
-import { Alert } from "@mantine/core";
+import { useRouter, useSearchParams } from "next/navigation";
+import { notifications } from "@mantine/notifications";
 
 export function UserReportForm({
   action,
 }: {
   action: (data: unknown) => Promise<FormResponse>;
 }) {
-  const [success, setSuccess] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
   return (
     <>
       <Form
         schema={UserReportSchema}
         action={action}
-        onSuccess={() => setSuccess(true)}
+        onSuccess={() => {
+          router.push(decodeURIComponent(searchParams.get("return_to") ?? "/"));
+          notifications.show({
+            title: "Success",
+            message:
+              "Thank you! Your report has been received by the Computing Team.",
+            color: "green",
+          });
+        }}
       >
         <SelectField
           name="type"
@@ -36,12 +49,11 @@ export function UserReportForm({
           name="description"
           label="Describe the issue or feature"
         />
+        <HiddenField
+          name="path"
+          value={decodeURIComponent(searchParams.get("return_to") ?? "?")}
+        ></HiddenField>
       </Form>
-      {success && (
-        <Alert variant="filled" color="green">
-          Thank you! Your report has been received by the Computing Team.
-        </Alert>
-      )}
     </>
   );
 }

@@ -8,7 +8,7 @@ import * as Sentry from "@sentry/nextjs";
 import { UserMenu } from "@/components/UserMenu";
 import { LoginPrompt } from "@/components/LoginPrompt";
 import { WebsocketProvider } from "@/components/WebsocketProvider";
-import { useCreateSocket } from "@/lib/socket";
+import { FeedbackPrompt } from "@/components/FeedbackPrompt";
 
 export default async function AuthenticatedLayout({
   children,
@@ -56,8 +56,7 @@ export default async function AuthenticatedLayout({
         <br />
         <footer className="mt-8 text-center text-sm text-gray-500">
           Calendar version {process.env.NEXT_PUBLIC_RELEASE}. Built and
-          maintained by the YSTV Computing Team.{" "}
-          <Link href="/feedback">Got an idea or found something broken?</Link>
+          maintained by the YSTV Computing Team. <FeedbackPrompt />
         </footer>
         <style
           dangerouslySetInnerHTML={{

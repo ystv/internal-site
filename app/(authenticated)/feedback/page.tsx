@@ -1,7 +1,20 @@
+import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { doHandleUserReport } from "./actions";
 import { UserReportForm } from "./form";
 
 export default async function ReportPage() {
+  if (!isSlackEnabled) {
+    return (
+      <div>
+        <h1>Not available</h1>
+        <p>
+          Unfortunately the slack integration isn't enabled for this site,
+          please try messaging the computing team.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1>Report a problem or request a feature</h1>

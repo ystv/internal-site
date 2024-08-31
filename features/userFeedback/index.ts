@@ -1,12 +1,29 @@
+import { FormResponse } from "@/components/Form";
 import { getUserName } from "@/components/UserHelpers";
 import { getCurrentUser } from "@/lib/auth/server";
 import { env } from "@/lib/env";
-import slackApiConnection from "@/lib/slack/slackApiConnection";
+import invariant from "@/lib/invariant";
+import slackApiConnection, {
+  isSlackEnabled,
+} from "@/lib/slack/slackApiConnection";
 import { KnownBlock } from "@slack/bolt";
 
-export async function submit(type: "bug" | "feature", description: string) {
-  const me = await getCurrentUser();
+export async function submit(
+  type: "bug" | "feature",
+  description: string,
+  path?: string,
+): Promise<FormResponse> {
+  invariant(
+    isSlackEnabled,
+    "Slack integration isn't enabled, you shouldn't be seeing this",
+  );
+  invariant(
+    env.SLACK_USER_FEEDBACK_CHANNEL != undefined,
+    "No feedback channel specified, please contact computing team",
+  );
+
   const slack = await slackApiConnection();
+  const me = await getCurrentUser();
   const slackIdentity = me.identities.find((x) => x.provider === "slack");
   const blocks: KnownBlock[] = [
     {
@@ -39,6 +56,16 @@ export async function submit(type: "bug" | "feature", description: string) {
                     bold: true,
                   },
                 },
+            {
+              type: "text",
+              text:
+                type === "bug" && path !== undefined
+                  ? ` at path \`${path}\``
+                  : "",
+              style: {
+                bold: true,
+              },
+            },
           ],
         },
       ],
@@ -80,8 +107,24 @@ export async function submit(type: "bug" | "feature", description: string) {
       ],
     });
   }
-  await slack.client.chat.postMessage({
+  const status = await slack.client.chat.postMessage({
     channel: env.SLACK_USER_FEEDBACK_CHANNEL!,
     blocks,
+    text: `New ${
+      type === "bug" ? "bug report" : "feature request"
+    } from ${getUserName(me)}`,
   });
+
+  if (status.ok) {
+    return {
+      ok: true,
+    };
+  } else {
+    return {
+      ok: false,
+      errors: {
+        root: status.error,
+      },
+    };
+  }
 }
