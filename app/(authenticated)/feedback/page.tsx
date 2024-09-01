@@ -8,7 +8,7 @@ export default async function ReportPage() {
       <div>
         <h1>Not available</h1>
         <p>
-          Unfortunately the slack integration isn't enabled for this site,
+          Unfortunately the slack integration isn&apos;t enabled for this site,
           please try messaging the computing team.
         </p>
       </div>
