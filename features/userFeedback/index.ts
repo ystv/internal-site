@@ -13,14 +13,22 @@ export async function submit(
   description: string,
   path?: string,
 ): Promise<FormResponse> {
-  invariant(
-    isSlackEnabled,
-    "Slack integration isn't enabled, you shouldn't be seeing this",
-  );
-  invariant(
-    env.SLACK_USER_FEEDBACK_CHANNEL != undefined,
-    "No feedback channel specified, please contact computing team",
-  );
+  if (isSlackEnabled) {
+    return {
+      ok: false,
+      errors: {
+        root: "Slack integration isn't enabled, you shouldn't be seeing this",
+      },
+    };
+  }
+  if (env.SLACK_USER_FEEDBACK_CHANNEL != undefined) {
+    return {
+      ok: false,
+      errors: {
+        root: "No feedback channel specified, please contact computing team",
+      },
+    };
+  }
 
   const slack = await slackApiConnection();
   const me = await getCurrentUser();
