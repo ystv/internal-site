@@ -173,17 +173,11 @@ export async function signUpToRole(sheetID: number, crewID: number) {
   if (isSlackEnabled) {
     const slackUser = me.identities.find((i) => i.provider === "slack");
     if (slackUser && sheet.events.slack_channel_id) {
-      console.log("Trying things");
-
       const slackApp = await slackApiConnection();
 
-      // I don't like the way this works but boltjs works weirdly.
-      // This works by attempting to invite the user to the channel.
-      // If the user is already in the channel, the method throws an
-      // error instead of returning it to be handled. This code will
-      // catch that error and if it is an error saying the user is
-      // already in the channel, it gets ignored, else the error is
-      // thrown
+      // Boltjs works weirdly.
+      // This code will ignore the error thrown if the user is already in the
+      // channel but throw any others.
       try {
         const invitiationResponse = await slackApp.client.conversations.invite({
           channel: sheet.events.slack_channel_id,
