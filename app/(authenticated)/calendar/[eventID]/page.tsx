@@ -168,7 +168,7 @@ async function SlackBanner(props: { event: EventObjectType }) {
       This event has a Slack channel: #{channelInfo.channel?.name}.&nbsp;
       Connect your Slack account to join it automatically.
       <br />
-      <SlackLoginButton />
+      <SlackLoginButton slackClientID={process.env.SLACK_CLIENT_ID!} />
     </Alert>
   );
 }

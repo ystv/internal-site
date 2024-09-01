@@ -27,6 +27,7 @@ import { Suspense } from "react";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { hasWrapped } from "../../wrapped/util";
 import Link from "next/link";
+import { env } from "@/lib/env";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;
@@ -95,7 +96,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
               <p>Add this URL as a new calendar in Google Calendar:</p>
               {await (async () => {
                 const link = `${
-                  process.env.PUBLIC_URL
+                  env.PUBLIC_URL
                 }/iCal/${await Calendar.encodeUserID(user.user_id)}`;
 
                 return (
@@ -122,7 +123,9 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             <Card withBorder>
               <h2 className="mt-0">Link your account to Slack</h2>
               <Suspense>
-                <SlackLoginButton />
+                <SlackLoginButton
+                  slackClientID={process.env.SLACK_CLIENT_ID!}
+                />
               </Suspense>
             </Card>
           ) : (

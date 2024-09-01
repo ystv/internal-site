@@ -2,11 +2,12 @@ import Image from "next/image";
 import Logo from "@/app/_assets/logo.png";
 import Link from "next/link";
 import { UserProvider } from "@/components/UserContext";
-import { mustGetCurrentUser } from "@/lib/auth/server";
+import { getCurrentUserOrNull } from "@/lib/auth/server";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 import * as Sentry from "@sentry/nextjs";
 import { UserMenu } from "@/components/UserMenu";
 import { QueryProvider } from "@/components/QueryProvider";
+import { LoginPrompt } from "@/components/LoginPrompt";
 import { WebsocketProvider } from "@/components/WebsocketProvider";
 
 export default async function AuthenticatedLayout({
@@ -14,7 +15,12 @@ export default async function AuthenticatedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await mustGetCurrentUser();
+  const user = await getCurrentUserOrNull();
+
+  if (typeof user == "string") {
+    return <LoginPrompt />;
+  }
+
   Sentry.setUser({
     id: user.user_id,
     username: user.username,
