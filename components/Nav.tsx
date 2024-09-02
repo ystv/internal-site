@@ -21,7 +21,7 @@ export default function Nav({ children, user }: NavProps) {
       padding="md"
       classNames={{ header: styles.header }}
     >
-      <AppShell.Header bg-dark>
+      <AppShell.Header bg-dark="true">
         <Group h="100%" px="md">
           <Link href="/">
             <Image

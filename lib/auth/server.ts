@@ -8,7 +8,6 @@ import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
-import { cookies } from "next/headers";
 import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
 import { env } from "../env";
 
@@ -79,13 +78,6 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
-}
-
-async function clearSession() {
-  const { cookies } = await import("next/headers");
-
-  await cookies().delete(cookieName);
-  await cookies().delete("g_csrf_token");
 }
 
 export async function getCurrentUserOrNull(
@@ -187,12 +179,4 @@ export async function loginOrCreateUserSlack(rawSlackToken: SlackTokenJson) {
   // It also makes the session token shorter.
   await setSession({ userID: user.user_id });
   return userType;
-}
-
-export async function logout() {
-  await clearSession();
-  const url = new URL("/login", env.PUBLIC_URL);
-  return NextResponse.redirect(url, {
-    status: 303,
-  });
 }

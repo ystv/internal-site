@@ -3,8 +3,8 @@ import { env } from "@/lib/env";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const searchParams = req.nextUrl.searchParams;
-  const redirect = searchParams.get("redirect");
+  const cookies = req.cookies;
+  const redirect = cookies.get("ystv-calendar-session.redirect");
 
   const dataRaw = await req.formData();
   const idToken = dataRaw.get("credential");
@@ -19,7 +19,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   await loginOrCreateUserGoogle(idToken);
 
-  const url = new URL("/calendar", env.PUBLIC_URL!);
+  var url = new URL(redirect?.value ?? "/calendar", env.PUBLIC_URL!);
+
+  if (!url.href.startsWith(env.PUBLIC_URL!)) url = new URL(env.PUBLIC_URL!);
+
   return NextResponse.redirect(url, {
     status: 303,
   });
