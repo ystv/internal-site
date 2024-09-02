@@ -16,6 +16,7 @@ const nextConfig = {
       // User avatars
       {
         hostname: "*.googleusercontent.com",
+        pathname: "**",
         protocol: "https",
       },
       {

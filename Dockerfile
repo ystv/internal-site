@@ -24,6 +24,7 @@ COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/.next/standalone /app
 COPY --from=build /app/public /app/public
 COPY --from=build /app/.next/static /app/.next/static
+COPY --from=build /app/next.config.build.js /app/next.config.js
 # Copy these in so that we can still run Prisma migrations in prod
 COPY --from=build /app/lib/db/schema.prisma /app/lib/db/schema.prisma
 COPY --from=build /app/lib/db/migrations /app/lib/db/migrations

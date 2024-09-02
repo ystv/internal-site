@@ -25,21 +25,22 @@ export type SlackTokenJson = {
   picture: string;
 };
 
-export async function getSlackUserInfo(code: string) {
+export async function getSlackUserInfo(code: string, redirect?: string | null) {
   invariant(isSlackEnabled, "Slack is not enabled");
   const slackApp = await slackApiConnection();
   const tokenResponse = await slackApp.client.openid.connect.token({
     client_id: env.SLACK_CLIENT_ID || "",
     client_secret: env.SLACK_CLIENT_SECRET || "",
     code: code,
-    redirect_uri: `${env.PUBLIC_URL}/login/slack/callback`,
+    redirect_uri: `${env.PUBLIC_URL}/login/slack/callback${
+      redirect ? "?redirect=" + redirect : ""
+    }`,
   });
   const token = jwtDecode(tokenResponse.id_token!) as SlackTokenJson;
   return token;
 }
 
 export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
-  console.log(userInfo["email"]);
   const user = await prisma.user.findFirst({
     where: {
       OR: [

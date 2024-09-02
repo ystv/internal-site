@@ -1,6 +1,6 @@
 import Image from "next/image";
 import BG from "./login-bg.png";
-import { GoogleLoginButton } from "./GoogleLoginButton";
+import { GoogleLoginButton } from "@/components/google/GoogleLoginButton";
 import invariant from "@/lib/invariant";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
@@ -11,8 +11,6 @@ export default function GoogleSignInPage(props: {
   searchParams: { error?: string };
 }) {
   invariant(env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID not set");
-
-  const gCsrfCookie = crypto.randomUUID();
 
   return (
     <div className="relative block h-full w-full">
@@ -39,9 +37,11 @@ export default function GoogleSignInPage(props: {
             <GoogleLoginButton
               clientID={env.GOOGLE_CLIENT_ID!}
               hostedDomain={env.GOOGLE_PERMITTED_DOMAINS}
-              gCsrfToken={gCsrfCookie}
+              gCsrfCookie={crypto.randomUUID()}
             />
-            {isSlackEnabled && <SlackLoginButton />}
+            {isSlackEnabled && (
+              <SlackLoginButton slackClientID={process.env.SLACK_CLIENT_ID!} />
+            )}
           </Stack>
         </Center>
       </div>
