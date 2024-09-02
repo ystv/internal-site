@@ -13,7 +13,7 @@ export async function submit(
   description: string,
   path?: string,
 ): Promise<FormResponse> {
-  if (isSlackEnabled) {
+  if (!isSlackEnabled) {
     return {
       ok: false,
       errors: {
@@ -21,7 +21,7 @@ export async function submit(
       },
     };
   }
-  if (env.SLACK_USER_FEEDBACK_CHANNEL != undefined) {
+  if (env.SLACK_USER_FEEDBACK_CHANNEL == undefined) {
     return {
       ok: false,
       errors: {
