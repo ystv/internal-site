@@ -64,9 +64,9 @@ export function AdminUserView(props: {
               if (response.ok) {
                 closeAddRoleModal();
                 router.refresh();
-                return true;
+                return response;
               } else {
-                return false;
+                return response;
               }
             }}
           />

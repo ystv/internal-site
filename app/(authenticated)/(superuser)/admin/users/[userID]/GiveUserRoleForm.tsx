@@ -1,5 +1,6 @@
 "use client";
 
+import { FormResponse } from "@/components/Form";
 import {
   ActionIcon,
   Card,
@@ -15,7 +16,7 @@ import { use } from "react";
 import { FaPlus } from "react-icons/fa";
 
 export function GiveUserRoleForm(props: {
-  onGiveRole: (role_id: number) => Promise<boolean>;
+  onGiveRole: (role_id: number) => Promise<FormResponse>;
   roles: Promise<Role[]>;
 }) {
   const roles = use(props.roles);
@@ -45,7 +46,7 @@ export function GiveUserRoleForm(props: {
                     onClick={async () => {
                       setLoading();
                       const response = await props.onGiveRole(role.role_id);
-                      if (response == true) {
+                      if (response.ok) {
                         unsetLoading();
                         notifications.show({
                           color: "green",
@@ -55,7 +56,7 @@ export function GiveUserRoleForm(props: {
                         unsetLoading();
                         notifications.show({
                           color: "red",
-                          message: `Unable to give user ${role.name} role. Please contact Computing Team`,
+                          message: `Unable to give user ${role.name} role: ${response.errors}`,
                         });
                       }
                     }}
