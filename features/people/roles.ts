@@ -69,6 +69,8 @@ export async function removeUserRole(data: unknown): Promise<FormResponse> {
 export async function getUserAbsentRoles(data: {
   user_id: number;
 }): Promise<Role[]> {
+  await requirePermission("Admin.Users.Admin");
+
   return await prisma.role.findMany({
     where: {
       role_members: {
@@ -80,7 +82,9 @@ export async function getUserAbsentRoles(data: {
   });
 }
 
-export function getRole(data: { role_id: number }) {
+export async function getRole(data: { role_id: number }) {
+  await requirePermission("Admin.Roles.Admin");
+
   return prisma.role.findFirst({
     where: {
       role_id: data.role_id,
@@ -94,6 +98,8 @@ export function getRole(data: { role_id: number }) {
 export async function createRole(
   data: z.infer<typeof createRoleSchema>,
 ): Promise<FormResponse> {
+  await requirePermission("Admin.Roles.Admin");
+
   const role = await prisma.role.create({
     data: {
       name: data.name,
@@ -119,6 +125,8 @@ export async function createRole(
 export async function updateRole(
   data: z.infer<typeof updateRoleSchema>,
 ): Promise<FormResponse> {
+  await requirePermission("Admin.Roles.Admin");
+
   const role = await prisma.role.update({
     where: {
       role_id: data.role_id,
@@ -156,6 +164,8 @@ export async function updateRole(
 export async function deleteRole(
   data: z.infer<typeof deleteRoleSchema>,
 ): Promise<FormResponse> {
+  await requirePermission("Admin.Roles.Admin");
+
   await prisma.rolePermission.deleteMany({
     where: {
       role_id: data.role_id,

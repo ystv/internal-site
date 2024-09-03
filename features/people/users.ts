@@ -122,6 +122,8 @@ export async function fetchUsers(data: {
 }) {
   "use server";
 
+  await requirePermission("Admin.Users.Admin");
+
   let totalMatching: number;
 
   const queryExists = data.query && data.query.trim() != "";
@@ -221,6 +223,8 @@ export async function fetchUsers(data: {
 }
 
 export async function fetchUserForAdmin(data: { user_id: number }) {
+  await requirePermission("Admin.Users.Admin");
+
   const user = await prisma.user.findFirst({
     where: {
       user_id: data.user_id,
@@ -275,34 +279,6 @@ export async function editUserAdmin(data: unknown): Promise<FormResponse> {
   });
 
   return { ok: true };
-}
-
-export async function searchUsers(
-  data: unknown,
-): Promise<FormResponse<{ positions: Position[] }>> {
-  "use server";
-  const dataSchema = z.object({
-    query: z.string().optional(),
-    // count: z.number(),
-    // page: z.number(),
-  });
-
-  const safeData = dataSchema.safeParse(data);
-
-  if (!safeData.success) {
-    return zodErrorResponse(safeData.error);
-  }
-
-  const searchResults = await prisma.position.findMany({
-    where: {
-      name: {
-        contains: safeData.data.query,
-      },
-    },
-    take: 10,
-  });
-
-  return { ok: true, positions: searchResults };
 }
 
 export const numUsers = prisma.position.count({

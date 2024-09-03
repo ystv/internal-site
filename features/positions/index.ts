@@ -14,7 +14,7 @@ export async function fetchPositions(data: {
 }) {
   "use server";
 
-  requirePermission("Admin.Positions.Admin");
+  await requirePermission("Admin.Positions.Admin");
 
   const totalMatching = await prisma.position.count({
     where: {
@@ -63,7 +63,7 @@ export async function createPosition(
 ): Promise<FormResponse<{ position: Position }>> {
   "use server";
 
-  requirePermission("Admin.Positions.Admin");
+  await requirePermission("Admin.Positions.Admin");
 
   const safeData = createPositionSchema.safeParse(data);
 
@@ -87,7 +87,7 @@ export async function deletePosition(
 ): Promise<FormResponse<{ position_id: number }>> {
   "use server";
 
-  requirePermission("Admin.Positions.Admin");
+  await requirePermission("Admin.Positions.Admin");
 
   const dataSchema = z.object({ position_id: z.number() });
 
@@ -114,7 +114,7 @@ export async function updatePosition(
 ): Promise<FormResponse<{ position: Position }>> {
   "use server";
 
-  requirePermission("Admin.Positions.Admin");
+  await requirePermission("Admin.Positions.Admin");
 
   const dataSchema = z.object({
     position_id: z.number(),
@@ -151,7 +151,7 @@ export async function searchPositions(
 ): Promise<FormResponse<{ positions: Position[] }>> {
   "use server";
 
-  requirePermission("Admin.Positions.Admin");
+  await requirePermission("Admin.Positions.Admin");
 
   const dataSchema = z.object({
     query: z.string().optional(),
