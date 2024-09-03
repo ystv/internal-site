@@ -6,13 +6,13 @@ export default function AdminPage() {
     <Card>
       <Stack>
         <Link href={"/admin/users"}>
-          <Button variant="default">Manage Users</Button>
+          <Button variant="default">Users</Button>
         </Link>
         <Link href={"/admin/positions"}>
-          <Button variant="default">Manage Positions</Button>
+          <Button variant="default">Crew Positions</Button>
         </Link>
         <Link href={"/admin/roles"}>
-          <Button variant="default">Manage Roles</Button>
+          <Button variant="default">Roles</Button>
         </Link>
       </Stack>
     </Card>
