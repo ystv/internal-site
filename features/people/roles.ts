@@ -18,7 +18,7 @@ export const giveUserRoleSchema = z.object({
 
 export async function giveUserRole(data: unknown): Promise<FormResponse> {
   "use server";
-  await requirePermission("Admin.Users.Admin");
+  await requirePermission("Admin.Users");
 
   const user = await mustGetCurrentUser();
 
@@ -42,7 +42,7 @@ export async function giveUserRole(data: unknown): Promise<FormResponse> {
 
 export async function removeUserRole(data: unknown): Promise<FormResponse> {
   "use server";
-  await requirePermission("Admin.Users.Admin");
+  await requirePermission("Admin.Users");
 
   const user = await mustGetCurrentUser();
 
@@ -69,7 +69,7 @@ export async function removeUserRole(data: unknown): Promise<FormResponse> {
 export async function getUserAbsentRoles(data: {
   user_id: number;
 }): Promise<Role[]> {
-  await requirePermission("Admin.Users.Admin");
+  await requirePermission("Admin.Users");
 
   return await prisma.role.findMany({
     where: {
@@ -83,7 +83,7 @@ export async function getUserAbsentRoles(data: {
 }
 
 export async function getRole(data: { role_id: number }) {
-  await requirePermission("Admin.Roles.Admin");
+  await requirePermission("Admin.Roles");
 
   return prisma.role.findFirst({
     where: {
@@ -98,7 +98,7 @@ export async function getRole(data: { role_id: number }) {
 export async function createRole(
   data: z.infer<typeof createRoleSchema>,
 ): Promise<FormResponse> {
-  await requirePermission("Admin.Roles.Admin");
+  await requirePermission("Admin.Roles");
 
   const role = await prisma.role.create({
     data: {
@@ -125,7 +125,7 @@ export async function createRole(
 export async function updateRole(
   data: z.infer<typeof updateRoleSchema>,
 ): Promise<FormResponse> {
-  await requirePermission("Admin.Roles.Admin");
+  await requirePermission("Admin.Roles");
 
   const role = await prisma.role.update({
     where: {
@@ -164,7 +164,7 @@ export async function updateRole(
 export async function deleteRole(
   data: z.infer<typeof deleteRoleSchema>,
 ): Promise<FormResponse> {
-  await requirePermission("Admin.Roles.Admin");
+  await requirePermission("Admin.Roles");
 
   await prisma.rolePermission.deleteMany({
     where: {

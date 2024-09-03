@@ -122,7 +122,7 @@ export async function fetchUsers(data: {
 }) {
   "use server";
 
-  await requirePermission("Admin.Users.Admin");
+  await requirePermission("Admin.Users");
 
   let totalMatching: number;
 
@@ -223,7 +223,7 @@ export async function fetchUsers(data: {
 }
 
 export async function fetchUserForAdmin(data: { user_id: number }) {
-  await requirePermission("Admin.Users.Admin");
+  await requirePermission("Admin.Users");
 
   const user = await prisma.user.findFirst({
     where: {
@@ -257,7 +257,7 @@ export async function fetchUserForAdmin(data: { user_id: number }) {
 
 export async function editUserAdmin(data: unknown): Promise<FormResponse> {
   "use server";
-  await requirePermission("Admin.Users.Admin");
+  await requirePermission("Admin.Users");
 
   const parsedData = editUserSchema.safeParse(data);
 

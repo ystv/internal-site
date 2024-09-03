@@ -20,12 +20,9 @@ export const PermissionEnum = z.enum([
   "Calendar.Social.Admin",
   "Calendar.Social.Creator",
   "CalendarIntegration.Admin",
-  "ManageMembers.Members.List",
-  "ManageMembers.Members.Admin",
-  "ManageMembers.Admin",
   "ManageQuotes",
-  "Admin.Users.Admin",
-  "Admin.Roles.Admin",
-  "Admin.Positions.Admin",
+  "Admin.Users",
+  "Admin.Roles",
+  "Admin.Positions",
 ]);
 export type Permission = z.infer<typeof PermissionEnum>;

@@ -11,7 +11,7 @@ export async function fetchRoles(data: {
 }) {
   "use server";
 
-  requirePermission("Admin.Roles.Admin");
+  requirePermission("Admin.Roles");
 
   let totalMatching: number;
 
