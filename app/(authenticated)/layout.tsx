@@ -9,6 +9,7 @@ import { UserMenu } from "@/components/UserMenu";
 import { LoginPrompt } from "@/components/LoginPrompt";
 import { WebsocketProvider } from "@/components/WebsocketProvider";
 import { useCreateSocket } from "@/lib/socket";
+import { FeedbackPrompt } from "@/components/FeedbackPrompt";
 import Nav from "@/components/Nav";
 
 export default async function AuthenticatedLayout({
@@ -38,6 +39,10 @@ export default async function AuthenticatedLayout({
             {children}
           </main>
           <br />
+          <footer className="mt-8 text-center text-sm text-gray-500">
+            Calendar version {process.env.NEXT_PUBLIC_RELEASE}. Built and
+            maintained by the YSTV Computing Team. <FeedbackPrompt />
+          </footer>
           <style
             dangerouslySetInnerHTML={{
               __html: `
