@@ -2,7 +2,6 @@
 
 import {
   ActionIcon,
-  Button,
   Card,
   Group,
   LoadingOverlay,
@@ -28,45 +27,56 @@ export function GiveUserRoleForm(props: {
     <>
       <Stack>
         <LoadingOverlay visible={isLoading} />
-        {roles.map((role) => {
-          return (
-            <Card key={role.role_id}>
-              <Group>
-                <Stack>
-                  <Text>{role.name}</Text>
-                  {role.description && (
-                    <Text c={"dimmed"} size="sm">
-                      {role.description}
-                    </Text>
-                  )}
-                </Stack>
-                <ActionIcon
-                  ml={"auto"}
-                  onClick={async () => {
-                    setLoading();
-                    const response = await props.onGiveRole(role.role_id);
-                    if (response == true) {
-                      unsetLoading();
-                      notifications.show({
-                        color: "green",
-                        message: `Successfully gave user ${role.name} role.`,
-                      });
-                    } else {
-                      unsetLoading();
-                      notifications.show({
-                        color: "red",
-                        message: `Unable to give user ${role.name} role. Please contact Computing Team`,
-                      });
-                    }
-                  }}
-                  disabled={isLoading}
-                >
-                  <FaPlus />
-                </ActionIcon>
-              </Group>
-            </Card>
-          );
-        })}
+        {roles.length != 0 ? (
+          roles.map((role) => {
+            return (
+              <Card key={role.role_id}>
+                <Group>
+                  <Stack>
+                    <Text>{role.name}</Text>
+                    {role.description && (
+                      <Text c={"dimmed"} size="sm">
+                        {role.description}
+                      </Text>
+                    )}
+                  </Stack>
+                  <ActionIcon
+                    ml={"auto"}
+                    onClick={async () => {
+                      setLoading();
+                      const response = await props.onGiveRole(role.role_id);
+                      if (response == true) {
+                        unsetLoading();
+                        notifications.show({
+                          color: "green",
+                          message: `Successfully gave user ${role.name} role.`,
+                        });
+                      } else {
+                        unsetLoading();
+                        notifications.show({
+                          color: "red",
+                          message: `Unable to give user ${role.name} role. Please contact Computing Team`,
+                        });
+                      }
+                    }}
+                    disabled={isLoading}
+                  >
+                    <FaPlus />
+                  </ActionIcon>
+                </Group>
+              </Card>
+            );
+          })
+        ) : (
+          <Stack>
+            <Text size={"xl"} fw={600}>
+              No more roles available
+            </Text>
+            <Text size={"sm"} c={"dimmed"}>
+              They caught &apos;em all
+            </Text>
+          </Stack>
+        )}
       </Stack>
     </>
   );

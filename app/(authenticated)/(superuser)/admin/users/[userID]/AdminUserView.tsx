@@ -20,7 +20,6 @@ import { Role } from "@prisma/client";
 import { Suspense } from "react";
 import { z } from "zod";
 import { GiveUserRoleForm } from "./GiveUserRoleForm";
-import { property } from "lodash";
 import { useRouter } from "next/navigation";
 import { FaEdit, FaMinus } from "react-icons/fa";
 import { modals } from "@mantine/modals";

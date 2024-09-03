@@ -1,11 +1,7 @@
 "use client";
 
-import { Identity, Role, RolePermission } from "@prisma/client";
+import { RoleWithPermissions } from "@/features/people";
 import React, { createContext, useContext, useState } from "react";
-
-export interface RoleWithPermissions extends Role {
-  permissions: RolePermission[];
-}
 
 type TRolesContext = {
   roles: RoleWithPermissions[];

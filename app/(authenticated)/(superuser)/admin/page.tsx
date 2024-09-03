@@ -1,4 +1,4 @@
-import { Button, Card, NavLink, Stack } from "@mantine/core";
+import { Button, Card, Stack } from "@mantine/core";
 import Link from "next/link";
 
 export default function AdminPage() {

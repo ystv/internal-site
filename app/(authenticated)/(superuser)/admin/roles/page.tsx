@@ -1,11 +1,17 @@
 import { RoleView } from "./RoleView";
 import { fetchRoles } from "@/features/roles";
-import { searchParamsSchema } from "./schema";
+import {
+  createRoleSchema,
+  deleteRoleSchema,
+  searchParamsSchema,
+  updateRoleSchema,
+} from "./schema";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { redirect } from "next/navigation";
 import { validateSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { RolesProvider } from "@/components/RolesContext";
+import { createRole, deleteRole, updateRole } from "@/features/people";
 
 export default async function PositionPage({
   searchParams,
@@ -57,7 +63,46 @@ export default async function PositionPage({
 
           return { ok: true, ...rolesData };
         }}
+        createRole={createRoleAction}
+        updateRole={updateRoleAction}
+        deleteRole={deleteRoleAction}
       />
     </RolesProvider>
   );
+}
+
+async function createRoleAction(data: unknown) {
+  "use server";
+
+  const safeData = createRoleSchema.safeParse(data);
+
+  if (!safeData.success) {
+    return zodErrorResponse(safeData.error);
+  }
+
+  return createRole(safeData.data);
+}
+
+async function updateRoleAction(data: unknown) {
+  "use server";
+
+  const safeData = updateRoleSchema.safeParse(data);
+
+  if (!safeData.success) {
+    return zodErrorResponse(safeData.error);
+  }
+
+  return updateRole(safeData.data);
+}
+
+async function deleteRoleAction(data: unknown) {
+  "use server";
+
+  const safeData = deleteRoleSchema.safeParse(data);
+
+  if (!safeData.success) {
+    return zodErrorResponse(safeData.error);
+  }
+
+  return deleteRole(safeData.data);
 }

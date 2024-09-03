@@ -18,6 +18,11 @@ import {
   SegmentedControl,
   Input,
   InputLabel,
+  Card,
+  ActionIcon,
+  Chip,
+  Space,
+  Stack,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useMembers } from "@/components/FormFieldPreloadedData";
@@ -26,6 +31,8 @@ import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import { FieldPath } from "react-hook-form/dist/types/path";
 import SelectOption from "./SelectOption";
+import { PermissionEnum, Permission } from "@/lib/auth/permissions";
+import { IoClose } from "react-icons/io5";
 
 export function TextField(props: {
   name: string;
@@ -351,5 +358,64 @@ export function HiddenField<
   const ctx = useFormContext<TFields>();
   return (
     <input type="hidden" {...ctx.register(props.name)} value={props.value} />
+  );
+}
+
+export function PermissionSelectField(props: {
+  name: string;
+  defaultValue?: string[];
+  label: string;
+  required?: boolean;
+}) {
+  const controller = useController({
+    name: props.name,
+    defaultValue: props.defaultValue,
+  });
+
+  const [filter, setFilter] = useState<string>("");
+
+  return (
+    <>
+      <InputLabel>{props.label}</InputLabel>
+      <Card withBorder>
+        <TextInput
+          placeholder="Filter"
+          value={filter}
+          onChange={(e) => setFilter(e.currentTarget.value)}
+          rightSection={
+            <ActionIcon
+              variant="transparent"
+              color="red"
+              onClick={() => setFilter("")}
+              disabled={filter === ""}
+            >
+              <IoClose />
+            </ActionIcon>
+          }
+        />
+        <Space h={"md"} />
+        <Chip.Group
+          multiple
+          value={controller.field.value}
+          onChange={(value) => {
+            controller.field.onChange(value);
+          }}
+        >
+          <Stack gap={4}>
+            {(Object.keys(PermissionEnum.Values) as Permission[])
+              .filter(
+                (v) =>
+                  v.toLowerCase().includes(filter.toLowerCase()) ||
+                  (controller.field.value as Permission[]).includes(v),
+              )
+              .map((key) => (
+                <Chip key={key} value={key} variant="outline">
+                  {key}
+                </Chip>
+              ))}
+          </Stack>
+        </Chip.Group>
+      </Card>
+    </>
   );
 }

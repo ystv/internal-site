@@ -1,5 +1,4 @@
 import { UserView } from "./UserView";
-import { PositionsProvider } from "@/components/PositionsContext";
 import { fetchUsers } from "@/features/people";
 import { searchParamsSchema } from "./schema";
 import { zodErrorResponse } from "@/components/FormServerHelpers";

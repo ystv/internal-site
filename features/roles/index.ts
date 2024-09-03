@@ -94,7 +94,7 @@ export async function fetchRoles(data: {
     );
     return {
       ...role,
-      permissions: searchRolePermissions,
+      role_permissions: searchRolePermissions,
     };
   });
 

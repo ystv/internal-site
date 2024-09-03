@@ -1,3 +1,4 @@
+import { PermissionEnum } from "@/lib/auth/permissions";
 import { z } from "zod";
 
 export const searchParamsSchema = z.object({
@@ -10,19 +11,19 @@ export const searchParamsSchema = z.object({
   query: z.string().optional(),
 });
 
-export const createPositionSchema = z.object({
-  name: z.string(),
-  brief_description: z.string().optional(),
-  full_description: z.string().optional(),
+export const createRoleSchema = z.object({
+  name: z.string().min(3),
+  description: z.string().optional(),
+  permissions: z.array(PermissionEnum),
 });
 
-export const updatePositionSchema = z.object({
-  position_id: z.number(),
-  name: z.string(),
-  brief_description: z.string().optional(),
-  full_description: z.string().optional(),
+export const updateRoleSchema = z.object({
+  role_id: z.number(),
+  name: z.string().min(3),
+  description: z.string().optional(),
+  permissions: z.array(PermissionEnum),
 });
 
-export const deletePositionSchema = z.object({
-  position_id: z.number(),
+export const deleteRoleSchema = z.object({
+  role_id: z.number(),
 });

@@ -29,7 +29,6 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { SearchBar } from "@/components/SearchBar";
-// import { CreateUserForm, UpdateUserForm } from "./form";
 import { useValidSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { UserCard } from "./UserCard";
@@ -68,11 +67,6 @@ export function UserView(props: {
       updateUsers();
     }
   }, [searchParamsState]);
-
-  // States for modals
-  const [editModalOpened, { open: openEditModal, close: closeEditModal }] =
-    useDisclosure(false);
-  const [selectedUser, setSelectedUser] = useState<User | undefined>();
 
   async function updateUsers() {
     const updatedUsers = await props.fetchUsers(searchParamsState);
@@ -114,11 +108,6 @@ export function UserView(props: {
         }}
         totalItems={usersContext.total}
       >
-        <Modal
-          opened={editModalOpened}
-          onClose={closeEditModal}
-          title={"Edit User"}
-        ></Modal>
         <Stack>
           <SearchBar
             default={validSearchParams.query}
@@ -146,12 +135,6 @@ export function UserView(props: {
             return (
               <UserCard
                 key={user.user_id}
-                // deleteAction={props.deleteUser}
-                // editAction={() => {
-                //   setSelectedUser(user);
-                //   openEditModal();
-                // }}
-                // onDeleteSuccess={updateUsers}
                 user={user}
                 searchQuery={searchParamsState.query}
               />
@@ -170,27 +153,6 @@ export function UserView(props: {
     </ScrollArea>
   );
 }
-
-const openDeleteModal = (props: {
-  onCancel: () => void;
-  onConfirm: () => void;
-  userName: string;
-}) =>
-  modals.openConfirmModal({
-    title: `Delete user "${props.userName}"`,
-    centered: true,
-    children: (
-      <Text size="sm">
-        Are you sure you want to delete the user &quot;{props.userName}
-        &quot;? This action is destructive and will remove all crew sheet roles
-        this references.
-      </Text>
-    ),
-    labels: { confirm: "Delete user", cancel: "Cancel" },
-    confirmProps: { color: "red" },
-    onCancel: props.onCancel,
-    onConfirm: props.onConfirm,
-  });
 
 /**
  * @returns A string in the format `[start] - [end]` representing the range of currently displayed items

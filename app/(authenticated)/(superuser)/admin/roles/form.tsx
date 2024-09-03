@@ -1,78 +1,81 @@
 import Form, { FormResponse } from "@/components/Form";
-// import { createUserSchema, updateUserSchema } from "./schema";
+import { createRoleSchema, updateRoleSchema } from "./schema";
 import { z } from "zod";
-import { TextAreaField, TextField } from "@/components/FormFields";
-import { User } from "@prisma/client";
-import { notifications } from "@mantine/notifications";
+import {
+  PermissionSelectField,
+  TextAreaField,
+  TextField,
+} from "@/components/FormFields";
+import { Permission } from "@/lib/auth/permissions";
+import { Space } from "@mantine/core";
+import { RoleWithPermissions } from "@/features/people";
 
-// export function CreateUserForm(props: {
-//   action: (data: z.infer<typeof createUserSchema>) => Promise<FormResponse>;
-//   onSuccess: () => void;
-// }) {
-//   return (
-//     <Form
-//       action={props.action}
-//       onSuccess={props.onSuccess}
-//       schema={createUserSchema}
-//     >
-//       <TextField name="name" label="Name" required />
-//       <TextAreaField
-//         name="brief_description"
-//         label="Brief Description"
-//         autosize
-//         minRows={1}
-//       />
-//       <TextAreaField
-//         name="full_description"
-//         label="Full Description"
-//         autosize
-//       />
-//     </Form>
-//   );
-// }
+export function CreateRoleForm(props: {
+  action: (data: z.infer<typeof createRoleSchema>) => Promise<FormResponse>;
+  onSuccess: () => void;
+  initialValues?: z.infer<typeof createRoleSchema>;
+}) {
+  return (
+    <Form
+      action={props.action}
+      onSuccess={props.onSuccess}
+      schema={createRoleSchema}
+      initialValues={props.initialValues}
+    >
+      <TextField name="name" label="Name" required />
+      <TextAreaField
+        name="description"
+        label="Description"
+        autosize
+        minRows={1}
+      />
+      <Space h={"md"} />
+      <PermissionSelectField name="permissions" label="Permissions" />
+    </Form>
+  );
+}
 
-// export function UpdateUserForm(props: {
-//   action: (data: z.infer<typeof updateUserSchema>) => Promise<FormResponse>;
-//   onSuccess: () => void;
-//   selectedUser: User | undefined;
-// }) {
-//   return (
-//     <Form
-//       action={(data) => {
-//         if (!props.selectedUser) {
-//           throw new Error("No selected position");
-//         }
-//         return props.action({
-//           position_id: props.selectedUser.position_id,
-//           ...data,
-//         });
-//       }}
-//       onSuccess={() => {
-//         notifications.show({
-//           message: `Successfully updated "${props.selectedUser?.name}"`,
-//           color: "green",
-//         });
-//         props.onSuccess();
-//       }}
-//       schema={updateUserSchema.omit({ position_id: true })}
-//       initialValues={{
-//         name: props.selectedUser?.name,
-//         brief_description: props.selectedUser?.brief_description,
-//         full_description: props.selectedUser?.full_description,
-//       }}
-//     >
-//       <TextField name="name" label="Name" required />
-//       <TextAreaField
-//         name="brief_description"
-//         label="Brief Description"
-//         autosize
-//         minRows={1}
-//       />
-//       <TextAreaField
-//         name="full_description"
-//         label="Full Description"
-//         autosize
-//       />
-//     </Form>
-//   );
-// }
+export function UpdateRoleForm(props: {
+  action: (data: z.infer<typeof updateRoleSchema>) => Promise<FormResponse>;
+  onSuccess: () => void;
+  selectedRole?: RoleWithPermissions;
+}) {
+  if (!props.selectedRole) {
+    return <>No Role Selected.</>;
+  }
+
+  const formSafeRole = {
+    ...props.selectedRole,
+    role_permissions: undefined,
+    permissions: props.selectedRole.role_permissions.map(
+      (v) => v.permission as Permission,
+    ),
+  };
+
+  return (
+    <Form
+      action={(data) => {
+        if (!props.selectedRole) {
+          throw new Error("No selected role");
+        }
+        return props.action({
+          role_id: props.selectedRole.role_id,
+          ...data,
+        });
+      }}
+      onSuccess={props.onSuccess}
+      schema={updateRoleSchema.omit({ role_id: true })}
+      initialValues={formSafeRole}
+    >
+      <TextField name="name" label="Name" required />
+      <TextAreaField
+        name="description"
+        label="Description"
+        autosize
+        minRows={1}
+      />
+      <Space h={"md"} />
+      <PermissionSelectField name="permissions" label="Permissions" />
+    </Form>
+  );
+}

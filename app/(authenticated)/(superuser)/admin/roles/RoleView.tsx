@@ -1,11 +1,23 @@
 "use client";
 
 import { FormResponse } from "@/components/Form";
-import { RoleWithPermissions, useRoles } from "@/components/RolesContext";
-import { Center, Group, Modal, ScrollArea, Stack, Text } from "@mantine/core";
-import { Role } from "@prisma/client";
+import { useRoles } from "@/components/RolesContext";
+import {
+  Button,
+  Center,
+  Group,
+  Modal,
+  ScrollArea,
+  Stack,
+  Text,
+} from "@mantine/core";
 import { usePathname, useSearchParams } from "next/navigation";
-import { searchParamsSchema } from "./schema";
+import {
+  createRoleSchema,
+  deleteRoleSchema,
+  searchParamsSchema,
+  updateRoleSchema,
+} from "./schema";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useEffect, useState } from "react";
@@ -15,12 +27,13 @@ import {
   PaginationProvider,
 } from "@/components/Pagination";
 import { useDisclosure } from "@mantine/hooks";
-import { modals } from "@mantine/modals";
 import { SearchBar } from "@/components/SearchBar";
-// import { CreateRoleForm, UpdateRoleForm } from "./form";
 import { useValidSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { RoleCard } from "./RoleCard";
+import { CreateRoleForm, UpdateRoleForm } from "./form";
+import { FaPlus } from "react-icons/fa";
+import { RoleWithPermissions } from "@/features/people";
 
 export function RoleView(props: {
   fetchRoles: (
@@ -28,6 +41,9 @@ export function RoleView(props: {
   ) => Promise<
     FormResponse<{ roles: RoleWithPermissions[]; page: number; total: number }>
   >;
+  createRole: (data: z.infer<typeof createRoleSchema>) => Promise<FormResponse>;
+  updateRole: (data: z.infer<typeof updateRoleSchema>) => Promise<FormResponse>;
+  deleteRole: (data: z.infer<typeof deleteRoleSchema>) => Promise<FormResponse>;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -58,9 +74,15 @@ export function RoleView(props: {
   }, [searchParamsState]);
 
   // States for modals
+  const [
+    createModalOpened,
+    { open: openCreateModal, close: closeCreateModal },
+  ] = useDisclosure(false);
   const [editModalOpened, { open: openEditModal, close: closeEditModal }] =
     useDisclosure(false);
-  const [selectedRole, setSelectedRole] = useState<Role | undefined>();
+  const [selectedRole, setSelectedRole] = useState<
+    RoleWithPermissions | undefined
+  >();
 
   async function updateRoles() {
     const updatedRoles = await props.fetchRoles(searchParamsState);
@@ -103,10 +125,32 @@ export function RoleView(props: {
         totalItems={rolesContext.total}
       >
         <Modal
+          opened={createModalOpened}
+          onClose={closeCreateModal}
+          title={"Create Position"}
+        >
+          <CreateRoleForm
+            action={props.createRole}
+            onSuccess={(): void => {
+              updateRoles();
+              closeCreateModal();
+            }}
+          />
+        </Modal>
+        <Modal
           opened={editModalOpened}
           onClose={closeEditModal}
-          title={"Edit Role"}
-        ></Modal>
+          title={"Edit Position"}
+        >
+          <UpdateRoleForm
+            action={props.updateRole}
+            onSuccess={(): void => {
+              updateRoles();
+              closeEditModal();
+            }}
+            selectedRole={selectedRole}
+          />
+        </Modal>
         <Stack>
           <SearchBar
             default={validSearchParams.query}
@@ -119,7 +163,11 @@ export function RoleView(props: {
             description="Due to the way this search works, only one permission can be searched at a time."
             withClear
           />
-          <Group></Group>
+          <Group>
+            <Button leftSection={<FaPlus />} onClick={openCreateModal}>
+              Create Role
+            </Button>
+          </Group>
           {rolesContext.total > 0 ? (
             <>
               <CountControls />
@@ -134,12 +182,12 @@ export function RoleView(props: {
             return (
               <RoleCard
                 key={role.role_id}
-                // deleteAction={props.deleteRole}
-                // editAction={() => {
-                //   setSelectedRole(role);
-                //   openEditModal();
-                // }}
-                // onDeleteSuccess={updateRoles}
+                deleteAction={props.deleteRole}
+                editAction={() => {
+                  setSelectedRole(role);
+                  openEditModal();
+                }}
+                onDeleteSuccess={updateRoles}
                 role={role}
                 searchQuery={searchParamsState.query}
               />
@@ -158,27 +206,6 @@ export function RoleView(props: {
     </ScrollArea>
   );
 }
-
-const openDeleteModal = (props: {
-  onCancel: () => void;
-  onConfirm: () => void;
-  roleName: string;
-}) =>
-  modals.openConfirmModal({
-    title: `Delete role "${props.roleName}"`,
-    centered: true,
-    children: (
-      <Text size="sm">
-        Are you sure you want to delete the role &quot;{props.roleName}
-        &quot;? This action is destructive and will remove all crew sheet roles
-        this references.
-      </Text>
-    ),
-    labels: { confirm: "Delete role", cancel: "Cancel" },
-    confirmProps: { color: "red" },
-    onCancel: props.onCancel,
-    onConfirm: props.onConfirm,
-  });
 
 /**
  * @returns A string in the format `[start] - [end]` representing the range of currently displayed items

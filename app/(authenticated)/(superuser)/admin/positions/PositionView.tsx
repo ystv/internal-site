@@ -3,12 +3,9 @@
 import { FormResponse } from "@/components/Form";
 import { usePositions } from "@/components/PositionsContext";
 import {
-  ActionIcon,
   Button,
-  Card,
   Center,
   Group,
-  Menu,
   Modal,
   ScrollArea,
   Stack,
@@ -23,9 +20,7 @@ import {
   updatePositionSchema,
 } from "./schema";
 import { useRouter } from "next/navigation";
-import { notifications } from "@mantine/notifications";
-import { FaEdit, FaPlus } from "react-icons/fa";
-import { MdDeleteForever, MdMoreHoriz } from "react-icons/md";
+import { FaPlus } from "react-icons/fa";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import {
@@ -34,7 +29,6 @@ import {
   PaginationProvider,
 } from "@/components/Pagination";
 import { useDisclosure } from "@mantine/hooks";
-import { modals } from "@mantine/modals";
 import { SearchBar } from "@/components/SearchBar";
 import { CreatePositionForm, UpdatePositionForm } from "./form";
 import { useValidSearchParams } from "@/lib/searchParams/validate";
@@ -217,27 +211,6 @@ export function PositionView(props: {
     </ScrollArea>
   );
 }
-
-const openDeleteModal = (props: {
-  onCancel: () => void;
-  onConfirm: () => void;
-  positionName: string;
-}) =>
-  modals.openConfirmModal({
-    title: `Delete position "${props.positionName}"`,
-    centered: true,
-    children: (
-      <Text size="sm">
-        Are you sure you want to delete the position &quot;{props.positionName}
-        &quot;? This action is destructive and will remove all crew sheet roles
-        this references.
-      </Text>
-    ),
-    labels: { confirm: "Delete position", cancel: "Cancel" },
-    confirmProps: { color: "red" },
-    onCancel: props.onCancel,
-    onConfirm: props.onConfirm,
-  });
 
 /**
  * @returns A string in the format `[start] - [end]` representing the range of currently displayed items
