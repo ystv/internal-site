@@ -1,22 +1,8 @@
-import {
-  getCurrentUser,
-  mustGetCurrentUser,
-  requirePermission,
-} from "@/lib/auth/server";
+import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
 import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
-import { notFound } from "next/navigation";
 import { getUserName } from "@/components/UserHelpers";
-import {
-  Avatar,
-  Button,
-  Card,
-  CopyButton,
-  Group,
-  Skeleton,
-  Space,
-  Stack,
-} from "@mantine/core";
+import { Avatar, Card, Group, Skeleton, Space, Stack } from "@mantine/core";
 import { UserPreferences } from "./UserPreferences";
 import { ICalCopyButton } from "@/components/ICalCopyButton";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
@@ -28,22 +14,9 @@ import Link from "next/link";
 import { env } from "@/lib/env";
 import { SignoutButton } from "@/components/SignoutButton";
 
-export default async function UserPage({ params }: { params: { id: string } }) {
+export default async function UserPage() {
   let user: People.SecureUser;
-  if (params.id === "me") {
-    user = People.SecureUserModel.parse(await getCurrentUser());
-  } else {
-    await requirePermission(
-      "ManageMembers.Members.List",
-      "ManageMembers.Members.Admin",
-      "ManageMembers.Admin",
-    );
-    const dbUser = await People.getUser(parseInt(params.id, 10));
-    if (!dbUser) {
-      notFound();
-    }
-    user = People.SecureUserModel.parse(dbUser);
-  }
+  user = People.SecureUserModel.parse(await getCurrentUser());
   const prefs = People.preferenceDefaults(user.preferences);
   const slackUser = user.identities.find((i) => i.provider === "slack");
   return (
