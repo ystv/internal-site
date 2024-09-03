@@ -43,7 +43,7 @@ const envSchema = z.object({
   SENTRY_PROJECT_ID: z.string().optional(),
   COOKIE_DOMAIN: z
     .string()
-    .default(new URL(process.env.PUBLIC_URL ?? "localhost").host),
+    .default(new URL(process.env.PUBLIC_URL ?? "localhost").hostname),
 });
 
 export function validateEnv(
