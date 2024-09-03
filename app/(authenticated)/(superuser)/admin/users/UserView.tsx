@@ -46,10 +46,10 @@ export function UserView(props: {
   const usersContext = useUsers();
 
   // Get and force validate search params
-  const getSearchParams = useSearchParams();
+  const rawSearchParams = useSearchParams();
   const validSearchParams = useValidSearchParams(
     searchParamsSchema,
-    getSearchParams,
+    rawSearchParams,
   );
 
   const currentRange = useCurrentRange();
@@ -60,7 +60,7 @@ export function UserView(props: {
   useEffect(() => {
     const newSearchParamsString = getSearchParamsString(searchParamsState);
     if (
-      getSearchParamsString(Object.fromEntries(getSearchParams.entries())) !=
+      getSearchParamsString(Object.fromEntries(rawSearchParams.entries())) !=
       newSearchParamsString
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);

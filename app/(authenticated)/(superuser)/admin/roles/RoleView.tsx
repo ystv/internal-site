@@ -51,10 +51,10 @@ export function RoleView(props: {
   const rolesContext = useRoles();
 
   // Get and force validate search params
-  const getSearchParams = useSearchParams();
+  const rawSearchParams = useSearchParams();
   const validSearchParams = useValidSearchParams(
     searchParamsSchema,
-    getSearchParams,
+    rawSearchParams,
   );
 
   const currentRange = useCurrentRange();
@@ -65,7 +65,7 @@ export function RoleView(props: {
   useEffect(() => {
     const newSearchParamsString = getSearchParamsString(searchParamsState);
     if (
-      getSearchParamsString(Object.fromEntries(getSearchParams.entries())) !=
+      getSearchParamsString(Object.fromEntries(rawSearchParams.entries())) !=
       newSearchParamsString
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
