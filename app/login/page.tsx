@@ -6,12 +6,12 @@ import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { Center, Stack } from "@mantine/core";
 import { env } from "@/lib/env";
-import { mustNotGetSession } from "@/lib/auth/server";
+import { ensureNoActiveSession } from "@/lib/auth/server";
 
 export default async function GoogleSignInPage(props: {
   searchParams: { error?: string; redirect?: string };
 }) {
-  await mustNotGetSession(undefined, props.searchParams.redirect);
+  await ensureNoActiveSession(props.searchParams.redirect);
 
   invariant(env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID not set");
   return (

@@ -135,8 +135,7 @@ export async function mustGetCurrentUser(req?: NextRequest): Promise<UserType> {
 }
 
 // Redirects if there is a user logged in already
-export async function mustNotGetSession(
-  req?: NextRequest,
+export async function ensureNoActiveSession(
   loginRedirect?: string,
 ): Promise<void> {
   const session = await getSession();
