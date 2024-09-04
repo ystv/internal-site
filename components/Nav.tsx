@@ -7,6 +7,7 @@ import Logo from "@/app/_assets/logo.png";
 import { UserMenu } from "@/components/UserMenu";
 import styles from "@/styles/Nav.module.css";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
+import { FeedbackPrompt } from "./FeedbackPrompt";
 
 interface NavProps {
   children: React.ReactNode;
@@ -20,7 +21,7 @@ export default function Nav({ children, user }: NavProps) {
   return (
     <AppShell
       header={{ height: 80, collapsed: !headerPinned, offset: false }}
-      footer={{ height: 60, collapsed: !headerPinned, offset: false }}
+      footer={{ height: 80, collapsed: !headerPinned, offset: false }}
       padding="md"
       classNames={{ header: styles.header }}
     >
@@ -52,14 +53,7 @@ export default function Nav({ children, user }: NavProps) {
         <div className="flex h-full items-center justify-center">
           <Text ta="center">
             Calendar version {process.env.NEXT_PUBLIC_RELEASE}. Built and
-            maintained by the{" "}
-            <Anchor
-              href="https://ystv.slack.com/archives/C05UATQKUMA"
-              className="underline"
-            >
-              YSTV Computing Team
-            </Anchor>
-            .
+            maintained by the YSTV Computing Team. <FeedbackPrompt />
           </Text>
         </div>
       </AppShell.Footer>
