@@ -252,3 +252,17 @@ export async function removeSelfFromRole(sheetID: number, crewID: number) {
   socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
   return { ok: true };
 }
+
+export async function checkRoleClashes(
+  crewID: number,
+): Promise<Calendar.SignUpSheetWithEvent[]> {
+  const me = await getCurrentUser();
+  const crewRole = await Calendar.getCrewRole(crewID);
+
+  if (!crewRole) return [];
+  const sheet = crewRole.signup_sheets;
+
+  const clashes = await Calendar.getClashingSheets(me, sheet);
+
+  return clashes;
+}
