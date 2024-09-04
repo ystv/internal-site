@@ -9,7 +9,6 @@ const jsonSchema: z.ZodSchema<Json> = z.lazy(() => z.union([literalSchema, z.arr
 
 export const _UserModel = z.object({
   user_id: z.number().int(),
-  username: z.string(),
   email: z.string(),
   first_name: z.string(),
   last_name: z.string(),
