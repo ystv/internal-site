@@ -91,7 +91,6 @@ export async function findOrCreateUserFromGoogleToken(rawToken: string) {
       first_name: claims.given_name!,
       last_name: claims.family_name!,
       email: claims.email!,
-      username: claims.email!.split("@")[0],
       avatar: claims.picture,
       identities: {
         create: {
