@@ -25,7 +25,6 @@ export default async function AuthenticatedLayout({
 
   Sentry.setUser({
     id: user.user_id,
-    username: user.username,
     email: user.email,
   });
 
