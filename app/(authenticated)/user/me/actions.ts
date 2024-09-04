@@ -9,22 +9,12 @@ import { socket } from "@/lib/socket/server";
 
 export async function changePreference<
   K extends keyof PrismaJson.UserPreferences,
->(
-  userID: number,
-  key: K,
-  value: PrismaJson.UserPreferences[K],
-): Promise<FormResponse> {
+>(key: K, value: PrismaJson.UserPreferences[K]): Promise<FormResponse> {
   const me = await getCurrentUser();
-  if (userID !== me.user_id) {
-    await requirePermission(
-      "ManageMembers.Members.Admin",
-      "ManageMembers.Admin",
-    );
-  }
 
-  socket.emit(`userUpdate:${userID}`);
-  await People.setUserPreference(userID, key, value);
-  revalidatePath(`/user/${userID}`);
+  socket.emit(`userUpdate:${me.user_id}`);
+  await People.setUserPreference(me.user_id, key, value);
+  revalidatePath(`/user/${me.user_id}`);
   revalidatePath("/user/me");
   return { ok: true };
 }

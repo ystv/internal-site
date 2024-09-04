@@ -24,7 +24,6 @@ type ReqPrefs = Required<PrismaJson.UserPreferences>;
 interface PrefWrapperPassthroughProps<K extends keyof ReqPrefs> {
   prefs: ReqPrefs;
   field: K;
-  userID: number;
 }
 
 /**
@@ -58,7 +57,7 @@ function PrefWrapper<K extends keyof ReqPrefs>(
     onChange: (nv) => {
       setOptimistic(nv);
       startTransition(async () => {
-        await changePreference(props.userID, props.field, nv);
+        await changePreference(props.field, nv);
         notifications.show({
           message: "Preferences saved!",
         });
@@ -95,7 +94,7 @@ function SegmentedPreference<K extends "timeFormat" | "icalFilter">(
   );
 }
 
-export function UserPreferences(props: { value: ReqPrefs; userID: number }) {
+export function UserPreferences(props: { value: ReqPrefs }) {
   return (
     <Stack>
       <SegmentedPreference
@@ -103,7 +102,6 @@ export function UserPreferences(props: { value: ReqPrefs; userID: number }) {
         field="timeFormat"
         values={["12hr", "24hr"]}
         prefs={props.value}
-        userID={props.userID}
       />
       <Divider className="border-[--mantine-color-dark-4]" />
       <SegmentedPreference
@@ -114,7 +112,6 @@ export function UserPreferences(props: { value: ReqPrefs; userID: number }) {
           { label: "All Events", value: "all" },
         ]}
         prefs={props.value}
-        userID={props.userID}
       />
     </Stack>
   );

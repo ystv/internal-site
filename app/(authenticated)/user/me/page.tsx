@@ -41,7 +41,7 @@ export default async function UserPage() {
       <Card withBorder>
         <Stack gap={0}>
           <h2 className="mt-0">Preferences</h2>
-          <UserPreferences value={prefs} userID={user.user_id} />
+          <UserPreferences value={prefs} />
         </Stack>
       </Card>
       <Space h={"md"} />
