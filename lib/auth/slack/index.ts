@@ -86,7 +86,6 @@ export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
       first_name: userInfo.given_name!,
       last_name: userInfo.family_name!,
       email: userInfo.email!,
-      username: userInfo.email!.split("@")[0],
       avatar: userInfo.picture!,
       identities: {
         create: {
