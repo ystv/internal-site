@@ -42,6 +42,10 @@ app.prepare().then(async () => {
   io.use(authenticateSocket);
 
   io.on("connection", async (socket) => {
+    if (socket.data.auth.invalidSession === true) {
+      socket.emit("invalidSession");
+    }
+
     socket.onAny((eventName, value, ...args) => {
       const eventNameParse = parseEventName(eventName);
 

@@ -10,6 +10,7 @@ import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
 import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
 import { env } from "../env";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 export interface UserWithIdentities extends User {
   identities: Identity[];
@@ -54,17 +55,25 @@ const sessionSchema = z.object({
 });
 
 async function getSession(req?: NextRequest) {
+  var sessionID: RequestCookie | undefined;
   if (req) {
-    const sessionID = req.cookies.get(cookieName);
-    if (!sessionID) return null;
-    if (sessionID.value == "") return null;
-    return sessionSchema.parse(await decode(sessionID.value));
+    sessionID = req.cookies.get(cookieName);
+  } else {
+    const { cookies } = await import("next/headers");
+    sessionID = cookies().get(cookieName);
   }
-  const { cookies } = await import("next/headers");
-  const sessionID = cookies().get(cookieName);
   if (!sessionID) return null;
   if (sessionID.value == "") return null;
-  return sessionSchema.parse(await decode(sessionID.value));
+
+  // If there's an error decoding the sessionToken, pretend it doesn't exist
+  // and force a new login to take place in some cases
+  var decodedSession: unknown;
+  try {
+    decodedSession = await decode(sessionID.value);
+  } catch (e) {
+    return null;
+  }
+  return sessionSchema.parse(decodedSession);
 }
 
 async function setSession(user: z.infer<typeof sessionSchema>) {
