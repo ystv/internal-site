@@ -134,6 +134,19 @@ export async function mustGetCurrentUser(req?: NextRequest): Promise<UserType> {
   return userOrError;
 }
 
+// Redirects if there is a user logged in already
+export async function ensureNoActiveSession(
+  loginRedirect?: string,
+): Promise<void> {
+  const session = await getSession();
+  if (session) {
+    var url = new URL(loginRedirect ?? "/", env.PUBLIC_URL!);
+
+    if (!url.href.startsWith(env.PUBLIC_URL!)) url = new URL(env.PUBLIC_URL!);
+    redirect(url.href);
+  }
+}
+
 /**
  * Checks if the currently signed-in user has at least one of the given permissions.
  * @param perms
