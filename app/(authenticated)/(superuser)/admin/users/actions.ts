@@ -7,7 +7,7 @@ import { FormResponse } from "@/components/Form";
 import { UserWithIdentities } from "@/lib/auth/server";
 import { Role } from "@prisma/client";
 
-type UserWithIdentitiesBasicRoles = UserWithIdentities & {
+export type UserWithIdentitiesBasicRoles = UserWithIdentities & {
   roles: Role[];
 };
 

@@ -1,4 +1,3 @@
-import { UserWithIdentities } from "@/components/UsersContext";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import SlackIcon from "@/components/icons/SlackIcon";
 import {
@@ -13,9 +12,10 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { FaEye } from "react-icons/fa";
+import { UserWithIdentitiesBasicRoles } from "./actions";
 
 export function UserCard(props: {
-  user: UserWithIdentities;
+  user: UserWithIdentitiesBasicRoles;
   searchQuery: string | undefined;
 }) {
   return (
