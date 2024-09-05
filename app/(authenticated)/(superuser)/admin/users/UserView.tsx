@@ -1,24 +1,16 @@
 "use client";
 
-import { FormResponse } from "@/components/Form";
-import { UserWithIdentities, useUsers } from "@/components/UsersContext";
 import {
-  ActionIcon,
-  Button,
-  Card,
   Center,
   Group,
-  Menu,
-  Modal,
+  LoadingOverlay,
   ScrollArea,
   Stack,
   Text,
 } from "@mantine/core";
-import { Identity, User } from "@prisma/client";
 import { usePathname, useSearchParams } from "next/navigation";
 import { searchParamsSchema } from "./schema";
 import { useRouter } from "next/navigation";
-import { FaPlus } from "react-icons/fa";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import {
@@ -26,24 +18,16 @@ import {
   PageControls,
   PaginationProvider,
 } from "@/components/Pagination";
-import { useDisclosure } from "@mantine/hooks";
-import { modals } from "@mantine/modals";
 import { SearchBar } from "@/components/SearchBar";
 import { useValidSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { UserCard } from "./UserCard";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUsersAction, TFetchUsers } from "./actions";
 
-export function UserView(props: {
-  fetchUsers: (
-    data: z.infer<typeof searchParamsSchema>,
-  ) => Promise<
-    FormResponse<{ users: UserWithIdentities[]; page: number; total: number }>
-  >;
-}) {
+export function UserView(props: { initialUsers: TFetchUsers }) {
   const pathname = usePathname();
   const router = useRouter();
-
-  const usersContext = useUsers();
 
   // Get and force validate search params
   const rawSearchParams = useSearchParams();
@@ -52,7 +36,20 @@ export function UserView(props: {
     rawSearchParams,
   );
 
-  const currentRange = useCurrentRange();
+  const usersQuery = useQuery({
+    initialData: props.initialUsers,
+    queryKey: ["admin:users", validSearchParams],
+    queryFn: async () => {
+      const res = await fetchUsersAction(validSearchParams);
+      if (!res.ok) {
+        throw new Error("An error occurred updating roles.");
+      } else {
+        return res;
+      }
+    },
+  });
+
+  const currentRange = useCurrentRange(usersQuery.data);
 
   const [searchParamsState, setSearchParamsState] = useState(validSearchParams);
 
@@ -64,27 +61,18 @@ export function UserView(props: {
       newSearchParamsString
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
-      updateUsers();
     }
   }, [searchParamsState]);
-
-  async function updateUsers() {
-    const updatedUsers = await props.fetchUsers(searchParamsState);
-
-    if (updatedUsers.ok) {
-      usersContext.updateContext(
-        updatedUsers.users,
-        updatedUsers.page,
-        updatedUsers.total,
-      );
-    }
-  }
 
   function updateState(state: Partial<z.infer<typeof searchParamsSchema>>) {
     setSearchParamsState({
       ...searchParamsState,
       ...state,
     });
+  }
+
+  if (!usersQuery.isSuccess) {
+    return <LoadingOverlay />;
   }
 
   // Wrapped in ScrollArea to avoid jerky scrolling on page change
@@ -100,13 +88,13 @@ export function UserView(props: {
           range: currentRange,
         }}
         page={{
-          current: usersContext.page,
+          current: usersQuery.data.page,
           set(page) {
             updateState({ page });
           },
-          total: Math.ceil(usersContext.total / searchParamsState.count),
+          total: Math.ceil(usersQuery.data.total / searchParamsState.count),
         }}
-        totalItems={usersContext.total}
+        totalItems={usersQuery.data.total}
       >
         <Stack>
           <SearchBar
@@ -121,7 +109,7 @@ export function UserView(props: {
             withClear
           />
           <Group></Group>
-          {usersContext.total > 0 ? (
+          {usersQuery.data.total > 0 ? (
             <>
               <CountControls />
               <Center w={"max"}>
@@ -131,7 +119,7 @@ export function UserView(props: {
           ) : (
             <Text>No results</Text>
           )}
-          {usersContext.users.map((user) => {
+          {usersQuery.data.users.map((user) => {
             return (
               <UserCard
                 key={user.user_id}
@@ -140,7 +128,7 @@ export function UserView(props: {
               />
             );
           })}
-          {usersContext.total > 0 && (
+          {usersQuery.data.total > 0 && (
             <>
               <CountControls />
               <Center w={"max"}>
@@ -157,13 +145,12 @@ export function UserView(props: {
 /**
  * @returns A string in the format `[start] - [end]` representing the range of currently displayed items
  */
-function useCurrentRange(): `${number} - ${number}` {
-  const usersContext = useUsers();
+function useCurrentRange(usersData: TFetchUsers): `${number} - ${number}` {
   const count = Number(useSearchParams().get("count")) as number;
-  const endIndex = usersContext.page * count;
+  const endIndex = usersData.page * count;
 
-  const start = (usersContext.page - 1) * count + 1;
-  const end = usersContext.total < endIndex ? usersContext.total : endIndex;
+  const start = (usersData.page - 1) * count + 1;
+  const end = usersData.total < endIndex ? usersData.total : endIndex;
 
   return `${start} - ${end}`;
 }

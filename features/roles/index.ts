@@ -30,8 +30,6 @@ export async function fetchRoles(data: {
       );
     });
 
-    console.log(actualTotalMatching);
-
     if (actualTotalMatching.length > 0) {
       totalMatching = Number(z.bigint().parse(actualTotalMatching[0].count));
     } else {

@@ -1,20 +1,10 @@
 import { prisma } from "@/lib/db";
-import { string, z } from "zod";
+import { z } from "zod";
 import { UserPreferencesSchema } from "@/lib/db/preferences";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { FormResponse } from "@/components/Form";
-import {
-  Identity,
-  Position,
-  Prisma,
-  Role,
-  RolePermission,
-  User,
-} from "@prisma/client";
-import { revalidatePath } from "next/cache";
-import { createPositionSchema } from "@/app/(authenticated)/(superuser)/admin/users/schema";
+import { Identity, Prisma, Role, RolePermission, User } from "@prisma/client";
 import { getTsQuery } from "@/lib/search";
-import { UserWithIdentities } from "@/components/UsersContext";
 import { editUserSchema } from "@/app/(authenticated)/(superuser)/admin/users/[userID]/schema";
 import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";
 

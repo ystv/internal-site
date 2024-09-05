@@ -1,4 +1,8 @@
-import { createPositionSchema } from "@/app/(authenticated)/(superuser)/admin/positions/schema";
+import {
+  createPositionSchema,
+  deletePositionSchema,
+  updatePositionSchema,
+} from "@/app/(authenticated)/(superuser)/admin/positions/schema";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { requirePermission } from "@/lib/auth/server";
@@ -59,23 +63,16 @@ export async function fetchPositions(data: {
 }
 
 export async function createPosition(
-  data: unknown,
+  data: z.infer<typeof createPositionSchema>,
 ): Promise<FormResponse<{ position: Position }>> {
   "use server";
 
   await requirePermission("Admin.Positions");
-
-  const safeData = createPositionSchema.safeParse(data);
-
-  if (!safeData.success) {
-    return zodErrorResponse(safeData.error);
-  }
-
   const createdPosition = await prisma.position.create({
     data: {
-      name: safeData.data.name,
-      full_description: safeData.data.full_description ?? "",
-      brief_description: safeData.data.brief_description,
+      name: data.name,
+      full_description: data.full_description ?? "",
+      brief_description: data.brief_description,
     },
   });
   revalidatePath("/admin/positions");
@@ -83,23 +80,15 @@ export async function createPosition(
 }
 
 export async function deletePosition(
-  data: unknown,
+  data: z.infer<typeof deletePositionSchema>,
 ): Promise<FormResponse<{ position_id: number }>> {
   "use server";
 
   await requirePermission("Admin.Positions");
 
-  const dataSchema = z.object({ position_id: z.number() });
-
-  const safeData = dataSchema.safeParse(data);
-
-  if (!safeData.success) {
-    return zodErrorResponse(safeData.error);
-  }
-
   const deletedPosition = await prisma.position.delete({
     where: {
-      position_id: safeData.data.position_id,
+      position_id: data.position_id,
     },
   });
 
@@ -110,33 +99,20 @@ export async function deletePosition(
 }
 
 export async function updatePosition(
-  data: unknown,
+  data: z.infer<typeof updatePositionSchema>,
 ): Promise<FormResponse<{ position: Position }>> {
   "use server";
 
   await requirePermission("Admin.Positions");
 
-  const dataSchema = z.object({
-    position_id: z.number(),
-    name: z.string(),
-    brief_description: z.string(),
-    full_description: z.string(),
-  });
-
-  const safeData = dataSchema.safeParse(data);
-
-  if (!safeData.success) {
-    return zodErrorResponse(safeData.error);
-  }
-
   const updatedPosition = await prisma.position.update({
     where: {
-      position_id: safeData.data.position_id,
+      position_id: data.position_id,
     },
     data: {
-      name: safeData.data.name,
-      brief_description: safeData.data.brief_description,
-      full_description: safeData.data.full_description,
+      name: data.name,
+      brief_description: data.brief_description,
+      full_description: data.full_description,
     },
   });
 

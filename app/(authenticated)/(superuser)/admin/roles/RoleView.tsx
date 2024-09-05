@@ -1,23 +1,17 @@
 "use client";
 
-import { FormResponse } from "@/components/Form";
-import { useRoles } from "@/components/RolesContext";
 import {
   Button,
   Center,
   Group,
+  LoadingOverlay,
   Modal,
   ScrollArea,
   Stack,
   Text,
 } from "@mantine/core";
 import { usePathname, useSearchParams } from "next/navigation";
-import {
-  createRoleSchema,
-  deleteRoleSchema,
-  searchParamsSchema,
-  updateRoleSchema,
-} from "./schema";
+import { searchParamsSchema } from "./schema";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useEffect, useState } from "react";
@@ -34,21 +28,18 @@ import { RoleCard } from "./RoleCard";
 import { CreateRoleForm, UpdateRoleForm } from "./form";
 import { FaPlus } from "react-icons/fa";
 import { RoleWithPermissions } from "@/features/people";
+import {
+  createRoleAction,
+  deleteRoleAction,
+  fetchRolesAction,
+  TFetchRoles,
+  updateRoleAction,
+} from "./actions";
+import { useQuery } from "@tanstack/react-query";
 
-export function RoleView(props: {
-  fetchRoles: (
-    data: z.infer<typeof searchParamsSchema>,
-  ) => Promise<
-    FormResponse<{ roles: RoleWithPermissions[]; page: number; total: number }>
-  >;
-  createRole: (data: z.infer<typeof createRoleSchema>) => Promise<FormResponse>;
-  updateRole: (data: z.infer<typeof updateRoleSchema>) => Promise<FormResponse>;
-  deleteRole: (data: z.infer<typeof deleteRoleSchema>) => Promise<FormResponse>;
-}) {
+export function RoleView(props: { initialRoles: TFetchRoles }) {
   const pathname = usePathname();
   const router = useRouter();
-
-  const rolesContext = useRoles();
 
   // Get and force validate search params
   const rawSearchParams = useSearchParams();
@@ -57,7 +48,20 @@ export function RoleView(props: {
     rawSearchParams,
   );
 
-  const currentRange = useCurrentRange();
+  const rolesQuery = useQuery({
+    initialData: props.initialRoles,
+    queryKey: ["admin:roles", validSearchParams],
+    queryFn: async () => {
+      const res = await fetchRolesAction(validSearchParams);
+      if (!res.ok) {
+        throw new Error("An error occurred updating roles.");
+      } else {
+        return res;
+      }
+    },
+  });
+
+  const currentRange = useCurrentRange(rolesQuery.data);
 
   const [searchParamsState, setSearchParamsState] = useState(validSearchParams);
 
@@ -69,7 +73,6 @@ export function RoleView(props: {
       newSearchParamsString
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
-      updateRoles();
     }
   }, [searchParamsState]);
 
@@ -84,23 +87,15 @@ export function RoleView(props: {
     RoleWithPermissions | undefined
   >();
 
-  async function updateRoles() {
-    const updatedRoles = await props.fetchRoles(searchParamsState);
-
-    if (updatedRoles.ok) {
-      rolesContext.updateContext(
-        updatedRoles.roles,
-        updatedRoles.page,
-        updatedRoles.total,
-      );
-    }
-  }
-
   function updateState(state: Partial<z.infer<typeof searchParamsSchema>>) {
     setSearchParamsState({
       ...searchParamsState,
       ...state,
     });
+  }
+
+  if (!rolesQuery.isSuccess) {
+    return <LoadingOverlay />;
   }
 
   // Wrapped in ScrollArea to avoid jerky scrolling on page change
@@ -116,13 +111,13 @@ export function RoleView(props: {
           range: currentRange,
         }}
         page={{
-          current: rolesContext.page,
+          current: rolesQuery.data.page,
           set(page) {
             updateState({ page });
           },
-          total: Math.ceil(rolesContext.total / searchParamsState.count),
+          total: Math.ceil(rolesQuery.data.total / searchParamsState.count),
         }}
-        totalItems={rolesContext.total}
+        totalItems={rolesQuery.data.total}
       >
         <Modal
           opened={createModalOpened}
@@ -130,9 +125,9 @@ export function RoleView(props: {
           title={"Create Position"}
         >
           <CreateRoleForm
-            action={props.createRole}
+            action={createRoleAction}
             onSuccess={(): void => {
-              updateRoles();
+              rolesQuery.refetch();
               closeCreateModal();
             }}
           />
@@ -143,9 +138,9 @@ export function RoleView(props: {
           title={"Edit Position"}
         >
           <UpdateRoleForm
-            action={props.updateRole}
+            action={updateRoleAction}
             onSuccess={(): void => {
-              updateRoles();
+              rolesQuery.refetch();
               closeEditModal();
             }}
             selectedRole={selectedRole}
@@ -168,7 +163,7 @@ export function RoleView(props: {
               Create Role
             </Button>
           </Group>
-          {rolesContext.total > 0 ? (
+          {rolesQuery.data.total > 0 ? (
             <>
               <CountControls />
               <Center w={"max"}>
@@ -178,22 +173,22 @@ export function RoleView(props: {
           ) : (
             <Text>No results</Text>
           )}
-          {rolesContext.roles.map((role) => {
+          {rolesQuery.data.roles.map((role) => {
             return (
               <RoleCard
                 key={role.role_id}
-                deleteAction={props.deleteRole}
+                deleteAction={deleteRoleAction}
                 editAction={() => {
                   setSelectedRole(role);
                   openEditModal();
                 }}
-                onDeleteSuccess={updateRoles}
+                onDeleteSuccess={rolesQuery.refetch}
                 role={role}
                 searchQuery={searchParamsState.query}
               />
             );
           })}
-          {rolesContext.total > 0 && (
+          {rolesQuery.data.total > 0 && (
             <>
               <CountControls />
               <Center w={"max"}>
@@ -210,13 +205,12 @@ export function RoleView(props: {
 /**
  * @returns A string in the format `[start] - [end]` representing the range of currently displayed items
  */
-function useCurrentRange(): `${number} - ${number}` {
-  const rolesContext = useRoles();
+function useCurrentRange(rolesData: TFetchRoles): `${number} - ${number}` {
   const count = Number(useSearchParams().get("count")) as number;
-  const endIndex = rolesContext.page * count;
+  const endIndex = rolesData.page * count;
 
-  const start = (rolesContext.page - 1) * count + 1;
-  const end = rolesContext.total < endIndex ? rolesContext.total : endIndex;
+  const start = (rolesData.page - 1) * count + 1;
+  const end = rolesData.total < endIndex ? rolesData.total : endIndex;
 
   return `${start} - ${end}`;
 }
