@@ -314,6 +314,7 @@ export async function listPublicEvents() {
 
   const res = await prisma.event.findMany({
     where: {
+      event_type: "public",
       start_date: {
         gte: eventSearchDate,
       },
