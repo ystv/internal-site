@@ -64,17 +64,16 @@ export async function submit(
                     bold: true,
                   },
                 },
-            {
-              type: "text",
-              text:
-                type === "bug" && path !== undefined
-                  ? ` at path \`${path}\``
-                  : "",
-              style: {
-                bold: true,
-              },
-            },
-          ],
+            type === "bug" && path !== undefined
+              ? {
+                  type: "text",
+                  text: ` at path \`${path}\``,
+                  style: {
+                    bold: true,
+                  },
+                }
+              : null,
+          ].filter(Boolean),
         },
       ],
     },
