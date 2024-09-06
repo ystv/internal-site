@@ -19,7 +19,7 @@ pipeline {
           if (env.BRANCH_NAME != 'main') {
             imageNamePrefix = "${env.BRANCH_NAME}-"
           }
-          imageTag = "${imageNamePrefix}${env.BUILD_NUMBER}"
+          imageTag = "${imageNamePrefix.replace('/', '--')}${env.BUILD_NUMBER}"
         }
       }
     }
