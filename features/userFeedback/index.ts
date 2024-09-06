@@ -72,7 +72,7 @@ export async function submit(
                     bold: true,
                   },
                 }
-              : null,
+              : (null as any),
           ].filter(Boolean),
         },
       ],
