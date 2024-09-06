@@ -1,5 +1,14 @@
 "use client";
-import { Anchor, AppShell, Burger, Group, rem, Text } from "@mantine/core";
+import {
+  Anchor,
+  AppShell,
+  Box,
+  Burger,
+  Group,
+  NavLink,
+  rem,
+  Text,
+} from "@mantine/core";
 import { useDisclosure, useHeadroom } from "@mantine/hooks";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +17,10 @@ import { UserMenu } from "@/components/UserMenu";
 import styles from "@/styles/Nav.module.css";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
 import { FeedbackPrompt } from "./FeedbackPrompt";
+import { LuCalendar, LuCog, LuNewspaper, LuUser } from "react-icons/lu";
+import { usePathname } from "next/navigation";
+import path from "path";
+import Sidebar from "@/components/Sidebar";
 
 interface NavProps {
   children: React.ReactNode;
@@ -21,6 +34,7 @@ export default function Nav({ children, user }: NavProps) {
   const footerPinned = useHeadroom({ fixedAt: 100 });
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const pathname = usePathname();
 
   return (
     <>
@@ -38,39 +52,55 @@ export default function Nav({ children, user }: NavProps) {
         padding="md"
         classNames={{ header: styles.header }}
       >
-        <AppShell.Header bg-dark="true" className={styles.header}>
-          <Group h="100%" px="md">
-            <Burger
-              opened={mobileOpened}
-              onClick={toggleMobile}
-              hiddenFrom="sm"
-              size="sm"
-              color="white"
-            />
-            <Burger
-              opened={desktopOpened}
-              onClick={toggleDesktop}
-              visibleFrom="sm"
-              size="sm"
-              color="white"
-            />
-            <Link href="/">
-              <Image
-                src={Logo}
-                alt=""
-                placeholder="blur"
-                height={96}
-                className="max-h-[4.5rem] w-auto py-2"
+        <AppShell.Header
+          bg-dark="true"
+          className={`${styles.header} flex w-full items-center justify-between sm:justify-start`}
+        >
+          <Group
+            h="100%"
+            px="md"
+            className="flex w-full items-center justify-between"
+          >
+            {/* Left side with burger menus */}
+            <div className="flex items-center">
+              <Burger
+                opened={mobileOpened}
+                onClick={toggleMobile}
+                hiddenFrom="sm"
+                size="sm"
+                color="white"
               />
-            </Link>
-            <YSTVBreadcrumbs />
-            <div className="ml-auto h-14 w-14 space-x-1">
-              <UserMenu userAvatar={user.avatar} />
+              <Burger
+                opened={desktopOpened}
+                onClick={toggleDesktop}
+                visibleFrom="sm"
+                size="sm"
+                color="white"
+              />
             </div>
+
+            {/* Centered logo with negative margin */}
+            <div className="flex grow justify-center md:justify-start">
+              <Link href="/">
+                <Image
+                  src={Logo}
+                  alt="Logo"
+                  placeholder="blur"
+                  height={96}
+                  className="mr-10 max-h-[4.5rem] w-auto cursor-pointer py-2 md:mr-0"
+                />
+              </Link>
+            </div>
+
+            {/* Optional Breadcrumbs, visible on larger screens */}
+            <Box visibleFrom="sm">
+              <YSTVBreadcrumbs />
+            </Box>
           </Group>
         </AppShell.Header>
-        <AppShell.Navbar p="md" className={styles.navbar}>
-          Navbar
+
+        <AppShell.Navbar className={styles.navbar}>
+          <Sidebar />
         </AppShell.Navbar>
         <AppShell.Main
           pt={`calc(${rem(80)} + var(--mantine-spacing-md))`}
