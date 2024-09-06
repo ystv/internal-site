@@ -6,7 +6,7 @@ import * as YouTube from "@/features/youtube";
 import * as Calendar from "@/features/calendar";
 import { getUserName } from "@/components/UserHelpers";
 import { DateTime } from "@/components/DateTimeHelpers";
-import { Button, Paper } from "@mantine/core";
+import { Button, Paper, ScrollArea } from "@mantine/core";
 import { isSameDay } from "date-fns";
 import { TbArticle } from "react-icons/tb";
 import { PermissionGate } from "@/components/UserContext";
@@ -64,74 +64,82 @@ async function ProductionsNeedingCrew() {
   return (
     <div>
       <h2>{prods.events.length} productions need crew</h2>
-      {prods.events.map((event) => (
-        <Paper
-          key={event.event_id}
-          shadow="sm"
-          radius="md"
-          withBorder
-          className="flex-grow-1 !flex w-full flex-col p-[var(--mantine-spacing-md)] md:w-[calc(50%-theme(gap.4)/2)] lg:flex-grow-0 lg:p-[var(--mantine-spacing-xl)]"
-        >
-          {/* TODO: this copies a lot from discoverView, could they be refactored */}
-          <h3 className={"m-0"}>{event.name}</h3>
-          <p className={"m-0 mb-2 text-sm"}>
-            <strong>
-              <DateTime
-                val={event.start_date.toISOString()}
-                format="datetime"
-              />
-              {" - "}
-              {isSameDay(event.start_date, event.end_date) ? (
-                <DateTime val={event.end_date.toISOString()} format="time" />
-              ) : (
-                <DateTime
-                  val={event.end_date.toISOString()}
-                  format="datetime"
-                />
-              )}
-            </strong>
-          </p>
-          {event.signup_sheets
-            .filter((sheet) => sheet.crews.length > 0)
-            .map((sheet) => (
-              <div key={sheet.signup_id}>
-                <h3 className={"m-0 text-lg"}>{sheet.title}</h3>
-                <p className={"m-0 text-xs"}>
+      <ScrollArea h={300}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {prods.events.map((event) => (
+            <Paper
+              key={event.event_id}
+              shadow="sm"
+              radius="md"
+              withBorder
+              className="flex flex-col p-4"
+            >
+              <h3 className="m-0">{event.name}</h3>
+              <p className="m-0 mb-2 text-sm">
+                <strong>
                   <DateTime
-                    val={sheet.arrival_time.toISOString()}
+                    val={event.start_date.toISOString()}
                     format="datetime"
-                  />{" "}
-                  -{" "}
-                  {isSameDay(sheet.arrival_time, sheet.end_time) ? (
+                  />
+                  {" - "}
+                  {isSameDay(event.start_date, event.end_date) ? (
                     <DateTime
-                      val={sheet.end_time.toISOString()}
+                      val={event.end_date.toISOString()}
                       format="time"
                     />
                   ) : (
                     <DateTime
-                      val={sheet.end_time.toISOString()}
+                      val={event.end_date.toISOString()}
                       format="datetime"
                     />
                   )}
-                </p>
-                {sheet.crews.map((crew) => (
-                  <div key={crew.crew_id}>
-                    <li className={"ml-6 text-base"}>{crew.positions.name}</li>
+                </strong>
+              </p>
+              {event.signup_sheets
+                .filter((sheet) => sheet.crews.length > 0)
+                .map((sheet) => (
+                  <div key={sheet.signup_id}>
+                    <h3 className="m-0 text-lg">{sheet.title}</h3>
+                    <p className="m-0 text-xs">
+                      <DateTime
+                        val={sheet.arrival_time.toISOString()}
+                        format="datetime"
+                      />{" "}
+                      -{" "}
+                      {isSameDay(sheet.arrival_time, sheet.end_time) ? (
+                        <DateTime
+                          val={sheet.end_time.toISOString()}
+                          format="time"
+                        />
+                      ) : (
+                        <DateTime
+                          val={sheet.end_time.toISOString()}
+                          format="datetime"
+                        />
+                      )}
+                    </p>
+                    {sheet.crews.map((crew) => (
+                      <div key={crew.crew_id}>
+                        <li className="ml-6 text-base">
+                          {crew.positions.name}
+                        </li>
+                      </div>
+                    ))}
                   </div>
                 ))}
+              <div className="mt-auto flex grow items-end justify-end">
+                <Button
+                  component={Link}
+                  href={`/calendar/${event.event_id}`}
+                  leftSection={<TbArticle />}
+                >
+                  Event Details
+                </Button>
               </div>
-            ))}
-          <div className={"flex grow items-end justify-end"}>
-            <Button
-              component={Link}
-              href={`/calendar/${event.event_id}`}
-              leftSection={<TbArticle />}
-            >
-              Event Details
-            </Button>
-          </div>
-        </Paper>
-      ))}
+            </Paper>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 }
