@@ -7,6 +7,8 @@ import {
   Group,
   Divider,
   InputLabel,
+  Center,
+  VisuallyHidden,
 } from "@mantine/core";
 import {
   ReactNode,
@@ -18,6 +20,8 @@ import {
 import { changePreference } from "./actions";
 import { notifications } from "@mantine/notifications";
 import { useWebsocket } from "@/components/WebsocketProvider";
+import { useMantineColorScheme } from "@mantine/core";
+import { LuLaptop, LuMoon, LuSun } from "react-icons/lu";
 
 type ReqPrefs = Required<PrismaJson.UserPreferences>;
 
@@ -94,9 +98,51 @@ function SegmentedPreference<K extends "timeFormat" | "icalFilter">(
   );
 }
 
-export function UserPreferences(props: { value: ReqPrefs }) {
+export function UserPreferences(props: { value: ReqPrefs; userID: number }) {
+  const { setColorScheme, colorScheme } = useMantineColorScheme();
+
   return (
     <Stack>
+      <InputWrapper>
+        <Group>
+          <InputLabel>Color Scheme</InputLabel>
+          <SegmentedControl
+            value={colorScheme}
+            onChange={setColorScheme}
+            className="ml-auto min-w-[10rem]"
+            data={[
+              {
+                value: "light",
+                label: (
+                  <Center>
+                    <LuSun className="scale-150" aria-label="light mode" />
+                    <VisuallyHidden>Light Mode</VisuallyHidden>
+                  </Center>
+                ),
+              },
+              {
+                value: "auto",
+                label: (
+                  <Center>
+                    <LuLaptop className="scale-150" aria-label="auto mode" />
+                    <VisuallyHidden>Auto Mode</VisuallyHidden>
+                  </Center>
+                ),
+              },
+              {
+                value: "dark",
+                label: (
+                  <Center>
+                    <LuMoon className="scale-150" aria-label="dark mode" />
+                    <VisuallyHidden>Dark Mode</VisuallyHidden>
+                  </Center>
+                ),
+              },
+            ]}
+          />
+        </Group>
+      </InputWrapper>
+      <Divider className="border-[--mantine-color-dark-4]" />
       <SegmentedPreference
         label="Time Format"
         field="timeFormat"

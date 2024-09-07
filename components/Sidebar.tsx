@@ -15,6 +15,8 @@ import {
   LuLaptop,
   LuMoon,
   LuSun,
+  LuBookMarked,
+  LuMessageSquare,
 } from "react-icons/lu";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -52,14 +54,19 @@ export default function Sidebar() {
   }[] = [
     { href: "/calendar", label: "Calendar", icon: <LuCalendar /> },
     {
+      href: "/quotes",
+      label: "Quotes Board",
+      icon: <LuBookMarked />,
+      permission: "ManageQuotes",
+    },
+    {
       href: "/admin",
       label: "Admin",
       icon: <LuCog />,
       permission: "SuperUser",
     },
     { href: "/news", label: "News", icon: <LuNewspaper /> },
-    { href: "/feedback", label: "Feedback", icon: <LuNewspaper /> },
-    { href: "/user/me", label: "Profile", icon: <LuUser /> },
+    { href: "/feedback", label: "Feedback", icon: <LuMessageSquare /> },
   ];
 
   const colors = [
@@ -75,7 +82,10 @@ export default function Sidebar() {
   const userPermissions = user.permissions || []; // Example user permissions, replace with actual logic
 
   const filteredNavLinks = navLinks.filter(
-    (link) => !link.permission || userPermissions.includes(link.permission),
+    (link) =>
+      !link.permission ||
+      userPermissions.includes(link.permission) ||
+      userPermissions.includes("SuperUser"),
   );
 
   return (
@@ -109,7 +119,7 @@ export default function Sidebar() {
                   className="rounded-lg"
                   mt="md"
                   active
-                  color="orange"
+                  color={colors[index]}
                 />
                 <NavLink
                   href="/admin/roles"
@@ -121,7 +131,7 @@ export default function Sidebar() {
                   className="rounded-lg"
                   mt="md"
                   active
-                  color="orange"
+                  color={colors[index]}
                 />
                 <NavLink
                   href="/admin/users"
@@ -133,7 +143,7 @@ export default function Sidebar() {
                   className="rounded-lg"
                   mt="md"
                   active
-                  color="orange"
+                  color={colors[index]}
                 />
               </PermissionGate>
             )}

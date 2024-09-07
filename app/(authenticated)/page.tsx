@@ -6,7 +6,7 @@ import * as YouTube from "@/features/youtube";
 import * as Calendar from "@/features/calendar";
 import { getUserName } from "@/components/UserHelpers";
 import { DateTime } from "@/components/DateTimeHelpers";
-import { Button, Paper, ScrollArea } from "@mantine/core";
+import { Button, Paper, ScrollArea, Title, Text } from "@mantine/core";
 import { isSameDay } from "date-fns";
 import { TbArticle } from "react-icons/tb";
 import { PermissionGate } from "@/components/UserContext";
@@ -22,8 +22,8 @@ async function YouTubeTile() {
   }
   return (
     <div>
-      <h2>Latest Upload</h2>
-      <div className="aspect-video w-full">
+      <Title order={2}>Latest Upload</Title>
+      <div className="my-10 aspect-video w-full">
         <YouTubeEmbed
           id={video.id!.videoId!}
           title={video.snippet?.title ?? ""}
@@ -40,19 +40,16 @@ async function NewsRow() {
     return null;
   }
   return (
-    <div>
-      <h2>Latest News</h2>
-      <Paper shadow="md" withBorder className="p-2">
-        <h3>{newsItem.title}</h3>
-        {newsItem.content.split("\n").map((line, idx) => (
-          <p key={idx}>{line}</p>
-        ))}
-        <small>
-          Posted by {getUserName(newsItem.author)},{" "}
-          <DateTime val={newsItem.time.toISOString()} format="datetime" />
-        </small>
-      </Paper>
-    </div>
+    <Paper shadow="md" withBorder className="p-3">
+      <Title order={3}>{newsItem.title}</Title>
+      {newsItem.content.split("\n").map((line, idx) => (
+        <Text key={idx}>{line}</Text>
+      ))}
+      <small>
+        Posted by {getUserName(newsItem.author)},{" "}
+        <DateTime val={newsItem.time.toISOString()} format="datetime" />
+      </small>
+    </Paper>
   );
 }
 
@@ -63,8 +60,8 @@ async function ProductionsNeedingCrew() {
   }
   return (
     <div>
-      <h2>{prods.events.length} productions need crew</h2>
-      <ScrollArea h={300}>
+      <Title order={2}>{prods.events.length} productions need crew</Title>
+      <ScrollArea h={500} className="mt-10">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {prods.events.map((event) => (
             <Paper
@@ -148,24 +145,10 @@ export default async function HomePage() {
   const me = await getCurrentUser();
   return (
     <div>
-      <h1>Welcome back, {me.first_name}!</h1>
-      <div className="mt-2 space-x-2">
-        <Button component={Link} href="/calendar" size="md">
-          Calendar
-        </Button>
-        {/* TODO not implemented yet */}
-        {/* <PermissionGate required="News.Admin">
-          <Button component={Link} href="/news" size="md">
-            News
-          </Button>
-        </PermissionGate> */}
-        <PermissionGate required="ManageQuotes">
-          <Button component={Link} href="/quotes" size="md">
-            Quotes
-          </Button>
-        </PermissionGate>
-      </div>
-      <div>
+      <Title order={1} className="my-10">
+        Welcome back, {me.first_name}!
+      </Title>
+      <div className="my-5">
         <Suspense fallback={<div>Loading...</div>}>
           <NewsRow />
         </Suspense>

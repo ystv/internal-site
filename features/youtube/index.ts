@@ -29,12 +29,11 @@ export const getLatestUpload = async () => {
   return video;
 };
 
-// Wrap the function with caching logic
 export const cachedGetLatestUpload = unstable_cache(
   getLatestUpload,
   [env.YOUTUBE_CHANNEL_ID ?? ""],
   {
     tags: ["youtube-videos"],
-    revalidate: 60, // Cache duration in seconds
+    revalidate: 60,
   },
 );
