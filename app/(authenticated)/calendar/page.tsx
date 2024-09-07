@@ -104,6 +104,7 @@ export default async function CalendarPage({
 
   return (
     <>
+      <h1 className={"text-4xl font-bold"}>Calendar</h1>
       {vacantEventsCount > 0 && (
         <Alert
           variant={"outline"}
@@ -125,14 +126,15 @@ export default async function CalendarPage({
           </Button>
         </Alert>
       )}
-      <div className={"flex items-end justify-between"}>
-        <h1 className={"text-4xl font-bold"}>YSTV Calendar</h1>
-        <PermissionGate required={calendarEditPermissions}>
-          <Button component={Link} href="/calendar/new" fz="md">
-            Add Event
-          </Button>
-        </PermissionGate>
-      </div>
+
+      <PermissionGate required={calendarEditPermissions}>
+        <br />
+      </PermissionGate>
+      <PermissionGate required={calendarEditPermissions}>
+        <Button component={Link} href="/calendar/new" fz="md" my="md">
+          Add Event
+        </Button>
+      </PermissionGate>
       <PermissionGate required={calendarEditPermissions}>
         <br />
       </PermissionGate>
