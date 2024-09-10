@@ -49,3 +49,5 @@ next-env.d.ts
 .sentryclirc
 
 certificates
+# Sentry Config File
+.env.sentry-build-plugin
