@@ -31,7 +31,7 @@ pipeline {
         sh """docker build \\
           --build-arg GIT_REV=${env.GIT_COMMIT} \\
           --build-arg VERSION=${env.TAG_NAME ?: 'v0.0.0'} \\
-          --build-arg SENTRY_AUTH_TOKEN=\$SENTRY_AUTH_TOKEN \\
+          --secret id=sentry-auth-token,env=SENTRY_AUTH_TOKEN \\
           -t registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}\\
           .
         """
