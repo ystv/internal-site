@@ -73,6 +73,8 @@ model User {
   /// [UserPreferences]
   preferences Json @default("{}")
 
+  newsItems NewsItem[]
+
   @@map("users")
 }
 
@@ -204,4 +206,14 @@ model EquipmentListTemplate {
   archived                   Boolean @default(false)
 
   @@map("equipment_list_templates")
+}
+
+model NewsItem {
+  id        Int       @id @default(autoincrement())
+  author_id Int
+  author    User      @relation(fields: [author_id], references: [user_id])
+  time      DateTime
+  expires   DateTime?
+  title     String
+  content   String
 }

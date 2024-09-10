@@ -21,6 +21,7 @@ const envSchema = z.object({
   GOOGLE_PERMITTED_DOMAINS: z.string({
     description: "A comma separated list of domains to allow google login from",
   }),
+  GOOGLE_API_KEY: z.string().optional(),
   ADAMRMS_EMAIL: z.string().optional(),
   ADAMRMS_PASSWORD: z.string().optional(),
   ADAMRMS_BASE: z.string().optional(),
@@ -44,6 +45,7 @@ const envSchema = z.object({
   COOKIE_DOMAIN: z
     .string()
     .default(new URL(process.env.PUBLIC_URL ?? "localhost").hostname),
+  YOUTUBE_CHANNEL_ID: z.string().optional(),
 });
 
 export function validateEnv(

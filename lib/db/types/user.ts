@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { CompleteIdentity, IdentityModel, CompleteAttendee, AttendeeModel, CompleteCrew, CrewModel, CompleteEvent, EventModel, CompleteRoleMember, RoleMemberModel } from "./index"
+import { CompleteIdentity, IdentityModel, CompleteAttendee, AttendeeModel, CompleteCrew, CrewModel, CompleteEvent, EventModel, CompleteRoleMember, RoleMemberModel, CompleteNewsItem, NewsItemModel } from "./index"
 
 // Helper schema for JSON fields
 type Literal = boolean | number | string
@@ -30,6 +30,7 @@ export interface CompleteUser extends z.infer<typeof _UserModel> {
   events_events_updated_byTousers: CompleteEvent[]
   role_members: CompleteRoleMember[]
   hosted_events: CompleteEvent[]
+  newsItems: CompleteNewsItem[]
 }
 
 /**
@@ -46,4 +47,5 @@ export const UserModel: z.ZodSchema<CompleteUser> = z.lazy(() => _UserModel.exte
   events_events_updated_byTousers: EventModel.array(),
   role_members: RoleMemberModel.array(),
   hosted_events: EventModel.array(),
+  newsItems: NewsItemModel.array(),
 }))
