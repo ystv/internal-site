@@ -173,7 +173,3 @@ export const searchPositions = wrapServerAction(
     return { ok: true, positions: searchResults };
   },
 );
-
-export const numPositions = prisma.position.count({
-  where: { is_custom: false },
-});
