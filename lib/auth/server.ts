@@ -11,6 +11,7 @@ import { decode, encode } from "../sessionSecrets";
 import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
 import { env } from "../env";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { cache } from "react";
 
 export interface UserWithIdentities extends User {
   identities: Identity[];
@@ -20,23 +21,25 @@ export type UserType = UserWithIdentities & {
   permissions: Permission[];
 };
 
-async function resolvePermissionsForUser(userID: number) {
-  const result = await prisma.rolePermission.findMany({
-    where: {
-      roles: {
-        role_members: {
-          some: {
-            user_id: userID,
+const resolvePermissionsForUser = cache(
+  async function resolvePermissionsForUser(userID: number) {
+    const result = await prisma.rolePermission.findMany({
+      where: {
+        roles: {
+          role_members: {
+            some: {
+              user_id: userID,
+            },
           },
         },
       },
-    },
-    select: {
-      permission: true,
-    },
-  });
-  return result.map((r) => r.permission as Permission);
-}
+      select: {
+        permission: true,
+      },
+    });
+    return result.map((r) => r.permission as Permission);
+  },
+);
 
 /**
  * Ensures that the currently signed-in user has at least one of the given permissions,
@@ -89,23 +92,9 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
   });
 }
 
-export async function getCurrentUserOrNull(
-  req?: NextRequest,
-): Promise<UserType | string> {
-  let session;
-  try {
-    session = await getSession(req);
-  } catch (e) {
-    return String(e);
-  }
-  if (!session) {
-    return "No session";
-  }
-  // This is fairly expensive (two DB calls per every page load). If this starts
-  // to become a problem, we should consider caching.
-  // (See below for why we don't store the user object in the session.)
+const getUser = cache(async function _getUser(id: number) {
   const user = await prisma.user.findUnique({
-    where: { user_id: session.userID },
+    where: { user_id: id },
     include: {
       identities: {
         where: {
@@ -125,6 +114,21 @@ export async function getCurrentUserOrNull(
     identities: Identity[];
   };
   return userType;
+});
+
+export async function getCurrentUserOrNull(
+  req?: NextRequest,
+): Promise<UserType | string> {
+  let session;
+  try {
+    session = await getSession(req);
+  } catch (e) {
+    return String(e);
+  }
+  if (!session) {
+    return "No session";
+  }
+  return getUser(session.userID);
 }
 
 export async function getCurrentUser(req?: NextRequest): Promise<UserType> {
