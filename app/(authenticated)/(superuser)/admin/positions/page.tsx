@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { PositionView } from "./PositionView";
 import { PositionsProvider } from "@/components/PositionsContext";
 import {
@@ -50,20 +51,24 @@ export default async function PositionPage({
         deletePosition={deletePosition}
         fetchPositions={async (data: unknown) => {
           "use server";
+          return await Sentry.withServerActionInstrumentation(
+            "PositionsProvider.fetchPositions",
+            async () => {
+              const safeData = searchParamsSchema.safeParse(data);
 
-          const safeData = searchParamsSchema.safeParse(data);
+              if (!safeData.success) {
+                return zodErrorResponse(safeData.error);
+              }
 
-          if (!safeData.success) {
-            return zodErrorResponse(safeData.error);
-          }
+              const positionsData = await fetchPositions({
+                count: safeData.data.count,
+                page: safeData.data.page,
+                query: decodeURIComponent(safeData.data.query ?? ""),
+              });
 
-          const positionsData = await fetchPositions({
-            count: safeData.data.count,
-            page: safeData.data.page,
-            query: decodeURIComponent(safeData.data.query ?? ""),
-          });
-
-          return { ok: true, ...positionsData };
+              return { ok: true, ...positionsData } as const;
+            },
+          );
         }}
       />
     </PositionsProvider>
