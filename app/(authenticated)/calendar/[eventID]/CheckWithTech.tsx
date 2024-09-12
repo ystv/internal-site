@@ -97,13 +97,25 @@ function PostMessage(props: {
         loading={isPending}
         onClick={() =>
           startTransition(async () => {
-            await doCheckWithTech(props.eventID, memo, props.isConfident);
-            notifications.show({
-              title: "Sent!",
-              message:
-                "Keep an eye out on Slack in case the tech team need any further details.",
-            });
-            props.done();
+            const result = await doCheckWithTech(
+              props.eventID,
+              memo,
+              props.isConfident,
+            );
+            if (result.ok) {
+              notifications.show({
+                title: "Sent!",
+                message:
+                  "Keep an eye out on Slack in case the tech team need any further details.",
+              });
+              props.done();
+            } else {
+              notifications.show({
+                title: "Sorry, something went wrong...",
+                message: result.errors?.root ?? "Please try again later.",
+                color: "red",
+              });
+            }
           })
         }
         leftSection={<TbBrandSlack size={14} />}
