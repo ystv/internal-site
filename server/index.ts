@@ -9,6 +9,7 @@ import { z } from "zod";
 import { authenticateSocket, isServerSocket } from "./auth";
 import { env, validateEnv } from "../lib/env.js";
 import { readFileSync } from "node:fs";
+import slackApiConnection from "@/lib/slack/slackApiConnection";
 
 const dev = env.NODE_ENV !== "production";
 const doSSL = env.DEV_SSL === "true";
@@ -36,6 +37,10 @@ app.prepare().then(async () => {
   } else {
     httpServer = createHttpServer(handler);
   }
+
+  const slackApp = await slackApiConnection();
+
+  slackApp.action("user_feedback__search_sentry", async ({ ack }) => ack());
 
   io = new Server(httpServer);
 
@@ -72,6 +77,8 @@ app.prepare().then(async () => {
     //   console.log(socket.id, " disconnected");
     // });
   });
+
+  await slackApp.start();
 
   httpServer
     .once("error", (err) => {

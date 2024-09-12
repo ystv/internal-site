@@ -1,16 +1,10 @@
 import { App } from "@slack/bolt";
 import { env } from "../env";
 
-declare global {
-  var slack: App; // This must be a `var` and not a `let / const`
-}
-
-let app = global.slack;
-
 export const isSlackEnabled = env.SLACK_ENABLED === "true";
 
-if (!app && isSlackEnabled) {
-  app = global.slack = new App({
+async function slackApiConnection() {
+  return new App({
     token: env.SLACK_BOT_TOKEN,
     signingSecret: env.SLACK_SIGNING_SECRET,
     socketMode: true,
@@ -20,14 +14,6 @@ if (!app && isSlackEnabled) {
       redirectUriPath: "/login/slack/callback",
     },
   });
-
-  app.action("user_feedback__search_sentry", async ({ ack }) => ack());
-
-  (async () => await app.start())();
-}
-
-async function slackApiConnection() {
-  return app;
 }
 
 export default slackApiConnection;
