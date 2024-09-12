@@ -9,19 +9,11 @@ import { z } from "zod";
 import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
 import * as Calendar from "@/features/calendar";
 import { EventType, hasRSVP } from "@/features/calendar/types";
-import {
-  canManage,
-  canManageSignUpSheet,
-} from "@/features/calendar/permissions";
+import { canManage } from "@/features/calendar/permissions";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
-import {
-  EditEventSchema,
-  SignupSheetSchema,
-} from "@/app/(authenticated)/calendar/[eventID]/schema";
+import { EditEventSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
-import { updateSignUpSheet } from "@/features/calendar/signup_sheets";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
-import { isBefore } from "date-fns";
 import invariant from "@/lib/invariant";
 import slackApiConnection, {
   isSlackEnabled,
@@ -308,7 +300,7 @@ export const doCheckWithTech = wrapServerAction(
     const event = await Calendar.getEvent(eventID);
     invariant(event, "Event does not exist");
 
-    if (!canManage(event, me)) {
+    if (!Calendar.canManageAnySignupSheet(event, me)) {
       return {
         ok: false,
         errors: {
