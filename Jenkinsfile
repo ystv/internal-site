@@ -71,6 +71,16 @@ pipeline {
         ], wait: true
         deployPreview action: 'cleanup'
         sh "nomad alloc exec -task calendar-dev -job calendar-dev npx -y prisma migrate deploy --schema lib/db/schema.prisma"
+        script {
+          def mergedPullRequest = sh "git log --oneline -2 --pretty=%B | head -n 1 | grep -oP '#(\d+)(?!.*#[1-9][0-9]*)' | sed 's/#//'"
+          if (mergedPullRequest != "") {
+            oldJobID = sh script: "consul kv get 'pr-deployments/${currentBuild.projectName}/PR-${mergedPullRequest}' || true", returnStdout: true
+            if (oldJobID.length() > 0) {
+                sh script: "nomad job stop -purge ${oldJobID} || true", returnStatus: true
+                sh "consul kv delete 'pr-deployments/${currentBuild.projectName}/PR-${mergedPullRequest}'"
+            }
+          }
+        }
       }
     }
 
