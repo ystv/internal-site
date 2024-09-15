@@ -1,8 +1,4 @@
-import {
-  getCurrentUser,
-  mustGetCurrentUser,
-  requirePermission,
-} from "@/lib/auth/server";
+import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";
 import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { notFound } from "next/navigation";
@@ -31,7 +27,7 @@ import { SignoutButton } from "@/components/SignoutButton";
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;
   if (params.id === "me") {
-    user = People.SecureUserModel.parse(await getCurrentUser());
+    user = People.SecureUserModel.parse(await mustGetCurrentUser());
   } else {
     await requirePermission(
       "ManageMembers.Members.List",
