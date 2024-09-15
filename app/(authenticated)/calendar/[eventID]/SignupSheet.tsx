@@ -456,6 +456,7 @@ export function SignupSheetsView({
         !event.is_cancelled &&
         dayjs(event.start_date).isAfter(new Date()) &&
         (event.created_by === me.user_id ? (
+          // No need for this to be a canManageAnySignUpSheet, because there isn't one yet
           <Alert
             variant="light"
             color="blue"

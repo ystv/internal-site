@@ -98,8 +98,8 @@ export default async function CalendarPage({
     "Calendar.Meeting.Creator",
     "Calendar.Social.Admin",
     "Calendar.Social.Creator",
-    "Calendar.Show.Admin",
-    "Calendar.Social.Creator",
+    "Calendar.Public.Admin",
+    "Calendar.Public.Creator",
   ];
 
   return (

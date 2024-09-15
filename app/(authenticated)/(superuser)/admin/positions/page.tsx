@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { PositionView } from "./PositionView";
 import { fetchPositions } from "@/features/positions";
 import { searchParamsSchema } from "./schema";

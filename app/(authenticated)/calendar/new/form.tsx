@@ -47,7 +47,7 @@ export function CreateEventForm(props: {
       />
       <ConditionalField
         referencedFieldName="type"
-        condition={(t) => t !== "show"}
+        condition={(t) => !["show", "public"].includes(t as string)}
         childFieldName="host"
       >
         <SearchedMemberSelect name="host" label="Host" />

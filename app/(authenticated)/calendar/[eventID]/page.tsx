@@ -95,7 +95,7 @@ async function CheckWithTechPrompt({
   event: EventObjectType;
   me: UserType;
 }) {
-  if (me.user_id !== event.host) {
+  if (!canManageAnySignupSheet(event, me)) {
     return null;
   }
   if (event.adam_rms_project_id || event.check_with_tech_status) {
