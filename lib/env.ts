@@ -2,7 +2,12 @@ import { exit } from "process";
 import { z } from "zod";
 
 const slackEnvType =
-  process.env.SLACK_ENABLED == "true" ? z.string() : z.string().optional();
+  process.env.SLACK_ENABLED == "true"
+    ? z.string({
+        required_error:
+          "This variable must be set if the slack integration is enabled",
+      })
+    : z.string().optional();
 
 const envSchema = z.object({
   NODE_ENV: z
@@ -13,12 +18,17 @@ const envSchema = z.object({
     .string()
     .refine((str) => !str.endsWith("/"), "PUBLIC_URL must not end with a '/'"),
   GOOGLE_CLIENT_ID: z.string(),
-  GOOGLE_PERMITTED_DOMAINS: z.string(),
+  GOOGLE_PERMITTED_DOMAINS: z.string({
+    description: "A comma separated list of domains to allow google login from",
+  }),
   ADAMRMS_EMAIL: z.string().optional(),
   ADAMRMS_PASSWORD: z.string().optional(),
   ADAMRMS_BASE: z.string().optional(),
   ADAMRMS_PROJECT_TYPE_ID: z.string().optional(),
-  SESSION_SECRET: z.string(),
+  SESSION_SECRET: z.string({
+    required_error:
+      "Try generating a random secret with `openssl rand -base64 32`",
+  }),
   SLACK_ENABLED: z.enum(["true", "false"]).default("false"),
   SLACK_BOT_TOKEN: slackEnvType,
   SLACK_APP_TOKEN: slackEnvType,
@@ -26,10 +36,14 @@ const envSchema = z.object({
   SLACK_CLIENT_ID: slackEnvType,
   SLACK_CLIENT_SECRET: slackEnvType,
   SLACK_TEAM_ID: z.string().optional(),
-  SLACK_CHECK_WITH_TECH_CHANNEL: z.string().default("#check-with-tech"),
-  SLACK_TECH_HELP_CHANNEL: z.string().default("#check-with-tech"),
-  COOKIE_DOMAIN: z.string().default(new URL(process.env.PUBLIC_URL ?? "").host),
+  SLACK_CHECK_WITH_TECH_CHANNEL: slackEnvType.default("#check-with-tech"),
+  SLACK_TECH_HELP_CHANNEL: slackEnvType.default("#check-with-tech"),
+  SLACK_USER_FEEDBACK_CHANNEL: slackEnvType.default("#dev-calendar"),
   DEV_SSL: z.string().optional(), // Used to decide whether or not to use https in a dev environment
+  SENTRY_PROJECT_ID: z.string().optional(),
+  COOKIE_DOMAIN: z
+    .string()
+    .default(new URL(process.env.PUBLIC_URL ?? "http://localhost").hostname),
 });
 
 export function validateEnv(

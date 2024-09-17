@@ -41,7 +41,6 @@ export async function getSlackUserInfo(code: string, redirect?: string | null) {
 }
 
 export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
-  console.log(userInfo["email"]);
   const user = await prisma.user.findFirst({
     where: {
       OR: [
@@ -87,7 +86,6 @@ export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
       first_name: userInfo.given_name!,
       last_name: userInfo.family_name!,
       email: userInfo.email!,
-      username: userInfo.email!.split("@")[0],
       avatar: userInfo.picture!,
       identities: {
         create: {

@@ -11,11 +11,15 @@ const sentryRelease = `${version}-${gitCommit.slice(0, 7)}`;
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  experimental: {
+    instrumentationHook: true,
+  },
   images: {
     remotePatterns: [
       // User avatars
       {
         hostname: "*.googleusercontent.com",
+        pathname: "**",
         protocol: "https",
       },
       {

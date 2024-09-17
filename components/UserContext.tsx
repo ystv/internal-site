@@ -17,7 +17,6 @@ export function UserProvider(props: {
   useEffect(() => {
     Sentry.setUser({
       id: props.user.user_id,
-      username: props.user.username,
       email: props.user.email,
     });
   }, [props.user]);

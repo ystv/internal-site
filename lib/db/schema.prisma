@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
+  previewFeatures = ["postgresqlExtensions", "tracing"]
 }
 
 generator json {
@@ -55,7 +55,6 @@ model Role {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model User {
   user_id                         Int          @id @default(autoincrement())
-  username                        String       @unique
   email                           String       @unique
   first_name                      String
   last_name                       String

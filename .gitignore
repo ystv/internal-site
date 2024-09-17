@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+/.direnv
 
 # testing
 /coverage
@@ -49,3 +50,5 @@ next-env.d.ts
 .sentryclirc
 
 certificates
+# Sentry Config File
+.env.sentry-build-plugin

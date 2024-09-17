@@ -2,7 +2,8 @@
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import Link from "next/link";
-import { Anchor, Breadcrumbs } from "@mantine/core";
+import { Anchor, Breadcrumbs, Text } from "@mantine/core";
+import { LuHome } from "react-icons/lu";
 
 const breadcrumbSegments: { [K: string]: string } = {
   calendar: "Calendar",
@@ -31,8 +32,9 @@ export default function YSTVBreadcrumbs() {
           component={Link}
           underline="hover"
           key={`BC${result.length}`}
+          c="white"
         >
-          {segment.name}
+          <Text c="white">{segment.name}</Text>
         </Anchor>,
       );
     }
@@ -41,8 +43,10 @@ export default function YSTVBreadcrumbs() {
 
   return (
     <Breadcrumbs>
-      <Anchor href="/" component={Link} underline="hover" key="BC0">
-        Home
+      <Anchor href="/" component={Link} underline="hover" key="BC0" c="white">
+        {/*Home */}
+        {/*<LuHome aria-label="Home" color="white" size={20} />*/}
+        {/* Two Options for a Home Page Link when we add a Home Page */}
       </Anchor>
       {segments}
     </Breadcrumbs>

@@ -34,11 +34,20 @@ export async function authenticateSocket(
   const sessionCookie: string | undefined = cookie["ystv-calendar-session"];
 
   if (sessionCookie) {
+    var decodedSession: unknown;
+
+    try {
+      decodedSession = await decode(sessionCookie);
+    } catch (error) {
+      socket.data.auth = { invalidSession: true };
+      return next();
+    }
+
     const session = z
       .object({
         userID: z.number(),
       })
-      .parse(await decode(sessionCookie));
+      .parse(decodedSession);
 
     const user = await prisma.user.findFirst({
       where: {

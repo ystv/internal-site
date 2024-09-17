@@ -1,21 +1,39 @@
 "use client";
 
 import { isBefore, isSameDay } from "date-fns";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { Suspense, useEffect, useMemo, useState, useTransition } from "react";
 import { getUserName } from "@/components/UserHelpers";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
-import { Alert, Button, Modal, Paper } from "@mantine/core";
+import {
+  Alert,
+  Button,
+  Card,
+  Center,
+  Checkbox,
+  Group,
+  List,
+  Loader,
+  Modal,
+  Paper,
+  Stack,
+  Text,
+} from "@mantine/core";
 import {
   canManage,
   canManageSignUpSheet,
 } from "@/features/calendar/permissions";
 import { DateTime } from "@/components/DateTimeHelpers";
 import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]/AddEditSignUpSheetForm";
-import { CrewType, SignUpSheetType } from "@/features/calendar/signup_sheets";
+import {
+  CrewType,
+  SignUpSheetType,
+  SignUpSheetWithEvent,
+} from "@/features/calendar/signup_sheets";
 import { EventObjectType } from "@/features/calendar/events";
 import { ExposedUser } from "@/features/people";
 import {
+  checkRoleClashes,
   createSignUpSheet,
   deleteSignUpSheet,
   editSignUpSheet,
@@ -25,6 +43,7 @@ import {
 } from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
 import { TbCalendarCheck } from "react-icons/tb";
 import dayjs from "dayjs";
+import { useQuery } from "@tanstack/react-query";
 import { useWebsocket } from "@/components/WebsocketProvider";
 
 function SignupSheet({
@@ -247,12 +266,20 @@ function SignupSheet({
       </Modal>
       <Modal opened={signUpCrew !== null} onClose={() => setSignUpCrew(null)}>
         {signUpCrew !== null && (
-          <MyRoleSignUpModal
-            sheet={sheetState}
-            crew={signUpCrew}
-            me={me}
-            onSuccess={() => setSignUpCrew(null)}
-          />
+          <Suspense
+            fallback={
+              <Center>
+                <Loader />
+              </Center>
+            }
+          >
+            <MyRoleSignUpModal
+              sheet={sheetState}
+              crew={signUpCrew}
+              me={me}
+              onSuccess={() => setSignUpCrew(null)}
+            />
+          </Suspense>
         )}
       </Modal>
     </>
@@ -272,6 +299,13 @@ export function MyRoleSignUpModal({
   me?: ExposedUser;
   buttonless?: boolean;
 }) {
+  const clashes = useQuery({
+    queryKey: ["clashes", crew.crew_id],
+    queryFn: () => checkRoleClashes(crew.crew_id),
+  });
+
+  const [acceptClashes, setAcceptClashes] = useState<boolean>(false);
+
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   return (
@@ -303,26 +337,106 @@ export function MyRoleSignUpModal({
               Drop Out
             </Button>
           ) : (
-            <Button
-              size="large"
-              loading={isPending}
-              onClick={() => {
-                startTransition(async () => {
-                  const res = await signUpToRole(sheet.signup_id, crew.crew_id);
-                  if (!res.ok) {
-                    setError(res.errors!.root as string);
-                    return;
+            <Stack>
+              {clashes.isFetching && (
+                <Center>
+                  <Stack>
+                    <Text>Checking for clashes...</Text>
+                    <Center>
+                      <Loader />
+                    </Center>
+                  </Stack>
+                </Center>
+              )}
+              <ClashesView clashes={clashes.data} />
+              {clashes.data && clashes.data.length !== 0 && (
+                <Checkbox
+                  label={"Accept clashes"}
+                  onChange={(event) =>
+                    setAcceptClashes(event.currentTarget.checked)
                   }
-                  onSuccess();
-                });
-              }}
-            >
-              Sign Up
-            </Button>
+                />
+              )}
+              <Button
+                size="large"
+                loading={isPending || !clashes}
+                onClick={() => {
+                  startTransition(async () => {
+                    const res = await signUpToRole(
+                      sheet.signup_id,
+                      crew.crew_id,
+                    );
+                    if (!res.ok) {
+                      setError(res.errors!.root as string);
+                      return;
+                    }
+                    onSuccess();
+                  });
+                }}
+                disabled={clashes.data?.length !== 0 && !acceptClashes}
+              >
+                Sign Up
+              </Button>
+            </Stack>
           )}
         </div>
       )}
     </div>
+  );
+}
+
+function ClashesView({
+  clashes,
+}: {
+  clashes: SignUpSheetWithEvent[] | undefined;
+}) {
+  return (
+    <>
+      {clashes && clashes.length > 0 && (
+        <>
+          <Text fw={700}>This role clashes with some of your other roles:</Text>
+          <Stack>
+            {clashes.map((clash) => {
+              return (
+                <Card key={clash.signup_id}>
+                  <Stack gap={"xs"}>
+                    <Group>
+                      <Stack gap={0}>
+                        <Text fw={700}>{clash.events.name}</Text>
+                        <Text size="xs">{clash.title}</Text>
+                      </Stack>
+                      <Text size="xs" ml={"auto"}>
+                        <DateTime
+                          val={clash.arrival_time.toISOString()}
+                          format="datetime"
+                        />{" "}
+                        -{" "}
+                        <DateTime
+                          val={clash.end_time.toISOString()}
+                          format="datetime"
+                        />
+                      </Text>
+                    </Group>
+                    <Text size="sm" fw={600}>
+                      Role{clash.crews.length > 1 && "s"}:
+                    </Text>
+                    <List size="sm">
+                      {clash.crews.map((crew) => {
+                        return (
+                          <List.Item key={crew.crew_id}>
+                            {crew.positions.name}
+                          </List.Item>
+                        );
+                      })}
+                    </List>
+                  </Stack>
+                </Card>
+              );
+            })}
+          </Stack>
+        </>
+      )}
+    </>
   );
 }
 
@@ -342,6 +456,7 @@ export function SignupSheetsView({
         !event.is_cancelled &&
         dayjs(event.start_date).isAfter(new Date()) &&
         (event.created_by === me.user_id ? (
+          // No need for this to be a canManageAnySignUpSheet, because there isn't one yet
           <Alert
             variant="light"
             color="blue"

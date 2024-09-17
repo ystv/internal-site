@@ -1,9 +1,4 @@
-import {
-  getCurrentUser,
-  logout,
-  mustGetCurrentUser,
-  requirePermission,
-} from "@/lib/auth/server";
+import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";
 import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { notFound } from "next/navigation";
@@ -20,7 +15,6 @@ import {
 } from "@mantine/core";
 import { UserPreferences } from "./UserPreferences";
 import { ICalCopyButton } from "@/components/ICalCopyButton";
-
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
 import { Suspense } from "react";
@@ -28,11 +22,12 @@ import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { hasWrapped } from "../../wrapped/util";
 import Link from "next/link";
 import { env } from "@/lib/env";
+import { SignoutButton } from "@/components/SignoutButton";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   let user: People.SecureUser;
   if (params.id === "me") {
-    user = People.SecureUserModel.parse(await getCurrentUser());
+    user = People.SecureUserModel.parse(await mustGetCurrentUser());
   } else {
     await requirePermission(
       "ManageMembers.Members.List",
@@ -62,22 +57,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
               {user.email}
             </h4>
           </Stack>
-          <form
-            action={async () => {
-              "use server";
-              logout();
-            }}
-            className="ml-auto"
-          >
-            <Button
-              variant="filled"
-              color="red"
-              className="ml-auto"
-              type="submit"
-            >
-              Sign Out
-            </Button>
-          </form>
+          <SignoutButton />
         </Group>
       </Card>
       <Space h={"md"} />
