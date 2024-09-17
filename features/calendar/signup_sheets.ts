@@ -10,6 +10,7 @@ import { UserType } from "@/lib/auth/server";
 export interface CrewType {
   crew_id: number;
   position_id: number;
+  signup_id: number;
   positions: CrewPositionType;
   ordering: number;
   locked: boolean;
@@ -296,7 +297,17 @@ export async function getCrewRole(crewID: number) {
   });
 }
 
-export async function getClashingSheets(user: UserType, sheet: SignupSheet) {
+export async function getClashingSheets(
+  user: UserType,
+  sheetOrID: SignupSheet | number,
+) {
+  let sheet;
+  if (typeof sheetOrID === "number") {
+    sheet = await getSignUpSheet(sheetOrID);
+  } else {
+    sheet = sheetOrID;
+  }
+  invariant(sheet, `Sheet ${sheetOrID} not found`);
   const clashingSheets = await prisma.signupSheet.findMany({
     where: {
       AND: [
