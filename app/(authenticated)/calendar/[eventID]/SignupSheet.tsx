@@ -73,7 +73,7 @@ function SignupSheet({
     return () => {
       socket.off(`signupSheetUpdate:${sheet.signup_id}`, onSheetUpdate);
     };
-  }, []);
+  });
 
   const locked = useMemo(
     () =>
