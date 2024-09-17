@@ -14,7 +14,7 @@ export function LoginPrompt() {
 
   useEffect(() => {
     doLoginRedirect();
-  }, []);
+  });
 
   setTimeout(doLoginRedirect, 3000);
 

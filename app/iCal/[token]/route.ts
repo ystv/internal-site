@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Calendar from "@/features/calendar";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { token: string } },
