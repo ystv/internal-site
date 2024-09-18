@@ -4,7 +4,7 @@ import { PermissionGate } from "@/components/UserContext";
 import { listEvents, listVacantEvents } from "@/features/calendar/events";
 import { Alert, Button } from "@mantine/core";
 import { Permission } from "@/lib/auth/permissions";
-import { getCurrentUser } from "@/lib/auth/server";
+import { mustGetCurrentUser } from "@/lib/auth/server";
 import { TbArticle, TbCalendarEvent } from "react-icons/tb";
 import invariant from "@/lib/invariant";
 import { add, setDay } from "date-fns";
@@ -67,7 +67,7 @@ export default async function CalendarPage({
   const day = searchParams.day ? parseInt(searchParams.day, 10) : now.getDate();
   const selectedDay = new Date(year, month, day);
 
-  const me = await getCurrentUser();
+  const me = await mustGetCurrentUser();
 
   const filter = searchParams.filter;
 

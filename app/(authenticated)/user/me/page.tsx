@@ -1,4 +1,4 @@
-import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
+import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";
 import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { getUserName } from "@/components/UserHelpers";
@@ -15,8 +15,7 @@ import { env } from "@/lib/env";
 import { SignoutButton } from "@/components/SignoutButton";
 
 export default async function UserPage() {
-  let user: People.SecureUser;
-  user = People.SecureUserModel.parse(await getCurrentUser());
+  const user = People.SecureUserModel.parse(await mustGetCurrentUser());
   const prefs = People.preferenceDefaults(user.preferences);
   const slackUser = user.identities.find((i) => i.provider === "slack");
   return (

@@ -6,6 +6,8 @@ import {
 } from "@/lib/auth/server";
 import { env } from "@/lib/env";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const searchParams = req.nextUrl.searchParams;
   const code = searchParams.get("code");

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import invariant from "@/lib/invariant";
 import { getUserName } from "@/components/UserHelpers";
-import { getCurrentUser, UserType } from "@/lib/auth/server";
+import { mustGetCurrentUser, UserType } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/(authenticated)/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { SignupSheetsView } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
@@ -152,7 +152,7 @@ async function SlackBanner(props: { event: EventObjectType }) {
   if (!props.event.slack_channel_id) {
     return null;
   }
-  const me = await getCurrentUser();
+  const me = await mustGetCurrentUser();
   if (me.identities.find((x) => x.provider === "slack")) {
     return null;
   }
@@ -183,7 +183,7 @@ export default async function EventPage({
     notFound();
   }
 
-  const me = await getCurrentUser();
+  const me = await mustGetCurrentUser();
   let allMembers;
   if (canManage(event, me)) {
     allMembers = await getAllUsers();
