@@ -58,6 +58,7 @@ function SignupSheet({
   const [sheetState, setSheetState] = useState(sheet);
 
   const { socket, isConnected, transport } = useWebsocket();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     async function onSheetUpdate(value: any) {
@@ -65,6 +66,9 @@ function SignupSheet({
 
       if (res) {
         setSheetState(res);
+        await queryClient.invalidateQueries({
+          queryKey: ["clashes", sheet.signup_id],
+        });
       }
     }
 
