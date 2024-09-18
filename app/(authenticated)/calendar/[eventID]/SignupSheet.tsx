@@ -302,6 +302,7 @@ export function MyRoleSignUpModal({
   const clashes = useQuery({
     queryKey: ["clashes", crew.signup_id],
     queryFn: () => checkRoleClashes(crew.signup_id),
+    refetchOnMount: false,
   });
   const queryClient = useQueryClient();
 
