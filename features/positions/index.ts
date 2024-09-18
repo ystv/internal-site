@@ -4,7 +4,7 @@ import {
   createPositionSchema,
   deletePositionSchema,
   updatePositionSchema,
-} from "@/app/(authenticated)/(superuser)/admin/positions/schema";
+} from "@/app/(authenticated)/admin/positions/schema";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { wrapServerAction } from "@/lib/actions";

@@ -2,7 +2,7 @@ import {
   createRoleSchema,
   deleteRoleSchema,
   updateRoleSchema,
-} from "@/app/(authenticated)/(superuser)/admin/roles/schema";
+} from "@/app/(authenticated)/admin/roles/schema";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";

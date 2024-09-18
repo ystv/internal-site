@@ -5,7 +5,7 @@ import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { FormResponse } from "@/components/Form";
 import { Identity, Prisma, Role, RolePermission, User } from "@prisma/client";
 import { getTsQuery } from "@/lib/search";
-import { editUserSchema } from "@/app/(authenticated)/(superuser)/admin/users/[userID]/schema";
+import { editUserSchema } from "@/app/(authenticated)/admin/users/[userID]/schema";
 import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";
 
 /**
