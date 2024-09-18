@@ -190,24 +190,47 @@ export const signUpToRole = wrapServerAction(
       if (slackUser && sheet.events.slack_channel_id) {
         const slackApp = await slackApiConnection();
 
+        // Boltjs works weirdly.
+        // This code will ignore the error thrown if the user is already in the
+        // channel but throw any others.
         try {
-          await slackApp.client.conversations.invite({
-            channel: sheet.events.slack_channel_id,
-            users: slackUser.provider_key,
-          });
-        } catch (e) {}
+          const invitiationResponse =
+            await slackApp.client.conversations.invite({
+              channel: sheet.events.slack_channel_id,
+              users: slackUser.provider_key,
+            });
 
-        await slackApp.client.chat.postEphemeral({
-          channel: sheet.events.slack_channel_id,
-          user: slackUser.provider_key,
-          text: `You have been added to this channel as you signed up for the role of '${sheet.crews.find(
-            (crew_pos) => {
-              if (crew_pos.crew_id == crewID) {
-                return true;
-              }
-            },
-          )?.positions.name}' on '${sheet.events.name}'.`,
-        });
+          if (invitiationResponse.ok) {
+            await slackApp.client.chat.postEphemeral({
+              channel: sheet.events.slack_channel_id,
+              user: slackUser.provider_key,
+              text: `You have been added to this channel as you signed up for the role of '${sheet.crews.find(
+                (crew_pos) => {
+                  if (crew_pos.crew_id == crewID) {
+                    return true;
+                  }
+                },
+              )?.positions.name}' on '${sheet.events.name}'.`,
+            });
+          }
+        } catch (e) {
+          const parseAsSlackError = z
+            .object({
+              code: z.string(),
+              data: z.object({
+                ok: z.boolean(),
+                error: z.string(),
+              }),
+            })
+            .safeParse(e);
+          if (parseAsSlackError.success) {
+            if (parseAsSlackError.data.code === "already_in_channel") {
+              throw e;
+            }
+          } else {
+            throw e;
+          }
+        }
       }
     }
 
