@@ -155,7 +155,7 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
               });
             }}
             label="Search by Role Name or Permissions"
-            description="Due to the way this search works, only one permission can be searched at a time."
+            description="Only one permission can be searched at a time."
             withClear
           />
           <Group>
