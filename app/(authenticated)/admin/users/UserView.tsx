@@ -105,7 +105,7 @@ export function UserView(props: { initialUsers: TFetchUsers }) {
               });
             }}
             label="Search by Name or Email"
-            description="Search must start of the first, last or nick name, or username."
+            description="Search must start with the first, last, or nick name."
             withClear
           />
           <Group></Group>
