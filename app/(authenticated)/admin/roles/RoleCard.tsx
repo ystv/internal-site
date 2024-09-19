@@ -98,7 +98,7 @@ const openDeleteModal = (props: {
     children: (
       <Text size="sm">
         Are you sure you want to delete the role &quot;{props.roleName}
-        &quot;? This action is destructive and will remove this role from all
+        &quot;? This action cannot be undone and will remove this role from all
         users.
       </Text>
     ),
