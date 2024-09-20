@@ -215,6 +215,17 @@ export default async function EventPage({
           <SlackBanner event={event} />
         </Suspense>
       )}
+      {event.event_type === "public" && canManageAnySignupSheet(event, me) && (
+        <Alert
+          variant="light"
+          color="orange"
+          icon={<TbAlertTriangle />}
+          title="Public Event"
+        >
+          This event is public. Its details can be seen by anyone outside YSTV{" "}
+          and any changes are immediately published.
+        </Alert>
+      )}
       <div
         className={
           "flex w-full flex-col items-center justify-between sm:flex-row"

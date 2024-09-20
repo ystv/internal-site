@@ -14,10 +14,11 @@ import {
 import { useRouter } from "next/navigation";
 import { EventType } from "@/features/calendar/types";
 import { identity } from "lodash";
-import { InputLabel } from "@mantine/core";
+import { Alert, InputLabel } from "@mantine/core";
 import SlackChannelField from "@/components/SlackChannelField";
 import { useSlackEnabled } from "@/components/slack/SlackEnabledProvider";
 import { useCurrentUser } from "@/components/UserContext";
+import { TbAlertTriangle } from "react-icons/tb";
 
 export function CreateEventForm(props: {
   action: FormAction<{ id: number }>;
@@ -51,6 +52,14 @@ export function CreateEventForm(props: {
         childFieldName="host"
       >
         <SearchedMemberSelect name="host" label="Host" />
+      </ConditionalField>
+      <ConditionalField
+        referencedFieldName="type"
+        condition={(t) => t === "public"}
+      >
+        <Alert color="orange" icon={<TbAlertTriangle />} title="Public Event">
+          The details of this event will be visible to anyone outside YSTV.
+        </Alert>
       </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="private" label="Private Event" />*/}
