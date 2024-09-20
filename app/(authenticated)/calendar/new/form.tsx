@@ -57,7 +57,12 @@ export function CreateEventForm(props: {
         referencedFieldName="type"
         condition={(t) => t === "public"}
       >
-        <Alert color="orange" icon={<TbAlertTriangle />} title="Public Event">
+        <Alert
+          color="orange"
+          icon={<TbAlertTriangle />}
+          title="Public Event"
+          className="mt-1"
+        >
           The details of this event will be visible to anyone outside YSTV.
         </Alert>
       </ConditionalField>
