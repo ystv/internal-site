@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth/server";
+import { mustGetCurrentUser } from "@/lib/auth/server";
 import { CreateEventForm } from "@/app/(authenticated)/calendar/new/form";
 import { creatableEventTypes } from "@/features/calendar/permissions";
 import { Forbidden } from "@/lib/auth/errors";
@@ -47,7 +47,7 @@ async function getSlackChannels(): Promise<Channel[]> {
 
 export default async function NewEventPage() {
   const permittedEventTypes = creatableEventTypes(
-    (await getCurrentUser()).permissions,
+    (await mustGetCurrentUser()).permissions,
   );
   if (permittedEventTypes.length === 0) {
     throw new Forbidden([

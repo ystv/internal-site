@@ -1,20 +1,10 @@
 import * as Quotes from "@/features/quotes";
 import { requirePermission } from "@/lib/auth/server";
 import { AddQuote, QuoteView } from "./AddEditQuoteForm";
-import {
-  Center,
-  Group,
-  Pagination,
-  PaginationFirst,
-  PaginationItems,
-  PaginationLast,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationRoot,
-  Stack,
-} from "@mantine/core";
-import Link from "next/link";
+import { Stack } from "@mantine/core";
 import { QuotesPagination } from "./pagination";
+
+export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 25;
 

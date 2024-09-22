@@ -9,7 +9,7 @@ import { z } from "zod";
 import { authenticateSocket, isServerSocket } from "./auth";
 import { env, validateEnv } from "../lib/env.js";
 import { readFileSync } from "node:fs";
-import slackApiConnection from "@/lib/slack/slackApiConnection";
+import slackApiConnection from "../lib/slack/slackApiConnection";
 
 const dev = env.NODE_ENV !== "production";
 const doSSL = env.DEV_SSL === "true";
