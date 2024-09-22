@@ -70,6 +70,7 @@ pipeline {
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}")
         ], wait: true
         deployPreview action: 'cleanup'
+        deployPreview action: 'cleanupMerge'
         sh "nomad alloc exec -task calendar-dev -job calendar-dev npx -y prisma migrate deploy --schema lib/db/schema.prisma"
       }
     }
