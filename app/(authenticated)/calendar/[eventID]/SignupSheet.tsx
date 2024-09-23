@@ -43,7 +43,7 @@ import {
 } from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
 import { TbCalendarCheck } from "react-icons/tb";
 import dayjs from "dayjs";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWebsocket } from "@/components/WebsocketProvider";
 
 function SignupSheet({
@@ -58,6 +58,7 @@ function SignupSheet({
   const [sheetState, setSheetState] = useState(sheet);
 
   const { socket, isConnected, transport } = useWebsocket();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     async function onSheetUpdate(value: any) {
@@ -65,6 +66,9 @@ function SignupSheet({
 
       if (res) {
         setSheetState(res);
+        await queryClient.invalidateQueries({
+          queryKey: ["clashes", sheet.signup_id],
+        });
       }
     }
 
@@ -300,9 +304,11 @@ export function MyRoleSignUpModal({
   buttonless?: boolean;
 }) {
   const clashes = useQuery({
-    queryKey: ["clashes", crew.crew_id],
-    queryFn: () => checkRoleClashes(crew.crew_id),
+    queryKey: ["clashes", crew.signup_id],
+    queryFn: () => checkRoleClashes(crew.signup_id),
+    refetchOnMount: false,
   });
+  const queryClient = useQueryClient();
 
   const [acceptClashes, setAcceptClashes] = useState<boolean>(false);
 
@@ -330,6 +336,9 @@ export function MyRoleSignUpModal({
                     setError(res.errors!.root as string);
                     return;
                   }
+                  queryClient.invalidateQueries({
+                    queryKey: ["clashes", crew.signup_id],
+                  });
                   onSuccess();
                 });
               }}
@@ -370,6 +379,9 @@ export function MyRoleSignUpModal({
                       setError(res.errors!.root as string);
                       return;
                     }
+                    queryClient.invalidateQueries({
+                      queryKey: ["clashes", crew.signup_id],
+                    });
                     onSuccess();
                   });
                 }}

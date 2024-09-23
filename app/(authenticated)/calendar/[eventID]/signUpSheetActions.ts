@@ -298,15 +298,10 @@ export const removeSelfFromRole = wrapServerAction(
 export const checkRoleClashes = wrapServerAction(
   "checkRoleClashes",
   async function checkRoleClashes(
-    crewID: number,
+    sheetID: number,
   ): Promise<Calendar.SignUpSheetWithEvent[]> {
     const me = await getCurrentUser();
-    const crewRole = await Calendar.getCrewRole(crewID);
-
-    if (!crewRole) return [];
-    const sheet = crewRole.signup_sheets;
-
-    const clashes = await Calendar.getClashingSheets(me, sheet);
+    const clashes = await Calendar.getClashingSheets(me, sheetID);
 
     return clashes;
   },
