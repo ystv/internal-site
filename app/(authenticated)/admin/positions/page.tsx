@@ -1,10 +1,11 @@
-import * as Sentry from "@sentry/nextjs";
 import { PositionView } from "./PositionView";
 import { fetchPositions } from "@/features/positions";
 import { searchParamsSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { validateSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
+
+export const dynamic = "force-dynamic";
 
 export default async function PositionPage({
   searchParams,

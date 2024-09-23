@@ -1,6 +1,8 @@
 import { Button, Card, Stack } from "@mantine/core";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default function AdminPage() {
   return (
     <Card>

@@ -2,7 +2,7 @@
 
 import { FormResponse } from "@/components/Form";
 import { getUserName } from "@/components/UserHelpers";
-import { UserWithIdentitiesRoles, giveUserRoleSchema } from "@/features/people";
+import { UserWithIdentitiesRoles } from "@/features/people";
 import {
   Stack,
   Card,
@@ -26,6 +26,7 @@ import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { editUserSchema } from "./schema";
 import { EditUserForm } from "./EditUserForm";
+import { giveUserRoleSchema } from "@/features/people/schema";
 
 export function AdminUserView(props: {
   user: UserWithIdentitiesRoles;

@@ -12,11 +12,7 @@ import { prisma } from "@/lib/db";
 import { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-
-export const giveUserRoleSchema = z.object({
-  user_id: z.number(),
-  role_id: z.number(),
-});
+import { giveUserRoleSchema } from "./schema";
 
 export async function giveUserRole(data: unknown): Promise<FormResponse> {
   await requirePermission("Admin.Users");

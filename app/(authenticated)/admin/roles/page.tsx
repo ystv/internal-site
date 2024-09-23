@@ -6,6 +6,8 @@ import { getSearchParamsString } from "@/lib/searchParams/util";
 import { fetchRolesAction } from "./actions";
 import { Stack, Text } from "@mantine/core";
 
+export const dynamic = "force-dynamic";
+
 export default async function PositionPage({
   searchParams,
 }: {
