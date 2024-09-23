@@ -1,3 +1,5 @@
+"use server";
+
 import {
   createRoleSchema,
   deleteRoleSchema,
@@ -17,7 +19,6 @@ export const giveUserRoleSchema = z.object({
 });
 
 export async function giveUserRole(data: unknown): Promise<FormResponse> {
-  "use server";
   await requirePermission("Admin.Users");
 
   const user = await mustGetCurrentUser();
@@ -41,7 +42,6 @@ export async function giveUserRole(data: unknown): Promise<FormResponse> {
 }
 
 export async function removeUserRole(data: unknown): Promise<FormResponse> {
-  "use server";
   await requirePermission("Admin.Users");
 
   const user = await mustGetCurrentUser();
