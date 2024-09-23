@@ -42,7 +42,7 @@ export function UserView(props: { initialUsers: TFetchUsers }) {
     queryFn: async () => {
       const res = await fetchUsersAction(validSearchParams);
       if (!res.ok) {
-        throw new Error("An error occurred updating roles.");
+        throw new Error("An error occurred updating roles." + res.errors);
       } else {
         return res;
       }

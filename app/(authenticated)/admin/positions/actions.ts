@@ -23,8 +23,6 @@ export type TFetchPositions = {
 };
 
 export async function fetchPositionsAction(data: unknown) {
-  "use server";
-
   const safeData = searchParamsSchema.safeParse(data);
 
   if (!safeData.success) {

@@ -41,8 +41,6 @@ export async function fetchRolesAction(
 }
 
 export async function createRoleAction(data: unknown) {
-  "use server";
-
   const safeData = createRoleSchema.safeParse(data);
 
   if (!safeData.success) {
@@ -53,8 +51,6 @@ export async function createRoleAction(data: unknown) {
 }
 
 export async function updateRoleAction(data: unknown) {
-  "use server";
-
   const safeData = updateRoleSchema.safeParse(data);
 
   if (!safeData.success) {
@@ -65,8 +61,6 @@ export async function updateRoleAction(data: unknown) {
 }
 
 export async function deleteRoleAction(data: unknown) {
-  "use server";
-
   const safeData = deleteRoleSchema.safeParse(data);
 
   if (!safeData.success) {

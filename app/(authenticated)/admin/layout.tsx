@@ -1,3 +1,4 @@
+import ErrorPage from "@/components/ErrorPage";
 import { hasPermission } from "@/lib/auth/server";
 import { notFound } from "next/navigation";
 
@@ -9,6 +10,6 @@ export default async function AuthenticatedLayout({
   if (await hasPermission("Admin.Positions", "Admin.Roles", "Admin.Users")) {
     return <>{children}</>;
   } else {
-    return notFound();
+    return <ErrorPage code={403} message="Forbidden" />;
   }
 }

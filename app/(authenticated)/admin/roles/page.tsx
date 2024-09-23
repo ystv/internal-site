@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { validateSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { fetchRolesAction } from "./actions";
+import { Stack, Text } from "@mantine/core";
 
 export default async function PositionPage({
   searchParams,
@@ -22,7 +23,12 @@ export default async function PositionPage({
   const initialRolesData = await fetchRolesAction(validSearchParams);
 
   if (!initialRolesData.ok) {
-    return <>An error occurred</>;
+    return (
+      <Stack>
+        <Text>An error occurred</Text>
+        {initialRolesData.errors["root"]}
+      </Stack>
+    );
   }
 
   if (validSearchParams.page != initialRolesData.page) {

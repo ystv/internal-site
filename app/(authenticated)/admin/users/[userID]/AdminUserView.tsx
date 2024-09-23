@@ -151,9 +151,10 @@ export function AdminUserView(props: {
                                   });
                                   router.refresh();
                                 } else {
+                                  console.error(response.errors);
                                   notifications.show({
                                     color: "red",
-                                    message: `Failed to remove user from ${role.name} role.`,
+                                    message: `Failed to remove user from ${role.name} role, check the browser console for details.`,
                                   });
                                 }
                               },

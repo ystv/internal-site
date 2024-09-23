@@ -1,3 +1,4 @@
+import ErrorPage from "@/components/ErrorPage";
 import { hasPermission } from "@/lib/auth/server";
 
 export default async function AuthenticatedLayout({
@@ -8,6 +9,6 @@ export default async function AuthenticatedLayout({
   if (await hasPermission("Admin.Positions")) {
     return <>{children}</>;
   } else {
-    return <p>No permissions sorry</p>;
+    return <ErrorPage code={403} message="Forbidden" />;
   }
 }

@@ -94,6 +94,13 @@ export function PositionView(props: { initialPositions: TFetchPositions }) {
     });
   }
 
+  if (positionsQuery.isError) {
+    console.error(positionsQuery.error);
+    return (
+      <Text>An error occurred, check the browser console for details.</Text>
+    );
+  }
+
   if (!positionsQuery.isSuccess) {
     return <LoadingOverlay />;
   }

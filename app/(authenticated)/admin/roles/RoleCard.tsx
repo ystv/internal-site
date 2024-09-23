@@ -62,8 +62,10 @@ export function RoleCard(props: {
                     });
 
                     if (!deletedRole.ok) {
+                      console.error(deletedRole.errors);
                       notifications.show({
-                        message: "Unable to delete role",
+                        message:
+                          "Unable to delete role, check the browser console for details.",
                         color: "red",
                       });
                     } else {
