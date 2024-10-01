@@ -1,44 +1,27 @@
 import { App } from "@slack/bolt";
+import { env } from "../env";
 
 declare global {
-  var slack: App; // This must be a `var` and not a `let / const`
+  var slack: App | undefined; // This must be a `var` and not a `let / const`
 }
 
-let app = global.slack;
-
-function checkEnabled() {
-  if (
-    process.env.SLACK_ENABLED?.toLowerCase() === "true" &&
-    process.env.SLACK_BOT_TOKEN &&
-    process.env.SLACK_APP_TOKEN &&
-    process.env.SLACK_SIGNING_SECRET &&
-    process.env.SLACK_CLIENT_ID &&
-    process.env.SLACK_CLIENT_SECRET
-  ) {
-    return true;
-  }
-  return false;
-}
-
-export const isSlackEnabled = checkEnabled();
-
-if (!app && isSlackEnabled) {
-  app = global.slack = new App({
-    token: process.env.SLACK_BOT_TOKEN,
-    signingSecret: process.env.SLACK_SIGNING_SECRET,
-    socketMode: true,
-    appToken: process.env.SLACK_APP_TOKEN,
-    redirectUri: `${process.env.PUBLIC_URL}/login/slack/callback`,
-    installerOptions: {
-      redirectUriPath: "/login/slack/callback",
-    },
-  });
-
-  (async () => await app.start())();
-}
+export const isSlackEnabled = env.SLACK_ENABLED === "true";
 
 async function slackApiConnection() {
-  return app;
+  if (!global.slack) {
+    global.slack = new App({
+      token: env.SLACK_BOT_TOKEN,
+      signingSecret: env.SLACK_SIGNING_SECRET,
+      socketMode: true,
+      appToken: env.SLACK_APP_TOKEN,
+      redirectUri: `${env.PUBLIC_URL}/login/slack/callback`,
+      installerOptions: {
+        redirectUriPath: "/login/slack/callback",
+      },
+    });
+  }
+
+  return global.slack;
 }
 
 export default slackApiConnection;

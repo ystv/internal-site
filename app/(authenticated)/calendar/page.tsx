@@ -4,46 +4,11 @@ import { PermissionGate } from "@/components/UserContext";
 import { listEvents, listVacantEvents } from "@/features/calendar/events";
 import { Alert, Button } from "@mantine/core";
 import { Permission } from "@/lib/auth/permissions";
-import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
-import { TbArticle, TbCalendarEvent, TbClipboardList } from "react-icons/tb";
+import { mustGetCurrentUser } from "@/lib/auth/server";
+import { TbArticle, TbCalendarEvent } from "react-icons/tb";
 import invariant from "@/lib/invariant";
-import { add, set, setDay } from "date-fns";
-import { hasWrapped } from "../wrapped/util";
+import { add, setDay } from "date-fns";
 import { Suspense } from "react";
-
-async function WrappedBanner() {
-  const user = await mustGetCurrentUser();
-  if (!hasWrapped(user.email)) {
-    return null;
-  }
-  return (
-    <Alert
-      styles={{
-        root: {
-          backgroundColor: "black",
-        },
-        body: {
-          background: `linear-gradient(90deg, #dd4602, #e3830a, #2a8323, #008397, #2847cd, #7722a6, #aa006d)`,
-          // @ts-expect-error lolcss
-          "-webkit-background-clip": "text",
-          backgroundClip: "text",
-          "-webkit-text-fill-color": "transparent",
-          textFillColor: "transparent",
-        },
-        // message: {
-        //   background: `linear-gradient(90deg, #dd4602, #e3830a, #2a8323, #008397, #2847cd, #7722a6, #aa006d)`,
-        //   "-webkit-background-clip": "text",
-        //   "-webkit-text-fill-color": "transparent",
-        // },
-      }}
-      title="YSTV Wrapped"
-    >
-      <Link href="/wrapped" style={{ WebkitTextFillColor: "white" }}>
-        Your YSTV Wrapped for 2023/24 is available. <strong>Watch now</strong>
-      </Link>
-    </Alert>
-  );
-}
 
 function dateRangeForView(
   year: number,
@@ -102,7 +67,7 @@ export default async function CalendarPage({
   const day = searchParams.day ? parseInt(searchParams.day, 10) : now.getDate();
   const selectedDay = new Date(year, month, day);
 
-  const me = await getCurrentUser();
+  const me = await mustGetCurrentUser();
 
   const filter = searchParams.filter;
 
@@ -133,15 +98,12 @@ export default async function CalendarPage({
     "Calendar.Meeting.Creator",
     "Calendar.Social.Admin",
     "Calendar.Social.Creator",
-    "Calendar.Show.Admin",
-    "Calendar.Social.Creator",
+    "Calendar.Public.Admin",
+    "Calendar.Public.Creator",
   ];
 
   return (
     <>
-      <Suspense fallback={null}>
-        <WrappedBanner />
-      </Suspense>
       {vacantEventsCount > 0 && (
         <Alert
           variant={"outline"}

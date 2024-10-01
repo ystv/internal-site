@@ -1,14 +1,16 @@
 import SignupSheetUpdateInput = Prisma.SignupSheetUpdateInput;
 import { prisma } from "@/lib/db";
-import { Event, Prisma } from "@prisma/client";
+import { Event, Prisma, SignupSheet } from "@prisma/client";
 import { CrewPositionType } from "@/features/calendar/crew_positions";
 import { omit } from "lodash";
 import { ExposedUser } from "@/features/people";
 import invariant from "@/lib/invariant";
+import { UserType } from "@/lib/auth/server";
 
 export interface CrewType {
   crew_id: number;
   position_id: number;
+  signup_id: number;
   positions: CrewPositionType;
   ordering: number;
   locked: boolean;
@@ -278,4 +280,89 @@ export async function removeUserFromRole(
     }
     throw e;
   }
+}
+
+export async function getCrewRole(crewID: number) {
+  return prisma.crew.findFirst({
+    where: {
+      crew_id: crewID,
+    },
+    include: {
+      signup_sheets: {
+        include: {
+          events: true,
+        },
+      },
+    },
+  });
+}
+
+export async function getClashingSheets(
+  user: UserType,
+  sheetOrID: SignupSheet | number,
+) {
+  let sheet;
+  if (typeof sheetOrID === "number") {
+    sheet = await getSignUpSheet(sheetOrID);
+  } else {
+    sheet = sheetOrID;
+  }
+  invariant(sheet, `Sheet ${sheetOrID} not found`);
+  const clashingSheets = await prisma.signupSheet.findMany({
+    where: {
+      AND: [
+        {
+          crews: {
+            some: {
+              user_id: user.user_id,
+            },
+          },
+        },
+        {
+          OR: [
+            {
+              arrival_time: {
+                gte: sheet.arrival_time,
+                lte: sheet.end_time,
+              },
+            },
+            {
+              end_time: {
+                gte: sheet.arrival_time,
+                lte: sheet.end_time,
+              },
+            },
+            {
+              AND: [
+                {
+                  arrival_time: {
+                    lte: sheet.arrival_time,
+                  },
+                },
+                {
+                  end_time: {
+                    gte: sheet.end_time,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    include: {
+      events: true,
+      crews: {
+        include: {
+          positions: true,
+          users: true,
+        },
+        where: {
+          user_id: user.user_id,
+        },
+      },
+    },
+  });
+
+  return clashingSheets;
 }

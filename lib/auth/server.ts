@@ -8,8 +8,10 @@ import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
-import { cookies } from "next/headers";
 import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
+import { env } from "../env";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { cache } from "react";
 
 export interface UserWithIdentities extends User {
   identities: Identity[];
@@ -19,23 +21,25 @@ export type UserType = UserWithIdentities & {
   permissions: Permission[];
 };
 
-async function resolvePermissionsForUser(userID: number) {
-  const result = await prisma.rolePermission.findMany({
-    where: {
-      roles: {
-        role_members: {
-          some: {
-            user_id: userID,
+const resolvePermissionsForUser = cache(
+  async function resolvePermissionsForUser(userID: number) {
+    const result = await prisma.rolePermission.findMany({
+      where: {
+        roles: {
+          role_members: {
+            some: {
+              user_id: userID,
+            },
           },
         },
       },
-    },
-    select: {
-      permission: true,
-    },
-  });
-  return result.map((r) => r.permission as Permission);
-}
+      select: {
+        permission: true,
+      },
+    });
+    return result.map((r) => r.permission as Permission);
+  },
+);
 
 /**
  * Ensures that the currently signed-in user has at least one of the given permissions,
@@ -54,17 +58,25 @@ const sessionSchema = z.object({
 });
 
 async function getSession(req?: NextRequest) {
+  var sessionID: RequestCookie | undefined;
   if (req) {
-    const sessionID = req.cookies.get(cookieName);
-    if (!sessionID) return null;
-    if (sessionID.value == "") return null;
-    return sessionSchema.parse(await decode(sessionID.value));
+    sessionID = req.cookies.get(cookieName);
+  } else {
+    const { cookies } = await import("next/headers");
+    sessionID = cookies().get(cookieName);
   }
-  const { cookies } = await import("next/headers");
-  const sessionID = cookies().get(cookieName);
   if (!sessionID) return null;
   if (sessionID.value == "") return null;
-  return sessionSchema.parse(await decode(sessionID.value));
+
+  // If there's an error decoding the sessionToken, pretend it doesn't exist
+  // and force a new login to take place in some cases
+  var decodedSession: unknown;
+  try {
+    decodedSession = await decode(sessionID.value);
+  } catch (e) {
+    return null;
+  }
+  return sessionSchema.parse(decodedSession);
 }
 
 async function setSession(user: z.infer<typeof sessionSchema>) {
@@ -73,37 +85,16 @@ async function setSession(user: z.infer<typeof sessionSchema>) {
   cookies().set(cookieName, payload, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    domain: process.env.COOKIE_DOMAIN,
+    secure: env.NODE_ENV === "production",
+    domain: env.COOKIE_DOMAIN,
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
 }
 
-async function clearSession() {
-  const { cookies } = await import("next/headers");
-
-  await cookies().delete(cookieName);
-  await cookies().delete("g_csrf_token");
-}
-
-export async function getCurrentUserOrNull(
-  req?: NextRequest,
-): Promise<UserType | string> {
-  let session;
-  try {
-    session = await getSession(req);
-  } catch (e) {
-    return String(e);
-  }
-  if (!session) {
-    return "No session";
-  }
-  // This is fairly expensive (two DB calls per every page load). If this starts
-  // to become a problem, we should consider caching.
-  // (See below for why we don't store the user object in the session.)
+const getUser = cache(async function _getUser(id: number) {
   const user = await prisma.user.findUnique({
-    where: { user_id: session.userID },
+    where: { user_id: id },
     include: {
       identities: {
         where: {
@@ -123,6 +114,21 @@ export async function getCurrentUserOrNull(
     identities: Identity[];
   };
   return userType;
+});
+
+export async function getCurrentUserOrNull(
+  req?: NextRequest,
+): Promise<UserType | string> {
+  let session;
+  try {
+    session = await getSession(req);
+  } catch (e) {
+    return String(e);
+  }
+  if (!session) {
+    return "No session";
+  }
+  return getUser(session.userID);
 }
 
 export async function getCurrentUser(req?: NextRequest): Promise<UserType> {
@@ -139,6 +145,19 @@ export async function mustGetCurrentUser(req?: NextRequest): Promise<UserType> {
     redirect("/login?error=" + encodeURIComponent(userOrError));
   }
   return userOrError;
+}
+
+// Redirects if there is a user logged in already
+export async function ensureNoActiveSession(
+  loginRedirect?: string,
+): Promise<void> {
+  const session = await getSession();
+  if (session) {
+    var url = new URL(loginRedirect ?? "/", env.PUBLIC_URL!);
+
+    if (!url.href.startsWith(env.PUBLIC_URL!)) url = new URL(env.PUBLIC_URL!);
+    redirect(url.href);
+  }
 }
 
 /**
@@ -186,12 +205,4 @@ export async function loginOrCreateUserSlack(rawSlackToken: SlackTokenJson) {
   // It also makes the session token shorter.
   await setSession({ userID: user.user_id });
   return userType;
-}
-
-export async function logout() {
-  await clearSession();
-  const url = new URL("/login", process.env.PUBLIC_URL!);
-  return NextResponse.redirect(url, {
-    status: 303,
-  });
 }

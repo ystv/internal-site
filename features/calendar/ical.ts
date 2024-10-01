@@ -7,6 +7,7 @@ import { Prisma } from "@prisma/client";
 import { preferenceDefaults } from "../people";
 import { EventObjectType, listEvents } from "./events";
 import { add } from "date-fns";
+import { env } from "@/lib/env";
 
 export function encodeUserID(userID: number) {
   return encode({ userID });
@@ -51,7 +52,7 @@ export async function generateICalFeedForUser(userID: number) {
       end: evt.end_date,
       description: evt.description,
       location: evt.location,
-      url: `${process.env.PUBLIC_URL}/calendar/${evt.event_id}`,
+      url: `${env.PUBLIC_URL}/calendar/${evt.event_id}`,
       status: evt.is_cancelled
         ? ICalEventStatus.CANCELLED
         : evt.is_tentative

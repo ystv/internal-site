@@ -19,7 +19,7 @@ pipeline {
           if (env.BRANCH_NAME != 'main') {
             imageNamePrefix = "${env.BRANCH_NAME}-"
           }
-          imageTag = "${imageNamePrefix}${env.BUILD_NUMBER}"
+          imageTag = "${imageNamePrefix.replace('/', '--')}${env.BUILD_NUMBER}"
         }
       }
     }
@@ -31,7 +31,7 @@ pipeline {
         sh """docker build \\
           --build-arg GIT_REV=${env.GIT_COMMIT} \\
           --build-arg VERSION=${env.TAG_NAME ?: 'v0.0.0'} \\
-          --build-arg SENTRY_AUTH_TOKEN=\$SENTRY_AUTH_TOKEN \\
+          --secret id=sentry-auth-token,env=SENTRY_AUTH_TOKEN \\
           -t registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}\\
           .
         """
@@ -70,6 +70,8 @@ pipeline {
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}")
         ], wait: true
         deployPreview action: 'cleanup'
+        deployPreview action: 'cleanupMerge'
+        sh "nomad alloc exec -task calendar-dev -job calendar-dev npx -y prisma migrate deploy --schema lib/db/schema.prisma"
       }
     }
 
@@ -82,7 +84,8 @@ pipeline {
         build job: 'Deploy Nomad Job', parameters: [
           string(name: 'JOB_FILE', value: 'calendar-prod.nomad'),
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/calendar2023:${imageTag}")
-        ]
+        ], wait: true
+        sh "nomad alloc exec -task calendar-prod -job calendar-prod npx -y prisma migrate deploy --schema lib/db/schema.prisma"
       }
     }
   }

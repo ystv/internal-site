@@ -18,7 +18,7 @@ export function SearchBar(props: {
       props.onChange(searchQueryState);
     }, props.delay ?? 500);
     return () => clearTimeout(delayInputTimeoutId);
-  }, [searchQueryState, props.delay]);
+  }, [searchQueryState, props]);
 
   const isSearchEmpty = searchQueryState == "";
 

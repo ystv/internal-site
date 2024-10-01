@@ -3,10 +3,21 @@ import { notFound } from "next/navigation";
 import { createHash } from "node:crypto";
 import { hasWrapped } from "./util";
 
-export default async function WrappedPage() {
+export default async function WrappedPage({
+  searchParams,
+}: {
+  searchParams: { year?: string };
+}) {
   const user = await mustGetCurrentUser();
 
-  if (!hasWrapped(user.email)) {
+  if (
+    !hasWrapped(
+      user.email,
+      searchParams.year
+        ? parseInt(searchParams.year, 10)
+        : new Date().getFullYear(),
+    )
+  ) {
     notFound();
   }
   const emailHash = createHash("sha256").update(user.email).digest("hex");

@@ -1,4 +1,5 @@
 import makeFetchCookie from "fetch-cookie";
+import { env } from "../env";
 
 const fetchCookie = makeFetchCookie(fetch);
 
@@ -18,7 +19,7 @@ export async function makeRequest(
   params?: Record<string, string>,
   shouldRetryOnAuthFail = true,
 ): Promise<unknown> {
-  let url = process.env.ADAMRMS_BASE + "/api" + endpoint;
+  let url = env.ADAMRMS_BASE + "/api" + endpoint;
   const init: RequestInit = {
     method,
     headers: {},
@@ -50,8 +51,8 @@ export async function login() {
     "/login/login.php",
     "POST",
     {
-      formInput: process.env.ADAMRMS_EMAIL!,
-      password: process.env.ADAMRMS_PASSWORD!,
+      formInput: env.ADAMRMS_EMAIL!,
+      password: env.ADAMRMS_PASSWORD!,
     },
     false,
   );

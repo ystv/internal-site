@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { removeSlackLink } from "@/features/people";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import slackApiConnection, {
@@ -50,12 +51,17 @@ export default async function SlackUserInfo({
           <SlackLogoutButton
             action={async () => {
               "use server";
-              const removeSuccess = await removeSlackLink(cal_user.user_id);
-              if (removeSuccess) {
-                redirect("/user/me");
-              } else {
-                return false;
-              }
+              return Sentry.withServerActionInstrumentation(
+                "SlackUserInfo.logOut",
+                async () => {
+                  const removeSuccess = await removeSlackLink(cal_user.user_id);
+                  if (removeSuccess) {
+                    redirect("/user/me");
+                  } else {
+                    return false;
+                  }
+                },
+              );
             }}
           />
         </Group>

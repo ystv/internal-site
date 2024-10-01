@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { getSlackUserInfo } from "@/lib/auth/slack";
 import {
   getCurrentUserOrNull,
   loginOrCreateUserSlack,
 } from "@/lib/auth/server";
+import { env } from "@/lib/env";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const searchParams = req.nextUrl.searchParams;
   const code = searchParams.get("code");
+  const redirect = searchParams.get("redirect");
 
   if (typeof code !== "string" || code === null) {
     return new NextResponse(
@@ -19,11 +22,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const slackUserInfo = await getSlackUserInfo(code);
+  const slackUserInfo = await getSlackUserInfo(code, redirect);
   let user = await getCurrentUserOrNull(req);
   user = await loginOrCreateUserSlack(slackUserInfo);
 
-  const url = new URL("/user/me", process.env.PUBLIC_URL!);
+  var url = new URL(redirect ?? "/user/me", env.PUBLIC_URL!);
+
+  if (!url.href.startsWith(env.PUBLIC_URL!)) url = new URL(env.PUBLIC_URL!);
+
   return NextResponse.redirect(url, {
     status: 303,
   });

@@ -1,15 +1,7 @@
 "use client";
 
-import {
-  PaginationRoot,
-  PaginationFirst,
-  PaginationPrevious,
-  PaginationItems,
-  PaginationNext,
-  PaginationLast,
-  Group,
-} from "@mantine/core";
-import Link from "next/link";
+import { Pagination } from "@mantine/core";
+import { useRouter } from "next/navigation";
 
 export function QuotesPagination({
   page,
@@ -20,40 +12,19 @@ export function QuotesPagination({
   total: number;
   pageSize: number;
 }) {
+  const router = useRouter();
+
   const totalPages = Math.ceil(total / pageSize);
   return (
-    <PaginationRoot
-      total={totalPages}
-      value={page}
-      getItemProps={(page) => ({
-        component: Link,
-        href: `/quotes?page=${page}`,
-      })}
-    >
-      <Group gap={5}>
-        {page > 1 && (
-          <>
-            <PaginationFirst component={Link} href="/quotes?page=1" />
-            <PaginationPrevious
-              component={Link}
-              href={`/quotes?page=${page - 1}`}
-            />
-          </>
-        )}
-        {totalPages > 1 && <PaginationItems />}
-        {page < totalPages && (
-          <>
-            <PaginationNext
-              component={Link}
-              href={`/quotes?page=${page + 1}`}
-            />
-            <PaginationLast
-              component={Link}
-              href={`/quotes?page=${Math.ceil(totalPages)}`}
-            />
-          </>
-        )}
-      </Group>
-    </PaginationRoot>
+    <>
+      <Pagination
+        total={totalPages}
+        value={page}
+        withEdges
+        onChange={(page) => {
+          router.push(`/quotes?page=${page}`);
+        }}
+      />
+    </>
   );
 }

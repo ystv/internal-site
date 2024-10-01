@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import { mustGetCurrentUser } from "../server";
 import invariant from "@/lib/invariant";
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 
 export type SlackTokenJson = {
   iss: string;
@@ -24,21 +25,22 @@ export type SlackTokenJson = {
   picture: string;
 };
 
-export async function getSlackUserInfo(code: string) {
+export async function getSlackUserInfo(code: string, redirect?: string | null) {
   invariant(isSlackEnabled, "Slack is not enabled");
   const slackApp = await slackApiConnection();
   const tokenResponse = await slackApp.client.openid.connect.token({
-    client_id: process.env.SLACK_CLIENT_ID || "",
-    client_secret: process.env.SLACK_CLIENT_SECRET || "",
+    client_id: env.SLACK_CLIENT_ID || "",
+    client_secret: env.SLACK_CLIENT_SECRET || "",
     code: code,
-    redirect_uri: `${process.env.PUBLIC_URL}/login/slack/callback`,
+    redirect_uri: `${env.PUBLIC_URL}/login/slack/callback${
+      redirect ? "?redirect=" + redirect : ""
+    }`,
   });
   const token = jwtDecode(tokenResponse.id_token!) as SlackTokenJson;
   return token;
 }
 
 export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
-  console.log(userInfo["email"]);
   const user = await prisma.user.findFirst({
     where: {
       OR: [
@@ -84,7 +86,6 @@ export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
       first_name: userInfo.given_name!,
       last_name: userInfo.family_name!,
       email: userInfo.email!,
-      username: userInfo.email!.split("@")[0],
       avatar: userInfo.picture!,
       identities: {
         create: {

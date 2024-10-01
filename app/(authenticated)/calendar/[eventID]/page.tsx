@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import invariant from "@/lib/invariant";
 import { getUserName } from "@/components/UserHelpers";
-import { getCurrentUser, UserType } from "@/lib/auth/server";
+import { mustGetCurrentUser, UserType } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/(authenticated)/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { SignupSheetsView } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
@@ -95,7 +95,7 @@ async function CheckWithTechPrompt({
   event: EventObjectType;
   me: UserType;
 }) {
-  if (me.user_id !== event.host) {
+  if (!canManageAnySignupSheet(event, me)) {
     return null;
   }
   if (event.adam_rms_project_id || event.check_with_tech_status) {
@@ -152,7 +152,7 @@ async function SlackBanner(props: { event: EventObjectType }) {
   if (!props.event.slack_channel_id) {
     return null;
   }
-  const me = await getCurrentUser();
+  const me = await mustGetCurrentUser();
   if (me.identities.find((x) => x.provider === "slack")) {
     return null;
   }
@@ -168,7 +168,7 @@ async function SlackBanner(props: { event: EventObjectType }) {
       This event has a Slack channel: #{channelInfo.channel?.name}.&nbsp;
       Connect your Slack account to join it automatically.
       <br />
-      <SlackLoginButton />
+      <SlackLoginButton slackClientID={process.env.SLACK_CLIENT_ID!} />
     </Alert>
   );
 }
@@ -183,7 +183,7 @@ export default async function EventPage({
     notFound();
   }
 
-  const me = await getCurrentUser();
+  const me = await mustGetCurrentUser();
   let allMembers;
   if (canManage(event, me)) {
     allMembers = await getAllUsers();
@@ -214,6 +214,17 @@ export default async function EventPage({
         <Suspense fallback={null}>
           <SlackBanner event={event} />
         </Suspense>
+      )}
+      {event.event_type === "public" && canManageAnySignupSheet(event, me) && (
+        <Alert
+          variant="light"
+          color="orange"
+          icon={<TbAlertTriangle />}
+          title="Public Event"
+        >
+          This event is public. Its details can be seen by anyone outside YSTV{" "}
+          and any changes are immediately published.
+        </Alert>
       )}
       <div
         className={

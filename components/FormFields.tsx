@@ -329,14 +329,14 @@ export function ConditionalField<
 >(props: {
   referencedFieldName: TField;
   condition: (data: TSchema[TField]) => boolean;
-  childFieldName: string;
+  childFieldName?: string;
   children: ReactNode;
 }) {
   const ctx = useFormContext<TSchema>();
   const referencedField = ctx.watch(props.referencedFieldName);
   const shouldShow = props.condition(referencedField);
   useEffect(() => {
-    if (!shouldShow) {
+    if (!shouldShow && props.childFieldName) {
       // @ts-expect-error - otherwise you get errors if referencedFieldName and childFieldName don't match
       ctx.setValue(props.childFieldName, undefined as any);
     }
