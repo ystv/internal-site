@@ -7,6 +7,7 @@ export function SearchBar(props: {
   onChange: (query: string | undefined) => void;
   delay?: number;
   label?: string;
+  description?: string;
   withClear?: boolean;
 }) {
   const [searchQueryState, setSearchQueryState] = useState<string>(
@@ -25,6 +26,7 @@ export function SearchBar(props: {
   return (
     <TextInput
       label={props.label ?? "Search"}
+      description={props.description}
       rightSection={
         props.withClear && (
           <Tooltip label={"Clear search"} disabled={isSearchEmpty}>

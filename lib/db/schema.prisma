@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions", "tracing"]
+  previewFeatures = ["postgresqlExtensions", "tracing", "fullTextSearch"]
 }
 
 generator json {
