@@ -66,8 +66,8 @@ async function AttendeesView({
                 <td className={"text-sm"}>
                   {att.attend_status in AttendStatusLabels
                     ? AttendStatusLabels[
-                        att.attend_status as keyof typeof AttendStatusLabels
-                      ]
+                    att.attend_status as keyof typeof AttendStatusLabels
+                    ]
                     : AttendStatusLabels.unknown}
                 </td>
               </>
@@ -214,17 +214,6 @@ export default async function EventPage({
         <Suspense fallback={null}>
           <SlackBanner event={event} />
         </Suspense>
-      )}
-      {event.event_type === "public" && canManageAnySignupSheet(event, me) && (
-        <Alert
-          variant="light"
-          color="orange"
-          icon={<TbAlertTriangle />}
-          title="Public Event"
-        >
-          This event is public. Its details can be seen by anyone outside YSTV{" "}
-          and any changes are immediately published.
-        </Alert>
       )}
       <div
         className={
