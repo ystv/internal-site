@@ -3,7 +3,6 @@ import { User } from "@prisma/client";
 import { editUserSchema } from "./schema";
 import { TextField } from "@/components/FormFields";
 import { z } from "zod";
-import { useRouter } from "next/router";
 
 export function EditUserForm(props: {
   user: User;
@@ -23,7 +22,7 @@ export function EditUserForm(props: {
       onSuccess={props.onSuccess}
     >
       <TextField name="first_name" label="First Name" required />
-      <TextField name="nickname" label="Nick Name" required />
+      <TextField name="nickname" label="Nickname" />
       <TextField name="last_name" label="Last Name" required />
     </Form>
   );
