@@ -205,3 +205,12 @@ model EquipmentListTemplate {
 
   @@map("equipment_list_templates")
 }
+
+model WebcamFeed {
+  webcam_id  Int    @id @default(autoincrement())
+  full_name  String
+  identifier String @unique
+  stream_url String
+
+  @@map("webcam_feeds")
+}

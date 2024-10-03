@@ -26,5 +26,7 @@ export const PermissionEnum = z.enum([
   "Admin.Users",
   "Admin.Roles",
   "Admin.Positions",
+  "Webcams.Manage",
+  "Webcams.View",
 ]);
 export type Permission = z.infer<typeof PermissionEnum>;
