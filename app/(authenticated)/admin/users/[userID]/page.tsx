@@ -1,4 +1,3 @@
-import { getUserName } from "@/components/UserHelpers";
 import {
   editUserAdmin,
   fetchUserForAdmin,
@@ -6,7 +5,6 @@ import {
   giveUserRole,
   removeUserRole,
 } from "@/features/people";
-import { Avatar, Card, Group, Space, Stack, Text } from "@mantine/core";
 import { z } from "zod";
 import { AdminUserView } from "./AdminUserView";
 
