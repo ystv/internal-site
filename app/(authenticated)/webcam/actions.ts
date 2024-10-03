@@ -16,7 +16,7 @@ import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/lib/auth/server";
 
 export async function addWebcam(unsafeData: unknown): Promise<FormResponse> {
-  requirePermission("ManageWebcams");
+  await requirePermission("Webcams.Manage");
 
   const parsedData = await addWebcamSchema.safeParseAsync(unsafeData);
 
@@ -34,7 +34,7 @@ export async function addWebcam(unsafeData: unknown): Promise<FormResponse> {
 }
 
 export async function editWebcam(unsafeData: unknown): Promise<FormResponse> {
-  requirePermission("ManageWebcams");
+  await requirePermission("Webcams.Manage");
 
   const parsedData = await editWebcamSchema.safeParseAsync(unsafeData);
 
@@ -52,7 +52,7 @@ export async function editWebcam(unsafeData: unknown): Promise<FormResponse> {
 }
 
 export async function removeWebcam(unsafeData: unknown): Promise<FormResponse> {
-  requirePermission("ManageWebcams");
+  await requirePermission("Webcams.Manage");
 
   const parsedData = await removeWebcamSchema.safeParseAsync(unsafeData);
 

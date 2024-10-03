@@ -210,7 +210,7 @@ model WebcamFeed {
   webcam_id   Int     @id @default(autoincrement())
   full_name   String
   identifier  String  @unique
-  hls_url     String
+  stream_url     String
 
   @@map("webcam_feeds")
 }

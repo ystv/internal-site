@@ -1,31 +1,45 @@
 "use client";
 
-import ReactHlsPlayer from "react-hls-player";
-import HLSPlayer from "./HlsPlayer";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import MuxVideo from "@mux/mux-video-react";
+import { Box, LoadingOverlay } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
 export function WebcamView(props: {
   webcamUrl: string;
   width?: string | number;
+  parentHeight?: number;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
+
+  const [videoReady, { open: setReady, close: setUnready }] =
+    useDisclosure(false);
+
+  useEffect(() => {
+    if (ref.current?.readyState === 4) {
+      setReady();
+    } else {
+      setUnready();
+    }
+  }, [ref.current?.readyState, setReady, setUnready]);
+
   return (
     <>
-      <HLSPlayer
-        manifest={props.webcamUrl}
-        autoPlay
-        playsInline
-        muted
-        width={props.width || 400}
-      />
-      {/* <ReactHlsPlayer
+      <Box pos={"relative"}>
+        <LoadingOverlay
+          visible={!videoReady}
+          w={props.width}
+          h={props.parentHeight}
+        />
+      </Box>
+      <MuxVideo
         src={props.webcamUrl}
-        playerRef={ref}
-        muted
         autoPlay
         playsInline
+        muted
         width={props.width || 400}
-      /> */}
+        ref={ref}
+      />
     </>
   );
 }

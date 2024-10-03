@@ -46,7 +46,7 @@ export function WebcamCreateForm(props: {
             placeholder="studiocam1"
           />
           <TextField
-            name="hls_url"
+            name="stream_url"
             label="HLS URL"
             placeholder="https://example.com/studiocam1.m3u8"
           />
@@ -69,7 +69,7 @@ export function WebcamEditForm(props: {
         <Form
           schema={editWebcamSchema}
           action={props.edit}
-          submitLabel="Edit Webcam"
+          submitLabel="Update Webcam"
           onSuccess={() => {
             closeModal();
             notifications.show({
@@ -90,9 +90,9 @@ export function WebcamEditForm(props: {
             placeholder="studiocam1"
           />
           <TextField
-            name="hls_url"
-            label="HLS URL"
-            placeholder="https://example.com/studiocam1.m3u8"
+            name="stream_url"
+            label="Stream URL"
+            placeholder="http://go2rtc/api/stream.mp4?src=studiocam1"
           />
         </Form>
       </Modal>

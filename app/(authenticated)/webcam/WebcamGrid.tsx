@@ -12,18 +12,9 @@ import { z } from "zod";
 import { FormResponse } from "@/components/Form";
 import { WebcamCreateForm, WebcamEditForm, WebcamRemoveForm } from "./form";
 import { addWebcam } from "./actions";
-import {
-  ActionIcon,
-  Card,
-  Grid,
-  Group,
-  Stack,
-  Text,
-  Tooltip,
-} from "@mantine/core";
+import { Card, Grid, Group, Stack, Text } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
 import { PermissionGate } from "@/components/UserContext";
-import { FaEdit } from "react-icons/fa";
 
 export function WebcamGrid(props: {
   webcams: Promise<WebcamFeed[]>;
@@ -37,9 +28,11 @@ export function WebcamGrid(props: {
 
   return (
     <>
-      <WebcamCreateForm create={addWebcam} />
+      <PermissionGate required={"Webcams.Manage"}>
+        <WebcamCreateForm create={addWebcam} />
+      </PermissionGate>
       {webcamFeeds.length > 0 ? (
-        <Grid>
+        <Grid w={"100%"}>
           {webcamFeeds.map((feed) => (
             <WebcamGridCol
               feed={feed}
@@ -50,7 +43,7 @@ export function WebcamGrid(props: {
           ))}
         </Grid>
       ) : (
-        <>No Webcams added yet, try adding one using the button above.</>
+        <>No Webcams added yet.</>
       )}
     </>
   );
@@ -67,16 +60,20 @@ function WebcamGridCol(props: {
 
   return (
     <Grid.Col span={{ base: 12, sm: 6 }}>
-      <Card withBorder w={"auto"}>
+      <Card withBorder w={"100%"}>
         <Stack>
           <Text size="xl" fw={700}>
             {props.feed.full_name}
           </Text>
-          <Card.Section ref={ref}>
-            <WebcamView webcamUrl={props.feed.hls_url} width={width} />
+          <Card.Section ref={ref} className="w-100%">
+            <WebcamView
+              webcamUrl={props.feed.stream_url}
+              width={width}
+              parentHeight={height}
+            />
           </Card.Section>
           <Group>
-            <PermissionGate required={"ManageWebcams"}>
+            <PermissionGate required={"Webcams.Manage"}>
               <WebcamEditForm webcam={props.feed} edit={props.editWebcam} />
               <WebcamRemoveForm
                 webcam={props.feed}

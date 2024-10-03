@@ -20,7 +20,7 @@ export async function editWebcamFeed(data: z.infer<typeof editWebcamSchema>) {
     data: {
       full_name: data.full_name,
       identifier: data.identifier,
-      hls_url: data.hls_url,
+      stream_url: data.stream_url,
     },
   });
 }
