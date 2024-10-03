@@ -14,6 +14,7 @@ export default async function GoogleSignInPage(props: {
   await ensureNoActiveSession(props.searchParams.redirect);
 
   invariant(env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID not set");
+
   return (
     <div className="relative block h-full w-full">
       <Image

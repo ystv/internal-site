@@ -1,9 +1,14 @@
 "use server";
 
-import { createPositionSchema } from "@/app/(authenticated)/(superuser)/admin/positions/schema";
+import {
+  createPositionSchema,
+  deletePositionSchema,
+  updatePositionSchema,
+} from "@/app/(authenticated)/admin/positions/schema";
 import { FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { wrapServerAction } from "@/lib/actions";
+import { requirePermission } from "@/lib/auth/server";
 import { prisma } from "@/lib/db";
 import { Position } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -16,6 +21,8 @@ export const fetchPositions = wrapServerAction(
     page: number;
     query?: string;
   }) {
+    await requirePermission("Admin.Positions");
+
     const totalMatching = await prisma.position.count({
       where: {
         is_custom: false,
@@ -62,19 +69,15 @@ export const fetchPositions = wrapServerAction(
 export const createPosition = wrapServerAction(
   "createPosition",
   async function createPosition(
-    data: unknown,
+    data: z.infer<typeof createPositionSchema>,
   ): Promise<FormResponse<{ position: Position }>> {
-    const safeData = createPositionSchema.safeParse(data);
-
-    if (!safeData.success) {
-      return zodErrorResponse(safeData.error);
-    }
+    await requirePermission("Admin.Positions");
 
     const createdPosition = await prisma.position.create({
       data: {
-        name: safeData.data.name,
-        full_description: safeData.data.full_description ?? "",
-        brief_description: safeData.data.brief_description,
+        name: data.name,
+        full_description: data.full_description ?? "",
+        brief_description: data.brief_description,
       },
     });
     revalidatePath("/admin/positions");
@@ -85,19 +88,13 @@ export const createPosition = wrapServerAction(
 export const deletePosition = wrapServerAction(
   "deletePosition",
   async function deletePosition(
-    data: unknown,
+    data: z.infer<typeof deletePositionSchema>,
   ): Promise<FormResponse<{ position_id: number }>> {
-    const dataSchema = z.object({ position_id: z.number() });
-
-    const safeData = dataSchema.safeParse(data);
-
-    if (!safeData.success) {
-      return zodErrorResponse(safeData.error);
-    }
+    await requirePermission("Admin.Positions");
 
     const deletedPosition = await prisma.position.delete({
       where: {
-        position_id: safeData.data.position_id,
+        position_id: data.position_id,
       },
     });
 
@@ -111,29 +108,18 @@ export const deletePosition = wrapServerAction(
 export const updatePosition = wrapServerAction(
   "updatePosition",
   async function updatePosition(
-    data: unknown,
+    data: z.infer<typeof updatePositionSchema>,
   ): Promise<FormResponse<{ position: Position }>> {
-    const dataSchema = z.object({
-      position_id: z.number(),
-      name: z.string(),
-      brief_description: z.string(),
-      full_description: z.string(),
-    });
-
-    const safeData = dataSchema.safeParse(data);
-
-    if (!safeData.success) {
-      return zodErrorResponse(safeData.error);
-    }
+    await requirePermission("Admin.Positions");
 
     const updatedPosition = await prisma.position.update({
       where: {
-        position_id: safeData.data.position_id,
+        position_id: data.position_id,
       },
       data: {
-        name: safeData.data.name,
-        brief_description: safeData.data.brief_description,
-        full_description: safeData.data.full_description,
+        name: data.name,
+        brief_description: data.brief_description,
+        full_description: data.full_description,
       },
     });
 
@@ -141,35 +127,5 @@ export const updatePosition = wrapServerAction(
       ok: true,
       position: updatedPosition,
     };
-  },
-);
-
-export const searchPositions = wrapServerAction(
-  "searchPositions",
-  async function searchPositions(
-    data: unknown,
-  ): Promise<FormResponse<{ positions: Position[] }>> {
-    const dataSchema = z.object({
-      query: z.string().optional(),
-      // count: z.number(),
-      // page: z.number(),
-    });
-
-    const safeData = dataSchema.safeParse(data);
-
-    if (!safeData.success) {
-      return zodErrorResponse(safeData.error);
-    }
-
-    const searchResults = await prisma.position.findMany({
-      where: {
-        name: {
-          contains: safeData.data.query,
-        },
-      },
-      take: 10,
-    });
-
-    return { ok: true, positions: searchResults };
   },
 );
