@@ -14,12 +14,7 @@ export default function WebcamPage() {
     <Center>
       <Stack w={"100%"}>
         <Suspense fallback={<Loader />}>
-          <WebcamGrid
-            webcams={webcamFeeds}
-            addWebcam={addWebcam}
-            editWebcam={editWebcam}
-            removeWebcam={removeWebcam}
-          />
+          <WebcamGrid webcams={webcamFeeds} />
         </Suspense>
       </Stack>
     </Center>

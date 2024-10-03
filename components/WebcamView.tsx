@@ -16,6 +16,8 @@ export function WebcamView(props: {
     useDisclosure(false);
 
   useEffect(() => {
+    // The four (4) here is the value of readyState when a video element is ready to play
+    // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
     if (ref.current?.readyState === 4) {
       setReady();
     } else {

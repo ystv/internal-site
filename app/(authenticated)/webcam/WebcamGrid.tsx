@@ -3,27 +3,13 @@
 import { WebcamView } from "@/components/WebcamView";
 import { WebcamFeed } from "@prisma/client";
 import { use } from "react";
-import {
-  addWebcamSchema,
-  editWebcamSchema,
-  removeWebcamSchema,
-} from "./schema";
-import { z } from "zod";
-import { FormResponse } from "@/components/Form";
 import { WebcamCreateForm, WebcamEditForm, WebcamRemoveForm } from "./form";
-import { addWebcam } from "./actions";
+import { addWebcam, editWebcam, removeWebcam } from "./actions";
 import { Card, Grid, Group, Stack, Text } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
 import { PermissionGate } from "@/components/UserContext";
 
-export function WebcamGrid(props: {
-  webcams: Promise<WebcamFeed[]>;
-  addWebcam: (data: z.infer<typeof addWebcamSchema>) => Promise<FormResponse>;
-  editWebcam: (data: z.infer<typeof editWebcamSchema>) => Promise<FormResponse>;
-  removeWebcam: (
-    data: z.infer<typeof removeWebcamSchema>,
-  ) => Promise<FormResponse>;
-}) {
+export function WebcamGrid(props: { webcams: Promise<WebcamFeed[]> }) {
   const webcamFeeds = use(props.webcams);
 
   return (
@@ -34,12 +20,7 @@ export function WebcamGrid(props: {
       {webcamFeeds.length > 0 ? (
         <Grid w={"100%"}>
           {webcamFeeds.map((feed) => (
-            <WebcamGridCol
-              feed={feed}
-              key={feed.webcam_id}
-              editWebcam={props.editWebcam}
-              removeWebcam={props.removeWebcam}
-            />
+            <WebcamGridCol feed={feed} key={feed.webcam_id} />
           ))}
         </Grid>
       ) : (
@@ -49,13 +30,7 @@ export function WebcamGrid(props: {
   );
 }
 
-function WebcamGridCol(props: {
-  feed: WebcamFeed;
-  editWebcam: (data: z.infer<typeof editWebcamSchema>) => Promise<FormResponse>;
-  removeWebcam: (
-    data: z.infer<typeof removeWebcamSchema>,
-  ) => Promise<FormResponse>;
-}) {
+function WebcamGridCol(props: { feed: WebcamFeed }) {
   const { ref, height, width } = useElementSize();
 
   return (
@@ -74,11 +49,8 @@ function WebcamGridCol(props: {
           </Card.Section>
           <Group>
             <PermissionGate required={"Webcams.Manage"}>
-              <WebcamEditForm webcam={props.feed} edit={props.editWebcam} />
-              <WebcamRemoveForm
-                webcam={props.feed}
-                remove={props.removeWebcam}
-              />
+              <WebcamEditForm webcam={props.feed} edit={editWebcam} />
+              <WebcamRemoveForm webcam={props.feed} remove={removeWebcam} />
             </PermissionGate>
           </Group>
         </Stack>
