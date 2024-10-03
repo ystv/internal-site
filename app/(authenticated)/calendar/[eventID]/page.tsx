@@ -66,7 +66,7 @@ async function AttendeesView({
                 <td className={"text-sm"}>
                   {att.attend_status in AttendStatusLabels
                     ? AttendStatusLabels[
-                    att.attend_status as keyof typeof AttendStatusLabels
+                      att.attend_status as keyof typeof AttendStatusLabels
                     ]
                     : AttendStatusLabels.unknown}
                 </td>
