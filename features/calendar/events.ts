@@ -1,4 +1,4 @@
-// import "server-only";
+import "server-only";
 import { produce } from "immer";
 import { prisma } from "@/lib/db";
 import {
