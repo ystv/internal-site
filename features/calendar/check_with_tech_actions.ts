@@ -69,6 +69,7 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
   const api = await slackApiConnection();
 
   const type = action.action_id.replace(/^checkWithTech#/, "");
+  invariant(action.value, "Value not found in action");
   const cwtID = parseInt(action.value);
   const cwt = await prisma.checkWithTech.findUnique({
     where: {
