@@ -22,6 +22,8 @@ export const PermissionEnum = z.enum([
   "Calendar.Public.Admin",
   "Calendar.Public.Creator",
   "CalendarIntegration.Admin",
+  "CheckWithTech.Submit",
+  "CheckWithTech.Admin",
   "ManageQuotes",
   "Admin.Users",
   "Admin.Roles",

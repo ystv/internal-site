@@ -8,6 +8,9 @@ declare global {
 export const isSlackEnabled = env.SLACK_ENABLED === "true";
 
 async function slackApiConnection() {
+  if (!isSlackEnabled) {
+    throw new Error("Slack is not enabled");
+  }
   if (!global.slack) {
     global.slack = new App({
       token: env.SLACK_BOT_TOKEN,

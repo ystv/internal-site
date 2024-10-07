@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth/server";
+import { userHasPermission } from "@/lib/auth/core";
 import slackApiConnection from "@/lib/slack/slackApiConnection";
 import { getEvent } from "./events";
 import dayjs from "dayjs";
@@ -6,15 +6,13 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
+import { getCurrentUser } from "@/lib/auth/server";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export async function postCheckWithTech(eventID: number, memo: string) {
   const slack = await slackApiConnection();
-  if (!slack) {
-    throw new Error("No Slack app");
-  }
   const event = await getEvent(eventID);
   if (!event) {
     throw new Error("Event not found");
@@ -42,15 +40,67 @@ export async function postCheckWithTech(eventID: number, memo: string) {
     memo,
   ];
 
-  await slack.client.chat.postMessage({
-    channel: env.SLACK_CHECK_WITH_TECH_CHANNEL ?? "#check-with-tech",
-    text: lines.join("\n"),
-    mrkdwn: true,
+  const cwt = await prisma.checkWithTech.create({
+    data: {
+      event_id: eventID,
+      submitted_by: me.user_id,
+      request: memo,
+    },
   });
 
-  await prisma.event.update({
-    where: { event_id: eventID },
-    data: { check_with_tech_status: "Requested" },
+  await slack.client.chat.postMessage({
+    channel: env.SLACK_CHECK_WITH_TECH_CHANNEL ?? "#check-with-tech",
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: lines.join("\n"),
+        },
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "plain_text",
+            text: "For tech team use only:",
+          },
+        ],
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Approve",
+            },
+            value: cwt.cwt_id.toString(),
+            action_id: "checkWithTech#approve",
+            style: "primary",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Add Note",
+            },
+            value: cwt.cwt_id.toString(),
+            action_id: "checkWithTech#note",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Decline",
+            },
+            value: cwt.cwt_id.toString(),
+            action_id: "checkWithTech#decline",
+          },
+        ],
+      },
+    ],
   });
 }
 
@@ -97,6 +147,17 @@ export async function getEquipmentListTemplates() {
   return await prisma.equipmentListTemplate.findMany({
     where: {
       archived: false,
+    },
+  });
+}
+
+export async function getLatestRequest(eventID: number) {
+  return await prisma.checkWithTech.findFirst({
+    where: {
+      event_id: eventID,
+    },
+    orderBy: {
+      submitted_at: "desc",
     },
   });
 }

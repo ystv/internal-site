@@ -109,7 +109,7 @@ export async function submit(
           url: `https://ystv.sentry.io/issues/?project=${
             env.SENTRY_PROJECT_ID
           }&query=user.email%3A${encodeURIComponent(me.email)}&statsPeriod=7d`,
-          action_id: "user_feedback__search_sentry",
+          action_id: "userFeedback#searchSentry",
         },
       ],
     });

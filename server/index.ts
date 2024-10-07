@@ -13,6 +13,11 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "../lib/slack/slackApiConnection";
 import { App } from "@slack/bolt";
+import { setupActionHandlers } from "@/lib/slack/actions";
+import { AsyncLocalStorage } from "node:async_hooks";
+
+// HAX
+globalThis.AsyncLocalStorage = AsyncLocalStorage;
 
 const dev = env.NODE_ENV !== "production";
 const doSSL = env.DEV_SSL === "true";
@@ -46,7 +51,7 @@ app.prepare().then(async () => {
   if (isSlackEnabled) {
     slackApp = await slackApiConnection();
 
-    slackApp.action("user_feedback__search_sentry", async ({ ack }) => ack());
+    await setupActionHandlers(slackApp);
   }
 
   io = new Server(httpServer);

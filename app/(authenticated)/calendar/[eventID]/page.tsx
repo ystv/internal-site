@@ -13,6 +13,7 @@ import {
   canManage,
   canManageAnySignupSheet,
   getAllCrewPositions,
+  getLatestRequest,
 } from "@/features/calendar";
 import {
   CrewPositionsProvider,
@@ -21,7 +22,7 @@ import {
 import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
 import { Alert, Space, Text } from "@mantine/core";
-import { TbInfoCircle, TbAlertTriangle } from "react-icons/tb";
+import { TbInfoCircle, TbAlertTriangle, TbTool } from "react-icons/tb";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
@@ -98,7 +99,7 @@ async function CheckWithTechPrompt({
   if (!canManageAnySignupSheet(event, me)) {
     return null;
   }
-  if (event.adam_rms_project_id || event.check_with_tech_status) {
+  if (event.adam_rms_project_id) {
     // assume already checked
     return null;
   }
@@ -110,13 +111,42 @@ async function CheckWithTechPrompt({
     // signup sheets take priority
     return null;
   }
-  const slack = await slackApiConnection();
-  if (!slack) {
+  if (!isSlackEnabled) {
     return null;
+  }
+  const cwt = await getLatestRequest(event.event_id);
+  let contents;
+  if (!cwt) {
+    contents = <CheckWithTechPromptContents eventID={event.event_id} />;
+  } else {
+    switch (cwt.status) {
+      case "Rejected":
+        // Don't show rejected CWTs, just prompt to create a new one
+        contents = <CheckWithTechPromptContents eventID={event.event_id} />;
+        break;
+      case "Requested":
+        contents = (
+          <Alert
+            variant="light"
+            color="blue"
+            title="#CheckWithTech"
+            icon={<TbTool />}
+          >
+            Your #CheckWithTech has been submitted to the tech team. Keep an eye
+            on Slack in case they need any further details!
+          </Alert>
+        );
+        break;
+      case "Confirmed":
+        contents = null; // Don't show anything if it's already confirmed, reduce banner fatigue
+        break;
+      default:
+        invariant(false, `unexpected CWT status: ${cwt.status}`);
+    }
   }
   return (
     <>
-      <CheckWithTechPromptContents eventID={event.event_id} />
+      {contents}
       <Space h={"lg"} />
     </>
   );
