@@ -4,6 +4,7 @@ import { searchParamsSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { validateSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
+import { SetClientData } from "@/components/SetClientData";
 
 export const dynamic = "force-dynamic";
 
@@ -33,5 +34,10 @@ export default async function PositionPage({
     );
   }
 
-  return <PositionView initialPositions={initialPositionsData} />;
+  return (
+    <>
+      <SetClientData title="Positions" />
+      <PositionView initialPositions={initialPositionsData} />
+    </>
+  );
 }

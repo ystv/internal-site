@@ -13,6 +13,7 @@ import { App } from "@slack/bolt";
 import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
 import { env } from "@/lib/env";
 import { createEvent } from "./actions";
+import { SetClientData } from "@/components/SetClientData";
 
 async function getSlackChannels(): Promise<Channel[]> {
   var fetchedSlackChannels: Channel[] = [];
@@ -60,6 +61,7 @@ export default async function NewEventPage() {
 
   return (
     <div className="mx-auto max-w-xl">
+      <SetClientData title="New Event" />
       <h1 className="mb-4 mt-0 text-4xl font-bold">New Event</h1>
       <MembersProvider members={allMembers}>
         <SlackChannelsProvider slackChannels={publicSlackChannels}>

@@ -7,6 +7,8 @@ import {
 } from "@/features/people";
 import { z } from "zod";
 import { AdminUserView } from "./AdminUserView";
+import { SetClientData } from "@/components/SetClientData";
+import { getUserName } from "@/components/UserHelpers";
 
 export default async function SingleUserPage({
   params,
@@ -30,12 +32,15 @@ export default async function SingleUserPage({
   const userAbsentRoles = getUserAbsentRoles({ user_id: user.user_id });
 
   return (
-    <AdminUserView
-      user={user}
-      giveUserRole={giveUserRole}
-      removeUserRole={removeUserRole}
-      editUserAction={editUserAdmin}
-      userAbsentRoles={userAbsentRoles}
-    />
+    <>
+      <SetClientData title={`User - ${getUserName(user)}`} />
+      <AdminUserView
+        user={user}
+        giveUserRole={giveUserRole}
+        removeUserRole={removeUserRole}
+        editUserAction={editUserAdmin}
+        userAbsentRoles={userAbsentRoles}
+      />
+    </>
   );
 }

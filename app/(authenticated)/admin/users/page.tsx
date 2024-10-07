@@ -4,6 +4,7 @@ import { searchParamsSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { validateSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
+import { SetClientData } from "@/components/SetClientData";
 
 export default async function PositionPage({
   searchParams,
@@ -31,5 +32,10 @@ export default async function PositionPage({
     );
   }
 
-  return <UserView initialUsers={initialUsersData} />;
+  return (
+    <>
+      <SetClientData title="Users" />
+      <UserView initialUsers={initialUsersData} />
+    </>
+  );
 }
