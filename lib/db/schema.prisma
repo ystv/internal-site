@@ -164,6 +164,8 @@ model CheckWithTech {
   request String
   notes   String              @default("")
 
+  slack_message_ts String?
+
   confirmed_by      Int?
   confirmed_by_user User?     @relation("confirmed", fields: [confirmed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   confirmed_at      DateTime? @db.Timestamptz(6)

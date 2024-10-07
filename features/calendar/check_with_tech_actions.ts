@@ -3,7 +3,14 @@ import { userHasPermission } from "@/lib/auth/core";
 import { prisma } from "@/lib/db";
 import invariant from "@/lib/invariant";
 import slackApiConnection from "@/lib/slack/slackApiConnection";
-import { CheckWithTechStatus } from "@prisma/client";
+import {
+  CheckWithTech,
+  CheckWithTechStatus,
+  Event,
+  Identity,
+  User,
+} from "@prisma/client";
+import * as AdamRMS from "@/lib/adamrms";
 import {
   SlackActionMiddlewareArgs,
   BlockAction,
@@ -14,18 +21,17 @@ import {
   Block,
 } from "@slack/bolt";
 import dayjs from "dayjs";
-import { env } from "process";
+import { env } from "@/lib/env";
 import { z } from "zod";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { addProjectToAdamRMS } from "./adamRMS";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const ModelPrivateMetadataSchema = z.object({
   cwtID: z.number(),
-  messageTS: z.string(),
-  channelID: z.string(),
 });
 type ModalPrivateMetadata = z.infer<typeof ModelPrivateMetadataSchema>;
 
@@ -79,8 +85,6 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
   invariant(body.channel, "Channel not found in action body");
   const metadata: ModalPrivateMetadata = {
     cwtID,
-    messageTS: body.message.ts,
-    channelID: body.channel.id,
   };
   switch (type) {
     case "approve":
@@ -264,22 +268,23 @@ export async function handleSlackViewEvent(data: SlackViewMiddlewareArgs) {
   }
 
   const values = view.state.values;
-  const request = values.request.request.value;
-  if (!request) {
-    await ack({
-      response_action: "errors",
-      errors: {
-        request: "Request cannot be empty.",
-      },
-    });
-    return;
-  }
   const notes = values.notes?.notes.value;
   let newStatus: CheckWithTechStatus | undefined;
   const reqType = body.view.callback_id.replace(/^checkWithTech#do/, "");
+  let request;
   switch (reqType) {
     case "Approve":
       newStatus = "Confirmed";
+      request = values.request?.request.value;
+      if (!request) {
+        await ack({
+          response_action: "errors",
+          errors: {
+            request: "Request cannot be empty.",
+          },
+        });
+        return;
+      }
       break;
     case "Decline":
       newStatus = "Rejected";
@@ -302,6 +307,49 @@ export async function handleSlackViewEvent(data: SlackViewMiddlewareArgs) {
   if (!newStatus) {
     return;
   }
+  await _sendCWTFollowUpAndUpdateMessage(
+    cwt,
+    actor,
+    newStatus,
+    notes ?? "",
+    request,
+  );
+}
+
+export interface FullCheckWithTech extends CheckWithTech {
+  event: Event;
+  submitted_by_user: User & {
+    identities: Identity[];
+  };
+}
+
+export async function _sendCWTFollowUpAndUpdateMessage(
+  cwt: FullCheckWithTech,
+  actor: User,
+  newStatus: CheckWithTechStatus,
+  newNotes: string = "",
+  newRequest?: string,
+) {
+  if (
+    newStatus === "Confirmed" &&
+    env.ADAMRMS_BASE !== "" &&
+    (await userHasPermission(actor.user_id, "CalendarIntegration.Admin"))
+  ) {
+    let armsID = cwt.event.adam_rms_project_id;
+    if (!armsID) {
+      armsID = await addProjectToAdamRMS(cwt.event_id, actor.user_id);
+    }
+    await AdamRMS.newQuickProjectComment(
+      armsID!,
+      `Check With Tech confirmed by ${getUserName(actor)}\n\n${newRequest}`,
+    );
+  }
+
+  invariant(cwt.slack_message_ts, "Slack message TS not found");
+  invariant(
+    env.SLACK_CHECK_WITH_TECH_CHANNEL,
+    "SLACK_CHECK_WITH_TECH_CHANNEL not set",
+  );
   const requestor = cwt.submitted_by_user.identities.find(
     (x) => x.provider === "slack",
   );
@@ -313,7 +361,7 @@ export async function handleSlackViewEvent(data: SlackViewMiddlewareArgs) {
     `Your request for ${
       cwt.event.name
     } has been ${newStatus.toLowerCase()} by ${getUserName(actor)}.`,
-    notes ? `Notes: ${notes}` : "",
+    newNotes ? `Notes: ${newNotes}` : "",
     `View your event <${env.PUBLIC_URL}/calendar/${cwt.event_id}|here>.`,
   ].filter(Boolean);
   await api.client.chat.postMessage({
@@ -346,12 +394,12 @@ export async function handleSlackViewEvent(data: SlackViewMiddlewareArgs) {
             .format("dddd, MMMM D, YYYY h:mma")),
     `${env.PUBLIC_URL}/calendar/${cwt.event_id}`,
     cwt.event.location,
-    request,
+    newRequest ?? cwt.request,
   ];
 
   await api.client.chat.update({
-    channel: meta.channelID,
-    ts: meta.messageTS,
+    channel: env.SLACK_CHECK_WITH_TECH_CHANNEL,
+    ts: cwt.slack_message_ts,
     text: [...lines, newContext].join("\n"),
     blocks: [
       {

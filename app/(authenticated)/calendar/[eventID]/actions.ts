@@ -11,7 +11,10 @@ import * as Calendar from "@/features/calendar";
 import { EventType, hasRSVP } from "@/features/calendar/types";
 import { canManage } from "@/features/calendar/permissions";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
-import { EditEventSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
+import {
+  CheckWithTechActionSchema,
+  EditEventSchema,
+} from "@/app/(authenticated)/calendar/[eventID]/schema";
 import { FormResponse } from "@/components/Form";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import invariant from "@/lib/invariant";
@@ -315,6 +318,8 @@ export const doCheckWithTech = wrapServerAction(
       await Calendar.postTechHelpRequest(eventID, memo);
     }
 
+    revalidatePath(`/calendar/${event.event_id}`);
+
     return { ok: true };
   },
 );
@@ -323,5 +328,36 @@ export const equipmentListTemplates = wrapServerAction(
   "equipmentListTemplates",
   async function equipmentListTemplates() {
     return await Calendar.getEquipmentListTemplates();
+  },
+);
+
+export const actionCheckWithTech = wrapServerAction(
+  "actionCheckWithTech",
+  async function actionCheckWithTech(dataRaw: unknown): Promise<FormResponse> {
+    const data = CheckWithTechActionSchema.safeParse(dataRaw);
+    if (!data.success) {
+      return zodErrorResponse(data.error);
+    }
+    const { cwtID, action, note, request, eventID } = data.data;
+    switch (action) {
+      case "approve":
+        if (!request) {
+          return { ok: false, errors: { request: "No request provided" } };
+        }
+        await Calendar.approveCheckWithTech(cwtID, request, note);
+        break;
+      case "note":
+        if (!note) {
+          return { ok: false, errors: { note: "No note provided" } };
+        }
+        await Calendar.addNoteToCheckWithTech(cwtID, note);
+        break;
+      case "decline":
+        await Calendar.declineCheckWithTech(cwtID, note);
+        break;
+    }
+
+    revalidatePath(`/calendar/${eventID}`);
+    return { ok: true };
   },
 );

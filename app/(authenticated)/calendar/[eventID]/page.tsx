@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import invariant from "@/lib/invariant";
 import { getUserName } from "@/components/UserHelpers";
-import { mustGetCurrentUser, UserType } from "@/lib/auth/server";
+import { hasPermission, mustGetCurrentUser, UserType } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/(authenticated)/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { SignupSheetsView } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
@@ -21,7 +21,7 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
-import { Alert, Space, Text } from "@mantine/core";
+import { Alert, Button, ButtonGroup, Space, Text } from "@mantine/core";
 import { TbInfoCircle, TbAlertTriangle, TbTool } from "react-icons/tb";
 import slackApiConnection, {
   isSlackEnabled,
@@ -29,7 +29,10 @@ import slackApiConnection, {
 import { Suspense } from "react";
 import SlackChannelName from "@/components/slack/SlackChannelName";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
-import { CheckWithTechPromptContents } from "./CheckWithTech";
+import {
+  CheckWithTechAdminBanner,
+  CheckWithTechPromptContents,
+} from "./CheckWithTech";
 import { C } from "@fullcalendar/core/internal-common";
 import dayjs from "dayjs";
 
@@ -99,10 +102,6 @@ async function CheckWithTechPrompt({
   if (!canManageAnySignupSheet(event, me)) {
     return null;
   }
-  if (event.adam_rms_project_id) {
-    // assume already checked
-    return null;
-  }
   if (dayjs(event.start_date).isBefore(new Date())) {
     // no point checking something in the past
     return null;
@@ -115,6 +114,11 @@ async function CheckWithTechPrompt({
     return null;
   }
   const cwt = await getLatestRequest(event.event_id);
+
+  if (cwt && (await hasPermission("CheckWithTech.Admin"))) {
+    return <CheckWithTechAdminBanner cwt={cwt} />;
+  }
+
   let contents;
   if (!cwt) {
     contents = <CheckWithTechPromptContents eventID={event.event_id} />;

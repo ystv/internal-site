@@ -6,7 +6,18 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
-import { getCurrentUser } from "@/lib/auth/server";
+import {
+  getCurrentUser,
+  hasPermission,
+  mustGetCurrentUser,
+  requirePermission,
+} from "@/lib/auth/server";
+import { ExposedUserModel } from "../people/users";
+import * as AdamRMS from "@/lib/adamrms";
+import { getUserName } from "@/components/UserHelpers";
+import { addProjectToAdamRMS } from "./adamRMS";
+import { _sendCWTFollowUpAndUpdateMessage } from "./check_with_tech_actions";
+import invariant from "@/lib/invariant";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -48,7 +59,7 @@ export async function postCheckWithTech(eventID: number, memo: string) {
     },
   });
 
-  await slack.client.chat.postMessage({
+  const res = await slack.client.chat.postMessage({
     channel: env.SLACK_CHECK_WITH_TECH_CHANNEL ?? "#check-with-tech",
     blocks: [
       {
@@ -102,6 +113,15 @@ export async function postCheckWithTech(eventID: number, memo: string) {
       },
     ],
   });
+  invariant(res.ok, "Failed to send message");
+  await prisma.checkWithTech.update({
+    where: {
+      cwt_id: cwt.cwt_id,
+    },
+    data: {
+      slack_message_ts: res.ts,
+    },
+  });
 }
 
 export async function postTechHelpRequest(eventID: number, memo: string) {
@@ -152,12 +172,133 @@ export async function getEquipmentListTemplates() {
 }
 
 export async function getLatestRequest(eventID: number) {
-  return await prisma.checkWithTech.findFirst({
+  const r = await prisma.checkWithTech.findFirst({
     where: {
       event_id: eventID,
     },
     orderBy: {
       submitted_at: "desc",
+    },
+    include: {
+      submitted_by_user: true,
+      confirmed_by_user: true,
+    },
+  });
+  if (!r) {
+    return null;
+  }
+  return {
+    ...r,
+    submitted_by_user: ExposedUserModel.parse(r.submitted_by_user),
+    confirmed_by_user: r.confirmed_by_user
+      ? ExposedUserModel.parse(r.confirmed_by_user)
+      : null,
+  };
+}
+
+export type CheckWithTechType = NonNullable<
+  Awaited<ReturnType<typeof getLatestRequest>>
+>;
+
+export async function approveCheckWithTech(
+  cwtID: number,
+  newRequest: string,
+  notes?: string,
+) {
+  await requirePermission("CheckWithTech.Admin");
+  const cwt = await prisma.checkWithTech.findFirst({
+    where: {
+      cwt_id: cwtID,
+    },
+    include: {
+      event: true,
+      submitted_by_user: {
+        include: {
+          identities: {
+            where: {
+              provider: "slack",
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!cwt) {
+    throw new Error("Request not found");
+  }
+  if (cwt.confirmed_by) {
+    throw new Error("Request already confirmed");
+  }
+  const me = await mustGetCurrentUser();
+  await prisma.checkWithTech.update({
+    where: {
+      cwt_id: cwtID,
+    },
+    data: {
+      status: "Confirmed",
+      confirmed_by: me.user_id,
+      confirmed_at: new Date(),
+      request: newRequest,
+      notes: notes,
+    },
+  });
+  await _sendCWTFollowUpAndUpdateMessage(
+    cwt,
+    me,
+    "Confirmed",
+    notes,
+    newRequest,
+  );
+}
+
+export async function declineCheckWithTech(cwtID: number, notes?: string) {
+  await requirePermission("CheckWithTech.Admin");
+  const cwt = await prisma.checkWithTech.findFirst({
+    where: {
+      cwt_id: cwtID,
+    },
+    include: {
+      event: true,
+      submitted_by_user: {
+        include: {
+          identities: {
+            where: {
+              provider: "slack",
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!cwt) {
+    throw new Error("Request not found");
+  }
+  if (cwt.confirmed_by) {
+    throw new Error("Request already confirmed");
+  }
+  const me = await mustGetCurrentUser();
+  await prisma.checkWithTech.update({
+    where: {
+      cwt_id: cwtID,
+    },
+    data: {
+      status: "Rejected",
+      confirmed_at: new Date(),
+      confirmed_by: me.user_id,
+      notes: notes,
+    },
+  });
+  await _sendCWTFollowUpAndUpdateMessage(cwt, me, "Rejected", notes);
+}
+
+export async function addNoteToCheckWithTech(cwtID: number, notes: string) {
+  await requirePermission("CheckWithTech.Admin");
+  await prisma.checkWithTech.update({
+    where: {
+      cwt_id: cwtID,
+    },
+    data: {
+      notes: notes,
     },
   });
 }

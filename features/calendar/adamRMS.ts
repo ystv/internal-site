@@ -44,6 +44,7 @@ export async function addProjectToAdamRMS(
     projectId,
     `This project is linked to the Calendar event "${event.name}" (${env.PUBLIC_URL}/calendar/${event.event_id}).`,
   );
+  return projectId;
 }
 
 export async function getAdamRMSLinkCandidates() {

@@ -10,6 +10,7 @@ export const _CheckWithTechModel = z.object({
   status: z.nativeEnum(CheckWithTechStatus),
   request: z.string(),
   notes: z.string(),
+  slack_message_ts: z.string().nullish(),
   confirmed_by: z.number().int().nullish(),
   confirmed_at: z.date().nullish(),
 })

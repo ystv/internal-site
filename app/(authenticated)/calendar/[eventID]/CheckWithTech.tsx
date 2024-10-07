@@ -1,10 +1,30 @@
 "use client";
 
-import { Alert, Button, ButtonGroup, Modal, Textarea } from "@mantine/core";
+import {
+  Alert,
+  Button,
+  ButtonGroup,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  Textarea,
+} from "@mantine/core";
 import { Suspense, cache, use, useState, useTransition } from "react";
 import { TbBrandSlack, TbTool } from "react-icons/tb";
-import { doCheckWithTech, equipmentListTemplates } from "./actions";
+import {
+  actionCheckWithTech,
+  doCheckWithTech,
+  equipmentListTemplates,
+} from "./actions";
 import { notifications } from "@mantine/notifications";
+import { CheckWithTechType } from "@/features/calendar";
+import { getUserName } from "@/components/UserHelpers";
+import { useModals } from "@mantine/modals";
+import Form from "@/components/Form";
+import { CheckWithTechActionSchema } from "./schema";
+import { HiddenField, TextAreaField } from "@/components/FormFields";
 
 const _getEquipmentListTemplates = cache(equipmentListTemplates);
 
@@ -185,6 +205,80 @@ export function CheckWithTechPromptContents(props: { eventID: number }) {
             }}
           />
         )}
+      </Modal>
+    </>
+  );
+}
+
+export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
+  const [modalOpen, setModalOpen] = useState<
+    "approve" | "note" | "decline" | null
+  >(null);
+
+  return (
+    <>
+      <Alert
+        variant="light"
+        color="blue"
+        title="#CheckWithTech"
+        icon={<TbTool />}
+      >
+        <strong>
+          #CheckWithTech request from {getUserName(cwt.submitted_by_user)}
+        </strong>
+        <p>{cwt.request}</p>
+        {cwt.notes.length > 0 && <p>Notes: {cwt.notes}</p>}
+        {cwt.status !== "Requested" && (
+          <strong>
+            {cwt.status}
+            {cwt.confirmed_by_user &&
+              " by " + getUserName(cwt.confirmed_by_user)}
+          </strong>
+        )}
+        {cwt.status === "Requested" && (
+          <ButtonGroup>
+            <Button onClick={() => setModalOpen("approve")} color="green">
+              Approve
+            </Button>
+            <Button onClick={() => setModalOpen("note")}>Leave Note</Button>
+            <Button onClick={() => setModalOpen("decline")} color="red">
+              Decline
+            </Button>
+          </ButtonGroup>
+        )}
+      </Alert>
+      <Modal opened={modalOpen !== null} onClose={() => setModalOpen(null)}>
+        <ModalHeader>
+          <ModalTitle>
+            {modalOpen === "approve"
+              ? "Approve"
+              : modalOpen === "note"
+              ? "Leave Note"
+              : "Decline"}
+          </ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          {modalOpen !== null && (
+            <Form
+              action={actionCheckWithTech}
+              schema={CheckWithTechActionSchema}
+              onSuccess={() => setModalOpen(null)}
+              initialValues={{
+                action: modalOpen,
+                cwtID: cwt.cwt_id,
+                eventID: cwt.event_id,
+                request: cwt.request,
+                note: cwt.notes,
+              }}
+            >
+              <HiddenField name="cwtID" value={cwt.cwt_id.toString(10)} />
+              {modalOpen === "approve" && (
+                <TextAreaField name="request" label="Request" />
+              )}
+              <TextAreaField name="note" label="Notes" />
+            </Form>
+          )}
+        </ModalBody>
       </Modal>
     </>
   );
