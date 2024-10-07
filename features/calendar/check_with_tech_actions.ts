@@ -55,7 +55,7 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
   });
   if (!actor) {
     await respond({
-      text: `Please [link your Internal Site profile to Slack](${env.PUBLIC_URL}/user/me) to use this feature.`,
+      text: `Please <${env.PUBLIC_URL}/user/me|link your Internal Site profile to Slack> to use this feature.`,
     });
     return;
   }
