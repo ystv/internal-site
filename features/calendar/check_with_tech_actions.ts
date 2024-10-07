@@ -342,7 +342,8 @@ export async function _sendCWTFollowUpAndUpdateMessage(
     }
     await AdamRMS.newQuickProjectComment(
       armsID!,
-      `Check With Tech confirmed by ${getUserName(actor)}\n\n${newRequest}`,
+      `Check With Tech confirmed by ${getUserName(actor)}<br/>${newRequest}` +
+        (newNotes.length > 0 ? `<br/>Notes: ${newNotes}` : ""),
     );
   }
 
