@@ -289,9 +289,9 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
             >
               <HiddenField name="cwtID" value={cwt.cwt_id.toString(10)} />
               {modalOpen === "approve" && (
-                <TextAreaField name="request" label="Request" />
+                <TextAreaField name="request" label="Request" autosize />
               )}
-              <TextAreaField name="note" label="Notes" />
+              <TextAreaField name="note" label="Notes" autosize />
             </Form>
           )}
         </ModalBody>
