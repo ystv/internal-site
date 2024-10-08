@@ -1,13 +1,18 @@
-import { dbHealthCheck } from "@/features/lib";
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    await dbHealthCheck();
+    await prisma.$executeRaw(Prisma.sql`SELECT 1;`);
   } catch (e) {
-    return new NextResponse("not ok :(", { status: 500 });
+    return NextResponse.json(
+      { status: "not ok :(", reason: "Could not connect to database" },
+      { status: 500 },
+    );
   }
-  return new NextResponse("ok", { status: 200 });
+  return NextResponse.json({ status: "ok" }, { status: 200 });
 }
