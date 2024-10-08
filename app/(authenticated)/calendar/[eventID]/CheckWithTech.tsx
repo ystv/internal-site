@@ -272,6 +272,20 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
                 request: cwt.request,
                 note: cwt.notes,
               }}
+              submitLabel={
+                modalOpen === "approve"
+                  ? "Approve"
+                  : modalOpen === "note"
+                  ? "Leave Note"
+                  : "Decline"
+              }
+              submitColor={
+                modalOpen === "approve"
+                  ? "green"
+                  : modalOpen === "note"
+                  ? "blue"
+                  : "red"
+              }
             >
               <HiddenField name="cwtID" value={cwt.cwt_id.toString(10)} />
               {modalOpen === "approve" && (
