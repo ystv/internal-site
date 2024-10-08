@@ -63,4 +63,4 @@ Once you have channels you would like to use for this purpose, get the channel I
 
 ## Enable Integration
 
-Once all these variables are set, enable the integration by setting `SLACK_ENABLED` to `true`. If you start up your instance you should now be able to link your Slack account from your user profile and start assigning channels to events. If you have any questions ask Max because he's probably made it a bit complicated.
+Once these five variables are set, enable the integration by setting `SLACK_ENABLED` to `true`. If you start up your instance you should now be able to link your Slack account from your user profile and start assigning channels to events. If you have any questions ask Mia because she's probably made it a bit complicated.
