@@ -119,6 +119,15 @@ async function CheckWithTechPrompt({
     return <CheckWithTechAdminBanner cwt={cwt} />;
   }
 
+  if (event.adam_rms_project_id !== null) {
+    // Assume already checked
+    return null;
+  }
+
+  if (!(await hasPermission("CheckWithTech.Submit"))) {
+    return null;
+  }
+
   let contents;
   if (!cwt) {
     contents = <CheckWithTechPromptContents eventID={event.event_id} />;
