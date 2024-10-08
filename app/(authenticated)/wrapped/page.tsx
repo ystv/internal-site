@@ -2,7 +2,7 @@ import { mustGetCurrentUser } from "@/lib/auth/server";
 import { notFound } from "next/navigation";
 import { createHash } from "node:crypto";
 import { hasWrapped } from "./util";
-import { SetClientData } from "@/components/SetClientData";
+import { PageInfo } from "@/components/PageInfo";
 
 export default async function WrappedPage({
   searchParams,
@@ -25,7 +25,7 @@ export default async function WrappedPage({
   const fileURL = `https://cdn.ystv.co.uk/wrapped2024/${emailHash}.mp4`;
   return (
     <div>
-      <SetClientData title="YSTV Wrapped" />
+      <PageInfo title="YSTV Wrapped" />
       <video
         src={fileURL}
         controls

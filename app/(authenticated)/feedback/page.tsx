@@ -1,7 +1,7 @@
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { doHandleUserReport } from "./actions";
 import { UserReportForm } from "./form";
-import { SetClientData } from "@/components/SetClientData";
+import { PageInfo } from "@/components/PageInfo";
 import { BackButton } from "@/components/BackButton";
 
 export default async function ReportPage({
@@ -14,7 +14,7 @@ export default async function ReportPage({
   if (!isSlackEnabled) {
     return (
       <div>
-        <SetClientData title="Feedback" />
+        <PageInfo title="Feedback" />
         <BackButton
           path={
             searchParams.return_to && decodeURIComponent(searchParams.return_to)
@@ -31,7 +31,7 @@ export default async function ReportPage({
 
   return (
     <div>
-      <SetClientData title="Feedback" />
+      <PageInfo title="Feedback" />
       <BackButton
         path={
           searchParams.return_to && decodeURIComponent(searchParams.return_to)

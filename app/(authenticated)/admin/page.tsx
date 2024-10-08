@@ -1,4 +1,4 @@
-import { SetClientData } from "@/components/SetClientData";
+import { PageInfo } from "@/components/PageInfo";
 import { Button, Card, Stack } from "@mantine/core";
 import Link from "next/link";
 
@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default function AdminPage() {
   return (
     <>
-      <SetClientData title="Admin" />
+      <PageInfo title="Admin" />
       <Card>
         <Stack>
           <Link href={"/admin/users"}>

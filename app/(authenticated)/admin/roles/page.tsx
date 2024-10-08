@@ -5,7 +5,7 @@ import { validateSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { fetchRolesAction } from "./actions";
 import { Stack, Text } from "@mantine/core";
-import { SetClientData } from "@/components/SetClientData";
+import { PageInfo } from "@/components/PageInfo";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +46,7 @@ export default async function PositionPage({
 
   return (
     <>
-      <SetClientData title="Roles" />
+      <PageInfo title="Roles" />
       <RoleView initialRoles={initialRolesData} />
     </>
   );

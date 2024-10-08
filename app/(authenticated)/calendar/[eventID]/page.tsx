@@ -31,7 +31,7 @@ import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import { CheckWithTechPromptContents } from "./CheckWithTech";
 import { C } from "@fullcalendar/core/internal-common";
 import dayjs from "dayjs";
-import { SetClientData } from "@/components/SetClientData";
+import { PageInfo } from "@/components/PageInfo";
 
 async function AttendeesView({
   event,
@@ -191,7 +191,7 @@ export default async function EventPage({
   }
   return (
     <>
-      <SetClientData title={event.name} />
+      <PageInfo title={event.name} />
       {event.is_cancelled ? (
         <Alert
           variant="light"

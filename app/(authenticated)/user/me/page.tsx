@@ -13,7 +13,7 @@ import { hasWrapped } from "../../wrapped/util";
 import Link from "next/link";
 import { env } from "@/lib/env";
 import { SignoutButton } from "@/components/SignoutButton";
-import { SetClientData } from "@/components/SetClientData";
+import { PageInfo } from "@/components/PageInfo";
 
 export default async function UserPage() {
   const user = People.SecureUserModel.parse(await mustGetCurrentUser());
@@ -21,7 +21,7 @@ export default async function UserPage() {
   const slackUser = user.identities.find((i) => i.provider === "slack");
   return (
     <div>
-      <SetClientData title="My Profile" />
+      <PageInfo title="My Profile" />
       <Card withBorder>
         <Group>
           {user.avatar && (

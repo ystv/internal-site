@@ -4,7 +4,7 @@ import { Center, Group, Loader, Stack } from "@mantine/core";
 import { Suspense } from "react";
 import { WebcamGrid } from "./WebcamGrid";
 import { addWebcam, editWebcam, removeWebcam } from "./actions";
-import { SetClientData } from "@/components/SetClientData";
+import { PageInfo } from "@/components/PageInfo";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +13,7 @@ export default function WebcamPage() {
 
   return (
     <>
-      <SetClientData title="Webcams" />
+      <PageInfo title="Webcams" />
       <Center>
         <Stack w={"100%"}>
           <Suspense fallback={<Loader />}>

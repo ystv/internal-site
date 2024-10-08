@@ -7,7 +7,7 @@ import {
 } from "@/features/people";
 import { z } from "zod";
 import { AdminUserView } from "./AdminUserView";
-import { SetClientData } from "@/components/SetClientData";
+import { PageInfo } from "@/components/PageInfo";
 import { getUserName } from "@/components/UserHelpers";
 
 export default async function SingleUserPage({
@@ -33,7 +33,7 @@ export default async function SingleUserPage({
 
   return (
     <>
-      <SetClientData title={`User - ${getUserName(user)}`} />
+      <PageInfo title={`User - ${getUserName(user)}`} />
       <AdminUserView
         user={user}
         giveUserRole={giveUserRole}
