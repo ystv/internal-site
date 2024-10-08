@@ -56,7 +56,6 @@ You can now scroll up to the top of the page and click `Install to Workspace`. C
 This app uses a number of slack channels for integration with check-with-tech responses, feedback, and others. These three channels are:
 
 - `SLACK_CHECK_WITH_TECH_CHANNEL` - Used for check-with-tech requests
-- `SLACK_TECH_HELP_CHANNEL` - Used for help with tech requests
 - `SLACK_USER_FEEDBACK_CHANNEL` - Used for user feedback via the feedback form at the bottom of each page
 
 Once you have channels you would like to use for this purpose, get the channel ID by copying the link of the channel and taking the last bit of the link that looks something like `C07J1G4L0BA` and set the variables accordingly.
