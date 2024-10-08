@@ -12,7 +12,7 @@ import {
   Textarea,
 } from "@mantine/core";
 import { Suspense, cache, use, useState, useTransition } from "react";
-import { TbBrandSlack, TbTool } from "react-icons/tb";
+import { TbTool } from "react-icons/tb";
 import {
   actionCheckWithTech,
   doCheckWithTech,
@@ -25,6 +25,7 @@ import { useModals } from "@mantine/modals";
 import Form from "@/components/Form";
 import { CheckWithTechActionSchema } from "./schema";
 import { HiddenField, TextAreaField } from "@/components/FormFields";
+import SlackIcon from "@/components/icons/SlackIcon";
 
 const _getEquipmentListTemplates = cache(equipmentListTemplates);
 
@@ -138,7 +139,8 @@ function PostMessage(props: {
             }
           })
         }
-        leftSection={<TbBrandSlack size={14} />}
+        variant="light"
+        leftSection={<SlackIcon height={14} width={14} />}
       >
         Send
       </Button>
