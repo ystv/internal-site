@@ -22,7 +22,11 @@ import invariant from "@/lib/invariant";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export async function postCheckWithTech(eventID: number, memo: string) {
+export async function postCheckWithTech(
+  eventID: number,
+  memo: string,
+  type: "check" | "help",
+) {
   const slack = await slackApiConnection();
   const event = await getEvent(eventID);
   if (!event) {
@@ -35,7 +39,9 @@ export async function postCheckWithTech(eventID: number, memo: string) {
     : `${me.first_name} ${me.last_name}`;
 
   const lines = [
-    `*#check-with-tech request from ${user}*`,
+    type === "help"
+      ? `*${user} needs help with their production*`
+      : `*#check-with-tech request from ${user}*`,
     event.name,
     dayjs(event.start_date)
       .tz("Europe/London")
@@ -56,6 +62,7 @@ export async function postCheckWithTech(eventID: number, memo: string) {
       event_id: eventID,
       submitted_by: me.user_id,
       request: memo,
+      unsure: type === "help",
     },
   });
 
@@ -121,45 +128,6 @@ export async function postCheckWithTech(eventID: number, memo: string) {
     data: {
       slack_message_ts: res.ts,
     },
-  });
-}
-
-export async function postTechHelpRequest(eventID: number, memo: string) {
-  const slack = await slackApiConnection();
-  if (!slack) {
-    throw new Error("No Slack app");
-  }
-  const event = await getEvent(eventID);
-  if (!event) {
-    throw new Error("Event not found");
-  }
-  const me = await getCurrentUser();
-  const slackUser = me.identities.find((x) => x.provider === "slack");
-  const user = slackUser
-    ? `<@${slackUser.provider_key}>`
-    : `${me.first_name} ${me.last_name}`;
-
-  const lines = [
-    `*${user} needs help with their production*`,
-    event.name,
-    dayjs(event.start_date)
-      .tz("Europe/London")
-      .format("dddd, MMMM D, YYYY h:mma") +
-      " - " +
-      (dayjs(event.end_date).isSame(event.start_date, "day")
-        ? dayjs(event.end_date).tz("Europe/London").format("h:mma")
-        : dayjs(event.end_date)
-            .tz("Europe/London")
-            .format("dddd, MMMM D, YYYY h:mma")),
-    `${env.PUBLIC_URL}/calendar/${eventID}`,
-    event.location,
-    memo,
-  ];
-
-  await slack.client.chat.postMessage({
-    channel: env.SLACK_TECH_HELP_CHANNEL ?? "#check-with-tech",
-    text: lines.join("\n"),
-    mrkdwn: true,
   });
 }
 

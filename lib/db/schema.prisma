@@ -163,6 +163,7 @@ model CheckWithTech {
   status  CheckWithTechStatus @default(Requested)
   request String
   notes   String              @default("")
+  unsure  Boolean             @default(false)
 
   slack_message_ts String?
 

@@ -229,6 +229,12 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
           #CheckWithTech request from {getUserName(cwt.submitted_by_user)}
         </strong>
         <p>{cwt.request}</p>
+        {cwt.unsure && (
+          <strong>
+            Note: {cwt.submitted_by_user.first_name} was not sure of what they
+            need - please get in touch and amend as needed
+          </strong>
+        )}
         {cwt.notes.length > 0 && <p>Notes: {cwt.notes}</p>}
         {cwt.status !== "Requested" && (
           <strong>

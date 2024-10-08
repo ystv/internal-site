@@ -312,11 +312,11 @@ export const doCheckWithTech = wrapServerAction(
       };
     }
 
-    if (isConfident) {
-      await Calendar.postCheckWithTech(eventID, memo);
-    } else {
-      await Calendar.postTechHelpRequest(eventID, memo);
-    }
+    await Calendar.postCheckWithTech(
+      eventID,
+      memo,
+      isConfident ? "check" : "help",
+    );
 
     revalidatePath(`/calendar/${event.event_id}`);
 

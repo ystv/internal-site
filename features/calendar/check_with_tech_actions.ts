@@ -19,6 +19,7 @@ import {
   ViewSubmitAction,
   ContextBlock,
   Block,
+  SectionBlock,
 } from "@slack/bolt";
 import dayjs from "dayjs";
 import { env } from "@/lib/env";
@@ -74,6 +75,9 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
   const cwt = await prisma.checkWithTech.findUnique({
     where: {
       cwt_id: cwtID,
+    },
+    include: {
+      submitted_by_user: true,
     },
   });
   if (!cwt) {
@@ -131,11 +135,31 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
               },
               hint: {
                 type: "plain_text",
-                text: "Add any relevant notes here.",
+                text: "Add any relevant notes here. These will be visible to the requestor and other members of the tech team.",
               },
               optional: true,
             },
-          ],
+            (cwt.unsure && {
+              type: "context",
+              elements: [
+                {
+                  type: "plain_text",
+                  text:
+                    cwt.submitted_by_user.first_name +
+                    " indicated they were unsure of what they need - please get in touch and amend as needed.",
+                },
+              ],
+            }) as ContextBlock,
+            {
+              type: "context",
+              elements: [
+                {
+                  type: "plain_text",
+                  text: "This will send a message to the requestor, containing the above note.",
+                },
+              ],
+            },
+          ].filter(Boolean),
           submit: {
             type: "plain_text",
             text: "Approve",
@@ -171,11 +195,23 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
               },
               hint: {
                 type: "plain_text",
-                text: "Add any relevant notes here.",
+                text: "Add any relevant notes here. These will be visible to the requestor and other members of the tech team.",
               },
               optional: true,
             },
-          ],
+            {
+              type: "context",
+              elements: [
+                {
+                  type: "plain_text",
+                  text:
+                    type === "note"
+                      ? "This will not send a message to the requestor - you will need to get in touch with them directly."
+                      : "This will send a message to the requestor, containing the above note.",
+                },
+              ],
+            },
+          ].filter(Boolean),
           submit: {
             type: "plain_text",
             text: type === "note" ? "Add Note" : "Decline",
@@ -360,7 +396,7 @@ export async function _sendCWTFollowUpAndUpdateMessage(
   }
   const api = await slackApiConnection();
   const responseParts = [
-    `Your request for ${
+    `Your #check-with-tech request for ${
       cwt.event.name
     } has been ${newStatus.toLowerCase()} by ${getUserName(actor)}.`,
     newNotes ? `Notes: ${newNotes}` : "",

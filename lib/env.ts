@@ -37,7 +37,6 @@ const envSchema = z.object({
   SLACK_CLIENT_SECRET: slackEnvType,
   SLACK_TEAM_ID: z.string().optional(),
   SLACK_CHECK_WITH_TECH_CHANNEL: slackEnvType,
-  SLACK_TECH_HELP_CHANNEL: slackEnvType.default("#check-with-tech"),
   SLACK_USER_FEEDBACK_CHANNEL: slackEnvType.default("#dev-calendar"),
   DEV_SSL: z.string().optional(), // Used to decide whether or not to use https in a dev environment
   SENTRY_PROJECT_ID: z.string().optional(),
