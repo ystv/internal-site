@@ -1,18 +1,13 @@
-import { createServer as createHttpsServer } from "node:https";
-import {
-  createServer as createHttpServer,
-  Server as HttpServer,
-} from "node:http";
 import next from "next";
 import { Server, Socket } from "socket.io";
 import { z } from "zod";
 import { authenticateSocket, isServerSocket } from "./auth";
 import { env, validateEnv } from "../lib/env.js";
-import { readFileSync } from "node:fs";
 import slackApiConnection, {
   isSlackEnabled,
 } from "../lib/slack/slackApiConnection";
 import { App } from "@slack/bolt";
+import { checkDatabaseConnection, prepareHttpServer } from "./lib";
 
 const dev = env.NODE_ENV !== "production";
 const doSSL = env.DEV_SSL === "true";
@@ -30,16 +25,9 @@ var io: TServer;
 validateEnv();
 
 app.prepare().then(async () => {
-  let httpServer: HttpServer;
+  const httpServer = await prepareHttpServer(handler, doSSL);
 
-  if (doSSL) {
-    const cert = await readFileSync(process.cwd() + "/certificates/cert.pem");
-    const key = await readFileSync(process.cwd() + "/certificates/key.pem");
-
-    httpServer = createHttpsServer({ key: key, cert: cert }, handler);
-  } else {
-    httpServer = createHttpServer(handler);
-  }
+  await checkDatabaseConnection();
 
   let slackApp: App | undefined;
 
