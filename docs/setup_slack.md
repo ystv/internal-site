@@ -51,6 +51,16 @@ Sroll down slightly to `User Token Scopes` and add `team.read`.
 
 You can now scroll up to the top of the page and click `Install to Workspace`. Click `Allow` when prompted. This should take you back to the **OAuth & Permissions** page. Towards the top of the page you should see `Bot User OAuth Token`. Copy the value of this over to `SLACK_BOT_TOKEN`.
 
+## Setting up channels
+
+This app uses a number of slack channels for integration with check-with-tech responses, feedback, and others. These three channels are:
+
+- `SLACK_CHECK_WITH_TECH_CHANNEL` - Used for check-with-tech requests
+- `SLACK_TECH_HELP_CHANNEL` - Used for help with tech requests
+- `SLACK_USER_FEEDBACK_CHANNEL` - Used for user feedback via the feedback form at the bottom of each page
+
+Once you have channels you would like to use for this purpose, get the channel ID by copying the link of the channel and taking the last bit of the link that looks something like `C07J1G4L0BA` and set the variables accordingly.
+
 ## Enable Integration
 
-Once these five variables are set, enable the integration by setting `SLACK_ENABLED` to `true`. If you start up your instance you should now be able to link your Slack account from your user profile and start assigning channels to events. If you have any questions ask Max because he's probably made it a bit complicated.
+Once all these variables are set, enable the integration by setting `SLACK_ENABLED` to `true`. If you start up your instance you should now be able to link your Slack account from your user profile and start assigning channels to events. If you have any questions ask Max because he's probably made it a bit complicated.
