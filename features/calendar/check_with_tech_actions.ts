@@ -54,20 +54,25 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
       },
     },
   });
+
+  const api = await slackApiConnection();
+
   if (!actor) {
-    await respond({
+    await api.client.chat.postEphemeral({
+      channel: body.channel!.id,
+      user: body.user.id,
       text: `Please <${env.PUBLIC_URL}/user/me|link your Internal Site profile to Slack> to use this feature.`,
     });
     return;
   }
   if (!userHasPermission(actor.user_id, "CheckWithTech.Admin")) {
-    await respond({
+    await api.client.chat.postEphemeral({
+      channel: body.channel!.id,
+      user: body.user.id,
       text: "You do not have permission to use this feature.",
     });
     return;
   }
-
-  const api = await slackApiConnection();
 
   const type = action.action_id.replace(/^checkWithTech#/, "");
   invariant(action.value, "Value not found in action");
@@ -81,7 +86,9 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
     },
   });
   if (!cwt) {
-    await respond({
+    await api.client.chat.postEphemeral({
+      channel: body.channel!.id,
+      user: body.user.id,
       text: "Something went wrong internally (CWT object not found). Please report this to the Computing Team.",
     });
     return;
@@ -223,7 +230,9 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
       });
       break;
     default:
-      await respond({
+      await api.client.chat.postEphemeral({
+        channel: body.channel!.id,
+        user: body.user.id,
         text: `Something went wrong internally (unknown action type ${type}). Please report this to the Computing Team.`,
       });
   }
