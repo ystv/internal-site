@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon",
     "devSSL": "DEV_SSL=true nodemon",
-    "build": "next build && tsc --project tsconfig.server.json",
+    "build": "next build && yarn build:server",
+    "build:server": "tsc -p tsconfig.server.json && tsc-alias -p tsconfig.server.json",
     "start": "NODE_ENV=production node dist/server/index.js",
     "lint": "next lint",
     "test": "lint-staged",
@@ -116,6 +117,7 @@
     "storybook": "^7.0.27",
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.1",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.16.2",
     "zod-prisma": "^0.5.4"
   },
