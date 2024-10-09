@@ -15,7 +15,7 @@ async function slackApiConnection() {
     global.slack = new App({
       token: env.SLACK_BOT_TOKEN,
       signingSecret: env.SLACK_SIGNING_SECRET,
-      socketMode: true,
+      socketMode: env.SLACK_DISABLE_SOCKET_MODE !== "true",
       appToken: env.SLACK_APP_TOKEN,
       redirectUri: `${env.PUBLIC_URL}/login/slack/callback`,
       installerOptions: {
