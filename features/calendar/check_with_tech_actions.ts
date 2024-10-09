@@ -1,4 +1,4 @@
-import { getUserName } from "@/components/UserHelpers";
+import { getUserName } from "../../components/UserHelpers";
 import { userHasPermission } from "@/lib/auth/core";
 import { prisma } from "@/lib/db";
 import invariant from "@/lib/invariant";
