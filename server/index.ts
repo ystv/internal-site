@@ -7,7 +7,7 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "../lib/slack/slackApiConnection";
 import { App } from "@slack/bolt";
-import { setupActionHandlers } from "@/lib/slack/actions";
+import { setupActionHandlers } from "../lib/slack/actions";
 import { checkDatabaseConnection, prepareHttpServer } from "./lib";
 
 const dev = env.NODE_ENV !== "production";
