@@ -16,6 +16,7 @@ async function slackApiConnection() {
       token: env.SLACK_BOT_TOKEN,
       signingSecret: env.SLACK_SIGNING_SECRET,
       socketMode: env.SLACK_DISABLE_SOCKET_MODE !== "true",
+      port: 0, // We never want it to listen on a port
       appToken: env.SLACK_APP_TOKEN,
       redirectUri: `${env.PUBLIC_URL}/login/slack/callback`,
       installerOptions: {
