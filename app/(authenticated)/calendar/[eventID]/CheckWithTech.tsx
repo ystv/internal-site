@@ -9,6 +9,8 @@ import {
   ModalContent,
   ModalHeader,
   ModalTitle,
+  Space,
+  Stack,
   Textarea,
 } from "@mantine/core";
 import { Suspense, cache, use, useState, useTransition } from "react";
@@ -229,20 +231,22 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
           #CheckWithTech request from {getUserName(cwt.submitted_by_user)}
         </strong>
         <p>{cwt.request}</p>
-        {cwt.unsure && (
-          <strong>
-            Note: {cwt.submitted_by_user.first_name} was not sure of what they
-            need - please get in touch and amend as needed
-          </strong>
-        )}
-        {cwt.notes.length > 0 && <p>Notes: {cwt.notes}</p>}
-        {cwt.status !== "Requested" && (
-          <strong>
-            {cwt.status}
-            {cwt.confirmed_by_user &&
-              " by " + getUserName(cwt.confirmed_by_user)}
-          </strong>
-        )}
+        <Stack>
+          {cwt.unsure && (
+            <strong>
+              Note: {cwt.submitted_by_user.first_name} was not sure of what they
+              need - please get in touch and amend as needed
+            </strong>
+          )}
+          {cwt.notes.length > 0 && <p>Notes: {cwt.notes}</p>}
+          {cwt.status !== "Requested" && (
+            <strong>
+              {cwt.status}
+              {cwt.confirmed_by_user &&
+                " by " + getUserName(cwt.confirmed_by_user)}
+            </strong>
+          )}
+        </Stack>
         {cwt.status === "Requested" && (
           <ButtonGroup>
             <Button onClick={() => setModalOpen("approve")} color="green">
@@ -255,6 +259,7 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
           </ButtonGroup>
         )}
       </Alert>
+      <Space h={"md"} />
       <Modal opened={modalOpen !== null} onClose={() => setModalOpen(null)}>
         <ModalHeader>
           <ModalTitle>
