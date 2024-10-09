@@ -71,7 +71,9 @@ model User {
   hosted_events                   Event[]      @relation("event_host_user")
 
   /// [UserPreferences]
-  preferences Json @default("{}")
+  preferences               Json            @default("{}")
+  check_with_tech_confirmed CheckWithTech[] @relation("confirmed")
+  check_with_tech_submitted CheckWithTech[] @relation("submitted")
 
   @@map("users")
 }
@@ -118,39 +120,62 @@ model Crew {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Event {
-  event_id               Int                  @id @default(autoincrement())
-  event_type             String               @default("other")
-  name                   String
-  start_date             DateTime             @db.Timestamptz(6)
-  end_date               DateTime             @db.Timestamptz(6)
-  description            String               @default("")
-  location               String               @default("")
-  is_private             Boolean              @default(false)
-  is_cancelled           Boolean              @default(false)
-  is_tentative           Boolean              @default(false)
-  created_at             DateTime             @default(now()) @db.Timestamptz(6)
-  created_by             Int
-  updated_at             DateTime?            @db.Timestamptz(6)
-  updated_by             Int?
-  deleted_at             DateTime?            @db.Timestamptz(6)
-  deleted_by             Int?
-  host                   Int
-  adam_rms_project_id    Int?
-  slack_channel_id       String               @default("")
-  check_with_tech_status CheckWithTechStatus?
+  event_id            Int       @id @default(autoincrement())
+  event_type          String    @default("other")
+  name                String
+  start_date          DateTime  @db.Timestamptz(6)
+  end_date            DateTime  @db.Timestamptz(6)
+  description         String    @default("")
+  location            String    @default("")
+  is_private          Boolean   @default(false)
+  is_cancelled        Boolean   @default(false)
+  is_tentative        Boolean   @default(false)
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  created_by          Int
+  updated_at          DateTime? @db.Timestamptz(6)
+  updated_by          Int?
+  deleted_at          DateTime? @db.Timestamptz(6)
+  deleted_by          Int?
+  host                Int
+  adam_rms_project_id Int?
+  slack_channel_id    String    @default("")
 
   attendees       Attendee[]
-  created_by_user User          @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  deleted_by_user User?         @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  updated_by_user User?         @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  host_user       User          @relation("event_host_user", fields: [host], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  created_by_user User            @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  deleted_by_user User?           @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  updated_by_user User?           @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  host_user       User            @relation("event_host_user", fields: [host], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   signup_sheets   SignupSheet[]
+  check_with_tech CheckWithTech[]
 
   @@map("events")
 }
 
+model CheckWithTech {
+  cwt_id   Int   @id @default(autoincrement())
+  event_id Int
+  event    Event @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
+
+  submitted_by      Int
+  submitted_by_user User     @relation("submitted", fields: [submitted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  submitted_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  status  CheckWithTechStatus @default(Requested)
+  request String
+  notes   String              @default("")
+  unsure  Boolean             @default(false)
+
+  slack_message_ts String?
+
+  confirmed_by      Int?
+  confirmed_by_user User?     @relation("confirmed", fields: [confirmed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  confirmed_at      DateTime? @db.Timestamptz(6)
+}
+
 enum CheckWithTechStatus {
   Requested
+  Confirmed
+  Rejected
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.

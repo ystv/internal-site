@@ -11,7 +11,7 @@ import { useCallback, useState, useTransition } from "react";
 import classNames from "classnames";
 import { FieldPath } from "react-hook-form/dist/types/path";
 import { DebugOnly } from "@/components/DebugMode";
-import { Button } from "@mantine/core";
+import { Button, DefaultMantineColor } from "@mantine/core";
 
 export interface FormErrorResponse<Fields extends FieldValues = any> {
   ok: false;
@@ -44,6 +44,7 @@ export default function Form<
   children: React.ReactNode;
   className?: string;
   submitLabel?: string;
+  submitColor?: DefaultMantineColor;
   onSuccess?: (res: SuccessfulResponse) => void;
 }) {
   const form = useForm<z.infer<Schema>>({
@@ -106,6 +107,7 @@ export default function Form<
             type="submit"
             disabled={!form.formState.isValid}
             loading={isSubmitting}
+            color={props.submitColor}
           >
             {props.submitLabel ?? "Create"}
           </Button>

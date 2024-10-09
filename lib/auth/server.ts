@@ -2,8 +2,8 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { Forbidden, NotLoggedIn } from "./errors";
 import { Permission } from "./permissions";
-import { Identity, User } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { Identity } from "@prisma/client";
+import { NextRequest } from "next/server";
 import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -12,34 +12,9 @@ import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
 import { env } from "../env";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cache } from "react";
+import { UserType, resolvePermissionsForUser, userHasPermission } from "./core";
 
-export interface UserWithIdentities extends User {
-  identities: Identity[];
-}
-
-export type UserType = UserWithIdentities & {
-  permissions: Permission[];
-};
-
-const resolvePermissionsForUser = cache(
-  async function resolvePermissionsForUser(userID: number) {
-    const result = await prisma.rolePermission.findMany({
-      where: {
-        roles: {
-          role_members: {
-            some: {
-              user_id: userID,
-            },
-          },
-        },
-      },
-      select: {
-        permission: true,
-      },
-    });
-    return result.map((r) => r.permission as Permission);
-  },
-);
+export * from "./core";
 
 /**
  * Ensures that the currently signed-in user has at least one of the given permissions,
@@ -166,17 +141,7 @@ export async function ensureNoActiveSession(
  */
 export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   const user = await getCurrentUser();
-  const userPerms = await resolvePermissionsForUser(user.user_id);
-  for (const perm of perms) {
-    if (userPerms.includes(perm)) {
-      return true;
-    }
-  }
-  // noinspection RedundantIfStatementJS
-  if (userPerms.includes("SuperUser")) {
-    return true;
-  }
-  return false;
+  return await userHasPermission(user, ...perms);
 }
 
 export async function loginOrCreateUserGoogle(rawGoogleToken: string) {
