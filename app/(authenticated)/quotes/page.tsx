@@ -3,6 +3,7 @@ import { requirePermission } from "@/lib/auth/server";
 import { AddQuote, QuoteView } from "./AddEditQuoteForm";
 import { Stack } from "@mantine/core";
 import { QuotesPagination } from "./pagination";
+import { PageInfo } from "@/components/PageInfo";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export default async function QuotesPage(props: {
 
   return (
     <div>
+      <PageInfo title="Quotes Board" />
       <h1>Quotes</h1>
       <Stack>
         {total > 0 ? (

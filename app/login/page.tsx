@@ -7,6 +7,7 @@ import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { Center, Stack } from "@mantine/core";
 import { env } from "@/lib/env";
 import { ensureNoActiveSession } from "@/lib/auth/server";
+import { PageInfo } from "@/components/PageInfo";
 
 export default async function GoogleSignInPage(props: {
   searchParams: { error?: string; redirect?: string };
@@ -17,6 +18,7 @@ export default async function GoogleSignInPage(props: {
 
   return (
     <div className="relative block h-full w-full">
+      <PageInfo title="Login" />
       <Image
         src={BG}
         alt=""

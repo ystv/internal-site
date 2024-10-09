@@ -1,6 +1,7 @@
 import { listVacantEvents } from "@/features/calendar/events";
 import { CrewPositionType, getAllCrewPositions } from "@/features/calendar";
 import { DiscoverView } from "@/app/(authenticated)/calendar/discover/DiscoverView";
+import { PageInfo } from "@/components/PageInfo";
 
 export default async function CalendarDiscoverPage({
   searchParams,
@@ -44,11 +45,14 @@ export default async function CalendarDiscoverPage({
   });
 
   return (
-    <DiscoverView
-      vacantRoles={vacantRoles}
-      crewPositions={crewPositions}
-      position={position}
-    />
+    <>
+      <PageInfo title="Discover Roles" />
+      <DiscoverView
+        vacantRoles={vacantRoles}
+        crewPositions={crewPositions}
+        position={position}
+      />
+    </>
   );
 }
 
