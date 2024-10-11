@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import MuxVideo from "@mux/mux-video-react";
 import { Box, LoadingOverlay } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 
 export function WebcamView(props: {
   webcamUrl: string;
@@ -12,18 +11,30 @@ export function WebcamView(props: {
 }) {
   const ref = useRef<HTMLVideoElement>(null);
 
-  const [videoReady, { open: setReady, close: setUnready }] =
-    useDisclosure(false);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
-    // The four (4) here is the value of readyState when a video element is ready to play
-    // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
-    if (ref.current?.readyState === 4) {
-      setReady();
-    } else {
-      setUnready();
+    const el = ref.current;
+    if (!el) {
+      return;
     }
-  }, [ref.current?.readyState, setReady, setUnready]);
+    function isReady() {
+      setVideoReady(true);
+    }
+    function isNotReady() {
+      setVideoReady(false);
+    }
+    el.addEventListener("canplay", isReady);
+    for (const evt of ["stalled", "waiting", "error"]) {
+      el.addEventListener(evt, isNotReady);
+    }
+    return () => {
+      el.removeEventListener("canplay", isReady);
+      for (const evt of ["stalled", "waiting", "error"]) {
+        el.removeEventListener(evt, isNotReady);
+      }
+    };
+  }, [props.webcamUrl]);
 
   return (
     <>
@@ -35,6 +46,7 @@ export function WebcamView(props: {
         />
       </Box>
       <MuxVideo
+        key={props.webcamUrl}
         src={props.webcamUrl}
         autoPlay
         playsInline
