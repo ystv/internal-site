@@ -14,6 +14,8 @@ export function WebcamView(props: {
   const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
+    // Copy the element ref so that we can still reference it in the
+    // cleanup callback.
     const el = ref.current;
     if (!el) {
       return;
@@ -34,6 +36,8 @@ export function WebcamView(props: {
         el.removeEventListener(evt, isNotReady);
       }
     };
+    // Since the key of the video element is also webcamUrl, this effect
+    // will clean up and re-run whenever the webcamUrl changes.
   }, [props.webcamUrl]);
 
   return (

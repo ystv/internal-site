@@ -1,4 +1,3 @@
-import { userHasPermission } from "@/lib/auth/core";
 import slackApiConnection from "@/lib/slack/slackApiConnection";
 import { getEvent } from "./events";
 import dayjs from "dayjs";
@@ -8,14 +7,10 @@ import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import {
   getCurrentUser,
-  hasPermission,
   mustGetCurrentUser,
   requirePermission,
 } from "@/lib/auth/server";
 import { ExposedUserModel } from "../people/users";
-import * as AdamRMS from "@/lib/adamrms";
-import { getUserName } from "@/components/UserHelpers";
-import { addProjectToAdamRMS } from "./adamRMS";
 import { _sendCWTFollowUpAndUpdateMessage } from "./check_with_tech_actions";
 import invariant from "@/lib/invariant";
 
