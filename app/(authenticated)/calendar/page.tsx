@@ -12,6 +12,7 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import { fetchEvents } from "./actions";
+import { calendarEventsQueryKey } from "./helpers";
 
 export default async function CalendarPage() {
   await mustGetCurrentUser();
@@ -22,15 +23,11 @@ export default async function CalendarPage() {
   // Prefetch the "most likely" initial load state, that being the current month.
   // The client may immediately trigger another fetch if its view state is different.
   await qc.prefetchQuery({
-    queryKey: [
-      "fetchEvents",
-      {
-        year: now.getFullYear(),
-        month: now.getMonth(),
-        day: now.getDate(),
-        filter: "all",
-      },
-    ] as const,
+    queryKey: calendarEventsQueryKey({
+      year: now.getFullYear(),
+      month: now.getMonth(),
+      filter: "all",
+    }),
     queryFn: (args) => fetchEvents(args.queryKey[1]),
   });
 

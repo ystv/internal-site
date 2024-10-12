@@ -31,6 +31,7 @@ import { useUserPreferences } from "../../../components/UserContext";
 import { z } from "zod";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchEvents } from "./actions";
+import { calendarEventsQueryKey } from "./helpers";
 
 dayjs.extend(weekOfYear);
 
@@ -126,22 +127,17 @@ export default function YSTVCalendar() {
   }
 
   const selectedFilter = state.filter;
-  const selectedDate = new Date(state.year, state.month, state.day);
 
   const {
     data: events,
     isFetching,
     isPlaceholderData,
   } = useQuery({
-    queryKey: [
-      "fetchEvents",
-      {
-        year: selectedDate.getFullYear(),
-        month: selectedDate.getMonth(),
-        day: selectedDate.getDate(),
-        filter: selectedFilter,
-      },
-    ] as const,
+    queryKey: calendarEventsQueryKey({
+      year: state.year,
+      month: state.month,
+      filter: selectedFilter,
+    }),
     queryFn: (args) => fetchEvents(args.queryKey[1]),
     staleTime: 60_000,
     placeholderData: keepPreviousData,
@@ -162,6 +158,8 @@ export default function YSTVCalendar() {
         <Loader />
       </div>
     );
+
+  const selectedDate = new Date(state.year, state.month, state.day);
 
   return (
     <>

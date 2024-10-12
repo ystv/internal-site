@@ -2,12 +2,7 @@
 
 import { wrapServerAction } from "@/lib/actions";
 import { mustGetCurrentUser } from "@/lib/auth/server";
-import {
-  EventObjectType,
-  EventTypes,
-  listEvents,
-  listVacantEvents,
-} from "@/features/calendar";
+import { EventTypes, listEvents, listVacantEvents } from "@/features/calendar";
 import invariant from "@/lib/invariant";
 import dayjs from "dayjs";
 import { z } from "zod";
@@ -17,31 +12,25 @@ dayjs.locale("en-gb");
 export async function getCalendarEvents({
   year,
   month,
-  day,
   userID,
 }: {
   year: number;
   month: number;
-  day: number;
   userID?: number;
 }) {
-  const [start, end] = dateRangeForView(year, month, day);
+  const [start, end] = dateRangeForView(year, month);
   return await listEvents(start, end, userID);
 }
 
-function dateRangeForView(
-  year: number,
-  month: number,
-  day: number,
-): [Date, Date] {
-  let start = dayjs(new Date(year, month, day));
-  let end = dayjs(new Date(year, month, day));
+function dateRangeForView(year: number, month: number): [Date, Date] {
+  let start = dayjs(new Date(year, month));
+  let end = dayjs(new Date(year, month));
 
   // We always fetch the full month, plus a week on either side
   // to ensure we have all the events we need for the view (including week view,
   // which can straddle a month boundary).
-  start = start.subtract(1, "week");
-  end = end.add(1, "month").add(1, "week");
+  start = start.startOf("month").subtract(1, "week");
+  end = end.endOf("month").add(1, "week");
 
   return [start.toDate(), end.toDate()];
 }
@@ -62,12 +51,10 @@ export const fetchEvents = wrapServerAction(
   async function fetchEvents({
     year,
     month,
-    day,
     filter,
   }: {
     year: number;
     month: number;
-    day: number;
     filter?: "all" | "mine" | "vacant";
   }): Promise<MinimalEvent[]> {
     const me = await mustGetCurrentUser();
@@ -75,13 +62,12 @@ export const fetchEvents = wrapServerAction(
     switch (filter) {
       case "all":
       case undefined:
-        events = await getCalendarEvents({ year, month, day });
+        events = await getCalendarEvents({ year, month });
         break;
       case "mine":
         events = await getCalendarEvents({
           year,
           month,
-          day,
           userID: me.user_id,
         });
         break;
