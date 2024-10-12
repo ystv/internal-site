@@ -7,7 +7,7 @@ export function calendarEventsQueryKey({
 }: {
   year: number;
   month: number;
-  filter?: "all" | "mine" | "vacant";
+  filter: "all" | "mine" | "vacant";
 }) {
   return ["fetchEvents", { year, month, filter }] as const satisfies QueryKey;
 }
