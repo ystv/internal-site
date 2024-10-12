@@ -106,17 +106,26 @@ export default function YSTVCalendar() {
     year: currentDate.getFullYear(),
     month: currentDate.getMonth(),
     day: currentDate.getDate(),
-    view: isMobileView ? "dayGridWeek" : "dayGridMonth",
+    view: undefined,
     filter: "all",
     ...historyState,
   } satisfies z.infer<typeof HistoryStateSchema>);
-  function setState(data: Partial<typeof state>) {
-    _setState((prev) => ({ ...prev, ...data }));
-  }
+
   useEffect(() => {
     history.replaceState(state, "");
   }, [state]);
-  const { view: selectedView, filter: selectedFilter } = state;
+
+  function setState(data: Partial<typeof state>) {
+    _setState((prev) => ({ ...prev, ...data }));
+  }
+
+  if (state.view === undefined && isMobileView !== undefined) {
+    setState({
+      view: isMobileView ? "dayGridWeek" : "dayGridMonth",
+    });
+  }
+
+  const selectedFilter = state.filter;
   const selectedDate = new Date(state.year, state.month, state.day);
 
   const {
@@ -127,13 +136,9 @@ export default function YSTVCalendar() {
     queryKey: [
       "fetchEvents",
       {
-        // TODO: This causes an unnecessary refetch when we go to a view with a smaller date range
-        // that is fully covered by the range fetched previously. We may need to be a bit clever
-        // about we handle refetches, to only fetch when the date range becomes bigger.
         year: selectedDate.getFullYear(),
         month: selectedDate.getMonth(),
         day: selectedDate.getDate(),
-        view: selectedView,
         filter: selectedFilter,
       },
     ] as const,
@@ -367,7 +372,7 @@ export default function YSTVCalendar() {
               eventObject.color = "#B00020";
               eventObject.className = "ystv-calendar-strike-through";
             }
-            if (evt.end_date < currentDate) {
+            if (evt.end_date.valueOf() < currentDate.valueOf()) {
               eventObject.className += " opacity-50";
             }
             return eventObject;

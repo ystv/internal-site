@@ -4,11 +4,13 @@ import { wrapServerAction } from "@/lib/actions";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import {
   EventObjectType,
+  EventTypes,
   listEvents,
   listVacantEvents,
 } from "@/features/calendar";
 import invariant from "@/lib/invariant";
 import dayjs from "dayjs";
+import { z } from "zod";
 
 dayjs.locale("en-gb");
 
@@ -16,16 +18,14 @@ export async function getCalendarEvents({
   year,
   month,
   day,
-  view,
   userID,
 }: {
   year: number;
   month: number;
   day: number;
-  view?: string;
   userID?: number;
 }) {
-  const [start, end] = dateRangeForView(year, month, day, view);
+  const [start, end] = dateRangeForView(year, month, day);
   return await listEvents(start, end, userID);
 }
 
@@ -33,34 +33,29 @@ function dateRangeForView(
   year: number,
   month: number,
   day: number,
-  view?: string,
 ): [Date, Date] {
-  // These are just starting points, they'll shift depending on the view
   let start = dayjs(new Date(year, month, day));
   let end = dayjs(new Date(year, month, day));
 
-  switch (view) {
-    case "dayGridWeek":
-      // set end to the next Monday because the query does a <, not a <=
-      start = start.startOf("week");
-      end = start.endOf("week").add(1, "day");
-      break;
-    case "timeGridDay":
-      // add a day because the query does a <, not a <=
-      end = end.add(1, "day");
-      break;
-    case "dayGridMonth":
-    case "listMonth":
-    case undefined:
-      start = start.startOf("month");
-      end = start.endOf("month").add(1, "day");
-      break;
-    default:
-      invariant(false, `Unknown calendar view ${view}`);
-  }
+  // We always fetch the full month, plus a week on either side
+  // to ensure we have all the events we need for the view (including week view,
+  // which can straddle a month boundary).
+  start = start.subtract(1, "week");
+  end = end.add(1, "month").add(1, "week");
 
   return [start.toDate(), end.toDate()];
 }
+
+const MinimalEventSchema = z.object({
+  event_id: z.number(),
+  event_type: z.enum(EventTypes),
+  name: z.string(),
+  start_date: z.date(),
+  end_date: z.date(),
+  is_tentative: z.boolean(),
+  is_cancelled: z.boolean(),
+});
+export type MinimalEvent = z.infer<typeof MinimalEventSchema>;
 
 export const fetchEvents = wrapServerAction(
   "fetchEvents",
@@ -68,34 +63,36 @@ export const fetchEvents = wrapServerAction(
     year,
     month,
     day,
-    view,
     filter,
   }: {
     year: number;
     month: number;
     day: number;
-    view?: string;
     filter?: "all" | "mine" | "vacant";
-  }): Promise<EventObjectType[]> {
+  }): Promise<MinimalEvent[]> {
     const me = await mustGetCurrentUser();
+    let events;
     switch (filter) {
       case "all":
       case undefined:
-        return getCalendarEvents({ year, month, day, view });
+        events = await getCalendarEvents({ year, month, day });
+        break;
       case "mine":
-        return getCalendarEvents({
+        events = await getCalendarEvents({
           year,
           month,
           day,
-          view,
           userID: me.user_id,
         });
+        break;
       case "vacant":
-        return (
+        events = (
           await listVacantEvents({ role: undefined, date: { year, month } })
         ).events;
+        break;
       default:
         invariant(false, `Unknown filter ${filter}`);
     }
+    return events.map((event) => MinimalEventSchema.parse(event));
   },
 );

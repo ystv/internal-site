@@ -28,6 +28,7 @@ export default async function CalendarPage() {
         year: now.getFullYear(),
         month: now.getMonth(),
         day: now.getDate(),
+        filter: "all",
       },
     ] as const,
     queryFn: (args) => fetchEvents(args.queryKey[1]),
