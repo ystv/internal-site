@@ -3,7 +3,10 @@
 def imageTag = ''
 pipeline {
   agent {
-    label 'docker'
+    node {
+      label 'docker && ramdisk'
+      customWorkspace '/mnt/ramdisk/build/workspace/calendar'
+    }
   }
 
   environment {
