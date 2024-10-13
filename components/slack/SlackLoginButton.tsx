@@ -8,6 +8,7 @@ import SlackIcon from "../icons/SlackIcon";
 export default function SlackLoginButton(props: {
   slackClientID: string;
   redirect?: string;
+  height?: number | string;
 }) {
   const publicURL = usePublicURL();
   const searchParams = useSearchParams();
@@ -37,7 +38,7 @@ export default function SlackLoginButton(props: {
         fontFamily: "Lato, sans-serif",
         fontSize: 16,
         fontWeight: 600,
-        height: 48,
+        height: props.height ?? 48,
         justifyContent: "center",
         textDecoration: "none",
         width: 256,
