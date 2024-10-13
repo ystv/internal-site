@@ -150,6 +150,10 @@ function PostMessage(props: {
                         request is approved, as well as to use other Slack
                         features.
                       </p>
+                      <p>
+                        If you change your mind, click your profile picture at
+                        the top-right to connect or disconnect Slack later.
+                      </p>
                       <ButtonGroup>
                         <Button
                           onClick={() => modals.closeAll()}
