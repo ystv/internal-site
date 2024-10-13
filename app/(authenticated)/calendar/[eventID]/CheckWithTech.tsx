@@ -297,7 +297,7 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
       <Space h={"md"} />
       <Modal opened={modalOpen !== null} onClose={() => setModalOpen(null)}>
         <ModalHeader>
-          <ModalTitle>
+          <ModalTitle className="!text-xl !font-bold">
             {modalOpen === "approve"
               ? "Approve"
               : modalOpen === "note"
@@ -338,6 +338,17 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
                 <TextAreaField name="request" label="Request" autosize />
               )}
               <TextAreaField name="note" label="Notes" autosize />
+              {!cwt.userHasSlack && (
+                <Alert
+                  color="orange"
+                  title="User does not have Slack linked"
+                  className="mt-2"
+                >
+                  The requestor does not have a linked Slack account, so they
+                  will not receive a message. Please get in touch with them
+                  directly.
+                </Alert>
+              )}
             </Form>
           )}
         </ModalBody>
