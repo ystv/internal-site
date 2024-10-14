@@ -1,7 +1,4 @@
-import {
-  getCurrentUserOrNull,
-  loginOrCreateUserSlack,
-} from "@/lib/auth/server";
+import { loginOrCreateUserSlack } from "@/lib/auth/server";
 import { getSlackUserInfo } from "@/lib/auth/slack";
 import { env } from "@/lib/env";
 import { NextResponse, type NextRequest } from "next/server";
@@ -23,8 +20,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 
   const slackUserInfo = await getSlackUserInfo(code, redirect);
-  let _user = await getCurrentUserOrNull(req);
-  _user = await loginOrCreateUserSlack(slackUserInfo);
+  await loginOrCreateUserSlack(slackUserInfo);
 
   var url = new URL(redirect ?? "/user/me", env.PUBLIC_URL!);
 
