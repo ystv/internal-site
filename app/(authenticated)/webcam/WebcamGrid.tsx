@@ -4,7 +4,7 @@ import { WebcamView } from "@/app/(authenticated)/webcam/WebcamView";
 import { PermissionGate } from "@/components/contexts/UserContext";
 import { Card, Grid, Group, Stack, Text } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
-import { WebcamFeed } from "@prisma/client";
+import type { WebcamFeed } from "@prisma/client";
 import { use } from "react";
 import { addWebcam, editWebcam, removeWebcam } from "./actions";
 import { WebcamCreateForm, WebcamEditForm, WebcamRemoveForm } from "./form";

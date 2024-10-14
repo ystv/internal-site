@@ -1,10 +1,10 @@
 "use client";
 
 import Form, {
-  FormResponse,
   HiddenField,
   SelectField,
   TextAreaField,
+  type FormResponse,
 } from "@/components/forms";
 import { notifications } from "@mantine/notifications";
 import { identity } from "lodash";

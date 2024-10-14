@@ -1,9 +1,9 @@
 "use client";
 
 import { MyRoleSignUpModal } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
-import { CrewPositionsTypeWithAvailability } from "@/app/(authenticated)/calendar/discover/page";
+import type { CrewPositionsTypeWithAvailability } from "@/app/(authenticated)/calendar/discover/page";
 import { DateTime } from "@/components/helpers/DateTimeHelpers";
-import { CrewType, EventObjectType } from "@/features/calendar";
+import type { CrewType, EventObjectType } from "@/features/calendar";
 import {
   ActionIcon,
   Button,

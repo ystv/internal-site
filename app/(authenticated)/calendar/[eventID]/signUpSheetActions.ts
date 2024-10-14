@@ -1,7 +1,7 @@
 "use server";
 
 import { SignupSheetSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
-import { FormResponse, zodErrorResponse } from "@/components/forms";
+import { zodErrorResponse, type FormResponse } from "@/components/forms";
 import * as Calendar from "@/features/calendar";
 import {
   canManage,
@@ -60,7 +60,7 @@ export const fetchSignUpSheet = wrapServerAction(
   async function fetchSignUpSheet(
     sheetID: number,
   ): Promise<Calendar.SignUpSheetType | undefined> {
-    const me = await getCurrentUser();
+    await getCurrentUser();
 
     const sheet = await Calendar.getSignUpSheet(sheetID);
     if (!sheet) {

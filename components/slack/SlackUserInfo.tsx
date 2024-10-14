@@ -5,7 +5,7 @@ import slackApiConnection, {
 } from "@/lib/slack/slackApiConnection";
 import { Avatar, Card, Group, Stack, Text } from "@mantine/core";
 import * as Sentry from "@sentry/nextjs";
-import { App } from "@slack/bolt";
+import type { App } from "@slack/bolt";
 import { redirect } from "next/navigation";
 import SlackLogoutButton from "./SlackLogoutButton";
 

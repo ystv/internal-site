@@ -9,7 +9,7 @@ import Form, {
   TextAreaField,
   TextField,
 } from "@/components/forms";
-import { EventObjectType } from "@/features/calendar";
+import type { EventObjectType } from "@/features/calendar";
 import { Alert, Button, Menu, Modal, Select, Text } from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import Image from "next/image";

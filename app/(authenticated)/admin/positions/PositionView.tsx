@@ -19,19 +19,19 @@ import {
   Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Position } from "@prisma/client";
+import type { Position } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import { z } from "zod";
+import type { z } from "zod";
 import { PositionCard } from "./PositionCard";
 import {
-  TFetchPositions,
   createPositionAction,
   deletePositionAction,
   fetchPositionsAction,
   updatePositionAction,
+  type TFetchPositions,
 } from "./actions";
 import { CreatePositionForm, UpdatePositionForm } from "./form";
 import { searchParamsSchema } from "./schema";
@@ -73,6 +73,7 @@ export function PositionView(props: { initialPositions: TFetchPositions }) {
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParamsState]);
 
   // States for modals

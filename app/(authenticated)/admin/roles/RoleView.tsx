@@ -6,7 +6,7 @@ import {
   PageControls,
   PaginationProvider,
 } from "@/components/navigation/Pagination";
-import { RoleWithPermissions } from "@/features/people";
+import type { RoleWithPermissions } from "@/features/people";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { useValidSearchParams } from "@/lib/searchParams/validate";
 import {
@@ -24,14 +24,14 @@ import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import { z } from "zod";
+import type { z } from "zod";
 import { RoleCard } from "./RoleCard";
 import {
-  TFetchRoles,
   createRoleAction,
   deleteRoleAction,
   fetchRolesAction,
   updateRoleAction,
+  type TFetchRoles,
 } from "./actions";
 import { CreateRoleForm, UpdateRoleForm } from "./form";
 import { searchParamsSchema } from "./schema";
@@ -73,6 +73,7 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParamsState]);
 
   // States for modals

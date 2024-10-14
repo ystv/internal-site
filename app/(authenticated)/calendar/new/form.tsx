@@ -5,15 +5,15 @@ import Form, {
   CheckBoxField,
   ConditionalField,
   DatePickerField,
-  FormAction,
   SearchedMemberSelect,
   SegmentedField,
   SlackChannelField,
   TextAreaField,
   TextField,
+  type FormAction,
 } from "@/components/forms";
 import { useSlackEnabled } from "@/components/slack/SlackEnabledProvider";
-import { EventType } from "@/features/calendar/types";
+import type { EventType } from "@/features/calendar/types";
 import { Alert, InputLabel } from "@mantine/core";
 import { identity } from "lodash";
 import { useRouter } from "next/navigation";

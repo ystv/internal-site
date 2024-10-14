@@ -1,5 +1,5 @@
 "use client";
-import { EventInput, formatDate } from "@fullcalendar/core";
+import { formatDate, type EventInput } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
 import FullCalendar from "@fullcalendar/react";

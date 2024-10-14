@@ -13,17 +13,17 @@ import {
 import { DateTime } from "@/components/helpers/DateTimeHelpers";
 import { getUserName } from "@/components/helpers/UserHelpers";
 import { useWebsocket } from "@/components/providers/WebsocketProvider";
-import { EventObjectType } from "@/features/calendar/events";
+import type { EventObjectType } from "@/features/calendar/events";
 import {
   canManage,
   canManageSignUpSheet,
 } from "@/features/calendar/permissions";
-import {
+import type {
   CrewType,
   SignUpSheetType,
   SignUpSheetWithEvent,
 } from "@/features/calendar/signup_sheets";
-import { ExposedUser } from "@/features/people";
+import type { ExposedUser } from "@/features/people";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
 import {
@@ -57,11 +57,11 @@ function SignupSheet({
 }) {
   const [sheetState, setSheetState] = useState(sheet);
 
-  const { socket, isConnected, transport } = useWebsocket();
+  const { socket } = useWebsocket();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    async function onSheetUpdate(value: any) {
+    async function onSheetUpdate(_value: any) {
       const res = await fetchSignUpSheet(sheet.signup_id);
 
       if (res) {
@@ -141,7 +141,7 @@ function SignupSheet({
           >
             {sheetState.crews
               .sort((a, b) => a.ordering - b.ordering)
-              .map((crew, index) => {
+              .map((crew, _index) => {
                 const isProducer = crew.positions.admin;
 
                 return (
@@ -460,7 +460,6 @@ export function SignupSheetsView({
   me: UserType;
 }) {
   invariant(event.signup_sheets, "no signup_sheets for SignupSheetsView");
-  const [isPending, startTransition] = useTransition();
   const [isCreateOpen, setCreateOpen] = useState(false);
   return (
     <>

@@ -2,8 +2,8 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Socket, io } from "socket.io-client";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { io, type Socket } from "socket.io-client";
+import type { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 export const socket = io();
 
@@ -53,6 +53,7 @@ export function useCreateSocket(): TSocket {
       socket.off("invalidSession", onInvalidSession);
       socket.off("disconnect", onDisconnect);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { socket, isConnected, transport };

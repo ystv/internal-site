@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Card, Group, Stack, Text } from "@mantine/core";
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import type { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { useRouter } from "next/navigation";
 import { deleteCookie } from "./actions";
 

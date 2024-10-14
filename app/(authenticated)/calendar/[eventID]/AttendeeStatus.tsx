@@ -2,8 +2,11 @@
 import { updateAttendeeStatus } from "@/app/(authenticated)/calendar/[eventID]/actions";
 import Spinner from "@/components/Spinner";
 import { getUserName } from "@/components/helpers/UserHelpers";
-import { EventObjectType } from "@/features/calendar/events";
-import { AttendStatus, AttendStatusLabels } from "@/features/calendar/statuses";
+import type { EventObjectType } from "@/features/calendar/events";
+import {
+  AttendStatusLabels,
+  type AttendStatus,
+} from "@/features/calendar/statuses";
 import type { UserType } from "@/lib/auth/server";
 import { NativeSelect } from "@mantine/core";
 import { useTransition } from "react";

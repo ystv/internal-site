@@ -1,7 +1,7 @@
 "use client";
 
 import invariant from "@/lib/invariant";
-import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
+import type { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
 import { createContext, useContext } from "react";
 
 const SlackChannelContext = createContext<Promise<Channel[]> | null>(null);

@@ -12,10 +12,14 @@ import {
   getAllCrewPositions,
   getLatestRequest,
 } from "@/features/calendar";
-import { EventObjectType, getEvent } from "@/features/calendar/events";
+import { getEvent, type EventObjectType } from "@/features/calendar/events";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { getAllUsers } from "@/features/people";
-import { UserType, hasPermission, mustGetCurrentUser } from "@/lib/auth/server";
+import {
+  hasPermission,
+  mustGetCurrentUser,
+  type UserType,
+} from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
 import slackApiConnection, {
   isSlackEnabled,

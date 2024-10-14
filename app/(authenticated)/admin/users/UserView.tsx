@@ -19,9 +19,9 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { z } from "zod";
+import type { z } from "zod";
 import { UserCard } from "./UserCard";
-import { TFetchUsers, fetchUsersAction } from "./actions";
+import { fetchUsersAction, type TFetchUsers } from "./actions";
 import { searchParamsSchema } from "./schema";
 
 export function UserView(props: { initialUsers: TFetchUsers }) {
@@ -61,6 +61,7 @@ export function UserView(props: { initialUsers: TFetchUsers }) {
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParamsState]);
 
   function updateState(state: Partial<z.infer<typeof searchParamsSchema>>) {

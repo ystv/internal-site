@@ -10,6 +10,8 @@ import {
 import { z } from "zod";
 import { AdminUserView } from "./AdminUserView";
 
+export const dynamic = "force-dynamic";
+
 export default async function SingleUserPage({
   params,
 }: {

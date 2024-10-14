@@ -11,8 +11,8 @@ import { env } from "@/lib/env";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { App } from "@slack/bolt";
-import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
+import type { App } from "@slack/bolt";
+import type { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
 import { createEvent } from "./actions";
 
 async function getSlackChannels(): Promise<Channel[]> {

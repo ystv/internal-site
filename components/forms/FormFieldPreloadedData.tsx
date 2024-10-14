@@ -1,7 +1,7 @@
 "use client";
 
 import type { CrewPositionType } from "@/features/calendar";
-import { ExposedUser } from "@/features/people";
+import type { ExposedUser } from "@/features/people";
 import invariant from "@/lib/invariant";
 import { createContext, useContext } from "react";
 

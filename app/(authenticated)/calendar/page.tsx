@@ -1,7 +1,7 @@
 import { PermissionGate } from "@/components/contexts/UserContext";
 import YSTVCalendar from "@/components/YSTVCalendar";
 import { listEvents, listVacantEvents } from "@/features/calendar/events";
-import { Permission } from "@/lib/auth/permissions";
+import type { Permission } from "@/lib/auth/permissions";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
 import { Alert, Button } from "@mantine/core";

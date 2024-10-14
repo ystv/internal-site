@@ -1,6 +1,6 @@
 "use client";
 
-import { FormResponse } from "@/components/forms";
+import type { FormResponse } from "@/components/forms";
 import {
   ActionIcon,
   Card,
@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { Role } from "@prisma/client";
+import type { Role } from "@prisma/client";
 import { use } from "react";
 import { FaPlus } from "react-icons/fa";
 

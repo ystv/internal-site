@@ -1,5 +1,5 @@
 import * as CheckWithTech from "@/features/calendar/check_with_tech_actions";
-import { App } from "@slack/bolt";
+import type { App } from "@slack/bolt";
 
 export async function setupActionHandlers(app: App) {
   // Check With Tech

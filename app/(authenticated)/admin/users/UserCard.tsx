@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { FaEye } from "react-icons/fa";
-import { UserWithIdentitiesBasicRoles } from "./actions";
+import type { UserWithIdentitiesBasicRoles } from "./actions";
 
 export function UserCard(props: {
   user: UserWithIdentitiesBasicRoles;

@@ -3,7 +3,7 @@
 import Form, { HiddenField, TextAreaField } from "@/components/forms";
 import { getUserName } from "@/components/helpers/UserHelpers";
 import SlackIcon from "@/components/icons/SlackIcon";
-import { CheckWithTechType } from "@/features/calendar";
+import type { CheckWithTechType } from "@/features/calendar";
 import {
   Alert,
   Button,

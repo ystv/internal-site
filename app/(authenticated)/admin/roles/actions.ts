@@ -1,11 +1,11 @@
 "use server";
 
-import { FormResponse, zodErrorResponse } from "@/components/forms";
+import { zodErrorResponse, type FormResponse } from "@/components/forms";
 import {
-  RoleWithPermissions,
   createRole,
   deleteRole,
   updateRole,
+  type RoleWithPermissions,
 } from "@/features/people";
 import { fetchRoles } from "@/features/roles";
 import {

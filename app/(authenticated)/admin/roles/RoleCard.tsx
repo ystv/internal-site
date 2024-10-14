@@ -1,5 +1,5 @@
-import { FormResponse } from "@/components/forms";
-import { RoleWithPermissions } from "@/features/people";
+import type { FormResponse } from "@/components/forms";
+import type { RoleWithPermissions } from "@/features/people";
 import {
   ActionIcon,
   Card,
@@ -13,8 +13,8 @@ import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
-import { z } from "zod";
-import { deleteRoleSchema } from "./schema";
+import type { z } from "zod";
+import type { deleteRoleSchema } from "./schema";
 
 export function RoleCard(props: {
   role: RoleWithPermissions;

@@ -1,13 +1,13 @@
 "use server";
 
-import { FormResponse, zodErrorResponse } from "@/components/forms";
+import { zodErrorResponse, type FormResponse } from "@/components/forms";
 import {
   createPosition,
   deletePosition,
   fetchPositions,
   updatePosition,
 } from "@/features/positions";
-import { Position } from "@prisma/client";
+import type { Position } from "@prisma/client";
 import {
   createPositionSchema,
   deletePositionSchema,

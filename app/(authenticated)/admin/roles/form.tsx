@@ -1,13 +1,13 @@
 import Form, {
-  FormResponse,
   PermissionSelectField,
   TextAreaField,
   TextField,
+  type FormResponse,
 } from "@/components/forms";
-import { RoleWithPermissions } from "@/features/people";
-import { Permission } from "@/lib/auth/permissions";
+import type { RoleWithPermissions } from "@/features/people";
+import type { Permission } from "@/lib/auth/permissions";
 import { Space } from "@mantine/core";
-import { z } from "zod";
+import type { z } from "zod";
 import { createRoleSchema, updateRoleSchema } from "./schema";
 
 export function CreateRoleForm(props: {

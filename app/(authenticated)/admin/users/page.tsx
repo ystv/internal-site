@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { UserView } from "./UserView";
 import { searchParamsSchema } from "./schema";
 
+export const dynamic = "force-dynamic";
+
 export default async function PositionPage({
   searchParams,
 }: {

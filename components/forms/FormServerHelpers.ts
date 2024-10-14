@@ -1,5 +1,5 @@
-import { FormErrorResponse } from "@/components/forms";
-import { ZodError } from "zod";
+import type { FormErrorResponse } from "@/components/forms";
+import type { ZodError } from "zod";
 
 export function zodErrorResponse(err: ZodError): FormErrorResponse {
   return {

@@ -9,7 +9,7 @@ import {
   Stack,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { ReactNode, useOptimistic, useTransition } from "react";
+import { useOptimistic, useTransition, type ReactNode } from "react";
 import { changePreference } from "./actions";
 
 type ReqPrefs = Required<PrismaJson.UserPreferences>;
@@ -76,7 +76,7 @@ function SegmentedPreference<K extends "timeFormat" | "icalFilter">(
             <SegmentedControl
               value={value}
               onChange={onChange}
-              data={props.values}
+              data={values}
               disabled={disabled}
               className="ml-auto"
             />

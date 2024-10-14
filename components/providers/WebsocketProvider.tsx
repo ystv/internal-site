@@ -1,7 +1,7 @@
 "use client";
 
-import { TSocket, useCreateSocket } from "@/lib/socket";
-import { ReactNode, createContext, useContext } from "react";
+import { useCreateSocket, type TSocket } from "@/lib/socket";
+import { createContext, useContext, type ReactNode } from "react";
 
 export const WebsocketContext = createContext<TSocket>(
   null as unknown as TSocket,

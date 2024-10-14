@@ -1,8 +1,8 @@
 "use client";
 
 import { preferenceDefaults } from "@/features/people/preferences";
-import { Permission } from "@/lib/auth/permissions";
-import { UserType } from "@/lib/auth/server";
+import type { Permission } from "@/lib/auth/permissions";
+import type { UserType } from "@/lib/auth/server";
 import * as Sentry from "@sentry/nextjs";
 import { createContext, useContext, useEffect, useMemo } from "react";
 

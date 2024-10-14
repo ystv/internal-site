@@ -6,9 +6,9 @@ import Form, {
   TextField,
 } from "@/components/forms";
 import { Button, Card, Group, Text } from "@mantine/core";
-import { Quote } from "@prisma/client";
+import type { Quote } from "@prisma/client";
 import { useState, useTransition } from "react";
-import { z } from "zod";
+import type { z } from "zod";
 import { addQuote, deletQuote, editQuote } from "./actions";
 import { AddQuoteSchema, EditQuoteSchema } from "./schema";
 

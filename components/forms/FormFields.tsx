@@ -2,7 +2,7 @@
 
 import { useMembers } from "@/components/forms";
 import { getUserName } from "@/components/helpers/UserHelpers";
-import { Permission, PermissionEnum } from "@/lib/auth/permissions";
+import { PermissionEnum, type Permission } from "@/lib/auth/permissions";
 import {
   ActionIcon,
   Box,
@@ -21,17 +21,17 @@ import {
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import dayjs from "dayjs";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
-  ArrayPath,
   Controller,
-  FieldArray,
-  FieldValues,
   useController,
   useFieldArray,
   useFormContext,
+  type ArrayPath,
+  type FieldArray,
+  type FieldValues,
 } from "react-hook-form";
-import { FieldPath } from "react-hook-form/dist/types/path";
+import type { FieldPath } from "react-hook-form/dist/types/path";
 import { IoClose } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import SelectOption from "./SelectOption";

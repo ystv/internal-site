@@ -2,25 +2,25 @@
 
 import { DebugOnly } from "@/components/util/DebugMode";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, DefaultMantineColor } from "@mantine/core";
+import { Button, type DefaultMantineColor } from "@mantine/core";
 import { useCallback, useState, useTransition } from "react";
 import {
-  DeepPartial,
-  FieldValues,
   FormProvider,
   useForm,
+  type DeepPartial,
+  type FieldValues,
 } from "react-hook-form";
-import { FieldPath } from "react-hook-form/dist/types/path";
-import { ZodEffects, ZodTypeAny, z } from "zod";
+import type { FieldPath } from "react-hook-form/dist/types/path";
+import type { ZodEffects, ZodTypeAny, z } from "zod";
 
 export interface FormErrorResponse<Fields extends FieldValues = any> {
   ok: false;
-  errors: { [K in keyof Fields | "root"]?: string };
+  errors: { [_K in keyof Fields | "root"]?: string };
 }
 
 export type FormResponse<
   OK extends Record<string, unknown> = {},
-  Fields extends FieldValues = any,
+  _Fields extends FieldValues = any,
 > = ({ ok: true } & OK) | FormErrorResponse;
 export type FormAction<
   OK extends Record<string, unknown> = {},

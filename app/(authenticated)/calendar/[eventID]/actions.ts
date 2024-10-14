@@ -3,12 +3,15 @@ import {
   CheckWithTechActionSchema,
   EditEventSchema,
 } from "@/app/(authenticated)/calendar/[eventID]/schema";
-import { FormResponse, zodErrorResponse } from "@/components/forms";
+import { zodErrorResponse, type FormResponse } from "@/components/forms";
 import * as Calendar from "@/features/calendar";
 import { updateEventAttendeeStatus } from "@/features/calendar/events";
 import { canManage } from "@/features/calendar/permissions";
-import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
-import { EventType, hasRSVP } from "@/features/calendar/types";
+import {
+  AttendStatuses,
+  type AttendStatus,
+} from "@/features/calendar/statuses";
+import { hasRSVP, type EventType } from "@/features/calendar/types";
 import { wrapServerAction } from "@/lib/actions";
 import {
   getCurrentUser,
@@ -20,7 +23,7 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import type { z } from "zod";
 
 export const editEvent = wrapServerAction(
   "editEvent",

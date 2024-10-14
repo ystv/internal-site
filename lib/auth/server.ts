@@ -1,18 +1,22 @@
 import { prisma } from "@/lib/db";
-import { Identity } from "@prisma/client";
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import type { Identity } from "@prisma/client";
+import type { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { redirect } from "next/navigation";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { cache } from "react";
 import "server-only";
 import { z } from "zod";
 import { env } from "../env";
 import { decode, encode } from "../sessionSecrets";
-import { UserType, resolvePermissionsForUser, userHasPermission } from "./core";
+import {
+  resolvePermissionsForUser,
+  userHasPermission,
+  type UserType,
+} from "./core";
 import { Forbidden, NotLoggedIn } from "./errors";
 import { findOrCreateUserFromGoogleToken } from "./google";
-import { Permission } from "./permissions";
-import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
+import type { Permission } from "./permissions";
+import { findOrCreateUserFromSlackToken, type SlackTokenJson } from "./slack";
 
 export * from "./core";
 

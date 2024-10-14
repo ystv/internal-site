@@ -1,9 +1,9 @@
 "use server";
 
-import { FormResponse, zodErrorResponse } from "@/components/forms";
+import { zodErrorResponse, type FormResponse } from "@/components/forms";
 import { fetchUsers } from "@/features/people";
-import { UserWithIdentities } from "@/lib/auth/server";
-import { Role } from "@prisma/client";
+import type { UserWithIdentities } from "@/lib/auth/server";
+import type { Role } from "@prisma/client";
 import { searchParamsSchema } from "./schema";
 
 export type UserWithIdentitiesBasicRoles = UserWithIdentities & {

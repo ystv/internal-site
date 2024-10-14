@@ -1,6 +1,6 @@
 "use server";
 
-import { FormResponse } from "@/components/forms";
+import type { FormResponse } from "@/components/forms";
 import * as People from "@/features/people";
 import { wrapServerAction } from "@/lib/actions";
 import { getCurrentUser } from "@/lib/auth/server";

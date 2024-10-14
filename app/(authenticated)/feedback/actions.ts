@@ -1,6 +1,6 @@
 "use server";
 
-import { FormResponse, zodErrorResponse } from "@/components/forms";
+import { zodErrorResponse, type FormResponse } from "@/components/forms";
 import * as Feedback from "@/features/userFeedback";
 import { wrapServerAction } from "@/lib/actions";
 import { getCurrentUser } from "@/lib/auth/server";
