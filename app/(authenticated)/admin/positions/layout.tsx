@@ -1,4 +1,4 @@
-import ErrorPage from "@/components/util/ErrorPage";
+import ErrorPage from "@/components/helpers/ErrorPage";
 import { hasPermission } from "@/lib/auth/server";
 
 export default async function AuthenticatedLayout({

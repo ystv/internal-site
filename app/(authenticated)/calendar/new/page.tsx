@@ -1,8 +1,8 @@
 import { CreateEventForm } from "@/app/(authenticated)/calendar/new/form";
 import { MembersProvider } from "@/components/forms";
+import { PageInfo } from "@/components/helpers/PageInfo";
 import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
 import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
-import { PageInfo } from "@/components/util/PageInfo";
 import { creatableEventTypes } from "@/features/calendar/permissions";
 import { getAllUsers } from "@/features/people";
 import { Forbidden } from "@/lib/auth/errors";

@@ -1,4 +1,4 @@
-import { PageInfo } from "@/components/util/PageInfo";
+import { PageInfo } from "@/components/helpers/PageInfo";
 import { fetchUsers } from "@/features/people";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { validateSearchParams } from "@/lib/searchParams/validate";

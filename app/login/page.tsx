@@ -1,6 +1,6 @@
 import { GoogleLoginButton } from "@/components/google/GoogleLoginButton";
+import { PageInfo } from "@/components/helpers/PageInfo";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
-import { PageInfo } from "@/components/util/PageInfo";
 import { ensureNoActiveSession } from "@/lib/auth/server";
 import { env } from "@/lib/env";
 import invariant from "@/lib/invariant";

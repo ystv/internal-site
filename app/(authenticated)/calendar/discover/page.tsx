@@ -1,5 +1,5 @@
 import { DiscoverView } from "@/app/(authenticated)/calendar/discover/DiscoverView";
-import { PageInfo } from "@/components/util/PageInfo";
+import { PageInfo } from "@/components/helpers/PageInfo";
 import {
   getAllCrewPositions,
   type CrewPositionType,

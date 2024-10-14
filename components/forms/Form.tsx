@@ -1,6 +1,6 @@
 "use client";
 
-import { DebugOnly } from "@/components/util/DebugMode";
+import { DebugOnly } from "@/app/_components/DebugMode";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, type DefaultMantineColor } from "@mantine/core";
 import { useCallback, useState, useTransition } from "react";

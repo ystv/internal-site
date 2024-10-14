@@ -1,7 +1,7 @@
 "use client";
+import YSTVBreadcrumbs from "@/app/(authenticated)/_components/Breadcrumbs";
 import Logo from "@/app/_assets/logo.png";
 import { UserMenu } from "@/components/UserMenu";
-import YSTVBreadcrumbs from "@/components/navigation/Breadcrumbs";
 import styles from "@/styles/Nav.module.css";
 import { AppShell, Group, rem } from "@mantine/core";
 import { useHeadroom } from "@mantine/hooks";

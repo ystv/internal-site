@@ -2,10 +2,10 @@ import { CurrentUserAttendeeRow } from "@/app/(authenticated)/calendar/[eventID]
 import { SignupSheetsView } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
 import { CrewPositionsProvider, MembersProvider } from "@/components/forms";
 import { DateTime } from "@/components/helpers/DateTimeHelpers";
+import { PageInfo } from "@/components/helpers/PageInfo";
 import { getUserName } from "@/components/helpers/UserHelpers";
 import SlackChannelName from "@/components/slack/SlackChannelName";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
-import { PageInfo } from "@/components/util/PageInfo";
 import {
   canManage,
   canManageAnySignupSheet,

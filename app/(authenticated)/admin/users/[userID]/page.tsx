@@ -1,5 +1,5 @@
+import { PageInfo } from "@/components/helpers/PageInfo";
 import { getUserName } from "@/components/helpers/UserHelpers";
-import { PageInfo } from "@/components/util/PageInfo";
 import {
   editUserAdmin,
   fetchUserForAdmin,

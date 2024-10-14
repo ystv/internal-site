@@ -1,5 +1,5 @@
+import { PageInfo } from "@/components/helpers/PageInfo";
 import { BackButton } from "@/components/navigation/BackButton";
-import { PageInfo } from "@/components/util/PageInfo";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { doHandleUserReport } from "./actions";
 import { UserReportForm } from "./form";

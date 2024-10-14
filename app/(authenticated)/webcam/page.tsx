@@ -1,4 +1,4 @@
-import { PageInfo } from "@/components/util/PageInfo";
+import { PageInfo } from "@/components/helpers/PageInfo";
 import { fetchWebcamFeeds } from "@/features/webcams";
 import { Center, Loader, Stack } from "@mantine/core";
 import { Suspense } from "react";

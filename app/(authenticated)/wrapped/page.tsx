@@ -1,4 +1,4 @@
-import { PageInfo } from "@/components/util/PageInfo";
+import { PageInfo } from "@/components/helpers/PageInfo";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import { notFound } from "next/navigation";
 import { createHash } from "node:crypto";

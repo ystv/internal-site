@@ -1,4 +1,4 @@
-import { PageInfo } from "@/components/util/PageInfo";
+import { PageInfo } from "@/components/helpers/PageInfo";
 import * as Quotes from "@/features/quotes";
 import { requirePermission } from "@/lib/auth/server";
 import { Stack } from "@mantine/core";

@@ -1,9 +1,9 @@
-import { ICalCopyButton } from "@/components/ICalCopyButton";
+import { ICalCopyButton } from "@/app/(authenticated)/user/me/_components/ICalCopyButton";
+import { SignoutButton } from "@/app/(authenticated)/user/me/_components/SignoutButton";
+import { PageInfo } from "@/components/helpers/PageInfo";
 import { getUserName } from "@/components/helpers/UserHelpers";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
-import { PageInfo } from "@/components/util/PageInfo";
-import { SignoutButton } from "@/components/util/SignoutButton";
 import * as Calendar from "@/features/calendar";
 import * as People from "@/features/people";
 import { mustGetCurrentUser } from "@/lib/auth/server";

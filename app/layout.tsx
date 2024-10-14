@@ -1,6 +1,6 @@
+import { DebugIndicator, DebugModeProvider } from "@/app/_components/DebugMode";
 import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/common";
 import { PublicURLProvider } from "@/components/contexts/PublicURLContext";
-import { DebugIndicator, DebugModeProvider } from "@/components/util/DebugMode";
 import { env } from "@/lib/env";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";

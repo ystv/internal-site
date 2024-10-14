@@ -1,9 +1,9 @@
+import { FeedbackPrompt } from "@/app/(authenticated)/_components/FeedbackPrompt";
+import Nav from "@/app/(authenticated)/_components/Nav";
 import { LoginPrompt } from "@/components/LoginPrompt";
 import { UserProvider } from "@/components/contexts/UserContext";
-import Nav from "@/components/navigation/Nav";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { WebsocketProvider } from "@/components/providers/WebsocketProvider";
-import { FeedbackPrompt } from "@/components/util/FeedbackPrompt";
 import { getCurrentUserOrNull } from "@/lib/auth/server";
 import * as Sentry from "@sentry/nextjs";
 
