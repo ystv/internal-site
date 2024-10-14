@@ -1,10 +1,11 @@
+import "server-only";
+
 import { prisma } from "@/lib/db";
 import type { Identity } from "@prisma/client";
 import type { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { cache } from "react";
-import "server-only";
 import { z } from "zod";
 import { env } from "../env";
 import { decode, encode } from "../sessionSecrets";
