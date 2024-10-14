@@ -1,9 +1,9 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { isNotLoggedIn } from "@/lib/auth/errors";
 import * as Sentry from "@sentry/nextjs";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Error({
   error,

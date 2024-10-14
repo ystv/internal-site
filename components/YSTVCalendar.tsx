@@ -1,26 +1,26 @@
 "use client";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import listPlugin from "@fullcalendar/list";
 import { EventInput, formatDate } from "@fullcalendar/core";
-import { useRouter } from "next/navigation";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import listPlugin from "@fullcalendar/list";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import { ActionIcon, Loader, Menu, Select } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import {
-  CalendarType,
-  academicYears,
-  getNextPeriod,
-  Holiday,
-} from "uoy-week-calendar/dist/calendar";
-import "./YSTVCalendar.css";
+import * as Sentry from "@sentry/nextjs";
+import findLast from "core-js-pure/stable/array/find-last";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
-import { ActionIcon, Menu, Select, Loader } from "@mantine/core";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
-import * as Sentry from "@sentry/nextjs";
 import { TbCheck, TbFilter } from "react-icons/tb";
-import findLast from "core-js-pure/stable/array/find-last";
-import { useUserPreferences } from "./UserContext";
+import {
+  CalendarType,
+  Holiday,
+  academicYears,
+  getNextPeriod,
+} from "uoy-week-calendar/dist/calendar";
+import "./YSTVCalendar.css";
+import { useUserPreferences } from "./contexts/UserContext";
 
 dayjs.extend(weekOfYear);
 

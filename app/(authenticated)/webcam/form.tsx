@@ -1,19 +1,18 @@
 "use client";
 
+import Form, { FormResponse, TextField } from "@/components/forms";
+import { ActionIcon, Button, Modal, Tooltip } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { openConfirmModal } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { WebcamFeed } from "@prisma/client";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { z } from "zod";
 import {
   addWebcamSchema,
   editWebcamSchema,
   removeWebcamSchema,
 } from "./schema";
-import Form, { FormResponse } from "@/components/Form";
-import { useDisclosure } from "@mantine/hooks";
-import { ActionIcon, Button, Modal, Tooltip } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { TextField } from "@/components/FormFields";
-import { WebcamFeed } from "@prisma/client";
-import { FaEdit, FaTrash } from "react-icons/fa";
-import { openConfirmModal } from "@mantine/modals";
 
 export function WebcamCreateForm(props: {
   create: (data: z.infer<typeof addWebcamSchema>) => Promise<FormResponse>;

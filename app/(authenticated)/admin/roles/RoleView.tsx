@@ -1,5 +1,14 @@
 "use client";
 
+import { SearchBar } from "@/components/SearchBar";
+import {
+  CountControls,
+  PageControls,
+  PaginationProvider,
+} from "@/components/navigation/Pagination";
+import { RoleWithPermissions } from "@/features/people";
+import { getSearchParamsString } from "@/lib/searchParams/util";
+import { useValidSearchParams } from "@/lib/searchParams/validate";
 import {
   Button,
   Center,
@@ -10,32 +19,22 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { usePathname, useSearchParams } from "next/navigation";
-import { searchParamsSchema } from "./schema";
-import { useRouter } from "next/navigation";
-import { z } from "zod";
-import { useEffect, useState } from "react";
-import {
-  CountControls,
-  PageControls,
-  PaginationProvider,
-} from "@/components/Pagination";
 import { useDisclosure } from "@mantine/hooks";
-import { SearchBar } from "@/components/SearchBar";
-import { useValidSearchParams } from "@/lib/searchParams/validate";
-import { getSearchParamsString } from "@/lib/searchParams/util";
-import { RoleCard } from "./RoleCard";
-import { CreateRoleForm, UpdateRoleForm } from "./form";
+import { useQuery } from "@tanstack/react-query";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import { RoleWithPermissions } from "@/features/people";
+import { z } from "zod";
+import { RoleCard } from "./RoleCard";
 import {
+  TFetchRoles,
   createRoleAction,
   deleteRoleAction,
   fetchRolesAction,
-  TFetchRoles,
   updateRoleAction,
 } from "./actions";
-import { useQuery } from "@tanstack/react-query";
+import { CreateRoleForm, UpdateRoleForm } from "./form";
+import { searchParamsSchema } from "./schema";
 
 export function RoleView(props: { initialRoles: TFetchRoles }) {
   const pathname = usePathname();

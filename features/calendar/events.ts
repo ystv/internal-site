@@ -1,9 +1,11 @@
-import "server-only";
-import { produce } from "immer";
+import { SignUpSheetType } from "@/features/calendar/signup_sheets";
+import { AttendStatus } from "@/features/calendar/statuses";
+import { EventType } from "@/features/calendar/types";
+import { ExposedUser, ExposedUserModel } from "@/features/people";
+import * as AdamRMS from "@/lib/adamrms";
 import { prisma } from "@/lib/db";
 import {
   Attendee,
-  CheckWithTechStatus,
   Crew,
   Event,
   Position,
@@ -11,12 +13,9 @@ import {
   SignupSheet,
   User,
 } from "@prisma/client";
-import { AttendStatus } from "@/features/calendar/statuses";
-import { ExposedUser, ExposedUserModel } from "@/features/people";
-import { SignUpSheetType } from "@/features/calendar/signup_sheets";
-import { EventType } from "@/features/calendar/types";
-import * as AdamRMS from "@/lib/adamrms";
 import dayjs from "dayjs";
+import { produce } from "immer";
+import "server-only";
 import { z } from "zod";
 
 export interface EventAttendee {

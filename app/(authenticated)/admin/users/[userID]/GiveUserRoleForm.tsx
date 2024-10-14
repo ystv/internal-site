@@ -1,6 +1,6 @@
 "use client";
 
-import { FormResponse } from "@/components/Form";
+import { FormResponse } from "@/components/forms";
 import {
   ActionIcon,
   Card,

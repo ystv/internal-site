@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { zfd } from "zod-form-data";
 
 export const AddQuoteSchema = z.object({
   text: z.string().nonempty(),

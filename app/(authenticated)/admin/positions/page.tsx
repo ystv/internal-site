@@ -1,10 +1,10 @@
-import { PositionView } from "./PositionView";
+import { PageInfo } from "@/components/util/PageInfo";
 import { fetchPositions } from "@/features/positions";
-import { searchParamsSchema } from "./schema";
-import { redirect } from "next/navigation";
-import { validateSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
-import { PageInfo } from "@/components/PageInfo";
+import { validateSearchParams } from "@/lib/searchParams/validate";
+import { redirect } from "next/navigation";
+import { PositionView } from "./PositionView";
+import { searchParamsSchema } from "./schema";
 
 export const dynamic = "force-dynamic";
 

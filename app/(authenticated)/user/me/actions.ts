@@ -1,11 +1,11 @@
 "use server";
 
-import { FormResponse } from "@/components/Form";
-import { getCurrentUser, requirePermission } from "@/lib/auth/server";
+import { FormResponse } from "@/components/forms";
 import * as People from "@/features/people";
-import { revalidatePath } from "next/cache";
-import { socket } from "@/lib/socket/server";
 import { wrapServerAction } from "@/lib/actions";
+import { getCurrentUser } from "@/lib/auth/server";
+import { socket } from "@/lib/socket/server";
+import { revalidatePath } from "next/cache";
 
 export const changePreference = wrapServerAction(
   "changePreference",

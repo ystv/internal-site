@@ -1,18 +1,17 @@
-import "./globals.css";
-import { Inter } from "next/font/google";
-import { cookies } from "next/headers";
-import { DebugIndicator, DebugModeProvider } from "@/components/DebugMode";
 import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/common";
-import { PublicURLProvider } from "@/components/PublicURLContext";
+import { PublicURLProvider } from "@/components/contexts/PublicURLContext";
+import { DebugIndicator, DebugModeProvider } from "@/components/util/DebugMode";
+import { env } from "@/lib/env";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
-import { ModalsProvider } from "@mantine/modals";
-import { theme } from "./theme";
-
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
-import "@mantine/notifications/styles.css";
+import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
-import { env } from "@/lib/env";
+import "@mantine/notifications/styles.css";
+import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
+import "./globals.css";
+import { theme } from "./theme";
 
 const inter = Inter({
   subsets: ["latin"],

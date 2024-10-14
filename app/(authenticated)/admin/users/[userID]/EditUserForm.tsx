@@ -1,8 +1,7 @@
-import Form, { FormResponse } from "@/components/Form";
+import Form, { FormResponse, TextField } from "@/components/forms";
 import { User } from "@prisma/client";
-import { editUserSchema } from "./schema";
-import { TextField } from "@/components/FormFields";
 import { z } from "zod";
+import { editUserSchema } from "./schema";
 
 export function EditUserForm(props: {
   user: User;

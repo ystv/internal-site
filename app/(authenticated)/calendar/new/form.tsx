@@ -1,24 +1,24 @@
 "use client";
-import Form, { FormAction } from "@/components/Form";
-import { schema } from "./schema";
-import {
+
+import { useCurrentUser } from "@/components/contexts/UserContext";
+import Form, {
   CheckBoxField,
   ConditionalField,
   DatePickerField,
-  MemberSelect,
+  FormAction,
   SearchedMemberSelect,
   SegmentedField,
+  SlackChannelField,
   TextAreaField,
   TextField,
-} from "@/components/FormFields";
-import { useRouter } from "next/navigation";
-import { EventType } from "@/features/calendar/types";
-import { identity } from "lodash";
-import { Alert, InputLabel } from "@mantine/core";
-import SlackChannelField from "@/components/SlackChannelField";
+} from "@/components/forms";
 import { useSlackEnabled } from "@/components/slack/SlackEnabledProvider";
-import { useCurrentUser } from "@/components/UserContext";
+import { EventType } from "@/features/calendar/types";
+import { Alert, InputLabel } from "@mantine/core";
+import { identity } from "lodash";
+import { useRouter } from "next/navigation";
 import { TbAlertTriangle } from "react-icons/tb";
+import { schema } from "./schema";
 
 export function CreateEventForm(props: {
   action: FormAction<{ id: number }>;

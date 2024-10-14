@@ -1,14 +1,13 @@
+import { PermissionGate } from "@/components/contexts/UserContext";
 import YSTVCalendar from "@/components/YSTVCalendar";
-import Link from "next/link";
-import { PermissionGate } from "@/components/UserContext";
 import { listEvents, listVacantEvents } from "@/features/calendar/events";
-import { Alert, Button } from "@mantine/core";
 import { Permission } from "@/lib/auth/permissions";
 import { mustGetCurrentUser } from "@/lib/auth/server";
-import { TbArticle, TbCalendarEvent } from "react-icons/tb";
 import invariant from "@/lib/invariant";
+import { Alert, Button } from "@mantine/core";
 import { add, setDay } from "date-fns";
-import { Suspense } from "react";
+import Link from "next/link";
+import { TbArticle, TbCalendarEvent } from "react-icons/tb";
 
 function dateRangeForView(
   year: number,

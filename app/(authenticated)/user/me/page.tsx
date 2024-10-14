@@ -1,19 +1,19 @@
-import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";
-import * as People from "@/features/people";
-import * as Calendar from "@/features/calendar";
-import { getUserName } from "@/components/UserHelpers";
-import { Avatar, Card, Group, Skeleton, Space, Stack } from "@mantine/core";
-import { UserPreferences } from "./UserPreferences";
 import { ICalCopyButton } from "@/components/ICalCopyButton";
+import { getUserName } from "@/components/helpers/UserHelpers";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
-import { Suspense } from "react";
-import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
-import { hasWrapped } from "../../wrapped/util";
-import Link from "next/link";
+import { PageInfo } from "@/components/util/PageInfo";
+import { SignoutButton } from "@/components/util/SignoutButton";
+import * as Calendar from "@/features/calendar";
+import * as People from "@/features/people";
+import { mustGetCurrentUser } from "@/lib/auth/server";
 import { env } from "@/lib/env";
-import { SignoutButton } from "@/components/SignoutButton";
-import { PageInfo } from "@/components/PageInfo";
+import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
+import { Avatar, Card, Group, Skeleton, Space, Stack } from "@mantine/core";
+import Link from "next/link";
+import { Suspense } from "react";
+import { hasWrapped } from "../../wrapped/util";
+import { UserPreferences } from "./UserPreferences";
 
 export default async function UserPage() {
   const user = People.SecureUserModel.parse(await mustGetCurrentUser());

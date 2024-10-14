@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { usePublicURL } from "../PublicURLContext";
+import { usePublicURL } from "../contexts/PublicURLContext";
 import SlackIcon from "../icons/SlackIcon";
 
 export default function SlackLoginButton(props: {

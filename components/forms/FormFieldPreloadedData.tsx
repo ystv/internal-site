@@ -1,9 +1,9 @@
 "use client";
 
-import { createContext, useContext } from "react";
 import type { CrewPositionType } from "@/features/calendar";
-import invariant from "@/lib/invariant";
 import { ExposedUser } from "@/features/people";
+import invariant from "@/lib/invariant";
+import { createContext, useContext } from "react";
 
 const CrewPositionsContext = createContext<CrewPositionType[] | null>(null);
 

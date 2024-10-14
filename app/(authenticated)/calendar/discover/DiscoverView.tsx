@@ -1,5 +1,9 @@
 "use client";
 
+import { MyRoleSignUpModal } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
+import { CrewPositionsTypeWithAvailability } from "@/app/(authenticated)/calendar/discover/page";
+import { DateTime } from "@/components/helpers/DateTimeHelpers";
+import { CrewType, EventObjectType } from "@/features/calendar";
 import {
   ActionIcon,
   Button,
@@ -9,14 +13,10 @@ import {
   Select,
   Tooltip,
 } from "@mantine/core";
-import { DateTime } from "@/components/DateTimeHelpers";
 import { isSameDay } from "date-fns";
 import { useRouter } from "next/navigation";
-import { CrewType, EventObjectType } from "@/features/calendar";
 import { useState } from "react";
 import { TbArticle, TbFilter, TbInfoCircle } from "react-icons/tb";
-import { MyRoleSignUpModal } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
-import { CrewPositionsTypeWithAvailability } from "@/app/(authenticated)/calendar/discover/page";
 
 export function DiscoverView({
   vacantRoles,

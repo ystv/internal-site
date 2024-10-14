@@ -1,11 +1,10 @@
 "use server";
 
-import { zodErrorResponse } from "@/components/FormServerHelpers";
-import { UserReportSchema } from "./schema";
+import { FormResponse, zodErrorResponse } from "@/components/forms";
 import * as Feedback from "@/features/userFeedback";
-import { getCurrentUser } from "@/lib/auth/server";
-import { FormResponse } from "@/components/Form";
 import { wrapServerAction } from "@/lib/actions";
+import { getCurrentUser } from "@/lib/auth/server";
+import { UserReportSchema } from "./schema";
 
 export const doHandleUserReport = wrapServerAction(
   "doHandleUserReport",

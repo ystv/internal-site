@@ -1,9 +1,9 @@
+import { EventObjectType } from "@/features/calendar/events";
+import { SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventType } from "@/features/calendar/types";
 import { Permission } from "@/lib/auth/permissions";
 import { UserType } from "@/lib/auth/server";
 import { Event } from "@prisma/client";
-import { SignUpSheetType } from "@/features/calendar/signup_sheets";
-import { EventObjectType } from "@/features/calendar/events";
 
 /**
  * Which event types can a user with the given permissions administer,

@@ -5,8 +5,7 @@ import {
   deleteRoleSchema,
   updateRoleSchema,
 } from "@/app/(authenticated)/admin/roles/schema";
-import { FormResponse } from "@/components/Form";
-import { zodErrorResponse } from "@/components/FormServerHelpers";
+import { FormResponse, zodErrorResponse } from "@/components/forms";
 import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";
 import { prisma } from "@/lib/db";
 import { Role } from "@prisma/client";

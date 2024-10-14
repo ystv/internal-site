@@ -1,5 +1,13 @@
 "use client";
 
+import { SearchBar } from "@/components/SearchBar";
+import {
+  CountControls,
+  PageControls,
+  PaginationProvider,
+} from "@/components/navigation/Pagination";
+import { getSearchParamsString } from "@/lib/searchParams/util";
+import { useValidSearchParams } from "@/lib/searchParams/validate";
 import {
   Center,
   Group,
@@ -8,22 +16,13 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { usePathname, useSearchParams } from "next/navigation";
-import { searchParamsSchema } from "./schema";
-import { useRouter } from "next/navigation";
-import { z } from "zod";
-import { useEffect, useState } from "react";
-import {
-  CountControls,
-  PageControls,
-  PaginationProvider,
-} from "@/components/Pagination";
-import { SearchBar } from "@/components/SearchBar";
-import { useValidSearchParams } from "@/lib/searchParams/validate";
-import { getSearchParamsString } from "@/lib/searchParams/util";
-import { UserCard } from "./UserCard";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUsersAction, TFetchUsers } from "./actions";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { z } from "zod";
+import { UserCard } from "./UserCard";
+import { TFetchUsers, fetchUsersAction } from "./actions";
+import { searchParamsSchema } from "./schema";
 
 export function UserView(props: { initialUsers: TFetchUsers }) {
   const pathname = usePathname();

@@ -1,6 +1,6 @@
+import { decode as b64Decode, encode as b64Encode } from "base64-arraybuffer";
 import { env } from "./env";
 import invariant from "./invariant";
-import { encode as b64Encode, decode as b64Decode } from "base64-arraybuffer";
 
 function urlbase64Unescape(str: string) {
   return (str + "===".slice((str.length + 3) % 4))

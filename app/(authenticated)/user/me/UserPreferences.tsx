@@ -1,23 +1,16 @@
 "use client";
 
 import {
-  Stack,
+  Divider,
+  Group,
+  InputLabel,
   InputWrapper,
   SegmentedControl,
-  Group,
-  Divider,
-  InputLabel,
+  Stack,
 } from "@mantine/core";
-import {
-  ReactNode,
-  useEffect,
-  useOptimistic,
-  useState,
-  useTransition,
-} from "react";
-import { changePreference } from "./actions";
 import { notifications } from "@mantine/notifications";
-import { useWebsocket } from "@/components/WebsocketProvider";
+import { ReactNode, useOptimistic, useTransition } from "react";
+import { changePreference } from "./actions";
 
 type ReqPrefs = Required<PrismaJson.UserPreferences>;
 

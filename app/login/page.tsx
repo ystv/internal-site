@@ -1,13 +1,13 @@
-import Image from "next/image";
-import BG from "./login-bg.png";
 import { GoogleLoginButton } from "@/components/google/GoogleLoginButton";
-import invariant from "@/lib/invariant";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
+import { PageInfo } from "@/components/util/PageInfo";
+import { ensureNoActiveSession } from "@/lib/auth/server";
+import { env } from "@/lib/env";
+import invariant from "@/lib/invariant";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import { Center, Stack } from "@mantine/core";
-import { env } from "@/lib/env";
-import { ensureNoActiveSession } from "@/lib/auth/server";
-import { PageInfo } from "@/components/PageInfo";
+import Image from "next/image";
+import BG from "./login-bg.png";
 
 export default async function GoogleSignInPage(props: {
   searchParams: { error?: string; redirect?: string };

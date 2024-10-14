@@ -1,12 +1,12 @@
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import SlackIcon from "@/components/icons/SlackIcon";
 import {
-  Card,
-  Group,
-  Stack,
   ActionIcon,
   Avatar,
+  Card,
+  Group,
   Highlight,
+  Stack,
   Text,
   Tooltip,
 } from "@mantine/core";

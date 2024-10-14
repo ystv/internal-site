@@ -1,19 +1,19 @@
-import { mustGetCurrentUser } from "@/lib/auth/server";
 import { CreateEventForm } from "@/app/(authenticated)/calendar/new/form";
+import { MembersProvider } from "@/components/forms";
+import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
+import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
+import { PageInfo } from "@/components/util/PageInfo";
 import { creatableEventTypes } from "@/features/calendar/permissions";
-import { Forbidden } from "@/lib/auth/errors";
 import { getAllUsers } from "@/features/people";
-import { MembersProvider } from "@/components/FormFieldPreloadedData";
+import { Forbidden } from "@/lib/auth/errors";
+import { mustGetCurrentUser } from "@/lib/auth/server";
+import { env } from "@/lib/env";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
-import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
 import { App } from "@slack/bolt";
 import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
-import { env } from "@/lib/env";
 import { createEvent } from "./actions";
-import { PageInfo } from "@/components/PageInfo";
 
 async function getSlackChannels(): Promise<Channel[]> {
   var fetchedSlackChannels: Channel[] = [];

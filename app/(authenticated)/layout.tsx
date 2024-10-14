@@ -1,17 +1,11 @@
-import Image from "next/image";
-import Logo from "@/app/_assets/logo.png";
-import Link from "next/link";
-import { UserProvider } from "@/components/UserContext";
-import { getCurrentUserOrNull } from "@/lib/auth/server";
-import YSTVBreadcrumbs from "@/components/Breadcrumbs";
-import * as Sentry from "@sentry/nextjs";
-import { UserMenu } from "@/components/UserMenu";
-import { QueryProvider } from "@/components/QueryProvider";
 import { LoginPrompt } from "@/components/LoginPrompt";
-import { WebsocketProvider } from "@/components/WebsocketProvider";
-import { useCreateSocket } from "@/lib/socket";
-import { FeedbackPrompt } from "@/components/FeedbackPrompt";
-import Nav from "@/components/Nav";
+import { UserProvider } from "@/components/contexts/UserContext";
+import Nav from "@/components/navigation/Nav";
+import { QueryProvider } from "@/components/providers/QueryProvider";
+import { WebsocketProvider } from "@/components/providers/WebsocketProvider";
+import { FeedbackPrompt } from "@/components/util/FeedbackPrompt";
+import { getCurrentUserOrNull } from "@/lib/auth/server";
+import * as Sentry from "@sentry/nextjs";
 
 export default async function AuthenticatedLayout({
   children,

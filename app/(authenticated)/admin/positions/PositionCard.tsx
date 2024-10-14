@@ -1,12 +1,12 @@
-import { Card, Group, Stack, Menu, ActionIcon, Text } from "@mantine/core";
+import { FormResponse } from "@/components/forms";
+import { ActionIcon, Card, Group, Menu, Stack, Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { Position } from "@prisma/client";
 import { FaEdit } from "react-icons/fa";
-import { MdMoreHoriz, MdDeleteForever } from "react-icons/md";
-import { deletePositionSchema } from "./schema";
+import { MdDeleteForever, MdMoreHoriz } from "react-icons/md";
 import { z } from "zod";
-import { FormResponse } from "@/components/Form";
+import { deletePositionSchema } from "./schema";
 
 export function PositionCard(props: {
   position: Position;

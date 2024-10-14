@@ -1,18 +1,22 @@
 "use client";
 
+import Form, { HiddenField, TextAreaField } from "@/components/forms";
+import { getUserName } from "@/components/helpers/UserHelpers";
+import SlackIcon from "@/components/icons/SlackIcon";
+import { CheckWithTechType } from "@/features/calendar";
 import {
   Alert,
   Button,
   ButtonGroup,
   Modal,
   ModalBody,
-  ModalContent,
   ModalHeader,
   ModalTitle,
   Space,
   Stack,
   Textarea,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { Suspense, cache, use, useState, useTransition } from "react";
 import { TbTool } from "react-icons/tb";
 import {
@@ -20,14 +24,7 @@ import {
   doCheckWithTech,
   equipmentListTemplates,
 } from "./actions";
-import { notifications } from "@mantine/notifications";
-import { CheckWithTechType } from "@/features/calendar";
-import { getUserName } from "@/components/UserHelpers";
-import { useModals } from "@mantine/modals";
-import Form from "@/components/Form";
 import { CheckWithTechActionSchema } from "./schema";
-import { HiddenField, TextAreaField } from "@/components/FormFields";
-import SlackIcon from "@/components/icons/SlackIcon";
 
 const _getEquipmentListTemplates = cache(equipmentListTemplates);
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo } from "react";
+import { preferenceDefaults } from "@/features/people/preferences";
 import { Permission } from "@/lib/auth/permissions";
 import { UserType } from "@/lib/auth/server";
 import * as Sentry from "@sentry/nextjs";
-import { preferenceDefaults } from "@/features/people/preferences";
+import { createContext, useContext, useEffect, useMemo } from "react";
 
 const UserContext = createContext<UserType>(
   null as unknown as UserType /* Bit naughty, but getCurrentUser ensures there's a user signed in */,

@@ -1,8 +1,29 @@
 "use client";
 
-import { isBefore, isSameDay } from "date-fns";
-import { Suspense, useEffect, useMemo, useState, useTransition } from "react";
-import { getUserName } from "@/components/UserHelpers";
+import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]/AddEditSignUpSheetForm";
+import {
+  checkRoleClashes,
+  createSignUpSheet,
+  deleteSignUpSheet,
+  editSignUpSheet,
+  fetchSignUpSheet,
+  removeSelfFromRole,
+  signUpToRole,
+} from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
+import { DateTime } from "@/components/helpers/DateTimeHelpers";
+import { getUserName } from "@/components/helpers/UserHelpers";
+import { useWebsocket } from "@/components/providers/WebsocketProvider";
+import { EventObjectType } from "@/features/calendar/events";
+import {
+  canManage,
+  canManageSignUpSheet,
+} from "@/features/calendar/permissions";
+import {
+  CrewType,
+  SignUpSheetType,
+  SignUpSheetWithEvent,
+} from "@/features/calendar/signup_sheets";
+import { ExposedUser } from "@/features/people";
 import type { UserType } from "@/lib/auth/server";
 import invariant from "@/lib/invariant";
 import {
@@ -19,32 +40,11 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import {
-  canManage,
-  canManageSignUpSheet,
-} from "@/features/calendar/permissions";
-import { DateTime } from "@/components/DateTimeHelpers";
-import { AddEditSignUpSheetForm } from "@/app/(authenticated)/calendar/[eventID]/AddEditSignUpSheetForm";
-import {
-  CrewType,
-  SignUpSheetType,
-  SignUpSheetWithEvent,
-} from "@/features/calendar/signup_sheets";
-import { EventObjectType } from "@/features/calendar/events";
-import { ExposedUser } from "@/features/people";
-import {
-  checkRoleClashes,
-  createSignUpSheet,
-  deleteSignUpSheet,
-  editSignUpSheet,
-  fetchSignUpSheet,
-  removeSelfFromRole,
-  signUpToRole,
-} from "@/app/(authenticated)/calendar/[eventID]/signUpSheetActions";
-import { TbCalendarCheck } from "react-icons/tb";
-import dayjs from "dayjs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useWebsocket } from "@/components/WebsocketProvider";
+import { isBefore, isSameDay } from "date-fns";
+import dayjs from "dayjs";
+import { Suspense, useEffect, useMemo, useState, useTransition } from "react";
+import { TbCalendarCheck } from "react-icons/tb";
 
 function SignupSheet({
   event,

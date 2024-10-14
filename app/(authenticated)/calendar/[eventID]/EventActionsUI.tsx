@@ -1,33 +1,32 @@
 "use client";
 
-import Form from "@/components/Form";
-import { EventObjectType, EventType } from "@/features/calendar";
-import {
-  cancelEvent,
-  createAdamRMSProject,
-  deleteEvent,
-  editEvent,
-  reinstateEvent,
-  getAdamRMSLinkCandidates,
-  linkAdamRMSProject,
-  unlinkAdamRMS,
-} from "./actions";
-import { EditEventSchema } from "./schema";
-import {
+import { PermissionGate } from "@/components/contexts/UserContext";
+import Form, {
   CheckBoxField,
   ConditionalField,
   DatePickerField,
   SearchedMemberSelect,
   TextAreaField,
   TextField,
-} from "@/components/FormFields";
-import { useCallback, useState, useTransition } from "react";
-import Image from "next/image";
-import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
+} from "@/components/forms";
+import { EventObjectType } from "@/features/calendar";
 import { Alert, Button, Menu, Modal, Select, Text } from "@mantine/core";
 import { useModals } from "@mantine/modals";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { PermissionGate } from "@/components/UserContext";
+import { useCallback, useState, useTransition } from "react";
+import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
+import {
+  cancelEvent,
+  createAdamRMSProject,
+  deleteEvent,
+  editEvent,
+  getAdamRMSLinkCandidates,
+  linkAdamRMSProject,
+  reinstateEvent,
+  unlinkAdamRMS,
+} from "./actions";
+import { EditEventSchema } from "./schema";
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { Project } from "@/lib/adamrms";
 import { TbAlertTriangle } from "react-icons/tb";
