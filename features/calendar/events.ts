@@ -18,6 +18,8 @@ import { EventType } from "@/features/calendar/types";
 import * as AdamRMS from "@/lib/adamrms";
 import dayjs from "dayjs";
 import { z } from "zod";
+import { omit } from "lodash";
+import { socket } from "@/lib/socket/server";
 
 export interface EventAttendee {
   event_id: number;
@@ -363,7 +365,7 @@ export async function createEvent(
 
 export async function updateEvent(
   eventID: number,
-  data: EventCreateUpdateFields,
+  data: EventCreateUpdateFields & { updateCrewSheetTimes?: boolean | null },
   currentUserID: number,
 ): Promise<
   { ok: true; result: EventObjectType } | { ok: false; reason: string }
@@ -404,7 +406,7 @@ export async function updateEvent(
         event_id: eventID,
       },
       data: {
-        ...data,
+        ...omit(data, "updateCrewSheetTimes"),
         updated_by: currentUserID,
         updated_at: new Date(),
         host: data.host ?? currentUserID,
@@ -423,10 +425,37 @@ export async function updateEvent(
         "dates",
       );
     }
-    return { ok: true, result };
+    // If the dates have changed and the user requested, we also update the crew sheet times
+    let sheets: { signup_id: number }[] = [];
+    if (
+      data.start_date.getTime() !== event.start_date.getTime() ||
+      data.end_date.getTime() !== event.end_date.getTime()
+    ) {
+      if (data.updateCrewSheetTimes) {
+        const startDelta =
+          data.start_date.getTime() - event.start_date.getTime();
+        const endDelta = data.end_date.getTime() - event.end_date.getTime();
+        // prettier-ignore
+        sheets = await $db.$queryRaw`
+          UPDATE signup_sheets
+          SET start_time = start_time + (${startDelta.toString(10)} || ' milliseconds')::INTERVAL,
+          arrival_time = arrival_time + (${startDelta.toString(10)} || ' milliseconds')::INTERVAL,
+          end_time = end_time + (${endDelta.toString(10)} || ' milliseconds')::INTERVAL
+          WHERE event_id = ${eventID}
+          RETURNING signup_id
+        `;
+      }
+    }
+    return { ok: true, result, sheets };
   });
   if (!result.ok) {
     return { ok: false, reason: result.error! };
+  }
+  if (Array.isArray(result.sheets)) {
+    for (const sheet of result.sheets) {
+      console.log(sheet);
+      socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
+    }
   }
   return { ok: true, result: sanitize(result.result!) };
 }

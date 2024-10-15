@@ -24,13 +24,14 @@ import {
 import { useCallback, useState, useTransition } from "react";
 import Image from "next/image";
 import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
-import { Alert, Button, Menu, Modal, Select, Text } from "@mantine/core";
+import { Alert, Button, Menu, Modal, Select, Stack, Text } from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import { useRouter } from "next/navigation";
 import { PermissionGate } from "@/components/UserContext";
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { Project } from "@/lib/adamrms";
 import { TbAlertTriangle } from "react-icons/tb";
+import dayjs from "dayjs";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -57,7 +58,22 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
       {/*<br />*/}
       {/*<CheckBoxField name="is_private" label="Private Event" />*/}
       <br />
-      <CheckBoxField name="is_tentative" label="Tentative Event" />
+      <Stack>
+        <CheckBoxField name="is_tentative" label="Tentative Event" />
+        <ConditionalField
+          referencedFieldName={["start_date", "end_date"]}
+          condition={([start, end]: any[]) =>
+            !dayjs(start).isSame(props.event.start_date) ||
+            !dayjs(end).isSame(props.event.end_date)
+          }
+          childFieldName="updateCrewSheetTimes"
+        >
+          <CheckBoxField
+            name="updateCrewSheetTimes"
+            label="Update Crew Sheet Times"
+          />
+        </ConditionalField>
+      </Stack>
       {props.event.event_type === "public" && (
         <Alert
           variant="light"

@@ -45,39 +45,44 @@ import { TbCalendarCheck } from "react-icons/tb";
 import dayjs from "dayjs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWebsocket } from "@/components/WebsocketProvider";
+import { sheetClashesQueryKey, signUpSheetQueryKey } from "./queries";
+import { isEqual } from "lodash";
 
 function SignupSheet({
   event,
   me,
-  sheet,
+  sheet: initialSheet,
 }: {
   event: EventObjectType;
   sheet: SignUpSheetType;
   me: UserType;
 }) {
-  const [sheetState, setSheetState] = useState(sheet);
+  const { data: sheetState } = useQuery({
+    queryKey: signUpSheetQueryKey(initialSheet.signup_id),
+    queryFn: () => fetchSignUpSheet(initialSheet.signup_id),
+    initialData: initialSheet,
+  });
+  invariant(sheetState, "no sheetState, despite initialData");
 
   const { socket, isConnected, transport } = useWebsocket();
   const queryClient = useQueryClient();
 
   useEffect(() => {
     async function onSheetUpdate(value: any) {
-      const res = await fetchSignUpSheet(sheet.signup_id);
-
-      if (res) {
-        setSheetState(res);
-        await queryClient.invalidateQueries({
-          queryKey: ["clashes", sheet.signup_id],
-        });
-      }
+      queryClient.invalidateQueries({
+        queryKey: signUpSheetQueryKey(initialSheet.signup_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: sheetClashesQueryKey(initialSheet.signup_id),
+      });
     }
 
-    socket.on(`signupSheetUpdate:${sheet.signup_id}`, onSheetUpdate);
+    socket.on(`signupSheetUpdate:${initialSheet.signup_id}`, onSheetUpdate);
 
     return () => {
-      socket.off(`signupSheetUpdate:${sheet.signup_id}`, onSheetUpdate);
+      socket.off(`signupSheetUpdate:${initialSheet.signup_id}`, onSheetUpdate);
     };
-  });
+  }, [initialSheet.signup_id]);
 
   const locked = useMemo(
     () =>
@@ -262,7 +267,15 @@ function SignupSheet({
       >
         <AddEditSignUpSheetForm
           action={async (data) => editSignUpSheet(sheetState.signup_id, data)}
-          onSuccess={() => setEditOpen(false)}
+          onSuccess={() => {
+            setEditOpen(false);
+            queryClient.invalidateQueries({
+              queryKey: signUpSheetQueryKey(initialSheet.signup_id),
+            });
+            queryClient.invalidateQueries({
+              queryKey: sheetClashesQueryKey(initialSheet.signup_id),
+            });
+          }}
           initialValues={sheetState}
           submitLabel="Save"
         />
@@ -304,7 +317,7 @@ export function MyRoleSignUpModal({
   buttonless?: boolean;
 }) {
   const clashes = useQuery({
-    queryKey: ["clashes", crew.signup_id],
+    queryKey: sheetClashesQueryKey(crew.signup_id),
     queryFn: () => checkRoleClashes(crew.signup_id),
     refetchOnMount: false,
   });
@@ -337,7 +350,7 @@ export function MyRoleSignUpModal({
                     return;
                   }
                   queryClient.invalidateQueries({
-                    queryKey: ["clashes", crew.signup_id],
+                    queryKey: sheetClashesQueryKey(crew.signup_id),
                   });
                   onSuccess();
                 });
@@ -380,7 +393,7 @@ export function MyRoleSignUpModal({
                       return;
                     }
                     queryClient.invalidateQueries({
-                      queryKey: ["clashes", crew.signup_id],
+                      queryKey: sheetClashesQueryKey(crew.signup_id),
                     });
                     onSuccess();
                   });

@@ -29,10 +29,16 @@ import { useMembers } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
-import { FieldPath } from "react-hook-form/dist/types/path";
+import {
+  FieldPath,
+  FieldPathValue,
+  FieldPathValues,
+  Path,
+} from "react-hook-form/dist/types/path";
 import SelectOption from "./SelectOption";
 import { PermissionEnum, Permission } from "@/lib/auth/permissions";
 import { IoClose } from "react-icons/io5";
+import invariant from "@/lib/invariant";
 
 export function TextField(props: {
   name: string;
@@ -324,7 +330,7 @@ export function SearchedMemberSelect(props: {
  * This is useful for e.g. showing a field only if a checkbox is checked.
  *
  * To use it, wrap the field you want to conditionally render in a ConditionalField component.
- * Then pass the name of the field that controls whether the field should be shown in the
+ * Then pass the name(s) of the field(s) that controls whether the field should be shown in the
  * referencedFieldName prop, and a function that takes the value of that field and returns
  * whether the field should be shown in the condition prop.
  * Also pass the name of the field you want to conditionally render in the childFieldName prop,
@@ -333,14 +339,15 @@ export function SearchedMemberSelect(props: {
 export function ConditionalField<
   TSchema extends FieldValues = Record<string, unknown>,
   TField extends FieldPath<TSchema> = FieldPath<TSchema>,
+  TRF extends TField | readonly TField[] = TField | readonly TField[],
 >(props: {
-  referencedFieldName: TField;
-  condition: (data: TSchema[TField]) => boolean;
+  referencedFieldName: TRF;
+  condition: (data: TRF extends string ? unknown : unknown[]) => boolean;
   childFieldName?: string;
   children: ReactNode;
 }) {
   const ctx = useFormContext<TSchema>();
-  const referencedField = ctx.watch(props.referencedFieldName);
+  const referencedField = ctx.watch(props.referencedFieldName as any);
   const shouldShow = props.condition(referencedField);
   useEffect(() => {
     if (!shouldShow && props.childFieldName) {
