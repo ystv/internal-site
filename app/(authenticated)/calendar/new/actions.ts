@@ -113,21 +113,6 @@ export const createEvent = wrapServerAction(
             if (!error) throw e;
             if (error.code !== "already_in_channel") throw e;
           }
-
-          // // Check if the user creating the event is in the channel or not, add them if not
-          // const channel_members = await slackApp.client.conversations.members({
-          //   channel: slack_channel_id,
-          //   limit: channel_info.channel?.num_members,
-          // });
-
-          // if (channel_members.ok) {
-          //   if (!channel_members.members?.includes(slackUser.provider_key)) {
-          //     await slackApp.client.conversations.invite({
-          //       channel: slack_channel_id,
-          //       users: slackUser.provider_key,
-          //     });
-          //   }
-          // }
         }
       }
     }
