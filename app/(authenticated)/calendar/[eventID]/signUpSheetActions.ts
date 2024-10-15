@@ -18,6 +18,7 @@ import slackApiConnection, {
 } from "@/lib/slack/slackApiConnection";
 import { socket } from "@/lib/socket/server";
 import { wrapServerAction } from "@/lib/actions";
+import { parseAsSlackError } from "@/lib/slack";
 
 export const createSignUpSheet = wrapServerAction(
   "createSignUpSheet",
@@ -214,17 +215,9 @@ export const signUpToRole = wrapServerAction(
             });
           }
         } catch (e) {
-          const parseAsSlackError = z
-            .object({
-              code: z.string(),
-              data: z.object({
-                ok: z.boolean(),
-                error: z.string(),
-              }),
-            })
-            .safeParse(e);
-          if (parseAsSlackError.success) {
-            if (parseAsSlackError.data.code === "already_in_channel") {
+          const error = parseAsSlackError(e);
+          if (error) {
+            if (error.code !== "already_in_channel") {
               throw e;
             }
           } else {
