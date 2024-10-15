@@ -9,7 +9,7 @@ import { z } from "zod";
 
 dayjs.locale("en-gb");
 
-export async function getCalendarEvents({
+async function getCalendarEvents({
   year,
   month,
   userID,
