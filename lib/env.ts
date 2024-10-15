@@ -1,5 +1,8 @@
+import dotenv from "dotenv";
 import { exit } from "process";
 import { z } from "zod";
+
+dotenv.config();
 
 const slackEnvType =
   process.env.SLACK_ENABLED == "true"
