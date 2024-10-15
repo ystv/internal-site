@@ -1,12 +1,10 @@
+import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
+import invariant from "@/lib/invariant";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import * as People from "@/features/people";
 import { jwtDecode } from "jwt-decode";
-import { mustGetCurrentUser } from "../server";
-import invariant from "@/lib/invariant";
-import { prisma } from "@/lib/db";
-import { env } from "@/lib/env";
 
 export type SlackTokenJson = {
   iss: string;

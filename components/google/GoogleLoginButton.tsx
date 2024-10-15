@@ -1,10 +1,10 @@
 "use client";
 
-import { usePublicURL } from "@/components/PublicURLContext";
-import { useSearchParams, useRouter } from "next/navigation";
+import { usePublicURL } from "@/components/contexts/PublicURLContext";
+import { Button } from "@mantine/core";
+import { useRouter, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { setRedirectCookie } from "./actions";
-import { Button } from "@mantine/core";
 
 export function GoogleLoginButton(props: {
   clientID: string;

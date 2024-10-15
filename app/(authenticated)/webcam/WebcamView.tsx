@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import MuxVideo from "@mux/mux-video-react";
 import { Box, LoadingOverlay } from "@mantine/core";
+import MuxVideo from "@mux/mux-video-react";
+import { useEffect, useRef, useState } from "react";
 
 export function WebcamView(props: {
   webcamUrl: string;

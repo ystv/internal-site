@@ -1,3 +1,5 @@
+import { PageInfo } from "@/components/helpers/PageInfo";
+import { getUserName } from "@/components/helpers/UserHelpers";
 import {
   editUserAdmin,
   fetchUserForAdmin,
@@ -7,8 +9,8 @@ import {
 } from "@/features/people";
 import { z } from "zod";
 import { AdminUserView } from "./AdminUserView";
-import { PageInfo } from "@/components/PageInfo";
-import { getUserName } from "@/components/UserHelpers";
+
+export const dynamic = "force-dynamic";
 
 export default async function SingleUserPage({
   params,

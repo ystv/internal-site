@@ -1,5 +1,13 @@
 "use client";
 
+import { SearchBar } from "@/components/SearchBar";
+import {
+  CountControls,
+  PageControls,
+  PaginationProvider,
+} from "@/components/navigation/Pagination";
+import { getSearchParamsString } from "@/lib/searchParams/util";
+import { useValidSearchParams } from "@/lib/searchParams/validate";
 import {
   Button,
   Center,
@@ -10,32 +18,23 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { Position } from "@prisma/client";
-import { usePathname, useSearchParams } from "next/navigation";
-import { searchParamsSchema } from "./schema";
-import { useRouter } from "next/navigation";
-import { FaPlus } from "react-icons/fa";
-import { z } from "zod";
-import { useEffect, useState } from "react";
-import {
-  CountControls,
-  PageControls,
-  PaginationProvider,
-} from "@/components/Pagination";
 import { useDisclosure } from "@mantine/hooks";
-import { SearchBar } from "@/components/SearchBar";
-import { CreatePositionForm, UpdatePositionForm } from "./form";
-import { useValidSearchParams } from "@/lib/searchParams/validate";
-import { getSearchParamsString } from "@/lib/searchParams/util";
+import type { Position } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import type { z } from "zod";
 import { PositionCard } from "./PositionCard";
 import {
   createPositionAction,
   deletePositionAction,
   fetchPositionsAction,
-  TFetchPositions,
   updatePositionAction,
+  type TFetchPositions,
 } from "./actions";
-import { useQuery } from "@tanstack/react-query";
+import { CreatePositionForm, UpdatePositionForm } from "./form";
+import { searchParamsSchema } from "./schema";
 
 export function PositionView(props: { initialPositions: TFetchPositions }) {
   const pathname = usePathname();
@@ -74,6 +73,7 @@ export function PositionView(props: { initialPositions: TFetchPositions }) {
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParamsState]);
 
   // States for modals

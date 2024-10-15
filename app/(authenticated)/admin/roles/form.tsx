@@ -1,14 +1,14 @@
-import Form, { FormResponse } from "@/components/Form";
-import { createRoleSchema, updateRoleSchema } from "./schema";
-import { z } from "zod";
-import {
+import Form, {
   PermissionSelectField,
   TextAreaField,
   TextField,
-} from "@/components/FormFields";
-import { Permission } from "@/lib/auth/permissions";
+  type FormResponse,
+} from "@/components/forms";
+import type { RoleWithPermissions } from "@/features/people";
+import type { Permission } from "@/lib/auth/permissions";
 import { Space } from "@mantine/core";
-import { RoleWithPermissions } from "@/features/people";
+import type { z } from "zod";
+import { createRoleSchema, updateRoleSchema } from "./schema";
 
 export function CreateRoleForm(props: {
   action: (data: z.infer<typeof createRoleSchema>) => Promise<FormResponse>;

@@ -1,7 +1,7 @@
-import { Identity, User } from "@prisma/client";
-import { Permission } from "./permissions";
-import { prisma } from "../db";
+import type { Identity, User } from "@prisma/client";
 import { cache } from "react";
+import { prisma } from "../db";
+import type { Permission } from "./permissions";
 
 export interface UserWithIdentities extends User {
   identities: Identity[];

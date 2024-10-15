@@ -1,14 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import {
-  Box,
   Center,
   Menu,
   SegmentedControl,
   useMantineColorScheme,
   VisuallyHidden,
 } from "@mantine/core";
+import Image from "next/image";
 import { LuLaptop, LuMoon, LuSun } from "react-icons/lu";
 
 export function UserMenu({ userAvatar }: { userAvatar: string }) {

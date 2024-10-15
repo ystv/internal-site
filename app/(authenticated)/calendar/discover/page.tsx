@@ -1,7 +1,10 @@
-import { listVacantEvents } from "@/features/calendar/events";
-import { CrewPositionType, getAllCrewPositions } from "@/features/calendar";
 import { DiscoverView } from "@/app/(authenticated)/calendar/discover/DiscoverView";
-import { PageInfo } from "@/components/PageInfo";
+import { PageInfo } from "@/components/helpers/PageInfo";
+import {
+  getAllCrewPositions,
+  type CrewPositionType,
+} from "@/features/calendar";
+import { listVacantEvents } from "@/features/calendar/events";
 
 export default async function CalendarDiscoverPage({
   searchParams,

@@ -1,13 +1,13 @@
+import { App } from "@slack/bolt";
 import next from "next";
 import { Server, Socket } from "socket.io";
 import { z } from "zod";
-import { authenticateSocket, isServerSocket } from "./auth";
 import { env, validateEnv } from "../lib/env.js";
+import { setupActionHandlers } from "../lib/slack/actions";
 import slackApiConnection, {
   isSlackEnabled,
 } from "../lib/slack/slackApiConnection";
-import { App } from "@slack/bolt";
-import { setupActionHandlers } from "../lib/slack/actions";
+import { authenticateSocket, isServerSocket } from "./auth";
 import { checkDatabaseConnection, prepareHttpServer } from "./lib";
 
 const dev = env.NODE_ENV !== "production";

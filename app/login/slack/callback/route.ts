@@ -1,10 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { loginOrCreateUserSlack } from "@/lib/auth/server";
 import { getSlackUserInfo } from "@/lib/auth/slack";
-import {
-  getCurrentUserOrNull,
-  loginOrCreateUserSlack,
-} from "@/lib/auth/server";
 import { env } from "@/lib/env";
+import { NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -23,8 +20,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 
   const slackUserInfo = await getSlackUserInfo(code, redirect);
-  let user = await getCurrentUserOrNull(req);
-  user = await loginOrCreateUserSlack(slackUserInfo);
+  await loginOrCreateUserSlack(slackUserInfo);
 
   var url = new URL(redirect ?? "/user/me", env.PUBLIC_URL!);
 

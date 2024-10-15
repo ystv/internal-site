@@ -1,13 +1,13 @@
 "use client";
 
+import SelectWithCustomOption from "@/components/forms/SelectWithCustomOption";
+import { useSlackChannels } from "@/components/slack/SlackChannelsProvider";
+import { InputError } from "@mantine/core";
+import { useForceUpdate } from "@mantine/hooks";
 import { use, useMemo } from "react";
 import { useController, useFormContext } from "react-hook-form";
-import { useSlackChannels } from "@/components/slack/SlackChannelsProvider";
-import SelectWithCustomOption from "@/components/SelectWithCustomOption";
-import { useForceUpdate } from "@mantine/hooks";
-import { InputError } from "@mantine/core";
 
-export default function SlackChannelField(props: { parentName: string }) {
+export function SlackChannelField(props: { parentName: string }) {
   const ctx = useFormContext();
   const slackChannels = useSlackChannels();
   const vals = use(slackChannels);

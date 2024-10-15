@@ -1,38 +1,40 @@
+"use client";
+
+import { useMembers } from "@/components/forms";
+import { getUserName } from "@/components/helpers/UserHelpers";
+import { PermissionEnum, type Permission } from "@/lib/auth/permissions";
 import {
-  ArrayPath,
+  ActionIcon,
+  Box,
+  Button,
+  Card,
+  Checkbox,
+  Chip,
+  Input,
+  InputLabel,
+  NativeSelect,
+  SegmentedControl,
+  Space,
+  Stack,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
+import { DateTimePicker } from "@mantine/dates";
+import dayjs from "dayjs";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
   Controller,
-  FieldArray,
-  FieldValues,
   useController,
   useFieldArray,
   useFormContext,
+  type ArrayPath,
+  type FieldArray,
+  type FieldValues,
 } from "react-hook-form";
-import { ReactNode, useEffect, useMemo, useState } from "react";
-import {
-  Button,
-  Checkbox,
-  NativeSelect,
-  TextInput,
-  Textarea,
-  Box,
-  SegmentedControl,
-  Input,
-  InputLabel,
-  Card,
-  ActionIcon,
-  Chip,
-  Space,
-  Stack,
-} from "@mantine/core";
-import { DateTimePicker } from "@mantine/dates";
-import { useMembers } from "@/components/FormFieldPreloadedData";
-import { getUserName } from "@/components/UserHelpers";
-import dayjs from "dayjs";
-import { twMerge } from "tailwind-merge";
-import { FieldPath } from "react-hook-form/dist/types/path";
-import SelectOption from "./SelectOption";
-import { PermissionEnum, Permission } from "@/lib/auth/permissions";
+import type { FieldPath } from "react-hook-form/dist/types/path";
 import { IoClose } from "react-icons/io5";
+import { twMerge } from "tailwind-merge";
+import SelectOption from "./SelectOption";
 
 export function TextField(props: {
   name: string;

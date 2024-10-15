@@ -1,4 +1,5 @@
-import invariant from "@/lib/invariant";
+"use client";
+
 import {
   Combobox,
   ComboboxChevron,
@@ -12,32 +13,22 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 
 /**
- * React component for a select input with custom options.
- *
- * Its behaviour depends on the value of `props.isCustomValue`:
- * * If false, `props.value` is assumed to be the `value` field of one of the `props.data` elements, and the corresponding `label` is displayed.
- * * If true, `props.value` is assumed to be a custom value, and is displayed as-is. It is assumed that the parent component will handle storing it on the server.
+ * React component for a select input.
  *
  * @component
  * @param {Array} props.data - Array of objects with `label` and `value` properties for selectable options.
  * @param {string} props.value - Currently selected value (custom or from options).
- * @param {boolean} props.isCustomValue - Flag indicating if the selected value is custom.
- * @param {(value: string, isCustom: boolean) => unknown} props.onChange - Callback on value change. If allowNone is true, the value will be "" if the user selects "None".
+ * @param {(value: string) => unknown} props.onChange - Callback on value change. If allowNone is true, the value will be "" if the user selects "None".
  * @param {string} [props.placeholder] - Placeholder text for the input.
  * @param {boolean} [props.allowNone] - If true, a "None" option will be displayed when the input is empty.
  */
-export default function SelectWithCustomOption(props: {
+export default function SelectOption(props: {
   data: { label: string; value: string }[];
   value: string | null;
-  isCustomValue: boolean;
-  onChange: (value: string, isCustom: boolean) => unknown;
+  onChange: (value: string) => unknown;
   placeholder?: string;
   allowNone?: boolean;
 }) {
-  if (props.isCustomValue) {
-    invariant(props.value !== null, "value is null but isCustomValue is true");
-  }
-
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
@@ -61,11 +52,8 @@ export default function SelectWithCustomOption(props: {
   );
 
   const selected = useMemo(
-    () =>
-      props.isCustomValue
-        ? props.value
-        : props.data.find((x) => x.value === props.value)?.label ?? "",
-    [props.data, props.value, props.isCustomValue],
+    () => props.data.find((x) => x.value === props.value)?.label ?? "",
+    [props.data, props.value],
   );
 
   const options = filtered.map((item) => (
@@ -87,19 +75,12 @@ export default function SelectWithCustomOption(props: {
       store={combobox}
       withinPortal={false}
       onOptionSubmit={(val) => {
-        if (val === "$create") {
-          // we want to create a new field with the given input
-          // though note that we don't actually create it until the form as a whole
-          // is submitted, instead we hang on to it (or rather, we have the parent
-          // component hang on to it and pass it back to us along with isCustomValue=true)
-          invariant(search !== null, "selected $create but search is null");
-          props.onChange(search, true);
-        } else if (val === "$null") {
+        if (val === "$null") {
           // the user has selected nothing
-          props.onChange("", false);
+          props.onChange("");
         } else {
           // the user has selected an existing option
-          props.onChange(val, false);
+          props.onChange(val);
         }
         setSearch(null);
         combobox.closeDropdown();
@@ -136,18 +117,15 @@ export default function SelectWithCustomOption(props: {
       </ComboboxTarget>
       <ComboboxDropdown>
         <ComboboxOptions className="max-h-64 overflow-scroll">
+          {!props.allowNone && options.length === 0 && (
+            <ComboboxOption disabled value={"$null"} className="!opacity-100">
+              Invalid Search
+            </ComboboxOption>
+          )}
           {props.allowNone && (!search || search.trim().length === 0) && (
             <ComboboxOption value={"$null"}>None</ComboboxOption>
           )}
           {options}
-          {/* show the "create custom" option if the user has typed something and it doesn't match an existing item *exactly* */}
-          {/* (they may want to create a new item that's a substring of a pre-existing one - see WEB-99) */}
-          {(search?.trim().length ?? 0) > 0 &&
-            !filtered.some((x) => x.label === search?.trim()) && (
-              <ComboboxOption value="$create">
-                &apos;{search}&apos;
-              </ComboboxOption>
-            )}
         </ComboboxOptions>
       </ComboboxDropdown>
     </Combobox>

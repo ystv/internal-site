@@ -1,25 +1,23 @@
-import { z } from "zod";
 import {
-  CrewSchema,
   SignupSheetSchema,
+  type CrewSchema,
 } from "@/app/(authenticated)/calendar/[eventID]/schema";
-import Form, { FormResponse } from "@/components/Form";
-import {
+import Form, {
   ArrayField,
   CheckBoxField,
   DatePickerField,
   NullableCheckboxField,
   TextAreaField,
   TextField,
-} from "@/components/FormFields";
-import {
   useCrewPositions,
   useMembers,
-} from "@/components/FormFieldPreloadedData";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { useController, useFormContext } from "react-hook-form";
-import { getUserName } from "@/components/UserHelpers";
-import SelectWithCustomOption from "@/components/SelectWithCustomOption";
+  type FormResponse,
+} from "@/components/forms";
+import SelectWithCustomOption from "@/components/forms/SelectWithCustomOption";
+import { getUserName } from "@/components/helpers/UserHelpers";
+import { Fragment, useMemo, useState } from "react";
+import { useController } from "react-hook-form";
+import type { z } from "zod";
 
 function CrewPositionField(props: { parentName: string }) {
   const vals = useCrewPositions();

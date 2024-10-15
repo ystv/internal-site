@@ -1,5 +1,6 @@
-import { createHash } from "node:crypto";
 import "server-only";
+
+import { createHash } from "node:crypto";
 
 export async function hasWrapped(email: string, year: number) {
   const emailHash = createHash("sha256").update(email).digest("hex");
