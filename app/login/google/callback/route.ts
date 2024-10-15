@@ -1,4 +1,4 @@
-import { loginOrCreateUserGoogle } from "@/lib/auth/server";
+import { cookieName, loginOrCreateUserGoogle } from "@/lib/auth/server";
 import { env } from "@/lib/env";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const cookies = req.cookies;
-  const redirect = cookies.get("ystv-calendar-session.redirect");
+  const redirect = cookies.get(`${cookieName}.redirect`);
 
   const dataRaw = await req.formData();
   const idToken = dataRaw.get("credential");
