@@ -21,7 +21,7 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
-import { Alert, Button, ButtonGroup, Space, Text } from "@mantine/core";
+import { Alert, Group, Space, Stack } from "@mantine/core";
 import { TbInfoCircle, TbAlertTriangle, TbTool } from "react-icons/tb";
 import slackApiConnection, {
   isSlackEnabled,
@@ -209,10 +209,16 @@ async function SlackBanner(props: { event: EventObjectType }) {
 
   return (
     <Alert variant="light" color="blue" title="Slack" icon={<TbInfoCircle />}>
-      This event has a Slack channel: #{channelInfo.channel?.name}.&nbsp;
-      Connect your Slack account to join it automatically.
-      <br />
-      <SlackLoginButton slackClientID={process.env.SLACK_CLIENT_ID!} />
+      <Stack>
+        This event has a Slack channel: #{channelInfo.channel?.name}.&nbsp;
+        Connect your Slack account to join it automatically.
+        <Group>
+          <SlackLoginButton
+            slackClientID={process.env.SLACK_CLIENT_ID!}
+            mantineCompat
+          />
+        </Group>
+      </Stack>
     </Alert>
   );
 }

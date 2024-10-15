@@ -22,6 +22,7 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 import { wrapServerAction } from "@/lib/actions";
+import { env } from "@/lib/env";
 
 export const editEvent = wrapServerAction(
   "editEvent",
@@ -320,7 +321,14 @@ export const doCheckWithTech = wrapServerAction(
 
     revalidatePath(`/calendar/${event.event_id}`);
 
-    return { ok: true };
+    const userHasSlack = me.identities.some((x) => x.provider == "slack");
+
+    return {
+      ok: true,
+      isSlackEnabled,
+      userHasSlack,
+      slackClientID: env.SLACK_CLIENT_ID,
+    };
   },
 );
 

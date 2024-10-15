@@ -4,9 +4,9 @@ import {
   Alert,
   Button,
   ButtonGroup,
+  Group,
   Modal,
   ModalBody,
-  ModalContent,
   ModalHeader,
   ModalTitle,
   Space,
@@ -28,6 +28,9 @@ import Form from "@/components/Form";
 import { CheckWithTechActionSchema } from "./schema";
 import { HiddenField, TextAreaField } from "@/components/FormFields";
 import SlackIcon from "@/components/icons/SlackIcon";
+import Link from "next/link";
+import SlackLoginButton from "@/components/slack/SlackLoginButton";
+import invariant from "@/lib/invariant";
 
 const _getEquipmentListTemplates = cache(equipmentListTemplates);
 
@@ -67,6 +70,7 @@ function PostMessage(props: {
   const [isPending, startTransition] = useTransition();
   const [showTemplatePopup, setShowTemplatePopup] = useState(false);
   const [memo, setMemo] = useState("");
+  const modals = useModals();
   return (
     <>
       <Button
@@ -131,6 +135,44 @@ function PostMessage(props: {
                 message:
                   "Keep an eye out on Slack in case the tech team need any further details.",
               });
+              if (result.isSlackEnabled && !result.userHasSlack) {
+                invariant(
+                  result.slackClientID,
+                  "isSlackEnabled and !userHasSlack but no slackClientID",
+                );
+                modals.openModal({
+                  id: "linkSlackCWT",
+                  title: "Connect your Slack account",
+                  children: (
+                    <>
+                      <p>
+                        Connect your Slack account to be notified when your tech
+                        request is approved, as well as to use other Slack
+                        features.
+                      </p>
+                      <p>
+                        If you change your mind, click your profile picture at
+                        the top-right to connect or disconnect Slack later.
+                      </p>
+
+                      <Group>
+                        <Button
+                          onClick={() => modals.closeAll()}
+                          variant="light"
+                        >
+                          Cancel
+                        </Button>
+                        <SlackLoginButton
+                          mantineCompat
+                          slackClientID={result.slackClientID}
+                          height="auto"
+                          ml={"auto"}
+                        />
+                      </Group>
+                    </>
+                  ),
+                });
+              }
               props.done();
             } else {
               notifications.show({
@@ -262,7 +304,7 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
       <Space h={"md"} />
       <Modal opened={modalOpen !== null} onClose={() => setModalOpen(null)}>
         <ModalHeader>
-          <ModalTitle>
+          <ModalTitle className="!text-xl !font-bold">
             {modalOpen === "approve"
               ? "Approve"
               : modalOpen === "note"
@@ -303,6 +345,17 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
                 <TextAreaField name="request" label="Request" autosize />
               )}
               <TextAreaField name="note" label="Notes" autosize />
+              {!cwt.userHasSlack && (
+                <Alert
+                  color="orange"
+                  title="User does not have Slack linked"
+                  className="mt-2"
+                >
+                  The requestor does not have a linked Slack account, so they
+                  will not receive a message. Please get in touch with them
+                  directly.
+                </Alert>
+              )}
             </Form>
           )}
         </ModalBody>

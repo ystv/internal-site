@@ -20,6 +20,7 @@ import {
   ContextBlock,
   Block,
   SectionBlock,
+  RichTextBlock,
 } from "@slack/bolt";
 import dayjs from "dayjs";
 import { env } from "@/lib/env";
@@ -82,7 +83,15 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
       cwt_id: cwtID,
     },
     include: {
-      submitted_by_user: true,
+      submitted_by_user: {
+        include: {
+          identities: {
+            where: {
+              provider: "slack",
+            },
+          },
+        },
+      },
     },
   });
   if (!cwt) {
@@ -95,6 +104,11 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
   }
   invariant(body.message, "Message not found in action body");
   invariant(body.channel, "Channel not found in action body");
+
+  const requestorHasSlack = cwt.submitted_by_user.identities.some(
+    (x) => x.provider === "slack",
+  );
+
   const metadata: ModalPrivateMetadata = {
     cwtID,
   };
@@ -146,17 +160,18 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
               },
               optional: true,
             },
-            (cwt.unsure && {
-              type: "context",
-              elements: [
-                {
-                  type: "plain_text",
-                  text:
-                    cwt.submitted_by_user.first_name +
-                    " indicated they were unsure of what they need - please get in touch and amend as needed.",
-                },
-              ],
-            }) as ContextBlock,
+            cwt.unsure &&
+              ({
+                type: "context",
+                elements: [
+                  {
+                    type: "plain_text",
+                    text:
+                      cwt.submitted_by_user.first_name +
+                      " indicated they were unsure of what they need - please get in touch and amend as needed.",
+                  },
+                ],
+              } satisfies ContextBlock),
             {
               type: "context",
               elements: [
@@ -166,7 +181,25 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
                 },
               ],
             },
-          ].filter(Boolean),
+            !requestorHasSlack &&
+              ({
+                type: "rich_text",
+                elements: [
+                  {
+                    type: "rich_text_section",
+                    elements: [
+                      {
+                        type: "text",
+                        text: "The requestor does not have a linked Slack account, so they will not receive a message. Please get in touch with them directly.",
+                        style: {
+                          bold: true,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              } satisfies RichTextBlock),
+          ].filter((x) => !!x),
           submit: {
             type: "plain_text",
             text: "Approve",
@@ -218,7 +251,25 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
                 },
               ],
             },
-          ].filter(Boolean),
+            !requestorHasSlack &&
+              ({
+                type: "rich_text",
+                elements: [
+                  {
+                    type: "rich_text_section",
+                    elements: [
+                      {
+                        type: "text",
+                        text: "The requestor does not have a linked Slack account, so they will not receive a message. Please get in touch with them directly.",
+                        style: {
+                          bold: true,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              } satisfies RichTextBlock),
+          ].filter((x) => !!x),
           submit: {
             type: "plain_text",
             text: type === "note" ? "Add Note" : "Decline",

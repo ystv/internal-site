@@ -143,7 +143,18 @@ export async function getLatestRequest(eventID: number) {
       submitted_at: "desc",
     },
     include: {
-      submitted_by_user: true,
+      submitted_by_user: {
+        include: {
+          identities: {
+            where: {
+              provider: "slack",
+            },
+            select: {
+              provider: true,
+            },
+          },
+        },
+      },
       confirmed_by_user: true,
     },
   });
@@ -156,6 +167,7 @@ export async function getLatestRequest(eventID: number) {
     confirmed_by_user: r.confirmed_by_user
       ? ExposedUserModel.parse(r.confirmed_by_user)
       : null,
+    userHasSlack: r.submitted_by_user.identities.length > 0,
   };
 }
 
