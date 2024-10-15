@@ -81,9 +81,12 @@ export default async function UserPage() {
             <Card withBorder>
               <h2 className="mt-0">Link your account to Slack</h2>
               <Suspense>
-                <SlackLoginButton
-                  slackClientID={process.env.SLACK_CLIENT_ID!}
-                />
+                <Group>
+                  <SlackLoginButton
+                    slackClientID={process.env.SLACK_CLIENT_ID!}
+                    mantineCompat
+                  />
+                </Group>
               </Suspense>
             </Card>
           ) : (

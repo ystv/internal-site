@@ -4,9 +4,9 @@ import {
   Alert,
   Button,
   ButtonGroup,
+  Group,
   Modal,
   ModalBody,
-  ModalContent,
   ModalHeader,
   ModalTitle,
   Space,
@@ -154,18 +154,21 @@ function PostMessage(props: {
                         If you change your mind, click your profile picture at
                         the top-right to connect or disconnect Slack later.
                       </p>
-                      <ButtonGroup>
+
+                      <Group>
                         <Button
                           onClick={() => modals.closeAll()}
-                          variant="subtle"
+                          variant="light"
                         >
                           Cancel
                         </Button>
                         <SlackLoginButton
+                          mantineCompat
                           slackClientID={result.slackClientID}
                           height="auto"
+                          ml={"auto"}
                         />
-                      </ButtonGroup>
+                      </Group>
                     </>
                   ),
                 });
