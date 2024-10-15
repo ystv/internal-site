@@ -4,31 +4,35 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePublicURL } from "../PublicURLContext";
 import SlackIcon from "../icons/SlackIcon";
-import { Button, MantineStyleProps } from "@mantine/core";
+import { Button, ButtonProps, MantineStyleProps } from "@mantine/core";
+import { PolymorphicComponentProps } from "@mantine/core/lib/core/factory/create-polymorphic-component";
 
 export default function SlackLoginButton(props: {
-  slackClientID: string;
   height?: number | string;
   mantineCompat?: boolean;
+  redirect?: string;
   ml?: MantineStyleProps["ml"];
+  variant?: PolymorphicComponentProps<"button", ButtonProps>["variant"];
 }) {
   const publicURL = usePublicURL();
   const searchParams = useSearchParams();
 
   const loginRedirect = searchParams.get("redirect");
 
-  const slackLoginLink = `https://slack.com/openid/connect/authorize?scope=openid&response_type=code&client_id=${
-    props.slackClientID
-  }&redirect_uri=${encodeURIComponent(
-    publicURL + "/login/slack/callback",
-  )}&scope=openid profile email`;
+  const slackLoginLink = `${publicURL}/login/slack${
+    props.redirect
+      ? "?redirect=" + props.redirect
+      : loginRedirect !== null
+      ? "?redirect=" + loginRedirect
+      : ""
+  }`;
 
   return (
     <>
       {props.mantineCompat ? (
         <Button
           leftSection={<SlackIcon />}
-          variant="light"
+          variant={props.variant || "light"}
           color="gray"
           component={Link}
           href={slackLoginLink}

@@ -39,14 +39,8 @@ export default async function GoogleSignInPage(props: {
         </Center>
         <Center>
           <Stack>
-            <GoogleLoginButton
-              clientID={env.GOOGLE_CLIENT_ID!}
-              hostedDomain={env.GOOGLE_PERMITTED_DOMAINS}
-              gCsrfCookie={crypto.randomUUID()}
-            />
-            {isSlackEnabled && (
-              <SlackLoginButton slackClientID={process.env.SLACK_CLIENT_ID!} />
-            )}
+            <GoogleLoginButton />
+            {isSlackEnabled && <SlackLoginButton />}
           </Stack>
         </Center>
       </div>

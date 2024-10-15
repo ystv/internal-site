@@ -8,5 +8,5 @@
     "noEmit": false,
     "jsx": "react-jsx"
   },
-  "include": ["server/**/*.ts"]
+  "include": ["server/**/*.ts", "lib/db/json.d.ts"]
 }

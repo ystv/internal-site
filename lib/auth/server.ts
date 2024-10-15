@@ -26,7 +26,7 @@ export async function requirePermission(...perms: Permission[]) {
   if (!(await hasPermission(...perms))) throw new Forbidden(perms);
 }
 
-const cookieName = "ystv-calendar-session";
+export const cookieName = "ystv-calendar-session";
 
 const sessionSchema = z.object({
   userID: z.number(),

@@ -1,31 +1,24 @@
 "use client";
 
 import { usePublicURL } from "@/components/PublicURLContext";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Script from "next/script";
-import { setRedirectCookie } from "./actions";
 import { Button } from "@mantine/core";
+import Link from "next/link";
 
-export function GoogleLoginButton(props: {
-  clientID: string;
-  hostedDomain: string | undefined;
-  redirect?: string;
-  gCsrfCookie: string;
-}) {
+export function GoogleLoginButton(props: { redirect?: string }) {
   const publicURL = usePublicURL();
   const searchParams = useSearchParams();
 
-  const router = useRouter();
-
   const loginRedirect = searchParams.get("redirect");
 
-  const googleLoginURL = `https://accounts.google.com/gsi/select?client_id=${
-    props.clientID
-  }&ux_mode=redirect&login_uri=${encodeURIComponent(
-    publicURL + "/login/google/callback",
-  )}&ui_mode=card&context=signin${
-    props.hostedDomain ? `&hosted_domain=${props.hostedDomain}` : ""
-  }&g_csrf_token=${props.gCsrfCookie}&origin=${encodeURIComponent(publicURL)}`;
+  const googleLoginURL = `${publicURL}/login/google${
+    props.redirect
+      ? "?redirect=" + props.redirect
+      : loginRedirect !== null
+      ? "?redirect=" + loginRedirect
+      : ""
+  }`;
 
   return (
     <>
@@ -47,10 +40,8 @@ export function GoogleLoginButton(props: {
           textDecoration: "none",
           width: 256,
         }}
-        onClick={async () => {
-          await setRedirectCookie(loginRedirect ?? "");
-          router.push(googleLoginURL);
-        }}
+        component={Link}
+        href={`${googleLoginURL}`}
       >
         <GoogleIcon />
         Sign in with Google

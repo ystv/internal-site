@@ -164,7 +164,6 @@ function PostMessage(props: {
                         </Button>
                         <SlackLoginButton
                           mantineCompat
-                          slackClientID={result.slackClientID}
                           height="auto"
                           ml={"auto"}
                         />

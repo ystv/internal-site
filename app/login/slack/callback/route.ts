@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSlackUserInfo } from "@/lib/auth/slack";
 import {
+  cookieName,
   getCurrentUserOrNull,
   loginOrCreateUserSlack,
 } from "@/lib/auth/server";
@@ -9,9 +10,11 @@ import { env } from "@/lib/env";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  const cookies = req.cookies;
+  const redirect = cookies.get(`${cookieName}.redirect`);
+
   const searchParams = req.nextUrl.searchParams;
   const code = searchParams.get("code");
-  const redirect = searchParams.get("redirect");
 
   if (typeof code !== "string" || code === null) {
     return new NextResponse(
@@ -22,11 +25,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const slackUserInfo = await getSlackUserInfo(code, redirect);
+  const slackUserInfo = await getSlackUserInfo(code);
   let user = await getCurrentUserOrNull(req);
   user = await loginOrCreateUserSlack(slackUserInfo);
 
-  var url = new URL(redirect ?? "/user/me", env.PUBLIC_URL!);
+  var url = new URL(redirect?.value ?? "/user/me", env.PUBLIC_URL!);
 
   if (!url.href.startsWith(env.PUBLIC_URL!)) url = new URL(env.PUBLIC_URL!);
 

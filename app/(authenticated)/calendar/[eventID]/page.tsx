@@ -214,8 +214,8 @@ async function SlackBanner(props: { event: EventObjectType }) {
         Connect your Slack account to join it automatically.
         <Group>
           <SlackLoginButton
-            slackClientID={process.env.SLACK_CLIENT_ID!}
             mantineCompat
+            redirect={`/calendar/${props.event.event_id}`}
           />
         </Group>
       </Stack>
