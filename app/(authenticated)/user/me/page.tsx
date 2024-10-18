@@ -82,10 +82,7 @@ export default async function UserPage() {
               <h2 className="mt-0">Link your account to Slack</h2>
               <Suspense>
                 <Group>
-                  <SlackLoginButton
-                    slackClientID={process.env.SLACK_CLIENT_ID!}
-                    mantineCompat
-                  />
+                  <SlackLoginButton mantineCompat redirect="/user/me" />
                 </Group>
               </Suspense>
             </Card>

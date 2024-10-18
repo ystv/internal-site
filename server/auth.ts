@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ExtendedError } from "socket.io/dist/namespace";
 import { env } from "../lib/env";
 import { Socket } from "socket.io";
+import { cookieName } from "@/lib/auth/server";
 
 export async function authenticateSocket(
   socket: Socket,
@@ -31,7 +32,7 @@ export async function authenticateSocket(
 
   const cookie = parseCookie(socket.client.request.headers.cookie);
 
-  const sessionCookie: string | undefined = cookie["ystv-calendar-session"];
+  const sessionCookie: string | undefined = cookie[cookieName];
 
   if (sessionCookie) {
     var decodedSession: unknown;
