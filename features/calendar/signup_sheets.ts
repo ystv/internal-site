@@ -125,7 +125,7 @@ async function ensurePositionsForCrews(crews: CrewCreateUpdateInput[]) {
       }),
     ),
   );
-  console.log(`Created ${newPositions.length} new positions.`);
+
   for (let i = 0; i < crews.length; i++) {
     if (crews[i].custom_position_name) {
       const newPos = newPositions.find(

@@ -1,8 +1,6 @@
-import { env } from "@/lib/env";
-import { io } from "socket.io-client";
+import { Server } from "socket.io";
 
-export const socket = io("http://localhost:3000", {
-  auth: {
-    secret: env.SESSION_SECRET,
-  },
-});
+export const io = (globalThis as unknown as { io: Server }).io;
+
+export * from "./signUpSheet";
+export * from "./user";

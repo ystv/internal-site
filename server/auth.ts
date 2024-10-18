@@ -1,12 +1,12 @@
 import { prisma } from "../lib/db";
 import { decode } from "../lib/sessionSecrets";
 import { z } from "zod";
-import { TSocket } from ".";
 import { ExtendedError } from "socket.io/dist/namespace";
 import { env } from "../lib/env";
+import { Socket } from "socket.io";
 
 export async function authenticateSocket(
-  socket: TSocket,
+  socket: Socket,
   next: (err?: ExtendedError | undefined) => void,
 ) {
   if (Object.hasOwn(socket.data, "auth")) {
@@ -92,7 +92,7 @@ export function parseCookie(cookie: string | undefined) {
     }, {});
 }
 
-export function isServerSocket(socket: TSocket) {
+export function isServerSocket(socket: Socket) {
   return (
     socket.data.auth.authenticated == true && socket.data.auth.isClient == false
   );

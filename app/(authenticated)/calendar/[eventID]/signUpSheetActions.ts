@@ -16,8 +16,8 @@ import { zodErrorResponse } from "@/components/FormServerHelpers";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { socket } from "@/lib/socket/server";
 import { wrapServerAction } from "@/lib/actions";
+import { socketUpdateSignupSheet } from "@/lib/socket/server";
 
 export const createSignUpSheet = wrapServerAction(
   "createSignUpSheet",
@@ -103,7 +103,8 @@ export const editSignUpSheet = wrapServerAction(
 
     await updateSignUpSheet(sheetID, payload.data);
     revalidatePath(`/calendar/${sheet.events.event_id}`);
-    socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
+    socketUpdateSignupSheet(sheetID);
+
     return { ok: true } as const;
   },
 );
@@ -132,7 +133,7 @@ export const deleteSignUpSheet = wrapServerAction(
 
     await Calendar.deleteSignUpSheet(sheetID);
     revalidatePath(`/calendar/${sheet.events.event_id}`);
-    socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
+    socketUpdateSignupSheet(sheetID);
     return { ok: true } as const;
   },
 );
@@ -235,7 +236,8 @@ export const signUpToRole = wrapServerAction(
     }
 
     revalidatePath(`/calendar/${sheet.events.event_id}`);
-    socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
+    socketUpdateSignupSheet(sheetID);
+
     return { ok: true };
   },
 );
@@ -290,7 +292,8 @@ export const removeSelfFromRole = wrapServerAction(
       };
     }
     revalidatePath(`/calendar/${sheet.events.event_id}`);
-    socket.emit(`signupSheetUpdate:${sheet.signup_id}`);
+    socketUpdateSignupSheet(sheetID);
+
     return { ok: true };
   },
 );
