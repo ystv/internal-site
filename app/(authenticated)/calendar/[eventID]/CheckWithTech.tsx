@@ -166,6 +166,7 @@ function PostMessage(props: {
                           mantineCompat
                           height="auto"
                           ml={"auto"}
+                          redirect={`/calendar/${props.eventID}`}
                         />
                       </Group>
                     </>
