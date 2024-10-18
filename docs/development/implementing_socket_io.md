@@ -61,7 +61,7 @@ function UpdatedValue(props: { initialValue: string }) {
 
 ## Server example
 
-To send a message from the server to the client, import `io` from `@/lib/socket/server` and use it like a regular [socket server instance](https://socket.io/docs/v4/server-socket-instance/) to emit messages. Ideal usage is to create a helper function in `@/lib/socket/server` such as `socketUpdateSignupSheet()` in `@/lib/socket/server/signUpSheet.ts`. This is so that the exact implementation can be reused between nextjs and the socket server if needed.
+To send a message from the server to the client, import `io` from `@/lib/socket/server` and use it like a regular [socket server instance](https://socket.io/docs/v4/server-socket-instance/) to emit messages. The way you should do it unless you have a very good reason not to is to create a helper function in `@/lib/socket/server` such as `socketUpdateSignupSheet()` in `@/lib/socket/server/signUpSheet.ts`. This is so that the exact implementation can be reused between nextjs and the socket server if needed.
 
 **actions.ts** (Next.js server action)
 
