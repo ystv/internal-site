@@ -6,7 +6,7 @@ This documentation (if you can call it that) will cover the basics of how to imp
 
 The Socket.io implementation in this project consists of two distinct parts, the socket server and socket clients.
 
-The main part of the implementation is the Socket.io server, which resides in the top level `server` directory. This server is responsible for initializing the socket server and making it available to Next.js.
+The main part of the implementation is the web server, which resides in the top level `server` directory. This is responsible for initializing socket.io and making it available to Next.js.
 
 The secondary part of the implementation is the client. Socket.io clients should only ever connect from the frontend UI. This client may or may not be authenticated. Authentication can be checked by accessing `socket.data.auth` on the main socket server. These clients are best used to listen for messages from the Socket server and update data that way, and currently it is unlikely that they should ever send data back to the server (although this may change in future).
 
@@ -61,7 +61,7 @@ function UpdatedValue(props: { initialValue: string }) {
 
 ## Server example
 
-Sending messages from the Next.js server to a client is now much easier than I made it originally, simply import `io` from `@/lib/socket/server` and use it like a regular socket server to emit messages.
+To send a message from the server to the client, import `io` from `@/lib/socket/server` and use it like a regular [socket server instance](https://socket.io/docs/v4/server-socket-instance/) to emit messages. Ideal usage is to create a helper function in `@/lib/socket/server` such as `socketUpdateSignupSheet()` in `@/lib/socket/server/signUpSheet.ts`. This is so that the exact implementation can be reused between nextjs and the socket server if needed.
 
 **actions.ts** (Next.js server action)
 
