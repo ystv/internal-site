@@ -80,6 +80,14 @@ Open [http://localhost:3000](http://localhost:3000) or [https://localhost:3000](
 
 To get admin permissions, sign in once with Google, then run `yarn do promoteUser <your email>`.
 
+## Development
+
+There are some docs written for developing specific features but otherwise looking at the code and the [Next.js documentation](https://nextjs.org/docs) is the best place to get started.
+
+Feature specific docs:
+
+- [Socket.io communication](/docs/development/implementing_socket_io.md)
+
 ## Structure
 
 - app/ - pages
@@ -87,6 +95,6 @@ To get admin permissions, sign in once with Google, then run `yarn do promoteUse
 - lib/ - low level utilities (auth, db, etc.)
 - server/ - custom server that handles socket.io communication
 
-## Development
+## Issue Tracking
 
 We use [Linear](https://linear.app/ystv) to track issues - to access it, sign in with your @ystv.co.uk Google account (ask a Computing Team member if you don't have one).
