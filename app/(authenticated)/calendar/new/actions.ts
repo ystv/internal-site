@@ -7,7 +7,6 @@ import { wrapServerAction } from "@/lib/actions";
 import { Forbidden } from "@/lib/auth/errors";
 import { Permission } from "@/lib/auth/permissions";
 import { getCurrentUser } from "@/lib/auth/server";
-import { parseAsSlackError } from "@/lib/slack";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
@@ -16,7 +15,7 @@ import * as Calendar from "@/features/calendar";
 import { revalidatePath } from "next/cache";
 import { env } from "process";
 import { schema } from "./schema";
-import { App } from "@slack/bolt";
+import { App, CodedError, isCodedError } from "@slack/bolt";
 
 export const createEvent = wrapServerAction(
   "createEvent",
@@ -107,11 +106,11 @@ export const createEvent = wrapServerAction(
               users: slackUser.provider_key,
             });
           } catch (e) {
-            const error = parseAsSlackError(e);
+            if (!isCodedError(e)) throw e;
 
-            //Throw the error if it isn't just telling us the user is already in the channel
-            if (!error) throw e;
-            if (error.code !== "already_in_channel") throw e;
+            const error = e as CodedError;
+
+            if (error.code !== "already_in_channel") throw error;
           }
         }
       }

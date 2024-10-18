@@ -18,7 +18,7 @@ import slackApiConnection, {
 } from "@/lib/slack/slackApiConnection";
 import { socket } from "@/lib/socket/server";
 import { wrapServerAction } from "@/lib/actions";
-import { parseAsSlackError } from "@/lib/slack";
+import { CodedError, isCodedError } from "@slack/bolt";
 
 export const createSignUpSheet = wrapServerAction(
   "createSignUpSheet",
@@ -215,14 +215,11 @@ export const signUpToRole = wrapServerAction(
             });
           }
         } catch (e) {
-          const error = parseAsSlackError(e);
-          if (error) {
-            if (error.code !== "already_in_channel") {
-              throw e;
-            }
-          } else {
-            throw e;
-          }
+          if (!isCodedError(e)) throw e;
+
+          const error = e as CodedError;
+
+          if (error.code !== "already_in_channel") throw e;
         }
       }
     }
