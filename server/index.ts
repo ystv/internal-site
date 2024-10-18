@@ -1,7 +1,6 @@
 import next from "next";
-import { Server, Socket } from "socket.io";
-import { z } from "zod";
-import { authenticateSocket, isServerSocket } from "./auth";
+import { Server } from "socket.io";
+import { authenticateSocket } from "./auth";
 import { env, validateEnv } from "../lib/env.js";
 import slackApiConnection, {
   isSlackEnabled,
@@ -18,10 +17,7 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
-export type TSocket = Socket;
-export type TServer = Server;
-
-var io: TServer;
+var io: Server;
 
 validateEnv();
 
@@ -39,6 +35,7 @@ app.prepare().then(async () => {
   }
 
   io = new Server(httpServer);
+  (globalThis as unknown as { io: Server }).io = io;
 
   io.use(authenticateSocket);
 
@@ -46,32 +43,6 @@ app.prepare().then(async () => {
     if (socket.data.auth.invalidSession === true) {
       socket.emit("invalidSession");
     }
-
-    socket.onAny((eventName, value, ...args) => {
-      const eventNameParse = parseEventName(eventName);
-
-      switch (eventNameParse) {
-        case "userUpdate":
-          if (isServerSocket(socket)) {
-            io.in(`userOnly:id:${eventName.split(":")[2]}`).emit(
-              `userUpdate:me`,
-            );
-          }
-
-          break;
-        case "signupSheetUpdate":
-          io.in("authenticatedUsers").emit(
-            `signupSheetUpdate:${eventName.split(":")[1]}`,
-          );
-          break;
-        default:
-          break;
-      }
-    });
-
-    // socket.on("disconnect", (reason, description) => {
-    //   console.log(socket.id, " disconnected");
-    // });
   });
 
   if (slackApp) await slackApp.start();
@@ -85,25 +56,3 @@ app.prepare().then(async () => {
       console.log(`> Ready on http${doSSL ? "s" : ""}://${hostname}:${port}`);
     });
 });
-
-function parseEventName(
-  eventNameAny: any,
-): z.infer<typeof socketEventNames> | undefined {
-  const eventNameString = z.string().safeParse(eventNameAny);
-
-  if (!eventNameString.success) {
-    return undefined;
-  }
-
-  const eventName = socketEventNames.safeParse(
-    eventNameString.data.split(":")[0],
-  );
-
-  if (!eventName.success) {
-    return undefined;
-  }
-
-  return eventName.data;
-}
-
-const socketEventNames = z.enum(["userUpdate", "signupSheetUpdate"]);

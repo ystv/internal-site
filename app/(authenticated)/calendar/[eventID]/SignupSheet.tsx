@@ -55,21 +55,23 @@ function SignupSheet({
   sheet: SignUpSheetType;
   me: UserType;
 }) {
-  const [sheetState, setSheetState] = useState(sheet);
+  const sheetQuery = useQuery({
+    initialData: sheet,
+    queryKey: ["signupSheet", sheet.signup_id],
+    queryFn: () => fetchSignUpSheet(sheet.signup_id),
+  });
+
+  const sheetData = sheetQuery.data!;
 
   const { socket, isConnected, transport } = useWebsocket();
   const queryClient = useQueryClient();
 
   useEffect(() => {
     async function onSheetUpdate(value: any) {
-      const res = await fetchSignUpSheet(sheet.signup_id);
-
-      if (res) {
-        setSheetState(res);
-        await queryClient.invalidateQueries({
-          queryKey: ["clashes", sheet.signup_id],
-        });
-      }
+      sheetQuery.refetch();
+      await queryClient.invalidateQueries({
+        queryKey: ["clashes", sheet.signup_id],
+      });
     }
 
     socket.on(`signupSheetUpdate:${sheet.signup_id}`, onSheetUpdate);
@@ -80,9 +82,8 @@ function SignupSheet({
   });
 
   const locked = useMemo(
-    () =>
-      sheetState.unlock_date && isBefore(new Date(), sheetState.unlock_date),
-    [sheetState.unlock_date],
+    () => sheetData.unlock_date && isBefore(new Date(), sheetData.unlock_date),
+    [sheetData.unlock_date],
   );
   const readOnly = event.is_cancelled;
   const [isEditOpen, setEditOpen] = useState(false);
@@ -95,30 +96,30 @@ function SignupSheet({
         withBorder
         className="flex-grow-1 w-full p-[var(--mantine-spacing-md)] md:w-[calc(50%-theme(gap.4)/2)] lg:flex-grow-0 lg:p-[var(--mantine-spacing-xl)]"
       >
-        <h2 className={"m-0"}>{sheetState.title}</h2>
+        <h2 className={"m-0"}>{sheetData.title}</h2>
         <strong className={"text-sm font-extrabold"}>
           Arrive at{" "}
-          <DateTime val={sheetState.arrival_time.toISOString()} format="time" />
+          <DateTime val={sheetData.arrival_time.toISOString()} format="time" />
         </strong>
         <br />
         <strong className={"text-sm font-extrabold"}>
           Broadcast at{" "}
           <DateTime
-            val={sheetState.start_time.toISOString()}
+            val={sheetData.start_time.toISOString()}
             format="datetime"
           />{" "}
           -{" "}
-          {isSameDay(sheetState.start_time, sheetState.end_time) ? (
-            <DateTime val={sheetState.end_time.toISOString()} format="time" />
+          {isSameDay(sheetData.start_time, sheetData.end_time) ? (
+            <DateTime val={sheetData.end_time.toISOString()} format="time" />
           ) : (
             <DateTime
-              val={sheetState.end_time.toISOString()}
+              val={sheetData.end_time.toISOString()}
               format="datetime"
             />
           )}
         </strong>
         <div className={"max-w-prose text-sm"}>
-          {sheetState.description.split(/(\r\n|\r|\n)/g).map((p, idx) => (
+          {sheetData.description.split(/(\r\n|\r|\n)/g).map((p, idx) => (
             <p key={idx}>{p}</p>
           ))}
         </div>
@@ -127,7 +128,7 @@ function SignupSheet({
             <strong>
               Crew lists unlock on{" "}
               <DateTime
-                val={sheetState.unlock_date!.toISOString()}
+                val={sheetData.unlock_date!.toISOString()}
                 format="datetime"
               />
             </strong>
@@ -139,7 +140,7 @@ function SignupSheet({
               "divide-x-0 divide-y-2 divide-dashed divide-gray-200 dark:divide-[--mantine-color-placeholder]"
             }
           >
-            {sheetState.crews
+            {sheetData.crews
               .sort((a, b) => a.ordering - b.ordering)
               .map((crew, index) => {
                 const isProducer = crew.positions.admin;
@@ -229,7 +230,7 @@ function SignupSheet({
           </tbody>
         </table>
 
-        {canManageSignUpSheet(event, sheetState, me) && (
+        {canManageSignUpSheet(event, sheetData, me) && (
           <>
             <br />
             <div className={"flex justify-end gap-1"}>
@@ -239,10 +240,10 @@ function SignupSheet({
                 onClick={async () => {
                   if (
                     confirm(
-                      `Are you sure you want to delete the list "${sheetState.title}"? This action cannot be undone.`,
+                      `Are you sure you want to delete the list "${sheetData.title}"? This action cannot be undone.`,
                     )
                   ) {
-                    await deleteSignUpSheet(sheetState.signup_id);
+                    await deleteSignUpSheet(sheetData.signup_id);
                   }
                 }}
               >
@@ -261,9 +262,9 @@ function SignupSheet({
         size={"95%"}
       >
         <AddEditSignUpSheetForm
-          action={async (data) => editSignUpSheet(sheetState.signup_id, data)}
+          action={async (data) => editSignUpSheet(sheetData.signup_id, data)}
           onSuccess={() => setEditOpen(false)}
-          initialValues={sheetState}
+          initialValues={sheetData}
           submitLabel="Save"
         />
         <br />
@@ -278,7 +279,7 @@ function SignupSheet({
             }
           >
             <MyRoleSignUpModal
-              sheet={sheetState}
+              sheet={sheetData}
               crew={signUpCrew}
               me={me}
               onSuccess={() => setSignUpCrew(null)}
