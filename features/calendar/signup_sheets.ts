@@ -6,6 +6,7 @@ import { omit } from "lodash";
 import { ExposedUser } from "@/features/people";
 import invariant from "@/lib/invariant";
 import { UserType } from "@/lib/auth/server";
+import { socketUpdateSignupSheet } from "@/lib/socket/server";
 
 export interface CrewType {
   crew_id: number;
@@ -207,6 +208,7 @@ export async function updateSignUpSheet(
       ),
   ]);
   await deleteOrphanedCustomPositions();
+  socketUpdateSignupSheet(sheetID);
 }
 
 export async function deleteSignUpSheet(sheetID: number) {
@@ -216,6 +218,7 @@ export async function deleteSignUpSheet(sheetID: number) {
     },
   });
   await deleteOrphanedCustomPositions();
+  socketUpdateSignupSheet(sheetID);
 }
 
 export async function signUpToRole(
@@ -235,6 +238,9 @@ export async function signUpToRole(
         user_id,
       },
     });
+
+    socketUpdateSignupSheet(sheetID);
+
     return { ok: true };
   } catch (e) {
     if (
@@ -267,6 +273,9 @@ export async function removeUserFromRole(
         user_id: null,
       },
     });
+
+    socketUpdateSignupSheet(sheetID);
+
     return { ok: true };
   } catch (e) {
     if (
