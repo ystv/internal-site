@@ -15,7 +15,7 @@ import * as Calendar from "@/features/calendar";
 import { revalidatePath } from "next/cache";
 import { env } from "process";
 import { schema } from "./schema";
-import { App } from "@slack/bolt";
+import { App, CodedError, isCodedError } from "@slack/bolt";
 
 export const createEvent = wrapServerAction(
   "createEvent",
@@ -100,19 +100,17 @@ export const createEvent = wrapServerAction(
             });
           }
 
-          // Check if the user creating the event is in the channel or not, add them if not
-          const channel_members = await slackApp.client.conversations.members({
-            channel: slack_channel_id,
-            limit: channel_info.channel?.num_members,
-          });
+          try {
+            await slackApp.client.conversations.invite({
+              channel: slack_channel_id,
+              users: slackUser.provider_key,
+            });
+          } catch (e) {
+            if (!isCodedError(e)) throw e;
 
-          if (channel_members.ok) {
-            if (!channel_members.members?.includes(slackUser.provider_key)) {
-              await slackApp.client.conversations.invite({
-                channel: slack_channel_id,
-                users: slackUser.provider_key,
-              });
-            }
+            const error = e as CodedError;
+
+            if (error.code !== "already_in_channel") throw error;
           }
         }
       }
