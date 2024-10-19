@@ -66,7 +66,7 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
     });
     return;
   }
-  if (!await userHasPermission(actor.user_id, "CheckWithTech.Admin")) {
+  if (!(await userHasPermission(actor.user_id, "CheckWithTech.Admin"))) {
     await api.client.chat.postEphemeral({
       channel: body.channel!.id,
       user: body.user.id,
@@ -322,7 +322,7 @@ export async function handleSlackViewEvent(data: SlackViewMiddlewareArgs) {
     });
     return;
   }
-  if (!await userHasPermission(actor.user_id, "CheckWithTech.Admin")) {
+  if (!(await userHasPermission(actor.user_id, "CheckWithTech.Admin"))) {
     await ack({
       response_action: "errors",
       errors: {
