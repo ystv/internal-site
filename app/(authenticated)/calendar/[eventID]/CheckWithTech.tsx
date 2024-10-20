@@ -289,7 +289,7 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
           )}
           {cwt.notes.length > 0 && (
             <p>
-              Notes:{" "}
+              Notes:
               {cwt.notes.split("\n").map((line, index) => (
                 <span key={index}>
                   {line}
