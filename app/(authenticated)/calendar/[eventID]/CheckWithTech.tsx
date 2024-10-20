@@ -272,7 +272,14 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
         <strong>
           #CheckWithTech request from {getUserName(cwt.submitted_by_user)}
         </strong>
-        <p>{cwt.request}</p>
+        <p>
+          {cwt.request.split("\n").map((line, index) => (
+            <span key={index}>
+              {line}
+              <br />
+            </span>
+          ))}
+        </p>
         <Stack>
           {cwt.unsure && (
             <strong>
@@ -280,7 +287,17 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
               need - please get in touch and amend as needed
             </strong>
           )}
-          {cwt.notes.length > 0 && <p>Notes: {cwt.notes}</p>}
+          {cwt.notes.length > 0 && (
+            <p>
+              Notes:{" "}
+              {cwt.notes.split("\n").map((line, index) => (
+                <span key={index}>
+                  {line}
+                  <br />
+                </span>
+              ))}
+            </p>
+          )}
           {cwt.status !== "Requested" && (
             <strong>
               {cwt.status}
@@ -308,8 +325,8 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
             {modalOpen === "approve"
               ? "Approve"
               : modalOpen === "note"
-              ? "Leave Note"
-              : "Decline"}
+                ? "Leave Note"
+                : "Decline"}
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
@@ -329,15 +346,15 @@ export function CheckWithTechAdminBanner({ cwt }: { cwt: CheckWithTechType }) {
                 modalOpen === "approve"
                   ? "Approve"
                   : modalOpen === "note"
-                  ? "Leave Note"
-                  : "Decline"
+                    ? "Leave Note"
+                    : "Decline"
               }
               submitColor={
                 modalOpen === "approve"
                   ? "green"
                   : modalOpen === "note"
-                  ? "blue"
-                  : "red"
+                    ? "blue"
+                    : "red"
               }
             >
               <HiddenField name="cwtID" value={cwt.cwt_id.toString(10)} />
