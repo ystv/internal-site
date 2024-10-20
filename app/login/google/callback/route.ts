@@ -1,4 +1,5 @@
-import { cookieName, loginOrCreateUserGoogle } from "@/lib/auth/server";
+import { loginOrCreateUserGoogle } from "@/lib/auth/server";
+import { COOKIE_NAME } from "@/lib/auth/core";
 import { env } from "@/lib/env";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const cookies = req.cookies;
-  const redirect = cookies.get(`${cookieName}.redirect`);
+  const redirect = cookies.get(`${COOKIE_NAME}.redirect`);
 
   const dataRaw = await req.formData();
   const idToken = dataRaw.get("credential");

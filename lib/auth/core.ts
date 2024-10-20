@@ -3,6 +3,8 @@ import { Permission } from "./permissions";
 import { prisma } from "../db";
 import { cache } from "react";
 
+export const COOKIE_NAME = "ystv-calendar-session";
+
 export interface UserWithIdentities extends User {
   identities: Identity[];
 }

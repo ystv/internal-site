@@ -1,4 +1,4 @@
-import { cookieName } from "@/lib/auth/server";
+import { COOKIE_NAME } from "@/lib/auth/core";
 import { env } from "@/lib/env";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -14,11 +14,11 @@ export async function GET(req: NextRequest) {
   const res = NextResponse.redirect(slackLoginURI);
 
   if (redirect !== null) {
-    res.cookies.set(`${cookieName}.redirect`, redirect, {
+    res.cookies.set(`${COOKIE_NAME}.redirect`, redirect, {
       domain: env.COOKIE_DOMAIN,
     });
   } else {
-    res.cookies.set(`${cookieName}.redirect`, "", {
+    res.cookies.set(`${COOKIE_NAME}.redirect`, "", {
       domain: env.COOKIE_DOMAIN,
       maxAge: 0,
     });

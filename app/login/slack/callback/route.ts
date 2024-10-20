@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSlackUserInfo } from "@/lib/auth/slack";
 import {
-  cookieName,
+  COOKIE_NAME,
   getCurrentUserOrNull,
   loginOrCreateUserSlack,
 } from "@/lib/auth/server";
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const cookies = req.cookies;
-  const redirect = cookies.get(`${cookieName}.redirect`);
+  const redirect = cookies.get(`${COOKIE_NAME}.redirect`);
 
   const searchParams = req.nextUrl.searchParams;
   const code = searchParams.get("code");
