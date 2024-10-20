@@ -271,7 +271,7 @@ export default async function EventPage({
           "flex w-full flex-col items-center justify-between sm:flex-row"
         }
       >
-        <div className="w-fit grow font-bold">
+        <div className="w-fit grow break-words font-bold">
           <h1
             className={twMerge(
               "text-4xl font-bold",
