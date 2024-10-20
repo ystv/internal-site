@@ -12,7 +12,12 @@ import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
 import { env } from "../env";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cache } from "react";
-import { UserType, resolvePermissionsForUser, userHasPermission } from "./core";
+import {
+  COOKIE_NAME,
+  UserType,
+  resolvePermissionsForUser,
+  userHasPermission,
+} from "./core";
 
 export * from "./core";
 
@@ -26,8 +31,6 @@ export async function requirePermission(...perms: Permission[]) {
   if (!(await hasPermission(...perms))) throw new Forbidden(perms);
 }
 
-export const cookieName = "ystv-calendar-session";
-
 const sessionSchema = z.object({
   userID: z.number(),
 });
@@ -35,10 +38,10 @@ const sessionSchema = z.object({
 async function getSession(req?: NextRequest) {
   var sessionID: RequestCookie | undefined;
   if (req) {
-    sessionID = req.cookies.get(cookieName);
+    sessionID = req.cookies.get(COOKIE_NAME);
   } else {
     const { cookies } = await import("next/headers");
-    sessionID = cookies().get(cookieName);
+    sessionID = cookies().get(COOKIE_NAME);
   }
   if (!sessionID) return null;
   if (sessionID.value == "") return null;
@@ -57,7 +60,7 @@ async function getSession(req?: NextRequest) {
 async function setSession(user: z.infer<typeof sessionSchema>) {
   const payload = await encode(user);
   const { cookies } = await import("next/headers");
-  cookies().set(cookieName, payload, {
+  cookies().set(COOKIE_NAME, payload, {
     httpOnly: true,
     sameSite: "lax",
     secure: env.NODE_ENV === "production",
