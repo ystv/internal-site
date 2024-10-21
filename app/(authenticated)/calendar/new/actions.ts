@@ -15,7 +15,8 @@ import * as Calendar from "@/features/calendar";
 import { revalidatePath } from "next/cache";
 import { env } from "process";
 import { schema } from "./schema";
-import { App, CodedError, isCodedError } from "@slack/bolt";
+import { App } from "@slack/bolt";
+import { parseAndThrowOrIgnoreSlackError } from "@/lib/slack/errors";
 
 export const createEvent = wrapServerAction(
   "createEvent",
@@ -106,11 +107,7 @@ export const createEvent = wrapServerAction(
               users: slackUser.provider_key,
             });
           } catch (e) {
-            if (!isCodedError(e)) throw e;
-
-            const error = e as CodedError;
-
-            if (error.code !== "already_in_channel") throw error;
+            parseAndThrowOrIgnoreSlackError(e, "already_in_channel");
           }
         }
       }

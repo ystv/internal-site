@@ -17,7 +17,7 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 import { wrapServerAction } from "@/lib/actions";
-import { CodedError, isCodedError } from "@slack/bolt";
+import { parseAndThrowOrIgnoreSlackError } from "@/lib/slack/errors";
 
 export const createSignUpSheet = wrapServerAction(
   "createSignUpSheet",
@@ -190,6 +190,18 @@ export const signUpToRole = wrapServerAction(
       if (slackUser && sheet.events.slack_channel_id) {
         const slackApp = await slackApiConnection();
 
+        const channel_info = await slackApp.client.conversations.info({
+          channel: sheet.events.slack_channel_id,
+        });
+
+        if (channel_info.ok) {
+          if (!channel_info.channel?.is_member) {
+            await slackApp.client.conversations.join({
+              channel: sheet.events.slack_channel_id,
+            });
+          }
+        }
+
         // Boltjs works weirdly.
         // This code will ignore the error thrown if the user is already in the
         // channel but throw any others.
@@ -214,11 +226,7 @@ export const signUpToRole = wrapServerAction(
             });
           }
         } catch (e) {
-          if (!isCodedError(e)) throw e;
-
-          const error = e as CodedError;
-
-          if (error.code !== "already_in_channel") throw e;
+          parseAndThrowOrIgnoreSlackError(e, "already_in_channel");
         }
       }
     }

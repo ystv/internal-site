@@ -23,6 +23,7 @@ import slackApiConnection, {
 } from "@/lib/slack/slackApiConnection";
 import { wrapServerAction } from "@/lib/actions";
 import { env } from "@/lib/env";
+import { parseAndThrowOrIgnoreSlackError } from "@/lib/slack/errors";
 
 export const editEvent = wrapServerAction(
   "editEvent",
@@ -98,18 +99,32 @@ export const updateAttendeeStatus = wrapServerAction(
         if (slackUser && evt.slack_channel_id) {
           const slackApp = await slackApiConnection();
 
-          try {
-            await slackApp.client.conversations.invite({
-              channel: evt.slack_channel_id,
-              users: slackUser.provider_key,
-            });
-          } catch (e) {}
-
-          await slackApp.client.chat.postEphemeral({
+          const channel_info = await slackApp.client.conversations.info({
             channel: evt.slack_channel_id,
-            user: slackUser.provider_key,
-            text: `You have been added to this channel as you expressed your interest in attending '${evt.name}'.`,
           });
+
+          if (channel_info.ok) {
+            if (!channel_info.channel?.is_member) {
+              await slackApp.client.conversations.join({
+                channel: evt.slack_channel_id,
+              });
+            }
+
+            try {
+              await slackApp.client.conversations.invite({
+                channel: evt.slack_channel_id,
+                users: slackUser.provider_key,
+              });
+            } catch (e) {
+              parseAndThrowOrIgnoreSlackError(e, "already_in_channel");
+            }
+
+            await slackApp.client.chat.postEphemeral({
+              channel: evt.slack_channel_id,
+              user: slackUser.provider_key,
+              text: `You have been added to this channel as you expressed your interest in attending '${evt.name}'.`,
+            });
+          }
         }
       }
     }
