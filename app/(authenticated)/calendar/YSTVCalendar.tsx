@@ -32,6 +32,8 @@ import { z } from "zod";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchEvents } from "./actions";
 import { calendarEventsQueryKey } from "./helpers";
+import { EventColours } from "@/features/calendar/types";
+import { EventType } from "@/features/calendar/types";
 
 dayjs.extend(weekOfYear);
 
@@ -85,6 +87,12 @@ const HistoryStateSchema = z.object({
   view: z.string().optional(),
   filter: z.enum(["all", "mine", "vacant"]).optional(),
 });
+
+const getEventColor = (evt: Event): string => {
+  if (evt.is_cancelled) return "#B00020";
+  if (evt.is_tentative) return "#8b8b8b";
+  return EventColours[evt.event_type as EventType] || "#FFC0CB";
+};
 
 export default function YSTVCalendar() {
   const currentDate = new Date();
@@ -363,13 +371,13 @@ export default function YSTVCalendar() {
               end: evt.end_date,
               url: `/calendar/${evt.event_id}`,
             };
-            if (evt.is_tentative) {
-              eventObject.color = "#8b8b8b";
-            }
+
+            eventObject.color = getEventColor(evt);
+
             if (evt.is_cancelled) {
-              eventObject.color = "#B00020";
               eventObject.className = "ystv-calendar-strike-through";
             }
+
             if (evt.end_date.valueOf() < currentDate.valueOf()) {
               eventObject.className += " opacity-50";
             }
@@ -381,7 +389,7 @@ export default function YSTVCalendar() {
   );
 }
 
-type EventType = "show" | "meeting" | "social" | "other";
+//type EventType = "show" | "meeting" | "social" | "other";
 
 interface Event {
   event_id: number;
