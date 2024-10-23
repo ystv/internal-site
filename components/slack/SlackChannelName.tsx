@@ -2,7 +2,7 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 import { Text } from "@mantine/core";
-import { ConversationsInfoResponse } from "@slack/web-api/dist/response";
+import { ConversationsInfoResponse } from "@slack/web-api/dist/types/response";
 
 export default async function SlackChannelName({
   slackChannelID,

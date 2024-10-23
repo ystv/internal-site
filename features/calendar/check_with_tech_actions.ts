@@ -17,11 +17,11 @@ import {
   ButtonAction,
   SlackViewMiddlewareArgs,
   ViewSubmitAction,
-  ContextBlock,
-  Block,
-  SectionBlock,
-  RichTextBlock,
 } from "@slack/bolt";
+import {
+  ContextBlock,
+  RichTextBlock,
+} from "@slack/types/dist/block-kit/blocks";
 import dayjs from "dayjs";
 import { env } from "@/lib/env";
 import { z } from "zod";

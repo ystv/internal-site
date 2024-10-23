@@ -6,7 +6,7 @@ import invariant from "@/lib/invariant";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { KnownBlock } from "@slack/bolt";
+import { KnownBlock } from "@slack/types/dist/block-kit/blocks";
 
 export async function submit(
   type: "bug" | "feature",

@@ -29,7 +29,8 @@ app.prepare().then(async () => {
   let slackApp: App | undefined;
 
   if (isSlackEnabled) {
-    slackApp = await slackApiConnection();
+    slackApp = await slackApiConnection(true);
+    (globalThis as unknown as { slackApp: App }).slackApp = slackApp;
 
     await setupActionHandlers(slackApp);
   }

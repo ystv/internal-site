@@ -10,7 +10,7 @@ import slackApiConnection, {
 import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
 import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
 import { App } from "@slack/bolt";
-import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
+import { Channel } from "@slack/web-api/dist/types/response/ConversationsListResponse";
 import { env } from "@/lib/env";
 import { createEvent } from "./actions";
 import { PageInfo } from "@/components/PageInfo";

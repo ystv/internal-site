@@ -7,12 +7,12 @@ declare global {
 
 export const isSlackEnabled = env.SLACK_ENABLED === "true";
 
-async function slackApiConnection() {
+async function slackApiConnection(create?: boolean): Promise<App> {
   if (!isSlackEnabled) {
     throw new Error("Slack is not enabled");
   }
-  if (!global.slack) {
-    global.slack = new App({
+  if (create) {
+    return new App({
       token: env.SLACK_BOT_TOKEN,
       signingSecret: env.SLACK_SIGNING_SECRET,
       socketMode: env.SLACK_DISABLE_SOCKET_MODE !== "true",
@@ -24,8 +24,7 @@ async function slackApiConnection() {
       },
     });
   }
-
-  return global.slack;
+  return (globalThis as unknown as { slackApp: App }).slackApp;
 }
 
 export default slackApiConnection;
