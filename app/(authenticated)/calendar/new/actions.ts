@@ -26,7 +26,7 @@ export const createEvent = wrapServerAction(
     const me = await getCurrentUser();
     let slackApp: App | null = null;
     if (isSlackEnabled) {
-      slackApp = await slackApiConnection();
+      slackApp = slackApiConnection();
     }
     const payload = schema.safeParse(data);
     if (!payload.success) {

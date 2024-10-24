@@ -56,7 +56,7 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
     },
   });
 
-  const api = await slackApiConnection();
+  const api = slackApiConnection();
 
   if (!actor) {
     await api.client.chat.postEphemeral({
@@ -454,7 +454,7 @@ export async function _sendCWTFollowUpAndUpdateMessage(
   if (!requestor) {
     return;
   }
-  const api = await slackApiConnection();
+  const api = slackApiConnection();
   const responseParts = [
     `Your #check-with-tech request for ${
       cwt.event.name

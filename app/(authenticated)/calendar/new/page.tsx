@@ -21,7 +21,7 @@ async function getSlackChannels(): Promise<Channel[]> {
   let slackApp: App | null = null;
 
   if (isSlackEnabled) {
-    slackApp = await slackApiConnection();
+    slackApp = slackApiConnection();
     const slackChannels = await slackApp.client.conversations.list({
       team_id: env.SLACK_TEAM_ID,
       types: "public_channel",

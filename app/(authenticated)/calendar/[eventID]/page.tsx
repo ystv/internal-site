@@ -201,9 +201,7 @@ async function SlackBanner(props: { event: EventObjectType }) {
     return null;
   }
 
-  const channelInfo = await (
-    await slackApiConnection()
-  ).client.conversations.info({
+  const channelInfo = await slackApiConnection().client.conversations.info({
     channel: props.event.slack_channel_id,
   });
 

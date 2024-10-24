@@ -30,7 +30,7 @@ export async function submit(
     };
   }
 
-  const slack = await slackApiConnection();
+  const slack = slackApiConnection();
   const me = await getCurrentUser();
   const slackIdentity = me.identities.find((x) => x.provider === "slack");
   const blocks: KnownBlock[] = [

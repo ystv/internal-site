@@ -11,7 +11,7 @@ export default async function SlackChannelName({
 }) {
   let eventChannelInfo: ConversationsInfoResponse | null = null;
   if (isSlackEnabled) {
-    const slackApp = await slackApiConnection();
+    const slackApp = slackApiConnection();
     if (slackChannelID) {
       eventChannelInfo = await slackApp.client.conversations.info({
         channel: slackChannelID,
