@@ -3,6 +3,7 @@ import { Server } from "socket.io";
 import { authenticateSocket } from "./auth";
 import { env, validateEnv } from "../lib/env.js";
 import slackApiConnection, {
+  createSlackApp,
   isSlackEnabled,
 } from "../lib/slack/slackApiConnection";
 import { App } from "@slack/bolt";
@@ -29,7 +30,7 @@ app.prepare().then(async () => {
   let slackApp: App | undefined;
 
   if (isSlackEnabled) {
-    slackApp = await slackApiConnection();
+    slackApp = createSlackApp();
 
     await setupActionHandlers(slackApp);
   }

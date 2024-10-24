@@ -2,7 +2,7 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 import { Text } from "@mantine/core";
-import { ConversationsInfoResponse } from "@slack/web-api/dist/response";
+import { ConversationsInfoResponse } from "@slack/web-api/dist/types/response";
 
 export default async function SlackChannelName({
   slackChannelID,
@@ -11,7 +11,7 @@ export default async function SlackChannelName({
 }) {
   let eventChannelInfo: ConversationsInfoResponse | null = null;
   if (isSlackEnabled) {
-    const slackApp = await slackApiConnection();
+    const slackApp = slackApiConnection();
     if (slackChannelID) {
       eventChannelInfo = await slackApp.client.conversations.info({
         channel: slackChannelID,
