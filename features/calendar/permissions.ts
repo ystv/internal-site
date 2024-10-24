@@ -16,13 +16,23 @@ export function adminEventTypes(userPermissions: Permission[]): EventType[] {
     userPermissions.includes("Calendar.Admin") ||
     userPermissions.includes("SuperUser")
   ) {
-    permittedEventTypes.push("show", "meeting", "social", "public", "other");
+    permittedEventTypes.push(
+      "show",
+      "meeting",
+      "workshop",
+      "social",
+      "public",
+      "other",
+    );
   } else {
     if (userPermissions.includes("Calendar.Show.Admin")) {
       permittedEventTypes.push("show");
     }
     if (userPermissions.includes("Calendar.Meeting.Admin")) {
       permittedEventTypes.push("meeting");
+    }
+    if (userPermissions.includes("Calendar.Workshop.Admin")) {
+      permittedEventTypes.push("workshop");
     }
     if (userPermissions.includes("Calendar.Social.Admin")) {
       permittedEventTypes.push("social");
@@ -47,6 +57,9 @@ export function creatableEventTypes(
   }
   if (userPermissions.includes("Calendar.Meeting.Creator")) {
     base.push("meeting");
+  }
+  if (userPermissions.includes("Calendar.Workshop.Creator")) {
+    base.push("workshop");
   }
   if (userPermissions.includes("Calendar.Social.Creator")) {
     base.push("social");

@@ -52,7 +52,7 @@ export default async function NewEventPage() {
   );
   if (permittedEventTypes.length === 0) {
     throw new Forbidden([
-      "Calendar.Admin or Calendar.{Show,Meeting,Social}.{Creator,Admin}" as any,
+      "Calendar.Admin or Calendar.{Show,Meeting,Workshop,Social}.{Creator,Admin}" as any,
     ]);
   }
   const allMembers = await getAllUsers();
