@@ -95,6 +95,6 @@ Feature specific docs:
 - lib/ - low level utilities (auth, db, etc.)
 - server/ - custom server that handles socket.io communication
 
-## Issue Tracking
+## Contributing
 
-We use [Linear](https://linear.app/ystv) to track issues - to access it, sign in with your @ystv.co.uk Google account (ask a Computing Team member if you don't have one).
+Some documentation about how to contribute and some standards to follow is available [here](/docs/contributing.md)
