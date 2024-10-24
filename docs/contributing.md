@@ -21,5 +21,3 @@ Commit messages can contain a related [Linear issue ID](https://linear.app/docs/
 ## Pull requests
 
 Pull requests related to an issue should contain the [Linear issue ID](https://linear.app/docs/github#link-using-pull-requests) and either the issue title, or a summary of what was done to close the issue. For example: `[INT-67] Add Dark Mode`. This helps Linear to track what stage the issue is in and should be followed for all issues where applicable.
-
-Pull requests should use the provided [Pull Request Template](/.github/pull_request_template.md). This includes sections for what you've done, why you've done it, and how you've done it, along with how you tested it and some screenshots if applicable.
