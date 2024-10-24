@@ -389,8 +389,6 @@ export default function YSTVCalendar() {
   );
 }
 
-//type EventType = "show" | "meeting" | "social" | "other";
-
 interface Event {
   event_id: number;
   event_type: EventType | string;

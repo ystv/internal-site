@@ -31,14 +31,14 @@ export function adminEventTypes(userPermissions: Permission[]): EventType[] {
     if (userPermissions.includes("Calendar.Meeting.Admin")) {
       permittedEventTypes.push("meeting");
     }
+    if (userPermissions.includes("Calendar.Workshop.Admin")) {
+      permittedEventTypes.push("workshop");
+    }
     if (userPermissions.includes("Calendar.Social.Admin")) {
       permittedEventTypes.push("social");
     }
     if (userPermissions.includes("Calendar.Public.Admin")) {
       permittedEventTypes.push("public");
-    }
-    if (userPermissions.includes("Calendar.Workshop.Admin")) {
-      permittedEventTypes.push("workshop");
     }
   }
   return Array.from(new Set(permittedEventTypes));
@@ -58,14 +58,14 @@ export function creatableEventTypes(
   if (userPermissions.includes("Calendar.Meeting.Creator")) {
     base.push("meeting");
   }
+  if (userPermissions.includes("Calendar.Workshop.Creator")) {
+    base.push("workshop");
+  }
   if (userPermissions.includes("Calendar.Social.Creator")) {
     base.push("social");
   }
   if (userPermissions.includes("Calendar.Public.Creator")) {
     base.push("public");
-  }
-  if (userPermissions.includes("Calendar.Workshop.Creator")) {
-    base.push("workshop");
   }
   return Array.from(new Set(base));
 }
