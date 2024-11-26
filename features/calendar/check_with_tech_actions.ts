@@ -460,6 +460,10 @@ export async function _sendCWTFollowUpAndUpdateMessage(
     case "Rejected":
       newContext = `:x: Declined by ${getUserName(actor)}`;
       break;
+    case "Requested":
+      invariant(false, "CWTFollowUp: Expected status other than Requested");
+    default:
+      invariant(false, "CWTFollowUp: Unknown status " + newStatus);
   }
 
   const lines = [
