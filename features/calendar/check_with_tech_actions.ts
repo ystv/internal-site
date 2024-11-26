@@ -404,13 +404,15 @@ export async function handleSlackViewEvent(data: SlackViewMiddlewareArgs) {
   if (!newStatus) {
     return;
   }
-  await _sendCWTFollowUpAndUpdateMessage(
-    cwt,
-    actor,
-    newStatus,
-    notes ?? "",
-    request,
-  );
+  if (reqType !== "Note") {
+    await _sendCWTFollowUpAndUpdateMessage(
+      cwt,
+      actor,
+      newStatus,
+      notes ?? "",
+      request,
+    );
+  }
 }
 
 export interface FullCheckWithTech extends CheckWithTech {
