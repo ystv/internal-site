@@ -501,7 +501,7 @@ export async function _sendCWTFollowUpAndUpdateMessage(
           elements: [
             {
               type: "plain_text",
-              text: newContext!,
+              text: newContext,
               emoji: true,
             },
           ],
