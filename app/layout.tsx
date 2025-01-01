@@ -20,8 +20,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "YSTV Calendar",
-  description: "YSTV Calendar",
+  title: "YSTV Internal Site",
+  description: "YSTV Internal Site",
 };
 
 export default async function RootLayout({
