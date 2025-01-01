@@ -39,7 +39,7 @@ export default async function AuthenticatedLayout({
             </main>
             <br />
             <footer className="mt-8 text-center text-sm text-gray-500">
-              Calendar version {process.env.NEXT_PUBLIC_RELEASE}. Built and
+              Internal Site version {process.env.NEXT_PUBLIC_RELEASE}. Built and
               maintained by the YSTV Computing Team. <FeedbackPrompt />
             </footer>
             <style

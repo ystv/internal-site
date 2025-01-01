@@ -63,7 +63,7 @@ module.exports = withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
     org: "ystv",
-    project: "calendar2023",
+    project: "internal-site",
   },
   {
     // For all available options, see:
