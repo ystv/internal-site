@@ -77,6 +77,8 @@ model User {
 
   newsItems NewsItem[]
 
+  newsItems NewsItem[]
+
   @@map("users")
 }
 

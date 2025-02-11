@@ -85,6 +85,14 @@ export default async function CalendarPage() {
       <PermissionGate required={calendarEditPermissions}>
         <br />
       </PermissionGate>
+      <PermissionGate required={calendarEditPermissions}>
+        <Button component={Link} href="/calendar/new" fz="md" my="md">
+          Add Event
+        </Button>
+      </PermissionGate>
+      <PermissionGate required={calendarEditPermissions}>
+        <br />
+      </PermissionGate>
       <YSTVCalendar />
       <EventColoursKey />
     </HydrationBoundary>
