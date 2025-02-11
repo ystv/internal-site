@@ -4,9 +4,9 @@ import { z } from "zod";
 const slackEnvType =
   process.env.SLACK_ENABLED == "true"
     ? z.string({
-        required_error:
-          "This variable must be set if the slack integration is enabled",
-      })
+      required_error:
+        "This variable must be set if the slack integration is enabled",
+    })
     : z.string().optional();
 
 const envSchema = z.object({
@@ -21,6 +21,7 @@ const envSchema = z.object({
   GOOGLE_PERMITTED_DOMAINS: z.string({
     description: "A comma separated list of domains to allow google login from",
   }),
+  GOOGLE_API_KEY: z.string().optional(),
   ADAMRMS_EMAIL: z.string().optional(),
   ADAMRMS_PASSWORD: z.string().optional(),
   ADAMRMS_BASE: z.string().optional(),
@@ -36,14 +37,16 @@ const envSchema = z.object({
   SLACK_CLIENT_ID: slackEnvType,
   SLACK_CLIENT_SECRET: slackEnvType,
   SLACK_TEAM_ID: z.string().optional(),
-  SLACK_CHECK_WITH_TECH_CHANNEL: slackEnvType,
   SLACK_USER_FEEDBACK_CHANNEL: slackEnvType.default("#dev-internal-site"),
   SLACK_DISABLE_SOCKET_MODE: z.enum(["true", "false"]).default("false"), // Used to disable socket mode in dev since it shares an app with prod
   DEV_SSL: z.string().optional(), // Used to decide whether or not to use https in a dev environment
   SENTRY_PROJECT_ID: z.string().optional(),
+  SLACK_CHECK_WITH_TECH_CHANNEL: z.string().default("#check-with-tech"),
+  SLACK_TECH_HELP_CHANNEL: z.string().default("#check-with-tech"),
   COOKIE_DOMAIN: z
     .string()
-    .default(new URL(process.env.PUBLIC_URL ?? "http://localhost").hostname),
+    .default(new URL(process.env.PUBLIC_URL ?? "localhost").host),
+  YOUTUBE_CHANNEL_ID: z.string().optional(),
 });
 
 export function validateEnv(
