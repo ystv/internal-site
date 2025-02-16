@@ -6,6 +6,6 @@ export default async function ArbitraryUserPage({
 }: {
   params: { id: string };
 }) {
-  await requirePermission("Admin.Users");
+  await requirePermission("People.ViewProfile.All");
   return <UserPage id={parseInt(params.id, 10)} />;
 }
