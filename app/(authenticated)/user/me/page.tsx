@@ -100,10 +100,6 @@ export async function UserPage(props: { id: number }) {
         <Wrapped userID={user.user_id} />
       </Suspense>
       <Space h={"md"} />
-      <Suspense fallback={<Skeleton height={38} animate />}>
-        <MyEvents userID={user.user_id} />
-      </Suspense>
-      <Space h={"md"} />
       {isSlackEnabled && isMe && (
         <>
           {!slackUser ? (
@@ -135,6 +131,10 @@ export async function UserPage(props: { id: number }) {
           )}
         </>
       )}
+      <Space h={"md"} />
+      <Suspense fallback={<Skeleton height={38} animate />}>
+        <MyEvents userID={user.user_id} />
+      </Suspense>
     </div>
   );
 }
