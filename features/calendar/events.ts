@@ -530,6 +530,20 @@ export async function getAllEventsForUser(userID: number) {
     orderBy: {
       start_date: "asc",
     },
+    include: {
+      signup_sheets: {
+        include: {
+          crews: {
+            include: {
+              positions: true,
+            },
+            where: {
+              user_id: userID,
+            },
+          },
+        },
+      },
+    },
   });
   return events;
 }

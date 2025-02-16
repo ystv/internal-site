@@ -176,6 +176,7 @@ async function MyEvents({ userID }: { userID: number }) {
           <TableTr>
             <TableTh>Event</TableTh>
             <TableTh>Date</TableTh>
+            <TableTh>Role</TableTh>
           </TableTr>
         </TableThead>
         <TableTbody>
@@ -186,6 +187,12 @@ async function MyEvents({ userID }: { userID: number }) {
               </TableTd>
               <TableTd>
                 <DateTime val={event.start_date.toUTCString()} format="date" />
+              </TableTd>
+              <TableTd>
+                {event.signup_sheets
+                  // getAllEventsForUser pre-filters this to only include our crews
+                  .flatMap((sheet) => sheet.crews.map((c) => c.positions.name))
+                  .join(", ")}
               </TableTd>
             </TableTr>
           ))}
