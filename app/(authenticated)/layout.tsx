@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Logo from "@/app/_assets/logo.png";
+import Logo from "@/app/_assets/logo-new.png";
 import Link from "next/link";
 import { UserProvider } from "@/components/UserContext";
 import { getCurrentUserOrNull } from "@/lib/auth/server";
