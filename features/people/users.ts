@@ -64,6 +64,17 @@ export async function getUser(id: number): Promise<ExposedUser | null> {
   return ExposedUserModel.parse(user);
 }
 
+export async function getUserSecure(id: number): Promise<SecureUser | null> {
+  const user = await prisma.user.findUnique({
+    where: { user_id: id },
+    include: {
+      identities: true,
+    },
+  });
+  if (!user) return null;
+  return SecureUserModel.parse(user);
+}
+
 export async function setUserPreference<
   K extends keyof PrismaJson.UserPreferences,
 >(userID: number, key: K, value: PrismaJson.UserPreferences[K]) {
