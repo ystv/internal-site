@@ -502,3 +502,34 @@ export async function deleteEvent(eventID: number, userID: number) {
     },
   });
 }
+
+export async function getAllEventsForUser(userID: number) {
+  const events = await prisma.event.findMany({
+    where: {
+      OR: [
+        {
+          signup_sheets: {
+            some: {
+              crews: {
+                some: {
+                  user_id: userID,
+                },
+              },
+            },
+          },
+        },
+        {
+          attendees: {
+            some: {
+              user_id: userID,
+            },
+          },
+        },
+      ],
+    },
+    orderBy: {
+      start_date: "asc",
+    },
+  });
+  return events;
+}
