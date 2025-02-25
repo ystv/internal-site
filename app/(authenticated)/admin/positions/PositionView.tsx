@@ -25,7 +25,6 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { SearchBar } from "@/components/SearchBar";
 import { CreatePositionForm, UpdatePositionForm } from "./form";
-import { useValidSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { PositionCard } from "./PositionCard";
 import {
@@ -36,6 +35,7 @@ import {
   updatePositionAction,
 } from "./actions";
 import { useQuery } from "@tanstack/react-query";
+import { useValidSearchParams } from "@/lib/searchParams/validateHook";
 
 export function PositionView(props: { initialPositions: TFetchPositions }) {
   const pathname = usePathname();

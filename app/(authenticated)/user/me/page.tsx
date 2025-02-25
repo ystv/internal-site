@@ -1,8 +1,21 @@
-import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";
+import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
 import * as People from "@/features/people";
 import * as Calendar from "@/features/calendar";
 import { getUserName } from "@/components/UserHelpers";
-import { Avatar, Card, Group, Skeleton, Space, Stack } from "@mantine/core";
+import {
+  Avatar,
+  Card,
+  Group,
+  Skeleton,
+  Space,
+  Stack,
+  Table,
+  TableTbody,
+  TableTd,
+  TableTh,
+  TableThead,
+  TableTr,
+} from "@mantine/core";
 import { UserPreferences } from "./UserPreferences";
 import { ICalCopyButton } from "@/components/ICalCopyButton";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
@@ -14,14 +27,26 @@ import Link from "next/link";
 import { env } from "@/lib/env";
 import { SignoutButton } from "@/components/SignoutButton";
 import { PageInfo } from "@/components/PageInfo";
+import { notFound } from "next/navigation";
+import invariant from "@/lib/invariant";
+import { DateTime } from "@/components/DateTimeHelpers";
 
-export default async function UserPage() {
-  const user = People.SecureUserModel.parse(await mustGetCurrentUser());
+export default async function MePage() {
+  return <UserPage id={(await mustGetCurrentUser()).user_id} />;
+}
+
+export async function UserPage(props: { id: number }) {
+  const user = await People.getUserSecure(props.id);
+  if (!user) {
+    notFound();
+  }
+  const me = await getCurrentUser();
+  const isMe = me.user_id === props.id;
   const prefs = People.preferenceDefaults(user.preferences);
   const slackUser = user.identities.find((i) => i.provider === "slack");
   return (
     <div>
-      <PageInfo title="My Profile" />
+      <PageInfo title={isMe ? "My Profile" : getUserName(user)} />
       <Card withBorder>
         <Group>
           {user.avatar && (
@@ -35,16 +60,18 @@ export default async function UserPage() {
               {user.email}
             </h4>
           </Stack>
-          <SignoutButton />
+          {isMe && <SignoutButton />}
         </Group>
       </Card>
       <Space h={"md"} />
-      <Card withBorder>
-        <Stack gap={0}>
-          <h2 className="mt-0">Preferences</h2>
-          <UserPreferences value={prefs} />
-        </Stack>
-      </Card>
+      {isMe && (
+        <Card withBorder>
+          <Stack gap={0}>
+            <h2 className="mt-0">Preferences</h2>
+            <UserPreferences value={prefs} />
+          </Stack>
+        </Card>
+      )}
       <Space h={"md"} />
       <Card withBorder>
         <Group>
@@ -69,13 +96,11 @@ export default async function UserPage() {
         </Group>
       </Card>
       <Space h={"md"} />
-      <Card withBorder>
-        <Suspense fallback={<Skeleton height={38} animate />}>
-          <Wrapped />
-        </Suspense>
-      </Card>
+      <Suspense fallback={<Skeleton height={38} animate />}>
+        <Wrapped userID={user.user_id} />
+      </Suspense>
       <Space h={"md"} />
-      {isSlackEnabled && (
+      {isSlackEnabled && isMe && (
         <>
           {!slackUser ? (
             <Card withBorder>
@@ -106,27 +131,73 @@ export default async function UserPage() {
           )}
         </>
       )}
+      <Space h={"md"} />
+      <Suspense fallback={<Skeleton height={38} animate />}>
+        <MyEvents userID={user.user_id} />
+      </Suspense>
     </div>
   );
 }
 
-async function Wrapped() {
-  const me = await mustGetCurrentUser();
+async function Wrapped({ userID }: { userID: number }) {
+  const me = await People.getUserSecure(userID);
+  invariant(me, "no user");
   const has2024 = await hasWrapped(me.email, 2024);
   if (!has2024) {
     return null;
   }
   return (
-    <Group>
-      <div>
-        <h2 className="mt-0">YSTV Wrapped</h2>
-        <p className="my-1">Watch back previous years&apos; YSTV Wrapped.</p>
-        <ul>
-          <li>
-            <Link href="/wrapped?year=2024">YSTV Wrapped 2024</Link>
-          </li>
-        </ul>
-      </div>
-    </Group>
+    <Card withBorder>
+      <Group>
+        <div>
+          <h2 className="mt-0">YSTV Wrapped</h2>
+          <p className="my-1">Watch back previous years&apos; YSTV Wrapped.</p>
+          <ul>
+            <li>
+              <Link href="/wrapped?year=2024">YSTV Wrapped 2024</Link>
+            </li>
+          </ul>
+        </div>
+      </Group>
+    </Card>
+  );
+}
+
+async function MyEvents({ userID }: { userID: number }) {
+  const events = await Calendar.getAllEventsForUser(userID);
+  if (events.length === 0) {
+    return null;
+  }
+  return (
+    <Card withBorder>
+      <h2>My Events</h2>
+      <Table>
+        <TableThead>
+          <TableTr>
+            <TableTh>Event</TableTh>
+            <TableTh>Date</TableTh>
+            <TableTh>Role</TableTh>
+          </TableTr>
+        </TableThead>
+        <TableTbody>
+          {events.map((event) => (
+            <TableTr key={event.event_id}>
+              <TableTd>
+                <Link href={`/calendar/${event.event_id}`}>{event.name}</Link>
+              </TableTd>
+              <TableTd>
+                <DateTime val={event.start_date.toUTCString()} format="date" />
+              </TableTd>
+              <TableTd>
+                {event.signup_sheets
+                  // getAllEventsForUser pre-filters this to only include our crews
+                  .flatMap((sheet) => sheet.crews.map((c) => c.positions.name))
+                  .join(", ")}
+              </TableTd>
+            </TableTr>
+          ))}
+        </TableTbody>
+      </Table>
+    </Card>
   );
 }
