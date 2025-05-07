@@ -3,6 +3,7 @@ import { produce } from "immer";
 import { prisma } from "@/lib/db";
 import {
   Attendee,
+  CheckWithTechStatus,
   Crew,
   Event,
   Position,
@@ -15,6 +16,8 @@ import { ExposedUser, ExposedUserModel } from "@/features/people";
 import { SignUpSheetType } from "@/features/calendar/signup_sheets";
 import { EventType } from "@/features/calendar/types";
 import * as AdamRMS from "@/lib/adamrms";
+import dayjs from "dayjs";
+import { z } from "zod";
 
 export interface EventAttendee {
   event_id: number;
@@ -133,6 +136,15 @@ const EventSelectors = {
     },
   },
 } satisfies Prisma.EventInclude;
+
+export const publicEventSchema = z.object({
+  event_id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  start_date: z.date(),
+  end_date: z.date(),
+  location: z.string(),
+});
 
 export async function listEvents(start: Date, end: Date, me?: number) {
   return (
@@ -294,6 +306,26 @@ export async function listVacantEvents({
     events: vacantEvents,
     signUpRolesCount: vacantsignUpRolesCount,
   };
+}
+
+export async function listPublicEvents() {
+  const eventSearchDate = dayjs().subtract(2, "hours").toDate();
+
+  const res = await prisma.event.findMany({
+    where: {
+      event_type: "public",
+      start_date: {
+        gte: eventSearchDate,
+      },
+    },
+    orderBy: {
+      start_date: "asc",
+    },
+  });
+
+  const publicEvents = z.array(publicEventSchema).parse(res);
+
+  return publicEvents;
 }
 
 export async function getEvent(id: number): Promise<EventObjectType | null> {
@@ -469,4 +501,49 @@ export async function deleteEvent(eventID: number, userID: number) {
       },
     },
   });
+}
+
+export async function getAllEventsForUser(userID: number) {
+  const events = await prisma.event.findMany({
+    where: {
+      OR: [
+        {
+          signup_sheets: {
+            some: {
+              crews: {
+                some: {
+                  user_id: userID,
+                },
+              },
+            },
+          },
+        },
+        {
+          attendees: {
+            some: {
+              user_id: userID,
+            },
+          },
+        },
+      ],
+    },
+    orderBy: {
+      start_date: "asc",
+    },
+    include: {
+      signup_sheets: {
+        include: {
+          crews: {
+            include: {
+              positions: true,
+            },
+            where: {
+              user_id: userID,
+            },
+          },
+        },
+      },
+    },
+  });
+  return events;
 }

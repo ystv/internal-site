@@ -17,19 +17,20 @@ import {
   CheckBoxField,
   ConditionalField,
   DatePickerField,
-  MemberSelect,
+  SearchedMemberSelect,
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
 import { useCallback, useState, useTransition } from "react";
 import Image from "next/image";
 import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
-import { Button, Menu, Modal, Select, Text } from "@mantine/core";
+import { Alert, Button, Menu, Modal, Select, Text } from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import { useRouter } from "next/navigation";
 import { PermissionGate } from "@/components/UserContext";
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { Project } from "@/lib/adamrms";
+import { TbAlertTriangle } from "react-icons/tb";
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (
@@ -51,12 +52,24 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
         condition={(t) => t !== "show"}
         childFieldName="host"
       >
-        <MemberSelect name="host" label="Host" />
+        <SearchedMemberSelect name="host" label="Host" />
       </ConditionalField>
       {/*<br />*/}
       {/*<CheckBoxField name="is_private" label="Private Event" />*/}
       <br />
       <CheckBoxField name="is_tentative" label="Tentative Event" />
+      {props.event.event_type === "public" && (
+        <Alert
+          variant="light"
+          color="orange"
+          icon={<TbAlertTriangle />}
+          title="Public Event"
+          className="mt-4"
+        >
+          This event is public. Its details can be seen by anyone outside YSTV{" "}
+          and any changes are immediately published.
+        </Alert>
+      )}
     </Form>
   );
 }

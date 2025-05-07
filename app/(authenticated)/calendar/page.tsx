@@ -1,93 +1,41 @@
-import YSTVCalendar from "@/components/YSTVCalendar";
+import YSTVCalendar from "@/app/(authenticated)/calendar/YSTVCalendar";
 import Link from "next/link";
 import { PermissionGate } from "@/components/UserContext";
-import { listEvents, listVacantEvents } from "@/features/calendar/events";
+import { listVacantEvents } from "@/features/calendar/events";
 import { Alert, Button } from "@mantine/core";
 import { Permission } from "@/lib/auth/permissions";
-import { getCurrentUser } from "@/lib/auth/server";
-import { TbArticle, TbCalendarEvent, TbClipboardList } from "react-icons/tb";
-import invariant from "@/lib/invariant";
-import { add, set, setDay } from "date-fns";
+import { mustGetCurrentUser } from "@/lib/auth/server";
+import { TbArticle, TbCalendarEvent } from "react-icons/tb";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
+import { fetchEvents } from "./actions";
+import { calendarEventsQueryKey } from "./helpers";
+import EventColoursKey from "@/components/EventColoursKey";
 
-function dateRangeForView(
-  year: number,
-  month: number,
-  day: number,
-  view?: string,
-): [Date, Date] {
-  // These are just starting points, they'll shift depending on the view
-  let start = new Date(year, month, day);
-  let end = new Date(year, month, day);
+export default async function CalendarPage() {
+  await mustGetCurrentUser();
 
-  switch (view) {
-    case "dayGridWeek":
-      start = setDay(start, 1, { weekStartsOn: 1 });
-      // set end to the next Monday because the query does a <, not a <=
-      end = setDay(end, 1, { weekStartsOn: 1 });
-      end = add(end, { days: 7 });
-      break;
-    case "timeGridDay":
-      // add a day because the query does a <, not a <=
-      end = add(end, { days: 1 });
-      break;
-    case "dayGridMonth":
-    case "listMonth":
-    case undefined:
-      // JavaScript dates are 0-indexed, but humans think in 1-indexed
-      // months, so we have to add 1 here
-      start = new Date(year, month, 1);
-      end = new Date(year, month + 1, 1);
-      break;
-    default:
-      invariant(false, `Unknown calendar view ${view}`);
-  }
-
-  return [start, end];
-}
-
-export default async function CalendarPage({
-  searchParams,
-}: {
-  searchParams: {
-    year?: string;
-    month?: string;
-    day?: string;
-    view?: string;
-    filter?: string;
-  };
-}) {
   const now = new Date();
-  const year = searchParams.year
-    ? parseInt(searchParams.year, 10)
-    : now.getFullYear();
-  const month = searchParams.month
-    ? parseInt(searchParams.month, 10) - 1
-    : now.getMonth();
-  const day = searchParams.day ? parseInt(searchParams.day, 10) : now.getDate();
-  const selectedDay = new Date(year, month, day);
 
-  const me = await getCurrentUser();
-
-  const filter = searchParams.filter;
+  const qc = new QueryClient();
+  // Prefetch the "most likely" initial load state, that being the current month.
+  // The client may immediately trigger another fetch if its view state is different.
+  await qc.prefetchQuery({
+    queryKey: calendarEventsQueryKey({
+      year: now.getFullYear(),
+      month: now.getMonth(),
+      filter: "all",
+    }),
+    queryFn: (args) => fetchEvents(args.queryKey[1]),
+  });
 
   const vacantEvents = await listVacantEvents({
     role: undefined,
   });
   const vacantEventsCount = vacantEvents.signUpRolesCount;
-
-  const [start, end] = dateRangeForView(year, month, day, searchParams.view);
-  let events;
-  switch (filter) {
-    case "my":
-      events = await listEvents(start, end, me.user_id);
-      break;
-    case "vacant":
-      events = vacantEvents.events;
-      break;
-    default:
-      events = await listEvents(start, end);
-      break;
-  }
 
   const calendarEditPermissions: Permission[] = [
     "Calendar.Admin",
@@ -97,12 +45,12 @@ export default async function CalendarPage({
     "Calendar.Meeting.Creator",
     "Calendar.Social.Admin",
     "Calendar.Social.Creator",
-    "Calendar.Show.Admin",
-    "Calendar.Social.Creator",
+    "Calendar.Public.Admin",
+    "Calendar.Public.Creator",
   ];
 
   return (
-    <>
+    <HydrationBoundary state={dehydrate(qc)}>
       {vacantEventsCount > 0 && (
         <Alert
           variant={"outline"}
@@ -135,12 +83,8 @@ export default async function CalendarPage({
       <PermissionGate required={calendarEditPermissions}>
         <br />
       </PermissionGate>
-      <YSTVCalendar
-        events={events}
-        selectedDate={selectedDay}
-        selectedFilter={filter}
-        selectedView={searchParams.view}
-      />
-    </>
+      <YSTVCalendar />
+      <EventColoursKey />
+    </HydrationBoundary>
   );
 }

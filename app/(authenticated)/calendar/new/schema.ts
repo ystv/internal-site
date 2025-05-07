@@ -20,7 +20,7 @@ export const schema = zfd
       .nullable()
       .transform((v) => (v === "" ? null : v))
       .default(null),
-    slack_new_channel_name: z
+    slack_channel_new_name: z
       .string()
       .regex(
         /^[a-zA-Z0-9-]{1,80}$/,

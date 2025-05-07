@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import { OAuth2Client } from "google-auth-library";
+import { SlackTokenJson } from "../slack";
+import { env } from "@/lib/env";
 
 const Google = new OAuth2Client();
 
@@ -21,15 +23,15 @@ interface GoogleTokenClaims {
 }
 
 const permissibleDomains = new Set(
-  process.env.GOOGLE_PERMITTED_DOMAINS?.split(",") ?? [],
+  env.GOOGLE_PERMITTED_DOMAINS?.split(",") ?? [],
 );
 
-export async function verifyToken(
+export async function verifyGoogleToken(
   rawToken: string,
 ): Promise<GoogleTokenClaims> {
   const ticket = await Google.verifyIdToken({
     idToken: rawToken,
-    audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+    audience: env.GOOGLE_CLIENT_ID,
   });
   const payload = ticket.getPayload();
   if (!payload) {
@@ -45,18 +47,43 @@ export async function verifyToken(
 }
 
 export async function findOrCreateUserFromGoogleToken(rawToken: string) {
-  const claims = await verifyToken(rawToken);
+  const claims = await verifyGoogleToken(rawToken);
   const user = await prisma.user.findFirst({
     where: {
-      identities: {
-        some: {
+      OR: [
+        {
+          identities: {
+            some: {
+              provider: "google",
+              provider_key: claims.sub,
+            },
+          },
+        },
+        {
+          email: claims.email,
+        },
+      ],
+    },
+    include: {
+      identities: true,
+    },
+  });
+  if (user) {
+    await prisma.identity.upsert({
+      where: {
+        provider_provider_key: {
           provider: "google",
           provider_key: claims.sub,
         },
       },
-    },
-  });
-  if (user) {
+      update: {},
+      create: {
+        provider: "google",
+        provider_key: claims.sub,
+        user_id: user.user_id,
+      },
+    });
+
     return user;
   }
   return prisma.user.create({
@@ -64,7 +91,6 @@ export async function findOrCreateUserFromGoogleToken(rawToken: string) {
       first_name: claims.given_name!,
       last_name: claims.family_name!,
       email: claims.email!,
-      username: claims.email!.split("@")[0],
       avatar: claims.picture,
       identities: {
         create: {
@@ -72,6 +98,9 @@ export async function findOrCreateUserFromGoogleToken(rawToken: string) {
           provider_key: claims.sub,
         },
       },
+    },
+    include: {
+      identities: true,
     },
   });
 }

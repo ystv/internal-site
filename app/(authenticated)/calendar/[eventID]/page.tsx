@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import invariant from "@/lib/invariant";
 import { getUserName } from "@/components/UserHelpers";
-import { getCurrentUser, UserType } from "@/lib/auth/server";
+import { hasPermission, mustGetCurrentUser, UserType } from "@/lib/auth/server";
 import { CurrentUserAttendeeRow } from "@/app/(authenticated)/calendar/[eventID]/AttendeeStatus";
 import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { SignupSheetsView } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
@@ -13,6 +13,7 @@ import {
   canManage,
   canManageAnySignupSheet,
   getAllCrewPositions,
+  getLatestRequest,
 } from "@/features/calendar";
 import {
   CrewPositionsProvider,
@@ -20,15 +21,21 @@ import {
 } from "@/components/FormFieldPreloadedData";
 import { getAllUsers } from "@/features/people";
 import { EventActionsUI } from "./EventActionsUI";
-import { Alert, Text } from "@mantine/core";
-import { TbInfoCircle, TbAlertTriangle } from "react-icons/tb";
+import { Alert, Group, Space, Stack } from "@mantine/core";
+import { TbInfoCircle, TbAlertTriangle, TbTool } from "react-icons/tb";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { ConversationsInfoResponse } from "@slack/web-api/dist/response";
 import { Suspense } from "react";
 import SlackChannelName from "@/components/slack/SlackChannelName";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
+import {
+  CheckWithTechAdminBanner,
+  CheckWithTechPromptContents,
+} from "./CheckWithTech";
+import { C } from "@fullcalendar/core/internal-common";
+import dayjs from "dayjs";
+import { PageInfo } from "@/components/PageInfo";
 
 async function AttendeesView({
   event,
@@ -86,6 +93,79 @@ async function AttendeesView({
   );
 }
 
+async function CheckWithTechPrompt({
+  event,
+  me,
+}: {
+  event: EventObjectType;
+  me: UserType;
+}) {
+  if (!canManageAnySignupSheet(event, me)) {
+    return null;
+  }
+  if (dayjs(event.start_date).isBefore(new Date())) {
+    // no point checking something in the past
+    return null;
+  }
+  if (event.signup_sheets.length === 0) {
+    // signup sheets take priority
+    return null;
+  }
+  if (!isSlackEnabled) {
+    return null;
+  }
+  const cwt = await getLatestRequest(event.event_id);
+
+  if (cwt && (await hasPermission("CheckWithTech.Admin"))) {
+    return <CheckWithTechAdminBanner cwt={cwt} />;
+  }
+
+  if (event.adam_rms_project_id !== null) {
+    // Assume already checked
+    return null;
+  }
+
+  if (!(await hasPermission("CheckWithTech.Submit"))) {
+    return null;
+  }
+
+  let contents;
+  if (!cwt) {
+    contents = <CheckWithTechPromptContents eventID={event.event_id} />;
+  } else {
+    switch (cwt.status) {
+      case "Rejected":
+        // Don't show rejected CWTs, just prompt to create a new one
+        contents = <CheckWithTechPromptContents eventID={event.event_id} />;
+        break;
+      case "Requested":
+        contents = (
+          <Alert
+            variant="light"
+            color="blue"
+            title="#CheckWithTech"
+            icon={<TbTool />}
+          >
+            Your #CheckWithTech has been submitted to the tech team. Keep an eye
+            on Slack in case they need any further details!
+          </Alert>
+        );
+        break;
+      case "Confirmed":
+        contents = null; // Don't show anything if it's already confirmed, reduce banner fatigue
+        break;
+      default:
+        invariant(false, `unexpected CWT status: ${cwt.status}`);
+    }
+  }
+  return (
+    <>
+      {contents}
+      <Space h={"lg"} />
+    </>
+  );
+}
+
 async function ShowView({
   event,
   me,
@@ -103,6 +183,7 @@ async function ShowView({
     return (
       <CrewPositionsProvider positions={positions}>
         <MembersProvider members={members}>
+          <CheckWithTechPrompt event={event} me={me} />
           <SignupSheetsView event={event} me={me} />
         </MembersProvider>
       </CrewPositionsProvider>
@@ -115,8 +196,8 @@ async function SlackBanner(props: { event: EventObjectType }) {
   if (!props.event.slack_channel_id) {
     return null;
   }
-  const me = await getCurrentUser();
-  if (me.slack_user_id) {
+  const me = await mustGetCurrentUser();
+  if (me.identities.find((x) => x.provider === "slack")) {
     return null;
   }
 
@@ -128,10 +209,16 @@ async function SlackBanner(props: { event: EventObjectType }) {
 
   return (
     <Alert variant="light" color="blue" title="Slack" icon={<TbInfoCircle />}>
-      This event has a Slack channel: #{channelInfo.channel?.name}.&nbsp;
-      Connect your Slack account to join it automatically.
-      <br />
-      <SlackLoginButton />
+      <Stack>
+        This event has a Slack channel: #{channelInfo.channel?.name}.&nbsp;
+        Connect your Slack account to join it automatically.
+        <Group>
+          <SlackLoginButton
+            mantineCompat
+            redirect={`/calendar/${props.event.event_id}`}
+          />
+        </Group>
+      </Stack>
     </Alert>
   );
 }
@@ -146,13 +233,14 @@ export default async function EventPage({
     notFound();
   }
 
-  const me = await getCurrentUser();
+  const me = await mustGetCurrentUser();
   let allMembers;
   if (canManage(event, me)) {
     allMembers = await getAllUsers();
   }
   return (
     <>
+      <PageInfo title={event.name} />
       {event.is_cancelled ? (
         <Alert
           variant="light"
@@ -183,7 +271,7 @@ export default async function EventPage({
           "flex w-full flex-col items-center justify-between sm:flex-row"
         }
       >
-        <div className="w-fit grow font-bold">
+        <div className="w-fit grow break-words font-bold">
           <h1
             className={twMerge(
               "text-4xl font-bold",

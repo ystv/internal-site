@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { CompleteIdentity, IdentityModel, CompleteAttendee, AttendeeModel, CompleteCrew, CrewModel, CompleteEvent, EventModel, CompleteRoleMember, RoleMemberModel } from "./index"
+import { CompleteIdentity, IdentityModel, CompleteAttendee, AttendeeModel, CompleteCrew, CrewModel, CompleteEvent, EventModel, CompleteRoleMember, RoleMemberModel, CompleteCheckWithTech, CheckWithTechModel } from "./index"
 
 // Helper schema for JSON fields
 type Literal = boolean | number | string
@@ -9,13 +9,12 @@ const jsonSchema: z.ZodSchema<Json> = z.lazy(() => z.union([literalSchema, z.arr
 
 export const _UserModel = z.object({
   user_id: z.number().int(),
-  username: z.string(),
   email: z.string(),
   first_name: z.string(),
   last_name: z.string(),
   nickname: z.string(),
   avatar: z.string(),
-  slack_user_id: z.string(),
+  joined_on: z.date(),
   /**
    * [UserPreferences]
    */
@@ -31,6 +30,8 @@ export interface CompleteUser extends z.infer<typeof _UserModel> {
   events_events_updated_byTousers: CompleteEvent[]
   role_members: CompleteRoleMember[]
   hosted_events: CompleteEvent[]
+  check_with_tech_confirmed: CompleteCheckWithTech[]
+  check_with_tech_submitted: CompleteCheckWithTech[]
 }
 
 /**
@@ -47,4 +48,6 @@ export const UserModel: z.ZodSchema<CompleteUser> = z.lazy(() => _UserModel.exte
   events_events_updated_byTousers: EventModel.array(),
   role_members: RoleMemberModel.array(),
   hosted_events: EventModel.array(),
+  check_with_tech_confirmed: CheckWithTechModel.array(),
+  check_with_tech_submitted: CheckWithTechModel.array(),
 }))

@@ -2,35 +2,24 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { Forbidden, NotLoggedIn } from "./errors";
 import { Permission } from "./permissions";
-import { User } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { Identity } from "@prisma/client";
+import { NextRequest } from "next/server";
 import { findOrCreateUserFromGoogleToken } from "./google";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { decode, encode } from "../sessionSecrets";
-import { cookies } from "next/headers";
+import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
+import { env } from "../env";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { cache } from "react";
+import {
+  COOKIE_NAME,
+  UserType,
+  resolvePermissionsForUser,
+  userHasPermission,
+} from "./core";
 
-export type UserType = User & {
-  permissions: Permission[];
-};
-
-async function resolvePermissionsForUser(userID: number) {
-  const result = await prisma.rolePermission.findMany({
-    where: {
-      roles: {
-        role_members: {
-          some: {
-            user_id: userID,
-          },
-        },
-      },
-    },
-    select: {
-      permission: true,
-    },
-  });
-  return result.map((r) => r.permission as Permission);
-}
+export * from "./core";
 
 /**
  * Ensures that the currently signed-in user has at least one of the given permissions,
@@ -42,44 +31,68 @@ export async function requirePermission(...perms: Permission[]) {
   if (!(await hasPermission(...perms))) throw new Forbidden(perms);
 }
 
-const cookieName = "ystv-calendar-session";
-
 const sessionSchema = z.object({
   userID: z.number(),
 });
 
 async function getSession(req?: NextRequest) {
+  var sessionID: RequestCookie | undefined;
   if (req) {
-    const sessionID = req.cookies.get(cookieName);
-    if (!sessionID) return null;
-    if (sessionID.value == "") return null;
-    return sessionSchema.parse(await decode(sessionID.value));
+    sessionID = req.cookies.get(COOKIE_NAME);
+  } else {
+    const { cookies } = await import("next/headers");
+    sessionID = cookies().get(COOKIE_NAME);
   }
-  const { cookies } = await import("next/headers");
-  const sessionID = cookies().get(cookieName);
   if (!sessionID) return null;
   if (sessionID.value == "") return null;
-  return sessionSchema.parse(await decode(sessionID.value));
+
+  // If there's an error decoding the sessionToken, pretend it doesn't exist
+  // and force a new login to take place in some cases
+  var decodedSession: unknown;
+  try {
+    decodedSession = await decode(sessionID.value);
+  } catch (e) {
+    return null;
+  }
+  return sessionSchema.parse(decodedSession);
 }
 
 async function setSession(user: z.infer<typeof sessionSchema>) {
   const payload = await encode(user);
   const { cookies } = await import("next/headers");
-  cookies().set(cookieName, payload, {
+  cookies().set(COOKIE_NAME, payload, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
+    domain: env.COOKIE_DOMAIN,
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
 }
 
-async function clearSession() {
-  const { cookies } = await import("next/headers");
-
-  await cookies().delete(cookieName);
-  await cookies().delete("g_csrf_token");
-}
+const getUser = cache(async function _getUser(id: number) {
+  const user = await prisma.user.findUnique({
+    where: { user_id: id },
+    include: {
+      identities: {
+        where: {
+          provider: "slack",
+        },
+      },
+    },
+  });
+  if (!user) {
+    return "User not found";
+  }
+  const permissions = await resolvePermissionsForUser(user.user_id);
+  const userType = {
+    ...user,
+    permissions,
+  } satisfies UserType & {
+    identities: Identity[];
+  };
+  return userType;
+});
 
 export async function getCurrentUserOrNull(
   req?: NextRequest,
@@ -93,21 +106,7 @@ export async function getCurrentUserOrNull(
   if (!session) {
     return "No session";
   }
-  // This is fairly expensive (two DB calls per every page load). If this starts
-  // to become a problem, we should consider caching.
-  // (See below for why we don't store the user object in the session.)
-  const user = await prisma.user.findUnique({
-    where: { user_id: session.userID },
-  });
-  if (!user) {
-    return "User not found";
-  }
-  const permissions = await resolvePermissionsForUser(user.user_id);
-  const userType = {
-    ...user,
-    permissions,
-  } satisfies UserType;
-  return userType;
+  return getUser(session.userID);
 }
 
 export async function getCurrentUser(req?: NextRequest): Promise<UserType> {
@@ -126,26 +125,29 @@ export async function mustGetCurrentUser(req?: NextRequest): Promise<UserType> {
   return userOrError;
 }
 
+// Redirects if there is a user logged in already
+export async function ensureNoActiveSession(
+  loginRedirect?: string,
+): Promise<void> {
+  const session = await getSession();
+  if (session) {
+    var url = new URL(loginRedirect ?? "/", env.PUBLIC_URL!);
+
+    if (!url.href.startsWith(env.PUBLIC_URL!)) url = new URL(env.PUBLIC_URL!);
+    redirect(url.href);
+  }
+}
+
 /**
  * Checks if the currently signed-in user has at least one of the given permissions.
  * @param perms
  */
 export async function hasPermission(...perms: Permission[]): Promise<boolean> {
   const user = await getCurrentUser();
-  const userPerms = await resolvePermissionsForUser(user.user_id);
-  for (const perm of perms) {
-    if (userPerms.includes(perm)) {
-      return true;
-    }
-  }
-  // noinspection RedundantIfStatementJS
-  if (userPerms.includes("SuperUser")) {
-    return true;
-  }
-  return false;
+  return await userHasPermission(user, ...perms);
 }
 
-export async function loginOrCreateUser(rawGoogleToken: string) {
+export async function loginOrCreateUserGoogle(rawGoogleToken: string) {
   const user = await findOrCreateUserFromGoogleToken(rawGoogleToken);
   const permissions = await resolvePermissionsForUser(user.user_id);
   const userType = {
@@ -159,10 +161,16 @@ export async function loginOrCreateUser(rawGoogleToken: string) {
   return userType;
 }
 
-export async function logout() {
-  await clearSession();
-  const url = new URL("/login", process.env.PUBLIC_URL!);
-  return NextResponse.redirect(url, {
-    status: 303,
-  });
+export async function loginOrCreateUserSlack(rawSlackToken: SlackTokenJson) {
+  const user = await findOrCreateUserFromSlackToken(rawSlackToken);
+  const permissions = await resolvePermissionsForUser(user.user_id);
+  const userType = {
+    ...user,
+    permissions,
+  } satisfies UserType;
+  // We don't store the full user object in the session because then it wouldn't
+  // pick up user info or permission changes without signing out and back in.
+  // It also makes the session token shorter.
+  await setSession({ userID: user.user_id });
+  return userType;
 }

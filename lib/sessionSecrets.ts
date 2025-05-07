@@ -1,4 +1,5 @@
-import invariant from "@/lib/invariant";
+import { env } from "./env";
+import invariant from "./invariant";
 import { encode as b64Encode, decode as b64Decode } from "base64-arraybuffer";
 
 function urlbase64Unescape(str: string) {
@@ -15,10 +16,10 @@ let key: CryptoKey | null = null;
 
 async function getKey() {
   if (!key) {
-    invariant(process.env.SESSION_SECRET, "no SESSION_SECRET set");
+    invariant(env.SESSION_SECRET, "no SESSION_SECRET set");
     key = await crypto.subtle.importKey(
       "raw",
-      new TextEncoder().encode(process.env.SESSION_SECRET),
+      new TextEncoder().encode(env.SESSION_SECRET),
       {
         name: "HMAC",
         hash: "SHA-256",

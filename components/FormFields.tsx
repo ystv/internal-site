@@ -17,6 +17,12 @@ import {
   Box,
   SegmentedControl,
   Input,
+  InputLabel,
+  Card,
+  ActionIcon,
+  Chip,
+  Space,
+  Stack,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useMembers } from "@/components/FormFieldPreloadedData";
@@ -24,6 +30,9 @@ import { getUserName } from "@/components/UserHelpers";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import { FieldPath } from "react-hook-form/dist/types/path";
+import SelectOption from "./SelectOption";
+import { PermissionEnum, Permission } from "@/lib/auth/permissions";
+import { IoClose } from "react-icons/io5";
 
 export function TextField(props: {
   name: string;
@@ -43,13 +52,20 @@ export function TextField(props: {
   );
 }
 
-export function TextAreaField(props: { name: string; label: string }) {
+export function TextAreaField(props: {
+  name: string;
+  label: string;
+  autosize?: boolean;
+  minRows?: number;
+}) {
   const ctx = useFormContext();
   return (
     <Textarea
       {...ctx.register(props.name)}
       label={props.label}
       error={ctx.formState.errors[props.name]?.message as string}
+      autosize={props.autosize ?? false}
+      minRows={props.minRows ?? 2}
     />
   );
 }
@@ -266,6 +282,43 @@ export function MemberSelect(props: {
   );
 }
 
+export function SearchedMemberSelect(props: {
+  name: string;
+  label?: string;
+  nullable?: boolean;
+}) {
+  const members = useMembers();
+
+  const selectController = useController({
+    name: props.name,
+  });
+
+  const value = useMemo<string | null>(() => {
+    if (typeof selectController.field.value === "string") {
+      return selectController.field.value;
+    }
+    if (selectController.field.value === null) {
+      return null;
+    }
+    return selectController.field.value.toString(10);
+  }, [selectController.field.value]);
+  return (
+    <>
+      {props.label && <InputLabel>{props.label}</InputLabel>}
+      <SelectOption
+        data={members.map((v) => ({
+          label: getUserName(v),
+          value: v.user_id.toString(10),
+        }))}
+        value={value}
+        onChange={(newV) => {
+          selectController.field.onChange(newV);
+        }}
+      />
+    </>
+  );
+}
+
 /**
  * Wraps a form field to conditionally render it based on the value of another.
  * This is useful for e.g. showing a field only if a checkbox is checked.
@@ -283,17 +336,86 @@ export function ConditionalField<
 >(props: {
   referencedFieldName: TField;
   condition: (data: TSchema[TField]) => boolean;
-  childFieldName: string;
+  childFieldName?: string;
   children: ReactNode;
 }) {
   const ctx = useFormContext<TSchema>();
   const referencedField = ctx.watch(props.referencedFieldName);
   const shouldShow = props.condition(referencedField);
   useEffect(() => {
-    if (!shouldShow) {
+    if (!shouldShow && props.childFieldName) {
       // @ts-expect-error - otherwise you get errors if referencedFieldName and childFieldName don't match
       ctx.setValue(props.childFieldName, undefined as any);
     }
   }, [shouldShow, props.childFieldName, ctx]);
   return shouldShow && props.children;
+}
+
+export function HiddenField<
+  TFields extends FieldValues,
+  TFieldName extends FieldPath<TFields> = FieldPath<TFields>,
+>(props: { name: TFieldName; value: string }) {
+  const ctx = useFormContext<TFields>();
+  return (
+    <input type="hidden" {...ctx.register(props.name)} value={props.value} />
+  );
+}
+
+export function PermissionSelectField(props: {
+  name: string;
+  defaultValue?: string[];
+  label: string;
+  required?: boolean;
+}) {
+  const controller = useController({
+    name: props.name,
+    defaultValue: props.defaultValue,
+  });
+
+  const [filter, setFilter] = useState<string>("");
+
+  return (
+    <>
+      <InputLabel>{props.label}</InputLabel>
+      <Card withBorder>
+        <TextInput
+          placeholder="Filter"
+          value={filter}
+          onChange={(e) => setFilter(e.currentTarget.value)}
+          rightSection={
+            <ActionIcon
+              variant="transparent"
+              color="red"
+              onClick={() => setFilter("")}
+              disabled={filter === ""}
+            >
+              <IoClose />
+            </ActionIcon>
+          }
+        />
+        <Space h={"md"} />
+        <Chip.Group
+          multiple
+          value={controller.field.value}
+          onChange={(value) => {
+            controller.field.onChange(value);
+          }}
+        >
+          <Stack gap={4}>
+            {(Object.keys(PermissionEnum.Values) as Permission[])
+              .filter(
+                (v) =>
+                  v.toLowerCase().includes(filter.toLowerCase()) ||
+                  (controller.field.value as Permission[]).includes(v),
+              )
+              .map((key) => (
+                <Chip key={key} value={key} variant="outline">
+                  {key}
+                </Chip>
+              ))}
+          </Stack>
+        </Chip.Group>
+      </Card>
+    </>
+  );
 }

@@ -4,7 +4,7 @@ import { z } from "zod";
  * Available permissions. Should contain all the ones that users are expected
  * to have, along with some special ones:
  * * MEMBER - any logged in user
- * * PUBLIC - open to the world with no authentication
+ * * PUBLIC - open to the world with no authentication (not implemented)
  * * SuperUser - can do anything (don't use this unless you know what you're doing)
  */
 export const PermissionEnum = z.enum([
@@ -17,11 +17,21 @@ export const PermissionEnum = z.enum([
   "Calendar.Show.Creator",
   "Calendar.Meeting.Admin",
   "Calendar.Meeting.Creator",
+  "Calendar.Workshop.Admin",
+  "Calendar.Workshop.Creator",
   "Calendar.Social.Admin",
   "Calendar.Social.Creator",
+  "Calendar.Public.Admin",
+  "Calendar.Public.Creator",
   "CalendarIntegration.Admin",
-  "ManageMembers.Members.List",
-  "ManageMembers.Members.Admin",
-  "ManageMembers.Admin",
+  "CheckWithTech.Submit",
+  "CheckWithTech.Admin",
+  "ManageQuotes",
+  "People.ViewProfile.All",
+  "Admin.Users",
+  "Admin.Roles",
+  "Admin.Positions",
+  "Webcams.Manage",
+  "Webcams.View",
 ]);
 export type Permission = z.infer<typeof PermissionEnum>;

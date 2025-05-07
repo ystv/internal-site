@@ -47,3 +47,11 @@ export const SignupSheetSchema = z.object({
   unlock_date: z.coerce.date().nullable(),
   crews: z.array(CrewSchema),
 });
+
+export const CheckWithTechActionSchema = z.object({
+  cwtID: z.coerce.number(),
+  eventID: z.coerce.number(),
+  action: z.enum(["approve", "note", "decline"]),
+  note: z.string().optional(),
+  request: z.string().optional(),
+});

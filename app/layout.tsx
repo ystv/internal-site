@@ -12,6 +12,7 @@ import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 import { Notifications } from "@mantine/notifications";
+import { env } from "@/lib/env";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,8 +20,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "YSTV Calendar",
-  description: "YSTV Calendar",
+  title: "YSTV Internal Site",
+  description: "YSTV Internal Site",
 };
 
 export default async function RootLayout({
@@ -32,18 +33,15 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body className={inter.className}>
-        <MantineProvider theme={theme} defaultColorScheme="light">
+        <MantineProvider theme={theme} defaultColorScheme="auto">
           <ModalsProvider>
-            <PublicURLProvider value={process.env.PUBLIC_URL!}>
+            <PublicURLProvider value={env.PUBLIC_URL!}>
               <DebugModeProvider value={debugMode}>
                 {children}
                 <DebugIndicator />
-                <footer className="mt-8 text-center text-sm text-gray-500">
-                  Calendar version {process.env.NEXT_PUBLIC_RELEASE}.
-                </footer>
               </DebugModeProvider>
             </PublicURLProvider>
             <Notifications />
