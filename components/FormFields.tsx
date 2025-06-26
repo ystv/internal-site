@@ -23,8 +23,11 @@ import {
   Chip,
   Space,
   Stack,
+  InputError,
+  useMatches,
+  Center,
 } from "@mantine/core";
-import { DateTimePicker } from "@mantine/dates";
+import { DatePicker, DateTimePicker } from "@mantine/dates";
 import { useMembers } from "@/components/FormFieldPreloadedData";
 import { getUserName } from "@/components/UserHelpers";
 import dayjs from "dayjs";
@@ -116,6 +119,78 @@ export function DatePickerField(props: {
         );
       }}
     />
+  );
+}
+
+export function MultiDatePickerField(props: {
+  name: string;
+  defaultValue?: Date[] | string[];
+  label: string;
+  required?: boolean;
+}) {
+  const heh = useMatches({
+    xs: false,
+    sm: true,
+  });
+
+  const controller = useController({
+    name: props.name,
+    defaultValue: props.defaultValue
+      ? (() => {
+          if (
+            Array.isArray(props.defaultValue) &&
+            props.defaultValue.length > 0
+          ) {
+            if (props.defaultValue.at(0) instanceof Date)
+              return (props.defaultValue as Date[]).map((v: Date) => {
+                const date = dayjs(v);
+                return date
+                  .add(date.utcOffset(), "minutes")
+                  .format("YYYY-MM-DD");
+              });
+            return props.defaultValue;
+          }
+        })()
+      : undefined,
+  });
+  const dv = useMemo(() => {
+    if (!controller.field.value) {
+      return [];
+    }
+    try {
+      return controller.field.value.map((v: string) => {
+        const date = dayjs(v);
+        return date.add(date.utcOffset(), "minutes").toDate();
+      });
+      // return new Date(controller.field.value);
+    } catch (e) {
+      return [];
+    }
+  }, [controller.field.value]);
+  return (
+    <Stack>
+      <InputLabel required={props.required}>{props.label}</InputLabel>
+      <Center>
+        <DatePicker
+          type="multiple"
+          value={dv}
+          onChange={(v) =>
+            controller.field.onChange(
+              v?.map((v) => {
+                const date = dayjs(v);
+                return date
+                  .add(date.utcOffset(), "minutes")
+                  .set("hour", 0)
+                  .set("minute", 0)
+                  .format("YYYY-MM-DD");
+              }),
+            )
+          }
+          numberOfColumns={heh ? 2 : 1}
+        />
+      </Center>
+      <InputError>{controller.fieldState.error?.message as string}</InputError>
+    </Stack>
   );
 }
 

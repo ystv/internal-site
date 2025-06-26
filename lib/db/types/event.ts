@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { CompleteAttendee, AttendeeModel, CompleteUser, UserModel, CompleteSignupSheet, SignupSheetModel, CompleteCheckWithTech, CheckWithTechModel } from "./index"
+import { CompleteAttendee, AttendeeModel, CompleteUser, UserModel, CompleteRecurringEvent, RecurringEventModel, CompleteSignupSheet, SignupSheetModel, CompleteCheckWithTech, CheckWithTechModel } from "./index"
 
 export const _EventModel = z.object({
   event_id: z.number().int(),
@@ -21,6 +21,7 @@ export const _EventModel = z.object({
   host: z.number().int(),
   adam_rms_project_id: z.number().int().nullish(),
   slack_channel_id: z.string(),
+  recurring_event_id: z.number().int().nullish(),
 })
 
 export interface CompleteEvent extends z.infer<typeof _EventModel> {
@@ -29,6 +30,7 @@ export interface CompleteEvent extends z.infer<typeof _EventModel> {
   deleted_by_user?: CompleteUser | null
   updated_by_user?: CompleteUser | null
   host_user: CompleteUser
+  recurring_event?: CompleteRecurringEvent | null
   signup_sheets: CompleteSignupSheet[]
   check_with_tech: CompleteCheckWithTech[]
 }
@@ -44,6 +46,7 @@ export const EventModel: z.ZodSchema<CompleteEvent> = z.lazy(() => _EventModel.e
   deleted_by_user: UserModel.nullish(),
   updated_by_user: UserModel.nullish(),
   host_user: UserModel,
+  recurring_event: RecurringEventModel.nullish(),
   signup_sheets: SignupSheetModel.array(),
   check_with_tech: CheckWithTechModel.array(),
 }))

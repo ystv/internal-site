@@ -361,6 +361,60 @@ export async function createEvent(
   );
 }
 
+export async function createRecurringEvent(
+  event: EventCreateUpdateFields,
+  currentUserID: number,
+  recurringDates: Date[],
+): Promise<EventObjectType> {
+  const recurringEvent = await prisma.recurringEvent.create();
+
+  const eventStartDate = dayjs(event.start_date).utc(true);
+
+  for (const recurring_date of recurringDates) {
+    const recurDate = dayjs(recurring_date);
+    const recurStartDate = dayjs(event.start_date).add(
+      Math.ceil(recurDate.diff(eventStartDate, "days", true)),
+      "days",
+    );
+
+    const recurEndDate = dayjs(event.end_date).add(
+      Math.ceil(recurDate.diff(eventStartDate, "days", true)),
+      "days",
+    );
+
+    await prisma.event.create({
+      data: {
+        ...{ ...event, recurring_dates: undefined },
+
+        start_date: recurStartDate.toDate(),
+        end_date: recurEndDate.toDate(),
+        recurring_event_id: recurringEvent.recurring_event_id,
+        created_by: currentUserID,
+        created_at: new Date(),
+        updated_by: currentUserID,
+        updated_at: new Date(),
+        host: event.host ?? currentUserID,
+      },
+    });
+  }
+
+  return sanitize(
+    await prisma.event.create({
+      data: {
+        ...{ ...event, recurring_dates: undefined },
+
+        recurring_event_id: recurringEvent.recurring_event_id,
+        created_by: currentUserID,
+        created_at: new Date(),
+        updated_by: currentUserID,
+        updated_at: new Date(),
+        host: event.host ?? currentUserID,
+      },
+      include: EventSelectors,
+    }),
+  );
+}
+
 export async function updateEvent(
   eventID: number,
   data: EventCreateUpdateFields,
