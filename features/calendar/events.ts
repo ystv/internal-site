@@ -3,11 +3,11 @@ import { produce } from "immer";
 import { prisma } from "@/lib/db";
 import {
   Attendee,
-  CheckWithTechStatus,
   Crew,
   Event,
   Position,
   Prisma,
+  RecurringEvent,
   SignupSheet,
   User,
 } from "@prisma/client";
@@ -47,6 +47,11 @@ export interface EventObjectType {
   host: number;
   host_user: ExposedUser;
   slack_channel_id: string | null;
+  recurring_event_id: number | null;
+}
+
+export interface RecurringEventObjectType extends RecurringEvent {
+  events: Event[];
 }
 
 export interface EventCreateUpdateFields {
@@ -60,6 +65,12 @@ export interface EventCreateUpdateFields {
   is_tentative: boolean;
   host?: number;
   slack_channel_id?: string;
+}
+
+export interface EventUpdateFields
+  extends Omit<EventCreateUpdateFields, "start_date" | "end_date"> {
+  start_date?: Date;
+  end_date?: Date;
 }
 
 /**
@@ -342,6 +353,28 @@ export async function getEvent(id: number): Promise<EventObjectType | null> {
   return sanitize(res);
 }
 
+export async function getRecurringEventFromEvent(
+  event_id: number,
+): Promise<RecurringEventObjectType | null> {
+  const res = await prisma.recurringEvent.findFirst({
+    where: {
+      events: {
+        some: {
+          event_id: event_id,
+        },
+      },
+    },
+    include: {
+      events: true,
+    },
+  });
+  if (!res) {
+    return null;
+  }
+
+  return res;
+}
+
 export async function createEvent(
   event: EventCreateUpdateFields,
   currentUserID: number,
@@ -417,7 +450,7 @@ export async function createRecurringEvent(
 
 export async function updateEvent(
   eventID: number,
-  data: EventCreateUpdateFields,
+  data: EventUpdateFields,
   currentUserID: number,
 ): Promise<
   { ok: true; result: EventObjectType } | { ok: false; reason: string }
@@ -440,6 +473,8 @@ export async function updateEvent(
     // Then if it succeeds we update it locally and update the event dates to match.
     if (
       event.adam_rms_project_id &&
+      data.start_date &&
+      data.end_date &&
       (event.start_date.getTime() !== data.start_date.getTime() ||
         event.end_date.getTime() !== data.end_date.getTime())
     ) {
@@ -467,6 +502,8 @@ export async function updateEvent(
     });
     if (
       event.adam_rms_project_id &&
+      data.start_date &&
+      data.end_date &&
       (event.start_date.getTime() !== data.start_date.getTime() ||
         event.end_date.getTime() !== data.end_date.getTime())
     ) {

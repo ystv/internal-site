@@ -309,7 +309,7 @@ export function SelectField<TObj extends {}>(props: {
   label?: string;
   renderOption: (obj: TObj) => string;
   getOptionValue: (obj: TObj) => string;
-  filter: (obj: TObj, filter: string) => boolean;
+  filter?: (obj: TObj, filter: string) => boolean;
   nullable?: boolean;
 }) {
   const ctx = useFormContext();

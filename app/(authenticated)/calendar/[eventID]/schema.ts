@@ -11,6 +11,7 @@ export const EditEventSchema = z
     is_private: z.boolean(),
     is_tentative: z.boolean(),
     host: z.coerce.number().optional(),
+    recurring_update_type: z.enum(["none", "past", "future", "all"]).optional(),
   })
   .refine((val) => isBefore(val.start_date, val.end_date), {
     message: "End date must be after start date",
