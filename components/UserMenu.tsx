@@ -4,6 +4,7 @@ import Image from "next/image";
 import {
   Box,
   Center,
+  MantineColorScheme,
   Menu,
   SegmentedControl,
   useMantineColorScheme,
@@ -34,7 +35,9 @@ export function UserMenu({ userAvatar }: { userAvatar: string }) {
         <Menu.Label>Theme</Menu.Label>
         <SegmentedControl
           value={colorScheme}
-          onChange={setColorScheme}
+          onChange={(str) =>
+            setColorScheme(str as unknown as MantineColorScheme)
+          }
           className="min-w-full"
           data={[
             {

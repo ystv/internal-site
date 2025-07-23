@@ -3,11 +3,11 @@ import { produce } from "immer";
 import { prisma } from "@/lib/db";
 import {
   Attendee,
-  CheckWithTechStatus,
   Crew,
   Event,
   Position,
   Prisma,
+  RecurringEvent,
   SignupSheet,
   User,
 } from "@prisma/client";
@@ -47,6 +47,11 @@ export interface EventObjectType {
   host: number;
   host_user: ExposedUser;
   slack_channel_id: string | null;
+  recurring_event_id: number | null;
+}
+
+export interface RecurringEventObjectType extends RecurringEvent {
+  events: Event[];
 }
 
 export interface EventCreateUpdateFields {
@@ -60,6 +65,12 @@ export interface EventCreateUpdateFields {
   is_tentative: boolean;
   host?: number;
   slack_channel_id?: string;
+}
+
+export interface EventUpdateFields
+  extends Omit<EventCreateUpdateFields, "start_date" | "end_date"> {
+  start_date?: Date;
+  end_date?: Date;
 }
 
 /**
@@ -342,6 +353,28 @@ export async function getEvent(id: number): Promise<EventObjectType | null> {
   return sanitize(res);
 }
 
+export async function getRecurringEventFromEvent(
+  event_id: number,
+): Promise<RecurringEventObjectType | null> {
+  const res = await prisma.recurringEvent.findFirst({
+    where: {
+      events: {
+        some: {
+          event_id: event_id,
+        },
+      },
+    },
+    include: {
+      events: true,
+    },
+  });
+  if (!res) {
+    return null;
+  }
+
+  return res;
+}
+
 export async function createEvent(
   event: EventCreateUpdateFields,
   currentUserID: number,
@@ -361,9 +394,63 @@ export async function createEvent(
   );
 }
 
+export async function createRecurringEvent(
+  event: EventCreateUpdateFields,
+  currentUserID: number,
+  recurringDates: Date[],
+): Promise<EventObjectType> {
+  const recurringEvent = await prisma.recurringEvent.create();
+
+  const eventStartDate = dayjs(event.start_date).utc(true);
+
+  for (const recurring_date of recurringDates) {
+    const recurDate = dayjs(recurring_date);
+    const recurStartDate = dayjs(event.start_date).add(
+      Math.ceil(recurDate.diff(eventStartDate, "days", true)),
+      "days",
+    );
+
+    const recurEndDate = dayjs(event.end_date).add(
+      Math.ceil(recurDate.diff(eventStartDate, "days", true)),
+      "days",
+    );
+
+    await prisma.event.create({
+      data: {
+        ...{ ...event, recurring_dates: undefined },
+
+        start_date: recurStartDate.toDate(),
+        end_date: recurEndDate.toDate(),
+        recurring_event_id: recurringEvent.recurring_event_id,
+        created_by: currentUserID,
+        created_at: new Date(),
+        updated_by: currentUserID,
+        updated_at: new Date(),
+        host: event.host ?? currentUserID,
+      },
+    });
+  }
+
+  return sanitize(
+    await prisma.event.create({
+      data: {
+        ...{ ...event, recurring_dates: undefined },
+
+        recurring_event_id: recurringEvent.recurring_event_id,
+        created_by: currentUserID,
+        created_at: new Date(),
+        updated_by: currentUserID,
+        updated_at: new Date(),
+        host: event.host ?? currentUserID,
+      },
+      include: EventSelectors,
+    }),
+  );
+}
+
 export async function updateEvent(
   eventID: number,
-  data: EventCreateUpdateFields,
+  data: EventUpdateFields,
   currentUserID: number,
 ): Promise<
   { ok: true; result: EventObjectType } | { ok: false; reason: string }
@@ -386,6 +473,8 @@ export async function updateEvent(
     // Then if it succeeds we update it locally and update the event dates to match.
     if (
       event.adam_rms_project_id &&
+      data.start_date &&
+      data.end_date &&
       (event.start_date.getTime() !== data.start_date.getTime() ||
         event.end_date.getTime() !== data.end_date.getTime())
     ) {
@@ -413,6 +502,8 @@ export async function updateEvent(
     });
     if (
       event.adam_rms_project_id &&
+      data.start_date &&
+      data.end_date &&
       (event.start_date.getTime() !== data.start_date.getTime() ||
         event.end_date.getTime() !== data.end_date.getTime())
     ) {
