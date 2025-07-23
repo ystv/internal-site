@@ -22,7 +22,7 @@ export async function postCheckWithTech(
   memo: string,
   type: "check" | "help",
 ) {
-  const slack = await slackApiConnection();
+  const slack = slackApiConnection();
   const event = await getEvent(eventID);
   if (!event) {
     throw new Error("Event not found");

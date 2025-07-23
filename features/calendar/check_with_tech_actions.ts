@@ -17,11 +17,11 @@ import {
   ButtonAction,
   SlackViewMiddlewareArgs,
   ViewSubmitAction,
-  ContextBlock,
-  Block,
-  SectionBlock,
-  RichTextBlock,
 } from "@slack/bolt";
+import {
+  ContextBlock,
+  RichTextBlock,
+} from "@slack/types/dist/block-kit/blocks";
 import dayjs from "dayjs";
 import { env } from "@/lib/env";
 import { z } from "zod";
@@ -56,7 +56,7 @@ export async function handleSlackAction(data: SlackActionMiddlewareArgs) {
     },
   });
 
-  const api = await slackApiConnection();
+  const api = slackApiConnection();
 
   if (!actor) {
     await api.client.chat.postEphemeral({
@@ -450,7 +450,7 @@ export async function _sendCWTFollowUpAndUpdateMessage(
     env.SLACK_CHECK_WITH_TECH_CHANNEL,
     "SLACK_CHECK_WITH_TECH_CHANNEL not set",
   );
-  const api = await slackApiConnection();
+  const api = slackApiConnection();
 
   // First update the existing channel message, then DM the requestor if
   // they have a linked Slack account.

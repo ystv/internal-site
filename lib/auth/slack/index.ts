@@ -27,7 +27,7 @@ export type SlackTokenJson = {
 
 export async function getSlackUserInfo(code: string) {
   invariant(isSlackEnabled, "Slack is not enabled");
-  const slackApp = await slackApiConnection();
+  const slackApp = slackApiConnection();
   const tokenResponse = await slackApp.client.openid.connect.token({
     client_id: env.SLACK_CLIENT_ID || "",
     client_secret: env.SLACK_CLIENT_SECRET || "",

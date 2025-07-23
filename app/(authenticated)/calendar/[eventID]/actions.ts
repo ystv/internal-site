@@ -159,7 +159,7 @@ export const updateAttendeeStatus = wrapServerAction(
       if (status === "attending" || status === "maybe_attending") {
         const slackUser = me.identities.find((x) => x.provider == "slack");
         if (slackUser && evt.slack_channel_id) {
-          const slackApp = await slackApiConnection();
+          const slackApp = slackApiConnection();
 
           const channel_info = await slackApp.client.conversations.info({
             channel: evt.slack_channel_id,

@@ -10,7 +10,7 @@ import slackApiConnection, {
 import { SlackChannelsProvider } from "@/components/slack/SlackChannelsProvider";
 import { SlackEnabledProvider } from "@/components/slack/SlackEnabledProvider";
 import { App } from "@slack/bolt";
-import { Channel } from "@slack/web-api/dist/response/ConversationsListResponse";
+import { Channel } from "@slack/web-api/dist/types/response/ConversationsListResponse";
 import { env } from "@/lib/env";
 import { createEvent } from "./actions";
 import { PageInfo } from "@/components/PageInfo";
@@ -21,7 +21,7 @@ async function getSlackChannels(): Promise<Channel[]> {
   let slackApp: App | null = null;
 
   if (isSlackEnabled) {
-    slackApp = await slackApiConnection();
+    slackApp = slackApiConnection();
     const slackChannels = await slackApp.client.conversations.list({
       team_id: env.SLACK_TEAM_ID,
       types: "public_channel",

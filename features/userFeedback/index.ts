@@ -6,7 +6,7 @@ import invariant from "@/lib/invariant";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { KnownBlock } from "@slack/bolt";
+import { KnownBlock } from "@slack/types/dist/block-kit/blocks";
 
 export async function submit(
   type: "bug" | "feature",
@@ -30,7 +30,7 @@ export async function submit(
     };
   }
 
-  const slack = await slackApiConnection();
+  const slack = slackApiConnection();
   const me = await getCurrentUser();
   const slackIdentity = me.identities.find((x) => x.provider === "slack");
   const blocks: KnownBlock[] = [

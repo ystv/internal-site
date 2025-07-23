@@ -26,7 +26,7 @@ export default async function SlackUserInfo({
   let slackApp: App | null = null;
 
   if (isSlackEnabled) {
-    slackApp = await slackApiConnection();
+    slackApp = slackApiConnection();
     const slack_user = await slackApp.client.users.profile.get({
       user: slack_user_id,
     });

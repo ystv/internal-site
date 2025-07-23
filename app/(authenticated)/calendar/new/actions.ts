@@ -10,7 +10,7 @@ import { getCurrentUser } from "@/lib/auth/server";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { ConversationsInfoResponse } from "@slack/web-api/dist/response/ConversationsInfoResponse";
+import { ConversationsInfoResponse } from "@slack/web-api/dist/types/response/ConversationsInfoResponse";
 import * as Calendar from "@/features/calendar";
 import { revalidatePath } from "next/cache";
 import { env } from "process";
@@ -26,7 +26,7 @@ export const createEvent = wrapServerAction(
     const me = await getCurrentUser();
     let slackApp: App | null = null;
     if (isSlackEnabled) {
-      slackApp = await slackApiConnection();
+      slackApp = slackApiConnection();
     }
     const payload = schema.safeParse(data);
     if (!payload.success) {

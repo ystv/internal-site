@@ -188,7 +188,7 @@ export const signUpToRole = wrapServerAction(
     if (isSlackEnabled) {
       const slackUser = me.identities.find((i) => i.provider === "slack");
       if (slackUser && sheet.events.slack_channel_id) {
-        const slackApp = await slackApiConnection();
+        const slackApp = slackApiConnection();
 
         const channel_info = await slackApp.client.conversations.info({
           channel: sheet.events.slack_channel_id,
