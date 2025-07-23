@@ -13,6 +13,7 @@ import {
 } from "@tanstack/react-query";
 import { fetchEvents } from "./actions";
 import { calendarEventsQueryKey } from "./helpers";
+import EventColoursKey from "@/components/EventColoursKey";
 
 export default async function CalendarPage() {
   await mustGetCurrentUser();
@@ -83,6 +84,7 @@ export default async function CalendarPage() {
         <br />
       </PermissionGate>
       <YSTVCalendar />
+      <EventColoursKey />
     </HydrationBoundary>
   );
 }

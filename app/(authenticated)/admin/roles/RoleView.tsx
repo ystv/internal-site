@@ -22,7 +22,6 @@ import {
 } from "@/components/Pagination";
 import { useDisclosure } from "@mantine/hooks";
 import { SearchBar } from "@/components/SearchBar";
-import { useValidSearchParams } from "@/lib/searchParams/validate";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { RoleCard } from "./RoleCard";
 import { CreateRoleForm, UpdateRoleForm } from "./form";
@@ -36,6 +35,7 @@ import {
   updateRoleAction,
 } from "./actions";
 import { useQuery } from "@tanstack/react-query";
+import { useValidSearchParams } from "@/lib/searchParams/validateHook";
 
 export function RoleView(props: { initialRoles: TFetchRoles }) {
   const pathname = usePathname();

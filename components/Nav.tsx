@@ -3,7 +3,7 @@ import { AppShell, Group, rem } from "@mantine/core";
 import { useHeadroom } from "@mantine/hooks";
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "@/app/_assets/logo.png";
+import Logo from "@/app/_assets/logo-new.png";
 import { UserMenu } from "@/components/UserMenu";
 import styles from "@/styles/Nav.module.css";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";

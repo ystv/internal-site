@@ -404,13 +404,15 @@ export async function handleSlackViewEvent(data: SlackViewMiddlewareArgs) {
   if (!newStatus) {
     return;
   }
-  await _sendCWTFollowUpAndUpdateMessage(
-    cwt,
-    actor,
-    newStatus,
-    notes ?? "",
-    request,
-  );
+  if (reqType !== "Note") {
+    await _sendCWTFollowUpAndUpdateMessage(
+      cwt,
+      actor,
+      newStatus,
+      notes ?? "",
+      request,
+    );
+  }
 }
 
 export interface FullCheckWithTech extends CheckWithTech {
@@ -448,26 +450,10 @@ export async function _sendCWTFollowUpAndUpdateMessage(
     env.SLACK_CHECK_WITH_TECH_CHANNEL,
     "SLACK_CHECK_WITH_TECH_CHANNEL not set",
   );
-  const requestor = cwt.submitted_by_user.identities.find(
-    (x) => x.provider === "slack",
-  );
-  if (!requestor) {
-    return;
-  }
   const api = await slackApiConnection();
-  const responseParts = [
-    `Your #check-with-tech request for ${
-      cwt.event.name
-    } has been ${newStatus.toLowerCase()} by ${getUserName(actor)}.`,
-    newNotes ? `Notes: ${newNotes}` : "",
-    `View your event <${env.PUBLIC_URL}/calendar/${cwt.event_id}|here>.`,
-  ].filter(Boolean);
-  await api.client.chat.postMessage({
-    channel: requestor.provider_key,
-    text: responseParts.join("\n"),
-    mrkdwn: true,
-  });
 
+  // First update the existing channel message, then DM the requestor if
+  // they have a linked Slack account.
   let newContext;
   switch (newStatus) {
     case "Confirmed":
@@ -476,6 +462,10 @@ export async function _sendCWTFollowUpAndUpdateMessage(
     case "Rejected":
       newContext = `:x: Declined by ${getUserName(actor)}`;
       break;
+    case "Requested":
+      invariant(false, "CWTFollowUp: Expected status other than Requested");
+    default:
+      invariant(false, "CWTFollowUp: Unknown status " + newStatus);
   }
 
   const lines = [
@@ -495,29 +485,54 @@ export async function _sendCWTFollowUpAndUpdateMessage(
     newRequest ?? cwt.request,
   ];
 
-  await api.client.chat.update({
-    channel: env.SLACK_CHECK_WITH_TECH_CHANNEL,
-    ts: cwt.slack_message_ts,
-    text: [...lines, newContext].join("\n"),
-    blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: lines.join("\n"),
-        },
-      },
-      {
-        type: "context",
-        elements: [
-          {
-            type: "plain_text",
-            text: newContext!,
-            emoji: true,
+  try {
+    await api.client.chat.update({
+      channel: env.SLACK_CHECK_WITH_TECH_CHANNEL,
+      ts: cwt.slack_message_ts,
+      text: [...lines, newContext].join("\n"),
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: lines.join("\n"),
           },
-        ],
-      },
-    ],
+        },
+        {
+          type: "context",
+          elements: [
+            {
+              type: "plain_text",
+              text: newContext,
+              emoji: true,
+            },
+          ],
+        },
+      ],
+    });
+  } catch (e) {
+    console.error("Failed to update #check-with-tech message");
+    console.error(e);
+    // Still try to DM the requestor
+  }
+
+  const requestor = cwt.submitted_by_user.identities.find(
+    (x) => x.provider === "slack",
+  );
+  if (!requestor) {
+    return;
+  }
+  const responseParts = [
+    `Your #check-with-tech request for ${
+      cwt.event.name
+    } has been ${newStatus.toLowerCase()} by ${getUserName(actor)}.`,
+    newNotes ? `Notes: ${newNotes}` : "",
+    `View your event <${env.PUBLIC_URL}/calendar/${cwt.event_id}|here>.`,
+  ].filter(Boolean);
+  await api.client.chat.postMessage({
+    channel: requestor.provider_key,
+    text: responseParts.join("\n"),
+    mrkdwn: true,
   });
 }
 

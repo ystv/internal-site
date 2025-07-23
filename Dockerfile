@@ -8,7 +8,7 @@ RUN apt-get update -y && apt-get install -y build-essential python3
 WORKDIR /app
 COPY ./.yarn/ .yarn/
 COPY . /app/
-RUN --mount=type=cache,id=calendar2023-yarn,target=.yarn/cache yarn install --immutable --inline-builds
+RUN --mount=type=cache,id=internal-site-yarn,target=.yarn/cache yarn install --immutable --inline-builds
 
 ENV NODE_ENV=production
 ARG GIT_REV

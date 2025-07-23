@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Logo from "@/app/_assets/logo.png";
+import Logo from "@/app/_assets/logo-new.png";
 import Link from "next/link";
 import { UserProvider } from "@/components/UserContext";
 import { getCurrentUserOrNull } from "@/lib/auth/server";
@@ -39,7 +39,7 @@ export default async function AuthenticatedLayout({
             </main>
             <br />
             <footer className="mt-8 text-center text-sm text-gray-500">
-              Calendar version {process.env.NEXT_PUBLIC_RELEASE}. Built and
+              Internal Site version {process.env.NEXT_PUBLIC_RELEASE}. Built and
               maintained by the YSTV Computing Team. <FeedbackPrompt />
             </footer>
             <style
