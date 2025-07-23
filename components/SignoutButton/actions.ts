@@ -7,7 +7,7 @@ import { COOKIE_NAME } from "@/lib/auth/core";
 import { env } from "@/lib/env";
 
 export const signOut = wrapServerAction("signOut", async function signOut() {
-  cookies().set(COOKIE_NAME, "", {
+  (await cookies()).set(COOKIE_NAME, "", {
     maxAge: 0,
     domain: env.COOKIE_DOMAIN,
   });
