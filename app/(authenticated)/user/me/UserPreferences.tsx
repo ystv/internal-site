@@ -42,7 +42,8 @@ function PrefWrapper<K extends keyof ReqPrefs>(
     renderField: (_: {
       value: ReqPrefs[K];
       disabled: boolean;
-      onChange: (nv: ReqPrefs[K]) => unknown;
+      // onChange: (nv: ReqPrefs[K]) => unknown;
+      onChange: (nv: string) => unknown;
     }) => ReactNode;
   },
 ) {
@@ -54,9 +55,10 @@ function PrefWrapper<K extends keyof ReqPrefs>(
   return props.renderField({
     value: optimistic,
     disabled: isPending,
-    onChange: (nv) => {
-      setOptimistic(nv);
+    onChange: (str_nv) => {
+      const nv = str_nv as unknown as ReqPrefs[K];
       startTransition(async () => {
+        setOptimistic(nv);
         await changePreference(props.field, nv);
         notifications.show({
           message: "Preferences saved!",
