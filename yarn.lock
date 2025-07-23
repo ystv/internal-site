@@ -12374,7 +12374,6 @@ __metadata:
     postcss-preset-mantine: ^1.7.0
     postcss-simple-vars: ^7.0.1
     prettier: ^3.0.3
-    prettier-plugin-organize-imports: ^4.2.0
     prettier-plugin-tailwindcss: ^0.4.0
     prisma: ^5.21.1
     prisma-json-types-generator: ^3.0.2
@@ -16181,20 +16180,6 @@ __metadata:
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
   checksum: cd192ec0d0a8e4c6da3bb80e4f62afe336df3f76271ac6deb0e6a36187133b6073a19e9727a1ff108cd8b9982e4768850d413baa71214dd80c7979617dca827a
-  languageName: node
-  linkType: hard
-
-"prettier-plugin-organize-imports@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "prettier-plugin-organize-imports@npm:4.2.0"
-  peerDependencies:
-    prettier: ">=2.0"
-    typescript: ">=2.9"
-    vue-tsc: ^2.1.0 || 3
-  peerDependenciesMeta:
-    vue-tsc:
-      optional: true
-  checksum: 566484cb05b4458d9e919be268a065d01bb04abdc3a1ec1191017d91e4e4d2c75284e3c3042a704ed08b7820035322753f07d4e0301b69951ff654897811de4b
   languageName: node
   linkType: hard
 
