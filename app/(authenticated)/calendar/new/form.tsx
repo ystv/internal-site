@@ -1,11 +1,12 @@
 "use client";
+
 import Form, { FormAction } from "@/components/Form";
 import { schema } from "./schema";
 import {
   CheckBoxField,
   ConditionalField,
   DatePickerField,
-  MemberSelect,
+  MultiDatePickerField,
   SearchedMemberSelect,
   SegmentedField,
   TextAreaField,
@@ -77,6 +78,15 @@ export function CreateEventForm(props: {
 
       <br />
       <CheckBoxField name="tentative" label="Tentative Event" />
+      <br />
+      <CheckBoxField name="is_recurring" label="Recurring Event" />
+      <ConditionalField
+        referencedFieldName="is_recurring"
+        condition={(t) => t === true}
+      >
+        <br />
+        <MultiDatePickerField label="Recurring Dates" name="recurring_dates" />
+      </ConditionalField>
     </Form>
   );
 }

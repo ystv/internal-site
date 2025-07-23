@@ -30,6 +30,8 @@ export const schema = zfd
       .nullable()
       .transform((v) => (v === "" ? null : v))
       .default(null),
+    is_recurring: z.boolean(),
+    recurring_dates: z.array(z.coerce.date()),
   })
   .refine((val) => isBefore(val.startDate, val.endDate), {
     message: "End date must be after start date",

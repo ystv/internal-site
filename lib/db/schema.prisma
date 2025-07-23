@@ -139,12 +139,14 @@ model Event {
   host                Int
   adam_rms_project_id Int?
   slack_channel_id    String    @default("")
+  recurring_event_id  Int?
 
   attendees       Attendee[]
   created_by_user User            @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   deleted_by_user User?           @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   updated_by_user User?           @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   host_user       User            @relation("event_host_user", fields: [host], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  recurring_event RecurringEvent? @relation(references: [recurring_event_id], fields: [recurring_event_id], onDelete: NoAction, onUpdate: NoAction)
   signup_sheets   SignupSheet[]
   check_with_tech CheckWithTech[]
 
@@ -170,6 +172,8 @@ model CheckWithTech {
   confirmed_by      Int?
   confirmed_by_user User?     @relation("confirmed", fields: [confirmed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   confirmed_at      DateTime? @db.Timestamptz(6)
+
+  @@map("check_with_techs")
 }
 
 enum CheckWithTechStatus {
@@ -238,4 +242,12 @@ model WebcamFeed {
   stream_url String
 
   @@map("webcam_feeds")
+}
+
+model RecurringEvent {
+  recurring_event_id Int     @id @default(autoincrement())
+
+  events             Event[]
+
+  @@map("recurring_events")
 }

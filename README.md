@@ -1,11 +1,11 @@
-# YSTV Calendar
+# YSTV Internal Site
 
 This is the repo for https://internal.ystv.co.uk.
 Formerly known as `experimental-hypothetical-new-internal-site-idea`.
 
 ## Getting Started
 
-To set up a local copy of the new calendar, you will need
+To set up a local copy of the new internal site, you will need
 
 - Node.js (18 or later) - https://nodejs.org/en/download
 - Yarn - once you have Node installed, run `corepack enable`
@@ -31,7 +31,7 @@ You will also need to set up the following:
 
 ### Postgres Database
 
-Once you have PostgreSQL installed, run `createdb calendar_2023`.
+Once you have PostgreSQL installed, run `createdb internal_site`.
 
 Now run `yarn prisma db push` to set up the database tables.
 If you get a permissions error, check your PostgreSQL authentication settings - you should have a `local all all peer` line in your pg_hba.conf.
@@ -95,6 +95,6 @@ Feature specific docs:
 - lib/ - low level utilities (auth, db, etc.)
 - server/ - custom server that handles socket.io communication
 
-## Issue Tracking
+## Contributing
 
-We use [Linear](https://linear.app/ystv) to track issues - to access it, sign in with your @ystv.co.uk Google account (ask a Computing Team member if you don't have one).
+Some documentation about how to contribute and some standards to follow is available [here](/docs/contributing.md)

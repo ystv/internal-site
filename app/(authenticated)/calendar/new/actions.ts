@@ -113,21 +113,31 @@ export const createEvent = wrapServerAction(
       }
     }
 
-    const evt = await Calendar.createEvent(
-      {
-        name: payload.data.name,
-        description: payload.data.description,
-        event_type: payload.data.type,
-        start_date: payload.data.startDate,
-        end_date: payload.data.endDate,
-        location: payload.data.location,
-        is_private: payload.data.private,
-        is_tentative: payload.data.tentative,
-        host: payload.data.host,
-        slack_channel_id: slack_channel_id,
-      },
-      me.user_id,
-    );
+    var evt: Calendar.EventObjectType | undefined;
+
+    const eventCreatePayload = {
+      name: payload.data.name,
+      description: payload.data.description,
+      event_type: payload.data.type,
+      start_date: payload.data.startDate,
+      end_date: payload.data.endDate,
+      location: payload.data.location,
+      is_private: payload.data.private,
+      is_tentative: payload.data.tentative,
+      host: payload.data.host,
+      slack_channel_id: slack_channel_id,
+    };
+
+    if (payload.data.is_recurring && payload.data.recurring_dates.length > 0) {
+      evt = await Calendar.createRecurringEvent(
+        eventCreatePayload,
+        me.user_id,
+        payload.data.recurring_dates,
+      );
+    } else {
+      evt = await Calendar.createEvent(eventCreatePayload, me.user_id);
+    }
+
     revalidatePath("calendar");
     return {
       ok: true,

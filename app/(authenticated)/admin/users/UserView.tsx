@@ -19,7 +19,7 @@ import {
   PaginationProvider,
 } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
-import { useValidSearchParams } from "@/lib/searchParams/validate";
+import { useValidSearchParams } from "@/lib/searchParams/validateHook";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { UserCard } from "./UserCard";
 import { useQuery } from "@tanstack/react-query";

@@ -28,7 +28,7 @@ const nextConfig = {
 
 const sentryWebpackPluginOptions = {
   org: "ystv",
-  project: "calendar2023",
+  project: "internal-site",
 };
 
 const sentryOptions = {

@@ -36,26 +36,88 @@ export const editEvent = wrapServerAction(
     if (!data.success) {
       return zodErrorResponse(data.error);
     }
-    const result = await Calendar.updateEvent(eventID, data.data, me.user_id);
-    if (!result.ok) {
-      switch (result.reason) {
-        case "kit_clash":
-          return {
-            ok: false,
-            errors: {
-              root: "The changed dates would result in a kit clash. Please contact the Tech Team.",
-            },
-          };
-        default:
-          return {
-            ok: false,
-            errors: {
-              root: "An unknown error occurred (" + result.reason + ")",
-            },
-          };
+
+    var eventsToUpdate = [];
+
+    if (
+      data.data.recurring_update_type &&
+      data.data.recurring_update_type != "none"
+    ) {
+      const recurringEvent = await Calendar.getRecurringEventFromEvent(eventID);
+
+      if (!recurringEvent) {
+        return {
+          ok: false,
+          errors: {
+            root: "Attempted to update a recurring event but wasn't able to find the link.",
+          },
+        };
       }
+
+      var recurringEventsToUpdate: { event_id: number }[] = [];
+
+      const event = recurringEvent?.events.find(
+        (ev) => ev.event_id == eventID,
+      )!;
+
+      switch (data.data.recurring_update_type) {
+        case "all":
+          recurringEventsToUpdate = recurringEvent?.events;
+          break;
+        case "future":
+          recurringEventsToUpdate = recurringEvent?.events.filter(
+            (ev) => ev.start_date >= event.start_date,
+          );
+          break;
+
+        case "past":
+          recurringEventsToUpdate = recurringEvent?.events.filter(
+            (ev) => ev.start_date <= event.start_date,
+          );
+          break;
+
+        default:
+          break;
+      }
+
+      eventsToUpdate.push(...recurringEventsToUpdate);
     }
-    revalidatePath(`/calendar/${eventID}`);
+    eventsToUpdate.push({ event_id: eventID });
+    for (const { event_id: eventIDToUpdate } of eventsToUpdate) {
+      let updateData: Calendar.EventUpdateFields;
+      if (eventIDToUpdate != eventID) {
+        const { recurring_update_type, start_date, end_date, ...rest } =
+          data.data;
+        updateData = rest;
+      } else {
+        const { recurring_update_type, ...rest } = data.data;
+        updateData = rest;
+      }
+      const result = await Calendar.updateEvent(
+        eventIDToUpdate,
+        updateData,
+        me.user_id,
+      );
+      if (!result.ok) {
+        switch (result.reason) {
+          case "kit_clash":
+            return {
+              ok: false,
+              errors: {
+                root: "The changed dates would result in a kit clash. Please contact the Tech Team.",
+              },
+            };
+          default:
+            return {
+              ok: false,
+              errors: {
+                root: "An unknown error occurred (" + result.reason + ")",
+              },
+            };
+        }
+      }
+      revalidatePath(`/calendar/${eventIDToUpdate}`);
+    }
     revalidatePath("calendar");
     return { ok: true };
   },
