@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { DEBUG_MODE_COOKIE } from "./common";
+import { type NextRequest, NextResponse } from "next/server";
+
 import { env } from "@/lib/env";
+
+import { DEBUG_MODE_COOKIE } from "./common";
 
 export function GET(req: NextRequest): NextResponse {
   const val = req.nextUrl.searchParams.get("value")

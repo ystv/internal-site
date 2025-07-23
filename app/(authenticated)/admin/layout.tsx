@@ -1,6 +1,5 @@
 import ErrorPage from "@/components/ErrorPage";
 import { hasPermission } from "@/lib/auth/server";
-import { notFound } from "next/navigation";
 
 export default async function AuthenticatedLayout({
   children,

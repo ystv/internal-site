@@ -1,12 +1,13 @@
 "use client";
 
 import {
-  ReadonlyURLSearchParams,
+  type ReadonlyURLSearchParams,
+  redirect,
   usePathname,
   useSearchParams,
-  redirect,
 } from "next/navigation";
-import { z } from "zod";
+import { type z } from "zod";
+
 import { getSearchParamsString } from "./util";
 import { validateSearchParams } from "./validate";
 

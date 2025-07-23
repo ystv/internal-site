@@ -1,20 +1,22 @@
-import { RoleWithPermissions } from "@/features/people";
 import {
-  Card,
-  Stack,
-  Highlight,
-  Group,
   ActionIcon,
-  Tooltip,
+  Card,
+  Group,
+  Highlight,
+  Stack,
   Text,
+  Tooltip,
 } from "@mantine/core";
-import { FaEdit } from "react-icons/fa";
-import { z } from "zod";
-import { deleteRoleSchema } from "./schema";
-import { FormResponse } from "@/components/Form";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
+import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
+import { type z } from "zod";
+
+import { type FormResponse } from "@/components/Form";
+import { type RoleWithPermissions } from "@/features/people";
+
+import { type deleteRoleSchema } from "./schema";
 
 export function RoleCard(props: {
   role: RoleWithPermissions;

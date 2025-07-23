@@ -1,7 +1,8 @@
-import { zfd } from "zod-form-data";
-import { z } from "zod";
-import { EventTypes } from "@/features/calendar/types";
 import { isBefore } from "date-fns";
+import { z } from "zod";
+import { zfd } from "zod-form-data";
+
+import { EventTypes } from "@/features/calendar/types";
 
 export const schema = zfd
   .formData({

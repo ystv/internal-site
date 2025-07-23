@@ -1,4 +1,5 @@
 import { requirePermission } from "@/lib/auth/server";
+
 import { UserPage } from "../me/page";
 
 export default async function ArbitraryUserPage({

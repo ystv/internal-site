@@ -1,22 +1,15 @@
+import { Avatar, Card, Group, Stack, Text } from "@mantine/core";
 import * as Sentry from "@sentry/nextjs";
+import { type App } from "@slack/bolt";
+import { redirect } from "next/navigation";
+
 import { removeSlackLink } from "@/features/people";
 import { mustGetCurrentUser } from "@/lib/auth/server";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import {
-  Avatar,
-  Group,
-  Stack,
-  Text,
-  Button,
-  Card,
-  HoverCard,
-} from "@mantine/core";
-import { redirect } from "next/navigation";
+
 import SlackLogoutButton from "./SlackLogoutButton";
-import { App } from "@slack/bolt";
-import { notifications } from "@mantine/notifications";
 
 export default async function SlackUserInfo({
   slack_user_id,

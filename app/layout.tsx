@@ -1,18 +1,20 @@
-import "./globals.css";
-import { Inter } from "next/font/google";
-import { cookies } from "next/headers";
-import { DebugIndicator, DebugModeProvider } from "@/components/DebugMode";
-import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/common";
-import { PublicURLProvider } from "@/components/PublicURLContext";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
+import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
+import "./globals.css";
+
+import { DEBUG_MODE_COOKIE } from "@/app/enableDebugMode/common";
+import { DebugIndicator, DebugModeProvider } from "@/components/DebugMode";
+import { PublicURLProvider } from "@/components/PublicURLContext";
+import { env } from "@/lib/env";
+
 import { theme } from "./theme";
 
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
-import { Notifications } from "@mantine/notifications";
-import { env } from "@/lib/env";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,7 +31,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const debugMode = cookies().get(DEBUG_MODE_COOKIE)?.value === "true";
+  const debugMode = (await cookies()).get(DEBUG_MODE_COOKIE)?.value === "true";
   return (
     <html lang="en">
       <head>

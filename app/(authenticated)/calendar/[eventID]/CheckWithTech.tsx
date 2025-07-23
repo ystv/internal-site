@@ -13,24 +13,25 @@ import {
   Stack,
   Textarea,
 } from "@mantine/core";
+import { useModals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
 import { Suspense, cache, use, useState, useTransition } from "react";
 import { TbTool } from "react-icons/tb";
+
+import Form from "@/components/Form";
+import { HiddenField, TextAreaField } from "@/components/FormFields";
+import SlackIcon from "@/components/icons/SlackIcon";
+import SlackLoginButton from "@/components/slack/SlackLoginButton";
+import { getUserName } from "@/components/UserHelpers";
+import { type CheckWithTechType } from "@/features/calendar";
+import invariant from "@/lib/invariant";
+
 import {
   actionCheckWithTech,
   doCheckWithTech,
   equipmentListTemplates,
 } from "./actions";
-import { notifications } from "@mantine/notifications";
-import { CheckWithTechType } from "@/features/calendar";
-import { getUserName } from "@/components/UserHelpers";
-import { useModals } from "@mantine/modals";
-import Form from "@/components/Form";
 import { CheckWithTechActionSchema } from "./schema";
-import { HiddenField, TextAreaField } from "@/components/FormFields";
-import SlackIcon from "@/components/icons/SlackIcon";
-import Link from "next/link";
-import SlackLoginButton from "@/components/slack/SlackLoginButton";
-import invariant from "@/lib/invariant";
 
 const _getEquipmentListTemplates = cache(equipmentListTemplates);
 

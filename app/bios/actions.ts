@@ -1,7 +1,8 @@
 "use server";
 
-import { env } from "@/lib/env";
 import { cookies } from "next/headers";
+
+import { env } from "@/lib/env";
 
 export async function deleteCookie(name: string) {
   const cookieStore = cookies();

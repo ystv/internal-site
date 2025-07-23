@@ -1,18 +1,20 @@
 "use server";
 
-import { FormResponse } from "@/components/Form";
-import {
-  addWebcamSchema,
-  editWebcamSchema,
-  removeWebcamSchema,
-} from "./schema";
+import { revalidatePath } from "next/cache";
+
+import { type FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import {
   addWebcamFeed,
   editWebcamFeed,
   removeWebcamFeed,
 } from "@/features/webcams";
-import { revalidatePath } from "next/cache";
+
+import {
+  addWebcamSchema,
+  editWebcamSchema,
+  removeWebcamSchema,
+} from "./schema";
 
 export async function addWebcam(unsafeData: unknown): Promise<FormResponse> {
   const parsedData = await addWebcamSchema.safeParseAsync(unsafeData);

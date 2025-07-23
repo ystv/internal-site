@@ -1,19 +1,21 @@
-import YSTVCalendar from "@/app/(authenticated)/calendar/YSTVCalendar";
-import Link from "next/link";
-import { PermissionGate } from "@/components/UserContext";
-import { listVacantEvents } from "@/features/calendar/events";
 import { Alert, Button } from "@mantine/core";
-import { Permission } from "@/lib/auth/permissions";
-import { mustGetCurrentUser } from "@/lib/auth/server";
-import { TbArticle, TbCalendarEvent } from "react-icons/tb";
 import {
   HydrationBoundary,
   QueryClient,
   dehydrate,
 } from "@tanstack/react-query";
+import Link from "next/link";
+import { TbArticle, TbCalendarEvent } from "react-icons/tb";
+
+import YSTVCalendar from "@/app/(authenticated)/calendar/YSTVCalendar";
+import EventColoursKey from "@/components/EventColoursKey";
+import { PermissionGate } from "@/components/UserContext";
+import { listVacantEvents } from "@/features/calendar/events";
+import { type Permission } from "@/lib/auth/permissions";
+import { mustGetCurrentUser } from "@/lib/auth/server";
+
 import { fetchEvents } from "./actions";
 import { calendarEventsQueryKey } from "./helpers";
-import EventColoursKey from "@/components/EventColoursKey";
 
 export default async function CalendarPage() {
   await mustGetCurrentUser();

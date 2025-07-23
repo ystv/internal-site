@@ -1,39 +1,40 @@
 "use client";
-import FullCalendar from "@fullcalendar/react";
+import { type EventInput, formatDate } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
-import { EventInput, formatDate } from "@fullcalendar/core";
-import { useRouter } from "next/navigation";
-import { useMediaQuery } from "@mantine/hooks";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
 import {
-  CalendarType,
+  ActionIcon,
+  Box,
+  Loader,
+  LoadingOverlay,
+  Menu,
+  Select,
+} from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import * as Sentry from "@sentry/nextjs";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import findLast from "core-js-pure/stable/array/find-last";
+import dayjs from "dayjs";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { TbCheck, TbFilter } from "react-icons/tb";
+import {
   academicYears,
+  CalendarType,
   getNextPeriod,
   Holiday,
 } from "uoy-week-calendar/dist/calendar";
-import "./YSTVCalendar.css";
-import dayjs from "dayjs";
-import weekOfYear from "dayjs/plugin/weekOfYear";
-import {
-  ActionIcon,
-  Menu,
-  Select,
-  Loader,
-  Box,
-  LoadingOverlay,
-} from "@mantine/core";
-import { useEffect, useRef, useState } from "react";
-import * as Sentry from "@sentry/nextjs";
-import { TbCheck, TbFilter } from "react-icons/tb";
-import findLast from "core-js-pure/stable/array/find-last";
-import { useUserPreferences } from "../../../components/UserContext";
 import { z } from "zod";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import "./YSTVCalendar.css";
+
+import { EventColours, type EventType } from "@/features/calendar/types";
+
 import { fetchEvents } from "./actions";
 import { calendarEventsQueryKey } from "./helpers";
-import { EventColours } from "@/features/calendar/types";
-import { EventType } from "@/features/calendar/types";
+import { useUserPreferences } from "../../../components/UserContext";
 
 dayjs.extend(weekOfYear);
 

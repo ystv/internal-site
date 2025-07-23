@@ -1,6 +1,7 @@
-import { PageInfo } from "@/components/PageInfo";
 import { Button, Card, Stack } from "@mantine/core";
 import Link from "next/link";
+
+import { PageInfo } from "@/components/PageInfo";
 
 export const dynamic = "force-dynamic";
 

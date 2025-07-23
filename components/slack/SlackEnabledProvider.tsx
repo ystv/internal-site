@@ -1,7 +1,8 @@
 "use client";
 
-import invariant from "@/lib/invariant";
 import { createContext, useContext } from "react";
+
+import invariant from "@/lib/invariant";
 
 const SlackEnabledContext = createContext<boolean | null>(null);
 

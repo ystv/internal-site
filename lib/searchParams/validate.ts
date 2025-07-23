@@ -1,10 +1,5 @@
-import {
-  ReadonlyURLSearchParams,
-  redirect,
-  useSearchParams,
-} from "next/navigation";
+import { ReadonlyURLSearchParams } from "next/navigation";
 import { z } from "zod";
-import { getSearchParamsString } from "./util";
 
 export function validateSearchParams<Schema extends z.AnyZodObject>(
   schema: Schema,

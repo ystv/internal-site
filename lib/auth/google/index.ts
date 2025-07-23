@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/db";
 import { OAuth2Client } from "google-auth-library";
-import { SlackTokenJson } from "../slack";
+
+import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 
 const Google = new OAuth2Client();

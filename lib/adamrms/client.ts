@@ -1,4 +1,5 @@
 import makeFetchCookie from "fetch-cookie";
+
 import { env } from "../env";
 
 const fetchCookie = makeFetchCookie(fetch);

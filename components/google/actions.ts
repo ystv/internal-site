@@ -1,9 +1,10 @@
 "use server";
 
+import { cookies } from "next/headers";
+
 import { wrapServerAction } from "@/lib/actions";
 import { COOKIE_NAME } from "@/lib/auth/core";
 import { env } from "@/lib/env";
-import { cookies } from "next/headers";
 
 export const setRedirectCookie = wrapServerAction(
   "setRedirectCookie",

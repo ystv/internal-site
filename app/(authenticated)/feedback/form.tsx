@@ -1,15 +1,17 @@
 "use client";
 
-import Form, { FormResponse } from "@/components/Form";
-import { UserReportSchema } from "./schema";
+import { notifications } from "@mantine/notifications";
+import { identity } from "lodash";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import Form, { type FormResponse } from "@/components/Form";
 import {
   HiddenField,
   SelectField,
   TextAreaField,
 } from "@/components/FormFields";
-import { identity } from "lodash";
-import { useRouter, useSearchParams } from "next/navigation";
-import { notifications } from "@mantine/notifications";
+
+import { UserReportSchema } from "./schema";
 
 export function UserReportForm({
   action,

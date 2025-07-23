@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getSlackUserInfo } from "@/lib/auth/slack";
+import { type NextRequest, NextResponse } from "next/server";
+
 import {
   COOKIE_NAME,
   getCurrentUserOrNull,
   loginOrCreateUserSlack,
 } from "@/lib/auth/server";
+import { getSlackUserInfo } from "@/lib/auth/slack";
 import { env } from "@/lib/env";
 
 export const dynamic = "force-dynamic";

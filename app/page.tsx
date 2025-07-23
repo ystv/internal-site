@@ -1,6 +1,7 @@
+import { redirect } from "next/navigation";
+
 import { NotLoggedIn } from "@/lib/auth/errors";
 import { getCurrentUser } from "@/lib/auth/server";
-import { redirect } from "next/navigation";
 
 export default async function Home() {
   try {

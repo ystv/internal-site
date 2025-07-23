@@ -1,32 +1,34 @@
 "use client";
 
-import { FormResponse } from "@/components/Form";
-import { getUserName } from "@/components/UserHelpers";
-import { UserWithIdentitiesRoles } from "@/features/people";
 import {
-  Stack,
+  ActionIcon,
+  Avatar,
+  Button,
   Card,
   Group,
-  Avatar,
-  Space,
-  Text,
   Modal,
-  Button,
-  ActionIcon,
+  Space,
+  Stack,
+  Text,
   Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Role } from "@prisma/client";
-import { Suspense } from "react";
-import { z } from "zod";
-import { GiveUserRoleForm } from "./GiveUserRoleForm";
-import { useRouter } from "next/navigation";
-import { FaEdit, FaMinus } from "react-icons/fa";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { editUserSchema } from "./schema";
+import { type Role } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { FaEdit, FaMinus } from "react-icons/fa";
+import { type z } from "zod";
+
+import { type FormResponse } from "@/components/Form";
+import { getUserName } from "@/components/UserHelpers";
+import { type UserWithIdentitiesRoles } from "@/features/people";
+import { type giveUserRoleSchema } from "@/features/people/schema";
+
 import { EditUserForm } from "./EditUserForm";
-import { giveUserRoleSchema } from "@/features/people/schema";
+import { GiveUserRoleForm } from "./GiveUserRoleForm";
+import { type editUserSchema } from "./schema";
 
 export function AdminUserView(props: {
   user: UserWithIdentitiesRoles;

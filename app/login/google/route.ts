@@ -1,7 +1,8 @@
+import { randomUUID } from "crypto";
+import { type NextRequest, NextResponse } from "next/server";
+
 import { COOKIE_NAME } from "@/lib/auth/core";
 import { env } from "@/lib/env";
-import { randomUUID } from "crypto";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const redirect = req.nextUrl.searchParams.get("redirect");

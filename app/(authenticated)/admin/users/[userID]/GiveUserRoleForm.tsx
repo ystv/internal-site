@@ -1,6 +1,5 @@
 "use client";
 
-import { FormResponse } from "@/components/Form";
 import {
   ActionIcon,
   Card,
@@ -11,9 +10,11 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { Role } from "@prisma/client";
+import { type Role } from "@prisma/client";
 import { use } from "react";
 import { FaPlus } from "react-icons/fa";
+
+import { type FormResponse } from "@/components/Form";
 
 export function GiveUserRoleForm(props: {
   onGiveRole: (role_id: number) => Promise<FormResponse>;

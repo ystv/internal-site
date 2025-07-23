@@ -1,9 +1,11 @@
-import Form, { FormResponse } from "@/components/Form";
-import { createPositionSchema, updatePositionSchema } from "./schema";
-import { z } from "zod";
-import { TextAreaField, TextField } from "@/components/FormFields";
-import { Position } from "@prisma/client";
 import { notifications } from "@mantine/notifications";
+import { type Position } from "@prisma/client";
+import { type z } from "zod";
+
+import Form, { type FormResponse } from "@/components/Form";
+import { TextAreaField, TextField } from "@/components/FormFields";
+
+import { createPositionSchema, updatePositionSchema } from "./schema";
 
 export function CreatePositionForm(props: {
   action: (data: z.infer<typeof createPositionSchema>) => Promise<FormResponse>;

@@ -1,10 +1,11 @@
 "use client";
 
-import { usePublicURL } from "@/components/PublicURLContext";
-import { useSearchParams } from "next/navigation";
-import Script from "next/script";
 import { Button } from "@mantine/core";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import Script from "next/script";
+
+import { usePublicURL } from "@/components/PublicURLContext";
 
 export function GoogleLoginButton(props: { redirect?: string }) {
   const publicURL = usePublicURL();

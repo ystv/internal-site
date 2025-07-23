@@ -1,18 +1,13 @@
 "use client";
 
+import { Alert, Button, Menu, Modal, Select, Text } from "@mantine/core";
+import { useModals } from "@mantine/modals";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useCallback, useState, useTransition } from "react";
+import { TbAlertTriangle } from "react-icons/tb";
+
 import Form from "@/components/Form";
-import { EventObjectType, EventType } from "@/features/calendar";
-import {
-  cancelEvent,
-  createAdamRMSProject,
-  deleteEvent,
-  editEvent,
-  reinstateEvent,
-  getAdamRMSLinkCandidates,
-  linkAdamRMSProject,
-  unlinkAdamRMS,
-} from "./actions";
-import { EditEventSchema } from "./schema";
 import {
   CheckBoxField,
   ConditionalField,
@@ -22,16 +17,24 @@ import {
   TextAreaField,
   TextField,
 } from "@/components/FormFields";
-import { useCallback, useState, useTransition } from "react";
-import Image from "next/image";
-import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
-import { Alert, Button, Menu, Modal, Select, Text } from "@mantine/core";
-import { useModals } from "@mantine/modals";
-import { useRouter } from "next/navigation";
 import { PermissionGate } from "@/components/UserContext";
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { type EventObjectType } from "@/features/calendar";
 import type { Project } from "@/lib/adamrms";
-import { TbAlertTriangle } from "react-icons/tb";
+
+import {
+  cancelEvent,
+  createAdamRMSProject,
+  deleteEvent,
+  editEvent,
+  getAdamRMSLinkCandidates,
+  linkAdamRMSProject,
+  reinstateEvent,
+  unlinkAdamRMS,
+} from "./actions";
+import { EditEventSchema } from "./schema";
+import AdamRMSLogo from "../../../_assets/adamrms-logo.png";
+
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 
 function EditModal(props: { event: EventObjectType; close: () => void }) {
   return (

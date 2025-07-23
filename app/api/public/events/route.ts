@@ -1,5 +1,6 @@
+import { type NextRequest, NextResponse } from "next/server";
+
 import { listPublicEvents } from "@/features/calendar";
-import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 

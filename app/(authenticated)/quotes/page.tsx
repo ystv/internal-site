@@ -1,9 +1,11 @@
+import { Stack } from "@mantine/core";
+
+import { PageInfo } from "@/components/PageInfo";
 import * as Quotes from "@/features/quotes";
 import { requirePermission } from "@/lib/auth/server";
+
 import { AddQuote, QuoteView } from "./AddEditQuoteForm";
-import { Stack } from "@mantine/core";
 import { QuotesPagination } from "./pagination";
-import { PageInfo } from "@/components/PageInfo";
 
 export const dynamic = "force-dynamic";
 

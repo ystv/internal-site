@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@mantine/core";
+
 import { signOut } from "./actions";
 
 export function SignoutButton() {

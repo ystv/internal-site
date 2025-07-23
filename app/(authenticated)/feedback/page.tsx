@@ -1,8 +1,9 @@
+import { BackButton } from "@/components/BackButton";
+import { PageInfo } from "@/components/PageInfo";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
+
 import { doHandleUserReport } from "./actions";
 import { UserReportForm } from "./form";
-import { PageInfo } from "@/components/PageInfo";
-import { BackButton } from "@/components/BackButton";
 
 export default async function ReportPage({
   searchParams,
