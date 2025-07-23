@@ -19,6 +19,7 @@ import {
 } from "@/components/FormFields";
 import { PermissionGate } from "@/components/UserContext";
 import { type EventObjectType } from "@/features/calendar";
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { Project } from "@/lib/adamrms";
 
 import {

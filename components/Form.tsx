@@ -15,12 +15,12 @@ import { DebugOnly } from "@/components/DebugMode";
 
 export interface FormErrorResponse<Fields extends FieldValues = any> {
   ok: false;
-  errors: { [K in keyof Fields | "root"]?: string };
+  errors: { [_K in keyof Fields | "root"]?: string };
 }
 
 export type FormResponse<
   OK extends Record<string, unknown> = {},
-  Fields extends FieldValues = any,
+  _Fields extends FieldValues = any,
 > = ({ ok: true } & OK) | FormErrorResponse;
 export type FormAction<
   OK extends Record<string, unknown> = {},

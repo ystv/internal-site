@@ -63,6 +63,7 @@ export function UserView(props: { initialUsers: TFetchUsers }) {
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParamsState]);
 
   function updateState(state: Partial<z.infer<typeof searchParamsSchema>>) {

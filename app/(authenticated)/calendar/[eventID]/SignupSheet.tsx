@@ -64,11 +64,11 @@ function SignupSheet({
 
   const sheetData = sheetQuery.data!;
 
-  const { socket, isConnected, transport } = useWebsocket();
+  const { socket } = useWebsocket();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    async function onSheetUpdate(value: any) {
+    async function onSheetUpdate() {
       sheetQuery.refetch();
       await queryClient.invalidateQueries({
         queryKey: ["clashes", sheet.signup_id],
@@ -143,7 +143,7 @@ function SignupSheet({
           >
             {sheetData.crews
               .sort((a, b) => a.ordering - b.ordering)
-              .map((crew, index) => {
+              .map((crew, _index) => {
                 const isProducer = crew.positions.admin;
 
                 return (
@@ -462,7 +462,6 @@ export function SignupSheetsView({
   me: UserType;
 }) {
   invariant(event.signup_sheets, "no signup_sheets for SignupSheetsView");
-  const [isPending, startTransition] = useTransition();
   const [isCreateOpen, setCreateOpen] = useState(false);
   return (
     <>

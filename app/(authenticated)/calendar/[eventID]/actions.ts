@@ -90,11 +90,15 @@ export const editEvent = wrapServerAction(
     for (const { event_id: eventIDToUpdate } of eventsToUpdate) {
       let updateData: Calendar.EventUpdateFields;
       if (eventIDToUpdate != eventID) {
-        const { recurring_update_type, start_date, end_date, ...rest } =
-          data.data;
+        const {
+          recurring_update_type: _r,
+          start_date: _s,
+          end_date: _e,
+          ...rest
+        } = data.data;
         updateData = rest;
       } else {
-        const { recurring_update_type, ...rest } = data.data;
+        const { recurring_update_type: _, ...rest } = data.data;
         updateData = rest;
       }
       const result = await Calendar.updateEvent(

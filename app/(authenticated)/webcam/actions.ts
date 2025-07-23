@@ -25,7 +25,7 @@ export async function addWebcam(unsafeData: unknown): Promise<FormResponse> {
 
   const data = parsedData.data;
 
-  const addResult = await addWebcamFeed(data);
+  await addWebcamFeed(data);
 
   revalidatePath("webcam");
 
@@ -41,7 +41,7 @@ export async function editWebcam(unsafeData: unknown): Promise<FormResponse> {
 
   const data = parsedData.data;
 
-  const addResult = await editWebcamFeed(data);
+  await editWebcamFeed(data);
 
   revalidatePath("webcam");
 
@@ -57,7 +57,7 @@ export async function removeWebcam(unsafeData: unknown): Promise<FormResponse> {
 
   const data = parsedData.data;
 
-  const addResult = await removeWebcamFeed(data);
+  await removeWebcamFeed(data);
 
   revalidatePath("webcam");
 

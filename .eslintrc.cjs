@@ -4,7 +4,12 @@ const config = {
   parserOptions: {
     project: true,
   },
-  ignorePatterns: [".eslintrc.cjs", ".eslintrc.js", "lib/db/types/**/*"],
+  ignorePatterns: [
+    ".eslintrc.cjs",
+    ".eslintrc.js",
+    "prettier.config.js",
+    "lib/db/types/**/*",
+  ],
   extends: ["next/core-web-vitals", "prettier", "plugin:storybook/recommended"],
   settings: {
     react: {

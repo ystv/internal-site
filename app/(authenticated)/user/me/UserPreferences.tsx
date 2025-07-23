@@ -68,7 +68,7 @@ function SegmentedPreference<K extends "timeFormat" | "icalFilter">(
     values: ReqPrefs[K][] | Array<{ value: ReqPrefs[K]; label: string }>;
   },
 ) {
-  const { values, label, ...rest } = props;
+  const { label, ...rest } = props;
   return (
     <PrefWrapper
       {...rest}

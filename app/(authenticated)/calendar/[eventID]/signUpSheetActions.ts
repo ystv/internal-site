@@ -62,7 +62,7 @@ export const fetchSignUpSheet = wrapServerAction(
   async function fetchSignUpSheet(
     sheetID: number,
   ): Promise<Calendar.SignUpSheetType | undefined> {
-    const me = await getCurrentUser();
+    const _me = await getCurrentUser();
 
     const sheet = await Calendar.getSignUpSheet(sheetID);
     if (!sheet) {

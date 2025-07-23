@@ -75,6 +75,7 @@ export function PositionView(props: { initialPositions: TFetchPositions }) {
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParamsState]);
 
   // States for modals

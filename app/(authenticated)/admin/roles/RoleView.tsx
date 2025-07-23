@@ -75,6 +75,7 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParamsState]);
 
   // States for modals

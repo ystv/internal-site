@@ -53,6 +53,7 @@ export function useCreateSocket(): TSocket {
       socket.off("invalidSession", onInvalidSession);
       socket.off("disconnect", onDisconnect);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { socket, isConnected, transport };

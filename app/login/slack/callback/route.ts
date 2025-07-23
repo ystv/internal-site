@@ -27,8 +27,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 
   const slackUserInfo = await getSlackUserInfo(code);
-  let user = await getCurrentUserOrNull(req);
-  user = await loginOrCreateUserSlack(slackUserInfo);
+  let _user = await getCurrentUserOrNull(req);
+  _user = await loginOrCreateUserSlack(slackUserInfo);
 
   var url = new URL(redirect?.value ?? "/user/me", env.PUBLIC_URL!);
 
