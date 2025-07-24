@@ -8,7 +8,7 @@ RUN apt-get update -y && apt-get install -y build-essential python3
 WORKDIR /app
 COPY ./.yarn/ .yarn/
 COPY . /app/
-RUN --mount=type=cache,id=internal-site-yarn,target=.yarn/cache yarn install --immutable --inline-builds
+RUN --mount=type=cache,id=internal-site-yarn,target=.yarn/cache yarn install --immutable --inline-builds --frozen-lockfile
 
 ENV NODE_ENV=production
 ARG GIT_REV
@@ -21,9 +21,13 @@ RUN --mount=type=secret,id=sentry-auth-token \
   PUBLIC_URL="http://localhost:3000" \
   yarn run build
 
+FROM build AS sentry_modules
+RUN yarn plugin import workspace-tools
+RUN yarn workspaces focus server --production
+
 FROM base
 COPY --from=build /app/dist /app/dist
-COPY --from=build /app/node_modules /app/node_modules
+COPY --from=sentry_modules /app/node_modules /app/node_modules
 COPY --from=build /app/.next/standalone /app
 COPY --from=build /app/public /app/public
 COPY --from=build /app/.next/static /app/.next/static

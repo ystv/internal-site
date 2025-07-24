@@ -1,0 +1,11 @@
+{
+  "name": "server",
+  "private": true,
+  "version": "0.0.0",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@prisma/client": "*",
+    "@sentry/nextjs": "*",
+    "next": "*"
+  }
+}

@@ -1,14 +1,15 @@
-import { App } from "@slack/bolt";
+import { type App } from "@slack/bolt";
 import next from "next";
 import { Server } from "socket.io";
+
+import { authenticateSocket } from "./auth";
+import { checkDatabaseConnection, prepareHttpServer } from "./lib";
 import { env, validateEnv } from "../lib/env.js";
 import { setupActionHandlers } from "../lib/slack/actions";
 import {
   createSlackApp,
   isSlackEnabled,
 } from "../lib/slack/slackApiConnection";
-import { authenticateSocket } from "./auth";
-import { checkDatabaseConnection, prepareHttpServer } from "./lib";
 
 const dev = env.NODE_ENV !== "production";
 const doSSL = env.DEV_SSL === "true";
