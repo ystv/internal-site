@@ -8,22 +8,23 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { usePathname, useSearchParams } from "next/navigation";
-import { searchParamsSchema } from "./schema";
-import { useRouter } from "next/navigation";
-import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { type z } from "zod";
+
 import {
   CountControls,
   PageControls,
   PaginationProvider,
 } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
-import { useValidSearchParams } from "@/lib/searchParams/validateHook";
 import { getSearchParamsString } from "@/lib/searchParams/util";
+import { useValidSearchParams } from "@/lib/searchParams/validateHook";
+
+import { fetchUsersAction, type TFetchUsers } from "./actions";
+import { searchParamsSchema } from "./schema";
 import { UserCard } from "./UserCard";
-import { useQuery } from "@tanstack/react-query";
-import { fetchUsersAction, TFetchUsers } from "./actions";
 
 export function UserView(props: { initialUsers: TFetchUsers }) {
   const pathname = usePathname();
@@ -62,6 +63,7 @@ export function UserView(props: { initialUsers: TFetchUsers }) {
     ) {
       router.push(`${pathname}?${newSearchParamsString}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParamsState]);
 
   function updateState(state: Partial<z.infer<typeof searchParamsSchema>>) {

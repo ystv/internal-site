@@ -1,11 +1,12 @@
 "use server";
 
-import { wrapServerAction } from "@/lib/actions";
-import { mustGetCurrentUser } from "@/lib/auth/server";
-import { EventTypes, listEvents, listVacantEvents } from "@/features/calendar";
-import invariant from "@/lib/invariant";
 import dayjs from "dayjs";
 import { z } from "zod";
+
+import { EventTypes, listEvents, listVacantEvents } from "@/features/calendar";
+import { wrapServerAction } from "@/lib/actions";
+import { mustGetCurrentUser } from "@/lib/auth/server";
+import invariant from "@/lib/invariant";
 
 dayjs.locale("en-gb");
 

@@ -1,7 +1,8 @@
-import { Identity, User } from "@prisma/client";
-import { Permission } from "./permissions";
-import { prisma } from "../db";
+import { type Identity, type User } from "@prisma/client";
 import { cache } from "react";
+
+import { prisma } from "../db";
+import { type Permission } from "./permissions";
 
 export const COOKIE_NAME = "ystv-calendar-session";
 

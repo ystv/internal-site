@@ -1,23 +1,25 @@
-import "server-only";
-import { prisma } from "@/lib/db";
-import { Forbidden, NotLoggedIn } from "./errors";
-import { Permission } from "./permissions";
-import { Identity } from "@prisma/client";
-import { NextRequest } from "next/server";
-import { findOrCreateUserFromGoogleToken } from "./google";
+import { type Identity } from "@prisma/client";
+import { type RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { redirect } from "next/navigation";
-import { z } from "zod";
-import { decode, encode } from "../sessionSecrets";
-import { SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
-import { env } from "../env";
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { type NextRequest } from "next/server";
 import { cache } from "react";
+import "server-only";
+import { z } from "zod";
+
+import { prisma } from "@/lib/db";
+
+import { env } from "../env";
+import { decode, encode } from "../sessionSecrets";
 import {
   COOKIE_NAME,
-  UserType,
+  type UserType,
   resolvePermissionsForUser,
   userHasPermission,
 } from "./core";
+import { Forbidden, NotLoggedIn } from "./errors";
+import { findOrCreateUserFromGoogleToken } from "./google";
+import { type Permission } from "./permissions";
+import { type SlackTokenJson, findOrCreateUserFromSlackToken } from "./slack";
 
 export * from "./core";
 
@@ -41,7 +43,7 @@ async function getSession(req?: NextRequest) {
     sessionID = req.cookies.get(COOKIE_NAME);
   } else {
     const { cookies } = await import("next/headers");
-    sessionID = cookies().get(COOKIE_NAME);
+    sessionID = (await cookies()).get(COOKIE_NAME);
   }
   if (!sessionID) return null;
   if (sessionID.value == "") return null;
@@ -60,7 +62,7 @@ async function getSession(req?: NextRequest) {
 async function setSession(user: z.infer<typeof sessionSchema>) {
   const payload = await encode(user);
   const { cookies } = await import("next/headers");
-  cookies().set(COOKIE_NAME, payload, {
+  (await cookies()).set(COOKIE_NAME, payload, {
     httpOnly: true,
     sameSite: "lax",
     secure: env.NODE_ENV === "production",

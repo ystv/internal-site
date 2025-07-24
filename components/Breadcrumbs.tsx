@@ -1,9 +1,8 @@
 "use client";
+import { Anchor, Breadcrumbs, Text } from "@mantine/core";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import Link from "next/link";
-import { Anchor, Breadcrumbs, Text } from "@mantine/core";
-import { LuHome } from "react-icons/lu";
 
 const breadcrumbSegments: { [K: string]: string } = {
   calendar: "Calendar",

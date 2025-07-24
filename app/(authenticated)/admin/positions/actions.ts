@@ -1,20 +1,22 @@
 "use server";
 
+import { type Position } from "@prisma/client";
+
+import { type FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
-import {
-  createPositionSchema,
-  deletePositionSchema,
-  searchParamsSchema,
-  updatePositionSchema,
-} from "./schema";
 import {
   createPosition,
   deletePosition,
   fetchPositions,
   updatePosition,
 } from "@/features/positions";
-import { Position } from "@prisma/client";
-import { FormResponse } from "@/components/Form";
+
+import {
+  createPositionSchema,
+  deletePositionSchema,
+  searchParamsSchema,
+  updatePositionSchema,
+} from "./schema";
 
 export type TFetchPositions = {
   positions: Position[];

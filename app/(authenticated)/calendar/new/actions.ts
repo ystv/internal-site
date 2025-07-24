@@ -1,22 +1,24 @@
 "use server";
 
-import { FormResponse } from "@/components/Form";
+import { type App } from "@slack/bolt";
+import { type ConversationsInfoResponse } from "@slack/web-api/dist/types/response/ConversationsInfoResponse";
+import { revalidatePath } from "next/cache";
+import { env } from "process";
+
+import { type FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
+import * as Calendar from "@/features/calendar";
 import { canCreate } from "@/features/calendar";
 import { wrapServerAction } from "@/lib/actions";
 import { Forbidden } from "@/lib/auth/errors";
-import { Permission } from "@/lib/auth/permissions";
+import { type Permission } from "@/lib/auth/permissions";
 import { getCurrentUser } from "@/lib/auth/server";
+import { parseAndThrowOrIgnoreSlackError } from "@/lib/slack/errors";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { ConversationsInfoResponse } from "@slack/web-api/dist/types/response/ConversationsInfoResponse";
-import * as Calendar from "@/features/calendar";
-import { revalidatePath } from "next/cache";
-import { env } from "process";
+
 import { schema } from "./schema";
-import { App } from "@slack/bolt";
-import { parseAndThrowOrIgnoreSlackError } from "@/lib/slack/errors";
 
 export const createEvent = wrapServerAction(
   "createEvent",

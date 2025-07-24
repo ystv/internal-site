@@ -1,20 +1,21 @@
 "use server";
 
+import { type FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
+import {
+  createRole,
+  deleteRole,
+  type RoleWithPermissions,
+  updateRole,
+} from "@/features/people";
+import { fetchRoles } from "@/features/roles";
+
 import {
   createRoleSchema,
   deleteRoleSchema,
   searchParamsSchema,
   updateRoleSchema,
 } from "./schema";
-import { fetchRoles } from "@/features/roles";
-import {
-  createRole,
-  deleteRole,
-  RoleWithPermissions,
-  updateRole,
-} from "@/features/people";
-import { FormResponse } from "@/components/Form";
 
 export type TFetchRoles = {
   roles: RoleWithPermissions[];

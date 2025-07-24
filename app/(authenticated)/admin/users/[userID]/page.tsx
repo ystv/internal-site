@@ -1,3 +1,7 @@
+import { z } from "zod";
+
+import { PageInfo } from "@/components/PageInfo";
+import { getUserName } from "@/components/UserHelpers";
 import {
   editUserAdmin,
   fetchUserForAdmin,
@@ -5,10 +9,8 @@ import {
   giveUserRole,
   removeUserRole,
 } from "@/features/people";
-import { z } from "zod";
+
 import { AdminUserView } from "./AdminUserView";
-import { PageInfo } from "@/components/PageInfo";
-import { getUserName } from "@/components/UserHelpers";
 
 export default async function SingleUserPage({
   params,

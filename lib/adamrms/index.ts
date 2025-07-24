@@ -1,6 +1,7 @@
 import invariant from "@/lib/invariant";
-import { login, makeRequest } from "./client";
+
 import { env } from "../env";
+import { makeRequest } from "./client";
 
 async function findIDOfUser(email: string): Promise<number | null> {
   const usersSearchResult = (await makeRequest("/instances/users.php", "GET", {

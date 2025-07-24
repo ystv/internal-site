@@ -1,12 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { DEBUG_MODE_COOKIE } from "./common";
+import { type NextRequest, NextResponse } from "next/server";
+
 import { env } from "@/lib/env";
 
-export function GET(req: NextRequest): NextResponse {
+import { DEBUG_MODE_COOKIE } from "./common";
+
+export async function GET(req: NextRequest): Promise<NextResponse> {
   const val = req.nextUrl.searchParams.get("value")
     ? req.nextUrl.searchParams.get("value") === "true"
     : true;
-  cookies().set(DEBUG_MODE_COOKIE, String(val), { domain: env.COOKIE_DOMAIN });
+  (await cookies()).set(DEBUG_MODE_COOKIE, String(val), {
+    domain: env.COOKIE_DOMAIN,
+  });
   return NextResponse.redirect(new URL("/", env.PUBLIC_URL));
 }

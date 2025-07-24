@@ -1,7 +1,3 @@
-import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
-import * as People from "@/features/people";
-import * as Calendar from "@/features/calendar";
-import { getUserName } from "@/components/UserHelpers";
 import {
   Avatar,
   Card,
@@ -16,20 +12,26 @@ import {
   TableThead,
   TableTr,
 } from "@mantine/core";
-import { UserPreferences } from "./UserPreferences";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+
+import { DateTime } from "@/components/DateTimeHelpers";
 import { ICalCopyButton } from "@/components/ICalCopyButton";
+import { PageInfo } from "@/components/PageInfo";
+import { SignoutButton } from "@/components/SignoutButton";
 import SlackLoginButton from "@/components/slack/SlackLoginButton";
 import SlackUserInfo from "@/components/slack/SlackUserInfo";
-import { Suspense } from "react";
-import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
-import { hasWrapped } from "../../wrapped/util";
-import Link from "next/link";
+import { getUserName } from "@/components/UserHelpers";
+import * as Calendar from "@/features/calendar";
+import * as People from "@/features/people";
+import { getCurrentUser, mustGetCurrentUser } from "@/lib/auth/server";
 import { env } from "@/lib/env";
-import { SignoutButton } from "@/components/SignoutButton";
-import { PageInfo } from "@/components/PageInfo";
-import { notFound } from "next/navigation";
 import invariant from "@/lib/invariant";
-import { DateTime } from "@/components/DateTimeHelpers";
+import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
+
+import { UserPreferences } from "./UserPreferences";
+import { hasWrapped } from "../../wrapped/util";
 
 export default async function MePage() {
   return <UserPage id={(await mustGetCurrentUser()).user_id} />;

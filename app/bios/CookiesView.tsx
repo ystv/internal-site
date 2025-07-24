@@ -1,9 +1,10 @@
 "use client";
 
-import { Stack, Card, Group, Button, Text } from "@mantine/core";
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import { deleteCookie } from "./actions";
+import { Button, Card, Group, Stack, Text } from "@mantine/core";
+import { type RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { useRouter } from "next/navigation";
+
+import { deleteCookie } from "./actions";
 
 export function CookieView(props: { cookies: RequestCookie[] }) {
   const router = useRouter();

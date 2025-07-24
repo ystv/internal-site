@@ -1,11 +1,16 @@
 "use client";
 
+import {
+  Button,
+  type ButtonProps,
+  type MantineStyleProps,
+} from "@mantine/core";
+import { type PolymorphicComponentProps } from "@mantine/core/lib/core/factory/create-polymorphic-component";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { usePublicURL } from "../PublicURLContext";
+
 import SlackIcon from "../icons/SlackIcon";
-import { Button, ButtonProps, MantineStyleProps } from "@mantine/core";
-import { PolymorphicComponentProps } from "@mantine/core/lib/core/factory/create-polymorphic-component";
+import { usePublicURL } from "../PublicURLContext";
 
 export default function SlackLoginButton(props: {
   height?: number | string;

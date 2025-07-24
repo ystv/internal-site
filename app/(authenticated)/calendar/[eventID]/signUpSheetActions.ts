@@ -1,23 +1,24 @@
 "use server";
 
-import { getCurrentUser } from "@/lib/auth/server";
+import { isBefore } from "date-fns";
+import { revalidatePath } from "next/cache";
+import { type z } from "zod";
+
+import { SignupSheetSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
+import { type FormResponse } from "@/components/Form";
+import { zodErrorResponse } from "@/components/FormServerHelpers";
 import * as Calendar from "@/features/calendar";
 import {
   canManage,
   canManageSignUpSheet,
   updateSignUpSheet,
 } from "@/features/calendar";
-import { isBefore } from "date-fns";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-import { SignupSheetSchema } from "@/app/(authenticated)/calendar/[eventID]/schema";
-import { FormResponse } from "@/components/Form";
-import { zodErrorResponse } from "@/components/FormServerHelpers";
+import { wrapServerAction } from "@/lib/actions";
+import { getCurrentUser } from "@/lib/auth/server";
+import { parseAndThrowOrIgnoreSlackError } from "@/lib/slack/errors";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { wrapServerAction } from "@/lib/actions";
-import { parseAndThrowOrIgnoreSlackError } from "@/lib/slack/errors";
 
 export const createSignUpSheet = wrapServerAction(
   "createSignUpSheet",
@@ -61,7 +62,7 @@ export const fetchSignUpSheet = wrapServerAction(
   async function fetchSignUpSheet(
     sheetID: number,
   ): Promise<Calendar.SignUpSheetType | undefined> {
-    const me = await getCurrentUser();
+    const _me = await getCurrentUser();
 
     const sheet = await Calendar.getSignUpSheet(sheetID);
     if (!sheet) {

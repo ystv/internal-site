@@ -1,9 +1,9 @@
-import { prisma } from "../lib/db";
-import { decode } from "../lib/sessionSecrets";
-import { z } from "zod";
-import { ExtendedError } from "socket.io/dist/namespace";
-import { env } from "../lib/env";
 import { Socket } from "socket.io";
+import { ExtendedError } from "socket.io/dist/namespace";
+import { z } from "zod";
+import { prisma } from "../lib/db";
+import { env } from "../lib/env";
+import { decode } from "../lib/sessionSecrets";
 
 export async function authenticateSocket(
   socket: Socket,

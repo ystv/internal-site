@@ -1,13 +1,12 @@
 import { getUserName } from "@/components/UserHelpers";
 import { prisma } from "@/lib/db";
-import { decode, encode } from "@/lib/sessionSecrets";
-import ical, { ICalEventStatus } from "ical-generator";
+import { env } from "@/lib/env";
 import invariant from "@/lib/invariant";
-import { Prisma } from "@prisma/client";
+import { decode, encode } from "@/lib/sessionSecrets";
+import { add } from "date-fns";
+import ical, { ICalEventStatus } from "ical-generator";
 import { preferenceDefaults } from "../people";
 import { EventObjectType, listEvents } from "./events";
-import { add } from "date-fns";
-import { env } from "@/lib/env";
 
 export function encodeUserID(userID: number) {
   return encode({ userID });

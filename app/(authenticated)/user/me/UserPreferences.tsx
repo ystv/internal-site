@@ -1,23 +1,17 @@
 "use client";
 
 import {
-  Stack,
+  Divider,
+  Group,
+  InputLabel,
   InputWrapper,
   SegmentedControl,
-  Group,
-  Divider,
-  InputLabel,
+  Stack,
 } from "@mantine/core";
-import {
-  ReactNode,
-  useEffect,
-  useOptimistic,
-  useState,
-  useTransition,
-} from "react";
-import { changePreference } from "./actions";
 import { notifications } from "@mantine/notifications";
-import { useWebsocket } from "@/components/WebsocketProvider";
+import { type ReactNode, useOptimistic, useTransition } from "react";
+
+import { changePreference } from "./actions";
 
 type ReqPrefs = Required<PrismaJson.UserPreferences>;
 
@@ -74,7 +68,7 @@ function SegmentedPreference<K extends "timeFormat" | "icalFilter">(
     values: ReqPrefs[K][] | Array<{ value: ReqPrefs[K]; label: string }>;
   },
 ) {
-  const { values, label, ...rest } = props;
+  const { label, ...rest } = props;
   return (
     <PrefWrapper
       {...rest}

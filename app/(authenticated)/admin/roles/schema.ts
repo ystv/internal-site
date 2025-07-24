@@ -1,5 +1,6 @@
-import { PermissionEnum } from "@/lib/auth/permissions";
 import { z } from "zod";
+
+import { PermissionEnum } from "@/lib/auth/permissions";
 
 export const searchParamsSchema = z.object({
   count: z

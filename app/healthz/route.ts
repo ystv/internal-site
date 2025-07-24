@@ -1,7 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
+
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 

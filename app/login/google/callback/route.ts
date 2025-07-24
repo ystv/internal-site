@@ -1,7 +1,8 @@
-import { loginOrCreateUserGoogle } from "@/lib/auth/server";
+import { type NextRequest, NextResponse } from "next/server";
+
 import { COOKIE_NAME } from "@/lib/auth/core";
+import { loginOrCreateUserGoogle } from "@/lib/auth/server";
 import { env } from "@/lib/env";
-import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 

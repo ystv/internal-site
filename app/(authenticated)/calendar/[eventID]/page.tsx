@@ -1,41 +1,46 @@
+import { Alert, Group, Space, Stack } from "@mantine/core";
+import { isSameDay } from "date-fns";
+import dayjs from "dayjs";
 import { notFound } from "next/navigation";
-import invariant from "@/lib/invariant";
-import { getUserName } from "@/components/UserHelpers";
-import { hasPermission, mustGetCurrentUser, UserType } from "@/lib/auth/server";
+import { Suspense } from "react";
+import { TbAlertTriangle, TbInfoCircle, TbTool } from "react-icons/tb";
+import { twMerge } from "tailwind-merge";
+
 import { CurrentUserAttendeeRow } from "@/app/(authenticated)/calendar/[eventID]/AttendeeStatus";
-import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { SignupSheetsView } from "@/app/(authenticated)/calendar/[eventID]/SignupSheet";
 import { DateTime } from "@/components/DateTimeHelpers";
-import { isSameDay } from "date-fns";
-import { twMerge } from "tailwind-merge";
-import { EventObjectType, getEvent } from "@/features/calendar/events";
+import {
+  CrewPositionsProvider,
+  MembersProvider,
+} from "@/components/FormFieldPreloadedData";
+import { PageInfo } from "@/components/PageInfo";
+import SlackChannelName from "@/components/slack/SlackChannelName";
+import SlackLoginButton from "@/components/slack/SlackLoginButton";
+import { getUserName } from "@/components/UserHelpers";
 import {
   canManage,
   canManageAnySignupSheet,
   getAllCrewPositions,
   getLatestRequest,
 } from "@/features/calendar";
-import {
-  CrewPositionsProvider,
-  MembersProvider,
-} from "@/components/FormFieldPreloadedData";
+import { type EventObjectType, getEvent } from "@/features/calendar/events";
+import { AttendStatusLabels } from "@/features/calendar/statuses";
 import { getAllUsers } from "@/features/people";
-import { EventActionsUI } from "./EventActionsUI";
-import { Alert, Group, Space, Stack } from "@mantine/core";
-import { TbInfoCircle, TbAlertTriangle, TbTool } from "react-icons/tb";
+import {
+  hasPermission,
+  mustGetCurrentUser,
+  type UserType,
+} from "@/lib/auth/server";
+import invariant from "@/lib/invariant";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { Suspense } from "react";
-import SlackChannelName from "@/components/slack/SlackChannelName";
-import SlackLoginButton from "@/components/slack/SlackLoginButton";
+
 import {
   CheckWithTechAdminBanner,
   CheckWithTechPromptContents,
 } from "./CheckWithTech";
-import { C } from "@fullcalendar/core/internal-common";
-import dayjs from "dayjs";
-import { PageInfo } from "@/components/PageInfo";
+import { EventActionsUI } from "./EventActionsUI";
 
 async function AttendeesView({
   event,

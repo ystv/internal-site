@@ -1,10 +1,10 @@
-import { WebcamView } from "@/components/WebcamView";
-import { fetchWebcamFeeds } from "@/features/webcams";
-import { Center, Group, Loader, Stack } from "@mantine/core";
+import { Center, Loader, Stack } from "@mantine/core";
 import { Suspense } from "react";
-import { WebcamGrid } from "./WebcamGrid";
-import { addWebcam, editWebcam, removeWebcam } from "./actions";
+
 import { PageInfo } from "@/components/PageInfo";
+import { fetchWebcamFeeds } from "@/features/webcams";
+
+import { WebcamGrid } from "./WebcamGrid";
 
 export const dynamic = "force-dynamic";
 

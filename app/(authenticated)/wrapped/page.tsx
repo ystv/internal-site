@@ -1,8 +1,10 @@
-import { mustGetCurrentUser } from "@/lib/auth/server";
 import { notFound } from "next/navigation";
 import { createHash } from "node:crypto";
-import { hasWrapped } from "./util";
+
 import { PageInfo } from "@/components/PageInfo";
+import { mustGetCurrentUser } from "@/lib/auth/server";
+
+import { hasWrapped } from "./util";
 
 export default async function WrappedPage({
   searchParams,

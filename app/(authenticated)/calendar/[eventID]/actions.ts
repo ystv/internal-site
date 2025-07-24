@@ -1,29 +1,33 @@
 "use server";
+import { revalidatePath } from "next/cache";
+import { type z } from "zod";
+
+import {
+  CheckWithTechActionSchema,
+  EditEventSchema,
+} from "@/app/(authenticated)/calendar/[eventID]/schema";
+import { type FormResponse } from "@/components/Form";
+import { zodErrorResponse } from "@/components/FormServerHelpers";
+import * as Calendar from "@/features/calendar";
+import { updateEventAttendeeStatus } from "@/features/calendar/events";
+import { canManage } from "@/features/calendar/permissions";
+import {
+  type AttendStatus,
+  AttendStatuses,
+} from "@/features/calendar/statuses";
+import { type EventType, hasRSVP } from "@/features/calendar/types";
+import { wrapServerAction } from "@/lib/actions";
 import {
   getCurrentUser,
   mustGetCurrentUser,
   requirePermission,
 } from "@/lib/auth/server";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-import { AttendStatus, AttendStatuses } from "@/features/calendar/statuses";
-import * as Calendar from "@/features/calendar";
-import { EventType, hasRSVP } from "@/features/calendar/types";
-import { canManage } from "@/features/calendar/permissions";
-import { zodErrorResponse } from "@/components/FormServerHelpers";
-import {
-  CheckWithTechActionSchema,
-  EditEventSchema,
-} from "@/app/(authenticated)/calendar/[eventID]/schema";
-import { FormResponse } from "@/components/Form";
-import { updateEventAttendeeStatus } from "@/features/calendar/events";
+import { env } from "@/lib/env";
 import invariant from "@/lib/invariant";
+import { parseAndThrowOrIgnoreSlackError } from "@/lib/slack/errors";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
-import { wrapServerAction } from "@/lib/actions";
-import { env } from "@/lib/env";
-import { parseAndThrowOrIgnoreSlackError } from "@/lib/slack/errors";
 
 export const editEvent = wrapServerAction(
   "editEvent",
@@ -86,11 +90,15 @@ export const editEvent = wrapServerAction(
     for (const { event_id: eventIDToUpdate } of eventsToUpdate) {
       let updateData: Calendar.EventUpdateFields;
       if (eventIDToUpdate != eventID) {
-        const { recurring_update_type, start_date, end_date, ...rest } =
-          data.data;
+        const {
+          recurring_update_type: _r,
+          start_date: _s,
+          end_date: _e,
+          ...rest
+        } = data.data;
         updateData = rest;
       } else {
-        const { recurring_update_type, ...rest } = data.data;
+        const { recurring_update_type: _, ...rest } = data.data;
         updateData = rest;
       }
       const result = await Calendar.updateEvent(

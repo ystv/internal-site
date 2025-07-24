@@ -1,13 +1,15 @@
 "use client";
 
-import { WebcamView } from "@/components/WebcamView";
-import { WebcamFeed } from "@prisma/client";
-import { use } from "react";
-import { WebcamCreateForm, WebcamEditForm, WebcamRemoveForm } from "./form";
-import { addWebcam, editWebcam, removeWebcam } from "./actions";
 import { Card, Grid, Group, Stack, Text } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
+import { type WebcamFeed } from "@prisma/client";
+import { use } from "react";
+
 import { PermissionGate } from "@/components/UserContext";
+import { WebcamView } from "@/components/WebcamView";
+
+import { addWebcam, editWebcam, removeWebcam } from "./actions";
+import { WebcamCreateForm, WebcamEditForm, WebcamRemoveForm } from "./form";
 
 export function WebcamGrid(props: { webcams: Promise<WebcamFeed[]> }) {
   const webcamFeeds = use(props.webcams);

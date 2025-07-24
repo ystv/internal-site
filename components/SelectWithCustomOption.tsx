@@ -1,4 +1,3 @@
-import invariant from "@/lib/invariant";
 import {
   Combobox,
   ComboboxChevron,
@@ -10,6 +9,8 @@ import {
   useCombobox,
 } from "@mantine/core";
 import { useEffect, useMemo, useRef, useState } from "react";
+
+import invariant from "@/lib/invariant";
 
 /**
  * React component for a select input with custom options.

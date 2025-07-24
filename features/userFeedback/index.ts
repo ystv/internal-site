@@ -2,7 +2,6 @@ import { FormResponse } from "@/components/Form";
 import { getUserName } from "@/components/UserHelpers";
 import { getCurrentUser } from "@/lib/auth/server";
 import { env } from "@/lib/env";
-import invariant from "@/lib/invariant";
 import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
