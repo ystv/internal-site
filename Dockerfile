@@ -15,7 +15,8 @@ ARG GIT_REV
 ENV GIT_REV=$GIT_REV
 ARG VERSION
 ENV VERSION=$VERSION
-RUN --mount=type=secret,id=sentry-auth-token \
+RUN --mount=type=cache,target=/app/.next/cache \
+  --mount=type=secret,id=sentry-auth-token \
   SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry-auth-token) \
   SKIP_ENV_VALIDATION=1 \
   PUBLIC_URL="http://localhost:3000" \
