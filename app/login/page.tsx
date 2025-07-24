@@ -12,9 +12,11 @@ import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 import BG from "./login-bg.png";
 
 export default async function GoogleSignInPage(props: {
-  searchParams: { error?: string; redirect?: string };
+  searchParams: Promise<{ error?: string; redirect?: string }>;
 }) {
-  await ensureNoActiveSession(props.searchParams.redirect);
+  const searchParams = await props.searchParams;
+
+  await ensureNoActiveSession(searchParams.redirect);
 
   invariant(env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID not set");
 
@@ -33,10 +35,9 @@ export default async function GoogleSignInPage(props: {
             <h1 className="text-4xl font-bold text-black dark:text-white">
               Welcome to YSTV
             </h1>
-            {props.searchParams?.error &&
-              props.searchParams.error !== "No session" && (
-                <p className="text-danger">{props.searchParams.error}</p>
-              )}
+            {searchParams?.error && searchParams.error !== "No session" && (
+              <p className="text-danger">{searchParams.error}</p>
+            )}
           </Stack>
         </Center>
         <Center>
