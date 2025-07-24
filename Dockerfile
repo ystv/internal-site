@@ -7,6 +7,8 @@ FROM base AS build
 RUN apk update && apk add alpine-sdk python3
 WORKDIR /app
 COPY package.json yarn.lock .yarnrc.yml ./
+COPY server/package.json ./server/package.json
+COPY lib/db/schema.prisma ./lib/db/schema.prisma
 COPY ./.yarn/ .yarn/
 RUN --mount=type=cache,id=internal-site-yarn,target=.yarn/cache \
   yarn install --immutable --inline-builds
@@ -26,7 +28,6 @@ RUN --mount=type=cache,target=/app/.next/cache \
   yarn run build
 
 FROM build AS sentry_modules
-RUN yarn plugin import workspace-tools
 RUN yarn workspaces focus server --production
 
 FROM base
