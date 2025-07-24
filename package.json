@@ -2,11 +2,17 @@
   "name": "hypothetical-new-internal-site",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "server"
+  ],
   "scripts": {
     "dev": "nodemon",
     "devSSL": "DEV_SSL=true nodemon",
-    "build": "next build && yarn build:server",
-    "build:server": "tsc -p tsconfig.server.json && tsc-alias -p tsconfig.server.json",
+    "build": "yarn build:client && yarn build:server",
+    "build:client": "next build",
+    "build:server": "yarn build:server:compile && yarn build:server:bundle",
+    "build:server:compile": "tsc -p tsconfig.server.json",
+    "build:server:bundle": "ncc build build/server/index.js -o dist/server -e next -e @prisma/client",
     "start": "NODE_ENV=production node dist/server/index.js",
     "lint": "next lint",
     "test": "lint-staged",
@@ -104,6 +110,7 @@
     "@types/ws": "^8.5.9",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "@vercel/ncc": "^0.38.3",
     "dotenv-cli": "^7.2.1",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.32.0",
@@ -128,7 +135,7 @@
     "tsx": "^4.16.2",
     "zod-prisma": "^0.5.4"
   },
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@4.9.2",
   "resolutions": {
     "@fullcalendar/daygrid@^6.1.8": "patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch",
     "@fullcalendar/daygrid@~6.1.8": "patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch"
