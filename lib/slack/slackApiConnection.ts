@@ -23,8 +23,11 @@ function slackApiConnection(): App {
 }
 
 export function createSlackApp(): App {
+  if ((globalThis as unknown as { slackApp: App | undefined }).slackApp)
+    return (globalThis as unknown as { slackApp: App }).slackApp;
+
   invariant(
-    (globalThis as unknown as { slackApp: App | undefined }).slackApp,
+    !(globalThis as unknown as { slackApp: App | undefined }).slackApp,
     "createSlackApp was called but a global app already exists",
   );
 
