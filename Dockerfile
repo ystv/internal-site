@@ -1,10 +1,10 @@
 #syntax=docker/dockerfile:1
 
 FROM node:20-alpine AS base
-RUN apt-get update -y && apt-get install -y ca-certificates git openssl
+RUN apk update  && apk add ca-certificates git openssl
 
 FROM base AS build
-RUN apt-get update -y && apt-get install -y build-essential python3
+RUN apk update && apk add alpine-sdk python3
 WORKDIR /app
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY ./.yarn/ .yarn/
