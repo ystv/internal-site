@@ -1,14 +1,17 @@
 #syntax=docker/dockerfile:1
 
-FROM node:20-bookworm-slim AS base
+FROM node:20-alpine AS base
 RUN apt-get update -y && apt-get install -y ca-certificates git openssl
 
 FROM base AS build
 RUN apt-get update -y && apt-get install -y build-essential python3
 WORKDIR /app
+COPY package.json yarn.lock .yarnrc.yml ./
 COPY ./.yarn/ .yarn/
+RUN --mount=type=cache,id=internal-site-yarn,target=.yarn/cache \
+  yarn install --immutable --inline-builds
+
 COPY . /app/
-RUN --mount=type=cache,id=internal-site-yarn,target=.yarn/cache yarn install --immutable --inline-builds --frozen-lockfile
 
 ENV NODE_ENV=production
 ARG GIT_REV
