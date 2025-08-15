@@ -483,7 +483,7 @@ export function PermissionSelectField(props: {
               .filter(
                 (v) =>
                   v.toLowerCase().includes(filter.toLowerCase()) ||
-                  (controller.field.value as Permission[]).includes(v),
+                  ((controller.field.value || []) as Permission[]).includes(v),
               )
               .map((key) => (
                 <Chip key={key} value={key} variant="outline">
