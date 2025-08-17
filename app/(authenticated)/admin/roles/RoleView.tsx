@@ -21,7 +21,7 @@ import {
   CountControls,
   PageControls,
   PaginationProvider,
-} from "@/components/Pagination";
+} from "@/components/navigation/Pagination";
 import { SearchBar } from "@/components/SearchBar";
 import { type RoleWithPermissions } from "@/features/people";
 import { getSearchParamsString } from "@/lib/searchParams/util";

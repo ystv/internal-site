@@ -15,11 +15,11 @@ import { AdminUserView } from "./AdminUserView";
 export default async function SingleUserPage({
   params,
 }: {
-  params: { userID: string };
+  params: Promise<{ userID: string }>;
 }) {
   const userIDParse = z
     .preprocess((val) => (val ? val : undefined), z.coerce.number())
-    .safeParse(params.userID);
+    .safeParse((await params).userID);
 
   if (!userIDParse.success) {
     return <>Invalid User ID</>;

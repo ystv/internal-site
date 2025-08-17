@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/nextjs";
 
 import { FeedbackPrompt } from "@/components/FeedbackPrompt";
 import { LoginPrompt } from "@/components/LoginPrompt";
-import Nav from "@/components/Nav";
+import Nav from "@/components/navigation/Nav";
 import { QueryProvider } from "@/components/QueryProvider";
 import { UserProvider } from "@/components/UserContext";
 import { WebsocketProvider } from "@/components/WebsocketProvider";

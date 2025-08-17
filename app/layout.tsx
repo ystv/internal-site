@@ -1,4 +1,8 @@
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import {
+  ColorSchemeScript,
+  mantineHtmlProps,
+  MantineProvider,
+} from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { Inter } from "next/font/google";
@@ -33,7 +37,7 @@ export default async function RootLayout({
 }) {
   const debugMode = (await cookies()).get(DEBUG_MODE_COOKIE)?.value === "true";
   return (
-    <html lang="en">
+    <html lang="en" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript defaultColorScheme="auto" />
       </head>
