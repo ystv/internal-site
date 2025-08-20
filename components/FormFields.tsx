@@ -103,12 +103,14 @@ export function DatePickerField(props: {
     <DateTimePicker
       label={props.label}
       value={dv}
-      onChange={(v) => controller.field.onChange(v?.toISOString())}
+      valueFormat="YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+      onChange={(v) => controller.field.onChange(v?.toString())}
       error={controller.fieldState.error?.message as string}
       withAsterisk={props.required}
       dropdownType={props.modal ? "modal" : "popover"}
       renderDay={(date) => {
         const today = dayjs(date).isSame(dayjs(), "day");
+        const dateString = dayjs(date).format("");
         return (
           <Box
             className={twMerge(
@@ -116,7 +118,7 @@ export function DatePickerField(props: {
               today && "bg-blue-100",
             )}
           >
-            <div>{date.getDate()}</div>
+            <div>{dateString}</div>
           </Box>
         );
       }}
