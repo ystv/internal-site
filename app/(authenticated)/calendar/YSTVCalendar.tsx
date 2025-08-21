@@ -141,6 +141,7 @@ export default function YSTVCalendar() {
     data: events,
     isFetching,
     isPlaceholderData,
+    isRefetching,
   } = useQuery({
     queryKey: calendarEventsQueryKey({
       year: state.year,
@@ -161,7 +162,10 @@ export default function YSTVCalendar() {
     { value: "timeGridDay", label: "Day" },
   ];
 
-  if (isMobileView === undefined || (isFetching && !isPlaceholderData))
+  if (
+    isMobileView === undefined ||
+    (isFetching && !isPlaceholderData && !isRefetching)
+  )
     return (
       <div className={"flex w-full justify-center"}>
         <Loader />

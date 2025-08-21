@@ -19,6 +19,7 @@ import {
 } from "@mantine/core";
 import { DatePicker, DateTimePicker } from "@mantine/dates";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import {
   type ArrayPath,
@@ -82,6 +83,8 @@ export function DatePickerField(props: {
   required?: boolean;
   modal?: boolean;
 }) {
+  dayjs.extend(utc);
+
   const controller = useController({
     name: props.name,
     defaultValue:
@@ -103,20 +106,26 @@ export function DatePickerField(props: {
     <DateTimePicker
       label={props.label}
       value={dv}
-      onChange={(v) => controller.field.onChange(v?.toISOString())}
+      valueFormat="DD/MM/YYYY HH:mm"
+      onChange={(v) =>
+        controller.field.onChange(
+          dayjs(v).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+        )
+      }
       error={controller.fieldState.error?.message as string}
       withAsterisk={props.required}
       dropdownType={props.modal ? "modal" : "popover"}
       renderDay={(date) => {
         const today = dayjs(date).isSame(dayjs(), "day");
+        const dateString = dayjs(date).format("DD");
         return (
           <Box
             className={twMerge(
               "flex h-full w-full items-center justify-center rounded-sm text-center",
-              today && "bg-blue-100",
+              today && "bg-blue-100 dark:text-black",
             )}
           >
-            <div>{date.getDate()}</div>
+            <div>{dateString}</div>
           </Box>
         );
       }}

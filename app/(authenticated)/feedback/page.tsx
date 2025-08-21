@@ -1,4 +1,4 @@
-import { BackButton } from "@/components/BackButton";
+import { BackButton } from "@/components/navigation/BackButton";
 import { PageInfo } from "@/components/PageInfo";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 
