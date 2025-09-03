@@ -64,30 +64,34 @@ function EditModal(props: { event: EventObjectType; close: () => void }) {
       <br />
       <CheckBoxField name="is_tentative" label="Tentative Event" />
       <br />
-      <Alert
-        variant="light"
-        color="orange"
-        icon={<TbAlertTriangle />}
-        title="Recurring Event"
-        className="mt-4"
-      >
-        This event is recurring. It is linked to a number of other events which
-        can be upated at the same time, but changing the timings has to be done
-        individually.
-      </Alert>
-      <br />
-      <SelectField
-        name="recurring_update_type"
-        label="Events to Update"
-        options={[
-          { type: "none", label: "Only update this event" },
-          { type: "future", label: "Update this and future events" },
-          { type: "past", label: "Update this and past events" },
-          { type: "all", label: "Update all events" },
-        ]}
-        getOptionValue={(obj) => obj.type}
-        renderOption={(obj) => obj.label}
-      />
+      {props.event.recurring_event_id && (
+        <>
+          <Alert
+            variant="light"
+            color="orange"
+            icon={<TbAlertTriangle />}
+            title="Recurring Event"
+            className="mt-4"
+          >
+            This event is recurring. It is linked to a number of other events
+            which can be upated at the same time, but changing the timings has
+            to be done individually.
+          </Alert>
+          <br />
+          <SelectField
+            name="recurring_update_type"
+            label="Events to Update"
+            options={[
+              { type: "none", label: "Only update this event" },
+              { type: "future", label: "Update this and future events" },
+              { type: "past", label: "Update this and past events" },
+              { type: "all", label: "Update all events" },
+            ]}
+            getOptionValue={(obj) => obj.type}
+            renderOption={(obj) => obj.label}
+          />
+        </>
+      )}
       {props.event.event_type === "public" && (
         <Alert
           variant="light"
