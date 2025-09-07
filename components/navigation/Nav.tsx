@@ -120,29 +120,23 @@ function Navbar() {
         <Title order={4}>Nothing for you here I&apos;m afraid...</Title>
       }
     >
-      <PermissionGate required={"ManageQuotes"}>
-        <NavLink
-          component={Link}
-          href={"/quotes"}
-          label={"Quotes Board"}
-          leftSection={
-            <BsChatLeftQuoteFill
-              style={{ position: "relative", top: 2 }}
-              size={20}
-            />
-          }
-        />
-      </PermissionGate>
-      <PermissionGate
-        required={["Admin.Positions", "Admin.Roles", "Admin.Users"]}
-      >
-        <NavLink
-          component={Link}
-          href={"/admin"}
-          label={"Admin Pages"}
-          leftSection={<MdAdminPanelSettings size={24} />}
-        />
-      </PermissionGate>
+      {links.map((link) => {
+        const navLink = (
+          <NavLink
+            component={Link}
+            href={link.href}
+            label={link.label}
+            leftSection={link.leftSection}
+          />
+        );
+        return link.permissions ? (
+          <PermissionGate key={link.href} required={link.permissions}>
+            {navLink}
+          </PermissionGate>
+        ) : (
+          navLink
+        );
+      })}
     </PermissionGate>
   );
 }
