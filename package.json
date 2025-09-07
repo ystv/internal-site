@@ -31,10 +31,6 @@
     "postinstall": "yarn prisma:generate && husky init",
     "prepare": "husky"
   },
-  "prisma": {
-    "seed": "tsx scripts/seed.mts",
-    "schema": "lib/db/schema.prisma"
-  },
   "dependencies": {
     "@fullcalendar/core": "^6.1.8",
     "@fullcalendar/daygrid": "^6.1.8",
@@ -49,7 +45,7 @@
     "@mantine/modals": "^8.2.4",
     "@mantine/notifications": "^8.2.4",
     "@mux/mux-video-react": "^0.11.4",
-    "@prisma/client": "^6.12.0",
+    "@prisma/client": "^6.15.0",
     "@sentry/nextjs": "^9.40.0",
     "@slack/bolt": "^4.4.0",
     "@tanstack/react-query": "^5.51.23",
@@ -125,8 +121,8 @@
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.4.0",
-    "prisma": "^6.12.0",
-    "prisma-json-types-generator": "^3.5.1",
+    "prisma": "^6.15.0",
+    "prisma-json-types-generator": "^3.6.0",
     "sharp": "^0.32.3",
     "storybook": "^7.0.27",
     "tailwindcss-animate": "^1.0.7",
