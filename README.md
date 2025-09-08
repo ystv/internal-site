@@ -46,7 +46,7 @@ Create an OAuth Client ID, select "Web Application" as the type, and copy the Cl
 
 Edit your `.env.local` and add the Client ID on the `GOOGLE_CLIENT_ID=` line. You should also set `GOOGLE_PERMITTED_DOMAINS=` to `york.ac.uk`.
 
-Also add `http://localhost` and `http://localhost:3000` to both the "Authorised JavaScript origins" and "Authorised redirect URIs" sections (Or whatever origin/domain your instance will be hosted on).
+Also add `http://localhost` and `http://localhost:3000` to both the "Authorised JavaScript origins" and "Authorised redirect URIs" sections (Or whatever origin/domain your instance will be hosted on). Add the previous URIs with `/login/google/callback` appended to the "Authorised redirect URIs" section if you continue to have issues.
 
 Also ensure to set the `SESSION_SECRET` in `.env`, this can be whatever random string you'd like in development.
 
