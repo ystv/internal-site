@@ -10,6 +10,7 @@ import {
   InputError,
   InputLabel,
   NativeSelect,
+  NumberInput,
   SegmentedControl,
   Space,
   Stack,
@@ -17,7 +18,7 @@ import {
   Textarea,
   useMatches,
 } from "@mantine/core";
-import { DatePicker, DateTimePicker } from "@mantine/dates";
+import { DatePicker, DatePickerInput, DateTimePicker } from "@mantine/dates";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
@@ -76,7 +77,7 @@ export function TextAreaField(props: {
   );
 }
 
-export function DatePickerField(props: {
+export function DateTimePickerField(props: {
   name: string;
   defaultValue?: Date | string;
   label: string;
@@ -123,6 +124,63 @@ export function DatePickerField(props: {
             className={twMerge(
               "flex h-full w-full items-center justify-center rounded-sm text-center",
               today && "bg-blue-100 dark:text-black",
+            )}
+          >
+            <div>{dateString}</div>
+          </Box>
+        );
+      }}
+    />
+  );
+}
+
+export function DatePickerField(props: {
+  name: string;
+  defaultValue?: Date | string;
+  label: string;
+  required?: boolean;
+  modal?: boolean;
+}) {
+  dayjs.extend(utc);
+
+  const controller = useController({
+    name: props.name,
+    defaultValue:
+      props.defaultValue instanceof Date
+        ? props.defaultValue.toISOString()
+        : props.defaultValue,
+  });
+  const dv = useMemo(() => {
+    if (!controller.field.value) {
+      return null;
+    }
+    try {
+      return new Date(controller.field.value);
+    } catch (e) {
+      return null;
+    }
+  }, [controller.field.value]);
+  return (
+    <DatePickerInput
+      label={props.label}
+      value={dv}
+      valueFormat="DD/MM/YYYY"
+      onChange={(v) =>
+        controller.field.onChange(
+          dayjs(v).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+        )
+      }
+      error={controller.fieldState.error?.message as string}
+      withAsterisk={props.required}
+      dropdownType={props.modal ? "modal" : "popover"}
+      renderDay={(date) => {
+        const today = dayjs(date).isSame(dayjs(), "day");
+        const dateString = dayjs(date).format("DD");
+        return (
+          <Box
+            className={twMerge(
+              "flex h-full w-full items-center justify-center rounded-sm text-center",
+              today && "bg-blue-100 text-black",
             )}
           >
             <div>{dateString}</div>
@@ -383,7 +441,10 @@ export function SearchedMemberSelect(props: {
     if (typeof selectController.field.value === "string") {
       return selectController.field.value;
     }
-    if (selectController.field.value === null) {
+    if (
+      selectController.field.value === null ||
+      selectController.field.value === undefined
+    ) {
       return null;
     }
     return selectController.field.value.toString(10);
@@ -503,5 +564,30 @@ export function PermissionSelectField(props: {
         </Chip.Group>
       </Card>
     </>
+  );
+}
+
+export function NumberField(props: {
+  name: string;
+  label?: string;
+  placeholder?: string;
+  required?: boolean;
+  min?: number;
+  max?: number;
+  step?: number;
+}) {
+  const ctx = useFormContext();
+  return (
+    <NumberInput
+      onChange={(v) => ctx.setValue(props.name, v as any)}
+      value={ctx.getValues(props.name) as number | undefined}
+      error={ctx.formState.errors[props.name]?.message as string}
+      label={props.label}
+      placeholder={props.placeholder}
+      required={props.required}
+      min={props.min}
+      max={props.max}
+      step={props.step}
+    />
   );
 }

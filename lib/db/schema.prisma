@@ -54,21 +54,22 @@ model Role {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model User {
-  user_id                         Int          @id @default(autoincrement())
-  email                           String       @unique
+  user_id                         Int                       @id @default(autoincrement())
+  email                           String                    @unique
   first_name                      String
   last_name                       String
-  nickname                        String       @default("")
-  avatar                          String       @default("")
-  joined_on                       DateTime     @default(now())
+  nickname                        String                    @default("")
+  avatar                          String                    @default("")
+  joined_on                       DateTime                  @default(now())
   identities                      Identity[]
   attendees                       Attendee[]
   crews                           Crew[]
-  events_events_created_byTousers Event[]      @relation("events_created_byTousers")
-  events_events_deleted_byTousers Event[]      @relation("events_deleted_byTousers")
-  events_events_updated_byTousers Event[]      @relation("events_updated_byTousers")
+  events_events_created_byTousers Event[]                   @relation("events_created_byTousers")
+  events_events_deleted_byTousers Event[]                   @relation("events_deleted_byTousers")
+  events_events_updated_byTousers Event[]                   @relation("events_updated_byTousers")
   role_members                    RoleMember[]
-  hosted_events                   Event[]      @relation("event_host_user")
+  hosted_events                   Event[]                   @relation("event_host_user")
+  committee_positions             CommitteePositionMember[]
 
   /// [UserPreferences]
   preferences               Json            @default("{}")
@@ -245,9 +246,59 @@ model WebcamFeed {
 }
 
 model RecurringEvent {
-  recurring_event_id Int     @id @default(autoincrement())
+  recurring_event_id Int @id @default(autoincrement())
 
-  events             Event[]
+  events Event[]
 
   @@map("recurring_events")
+}
+
+model CommitteePosition {
+  committee_position_id Int    @id @default(autoincrement())
+  name                  String @unique
+  description           String @default("")
+  seats                 Int    @default(1)
+  sort_order            Int    @default(0)
+
+  position_teams             CommitteePositionTeam[]
+  committee_position_members CommitteePositionMember[]
+
+  @@map("committee_positions")
+}
+
+model CommitteeTeam {
+  committee_team_id Int    @id @default(autoincrement())
+  name              String @unique
+  description       String @default("")
+
+  position_teams CommitteePositionTeam[]
+
+  @@map("committee_teams")
+}
+
+model CommitteePositionTeam {
+  committee_position_team_id Int @id @default(autoincrement())
+  committee_position_id      Int
+  committee_team_id          Int
+  ordering                   Int
+
+  committee_position CommitteePosition @relation(fields: [committee_position_id], references: [committee_position_id])
+  committee_team     CommitteeTeam     @relation(fields: [committee_team_id], references: [committee_team_id])
+
+  @@unique([committee_position_id, committee_team_id])
+  @@map("committee_position_teams")
+}
+
+model CommitteePositionMember {
+  committee_position_member_id Int               @id @default(autoincrement())
+  committee_position_id        Int
+  user_id                      Int
+  start_date                   DateTime          @db.Timestamptz(6)
+  end_date                     DateTime?         @db.Timestamptz(6)
+  current                      Boolean           @default(true)
+  committee_position           CommitteePosition @relation(fields: [committee_position_id], references: [committee_position_id])
+  user                         User              @relation(fields: [user_id], references: [user_id])
+
+  @@unique([committee_position_id, user_id, start_date])
+  @@map("committee_position_members")
 }

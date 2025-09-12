@@ -1,17 +1,18 @@
 "use server";
 
+import { type Position } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { type z } from "zod";
+
 import {
-  createPositionSchema,
-  deletePositionSchema,
-  updatePositionSchema,
+  type createPositionSchema,
+  type deletePositionSchema,
+  type updatePositionSchema,
 } from "@/app/(authenticated)/admin/positions/schema";
-import { FormResponse } from "@/components/Form";
+import { type FormResponse } from "@/components/Form";
 import { wrapServerAction } from "@/lib/actions";
 import { requirePermission } from "@/lib/auth/server";
 import { prisma } from "@/lib/db";
-import { Position } from "@prisma/client";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
 export const fetchPositions = wrapServerAction(
   "fetchPositions",

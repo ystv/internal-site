@@ -11,6 +11,9 @@ export default function AdminPage() {
       <PageInfo title="Admin" />
       <Card>
         <Stack>
+          <Link href={"/admin/committee"}>
+            <Button variant="default">Committee</Button>
+          </Link>
           <Link href={"/admin/users"}>
             <Button variant="default">Users</Button>
           </Link>
