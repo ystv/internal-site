@@ -21,6 +21,7 @@ export function CreateCommitteePositionForm(props: {
       action={props.action}
       onSuccess={props.onSuccess}
       schema={createCommitteePositionSchema}
+      initialValues={{ seats: 1 }}
     >
       <TextField name="name" label="Name" required />
       <TextAreaField
@@ -68,6 +69,7 @@ export function UpdateCommitteePositionForm(props: {
         description: props.selectedCommitteePosition?.description,
         seats: props.selectedCommitteePosition?.seats,
       }}
+      submitLabel="Update Position"
     >
       <TextField name="name" label="Name" required />
       <TextAreaField

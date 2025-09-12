@@ -105,6 +105,7 @@ export function AdminCommitteePositionView(props: {
         action={promoteUserToCommitteePositionAction}
         onSuccess={() => {
           committeePositionQuery.refetch();
+          previousMembersQuery.refetch();
           closePromoteUserModal();
         }}
       />
@@ -270,6 +271,7 @@ function PromoteUserModal(props: {
         initialValues={{
           start_date: new Date(),
         }}
+        submitLabel="Promote User"
       >
         <SearchedMemberSelect name="user_id" label="User" />
         <DatePickerField name="start_date" label="Start Date" />

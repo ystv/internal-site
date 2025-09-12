@@ -62,6 +62,7 @@ export function UpdatePositionForm(props: {
         brief_description: props.selectedPosition?.brief_description,
         full_description: props.selectedPosition?.full_description,
       }}
+      submitLabel="Update Position"
     >
       <TextField name="name" label="Name" required />
       <TextAreaField

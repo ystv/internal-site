@@ -41,7 +41,7 @@ export function UpdateCommitteeTeamForm(props: {
     <Form
       action={(data) => {
         if (!props.selectedCommitteeTeam) {
-          throw new Error("No selected position");
+          throw new Error("No selected team");
         }
         return props.action({
           committee_team_id: props.selectedCommitteeTeam.committee_team_id,
@@ -62,6 +62,7 @@ export function UpdateCommitteeTeamForm(props: {
         name: props.selectedCommitteeTeam?.name,
         description: props.selectedCommitteeTeam?.description,
       }}
+      submitLabel="Update Team"
     >
       <TextField name="name" label="Name" required />
       <TextAreaField
@@ -70,7 +71,6 @@ export function UpdateCommitteeTeamForm(props: {
         autosize
         minRows={1}
       />
-      <NumberField name="seats" label="Seats" min={0} max={100} step={1} />
     </Form>
   );
 }

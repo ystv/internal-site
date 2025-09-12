@@ -124,7 +124,7 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
         <Modal
           opened={createModalOpened}
           onClose={closeCreateModal}
-          title={"Create Position"}
+          title={"Create Role"}
         >
           <CreateRoleForm
             action={createRoleAction}
@@ -137,7 +137,7 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
         <Modal
           opened={editModalOpened}
           onClose={closeEditModal}
-          title={"Edit Position"}
+          title={"Edit Role"}
         >
           <UpdateRoleForm
             action={updateRoleAction}

@@ -36,7 +36,6 @@ import {
 } from "./actions";
 import { CommitteeTeamCard } from "./CommitteeTeamCard";
 import { CreateCommitteeTeamForm, UpdateCommitteeTeamForm } from "./form";
-// import { PositionCard } from "./PositionCard";
 import { searchParamsSchema } from "./schema";
 
 export function CommitteeTeamView(props: {
@@ -58,7 +57,7 @@ export function CommitteeTeamView(props: {
     queryFn: async () => {
       const res = await fetchCommitteeTeamsAction(validSearchParams);
       if (!res.ok) {
-        throw new Error("An error occurred updating committee positions.");
+        throw new Error("An error occurred updating committee teams.");
       } else {
         return res;
       }
@@ -136,7 +135,7 @@ export function CommitteeTeamView(props: {
         <Modal
           opened={createModalOpened}
           onClose={closeCreateModal}
-          title={"Create Position"}
+          title={"Create Team"}
         >
           <CreateCommitteeTeamForm
             action={createCommitteeTeamAction}
@@ -149,7 +148,7 @@ export function CommitteeTeamView(props: {
         <Modal
           opened={editModalOpened}
           onClose={closeEditModal}
-          title={"Edit Position"}
+          title={"Edit Team"}
         >
           <UpdateCommitteeTeamForm
             action={updateCommitteeTeamAction}
@@ -174,7 +173,7 @@ export function CommitteeTeamView(props: {
           />
           <Group>
             <Button leftSection={<FaPlus />} onClick={openCreateModal}>
-              Create Position
+              Create Team
             </Button>
           </Group>
           {committeeTeamsQuery.data.total > 0 ? (
