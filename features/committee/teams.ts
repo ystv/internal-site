@@ -340,12 +340,8 @@ export const reorderPositionInTeam = wrapServerAction(
         committee_team_id: data.committee_team_id,
         ordering:
           data.direction === "up"
-            ? {
-                lt: positionTeam.ordering,
-              }
-            : {
-                gt: positionTeam.ordering,
-              },
+            ? positionTeam.ordering - 1
+            : positionTeam.ordering + 1,
       },
       data: {
         ordering:
