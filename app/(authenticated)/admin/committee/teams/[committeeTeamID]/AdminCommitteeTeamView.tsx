@@ -16,6 +16,8 @@ import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { FaEye } from "react-icons/fa";
 import {
   MdAdd,
   MdDelete,
@@ -116,6 +118,15 @@ export function AdminCommitteeTeamView(props: {
                         </Text>
                       </Stack>
                       <Group ml={"auto"}>
+                        <Link
+                          href={`/admin/committee/positions/${positionTeam.committee_position.committee_position_id}`}
+                        >
+                          <Tooltip label="View Committee Position">
+                            <ActionIcon variant="light">
+                              <FaEye />
+                            </ActionIcon>
+                          </Tooltip>
+                        </Link>
                         <Stack gap={2}>
                           <Tooltip label="Move up">
                             <ActionIcon
