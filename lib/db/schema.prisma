@@ -270,7 +270,7 @@ model CommitteeTeam {
   committee_team_id Int    @id @default(autoincrement())
   name              String @unique
   description       String @default("")
-  public            Boolean @default(true)
+  public            Boolean @default(false)
   sort_order        Int    @default(0)
 
   position_teams CommitteePositionTeam[]

@@ -62,6 +62,7 @@ export const fetchCommitteeTeams = wrapServerAction(
           },
         },
       },
+      orderBy: [{ public: "desc" }, { sort_order: "asc" }],
       skip: skipValue,
       take: data.count,
     });

@@ -13,12 +13,16 @@ export const searchParamsSchema = z.object({
 export const createCommitteeTeamSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
+  sort_order: z.number().min(0).default(0),
+  public: z.boolean().default(false),
 });
 
 export const updateCommitteeTeamSchema = z.object({
   committee_team_id: z.number(),
   name: z.string(),
   description: z.string().optional(),
+  sort_order: z.number().min(0).default(0),
+  public: z.boolean().default(false),
 });
 
 export const deleteCommitteeTeamSchema = z.object({

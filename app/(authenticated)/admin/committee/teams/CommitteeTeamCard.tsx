@@ -39,6 +39,9 @@ export function CommitteeTeamCard(props: {
             {props.committeeTeam._count.position_teams} Position
             {props.committeeTeam._count.position_teams === 1 ? "" : "s"}
           </Text>
+          <Text size="xs" c={"dimmed"}>
+            {props.committeeTeam.public ? "Publicly Visible" : "Not Public"}
+          </Text>
         </Stack>
         <Menu position="left">
           <Menu.Target>

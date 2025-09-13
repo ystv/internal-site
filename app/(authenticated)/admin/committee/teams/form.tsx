@@ -1,9 +1,15 @@
+import { Space } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { type CommitteeTeam } from "@prisma/client";
 import { type z } from "zod";
 
 import Form, { type FormResponse } from "@/components/Form";
-import { NumberField, TextAreaField, TextField } from "@/components/FormFields";
+import {
+  CheckBoxField,
+  NumberField,
+  TextAreaField,
+  TextField,
+} from "@/components/FormFields";
 
 import { createCommitteeTeamSchema, updateCommitteeTeamSchema } from "./schema";
 
@@ -18,6 +24,7 @@ export function CreateCommitteeTeamForm(props: {
       action={props.action}
       onSuccess={props.onSuccess}
       schema={createCommitteeTeamSchema}
+      initialValues={{ sort_order: 0 }}
     >
       <TextField name="name" label="Name" required />
       <TextAreaField
@@ -26,6 +33,8 @@ export function CreateCommitteeTeamForm(props: {
         autosize
         minRows={1}
       />
+      <NumberField name="sort_order" label="Sort Order" min={0} step={1} />
+      <CheckBoxField name="public" label="Publicly Visible" />
     </Form>
   );
 }
@@ -61,6 +70,8 @@ export function UpdateCommitteeTeamForm(props: {
       initialValues={{
         name: props.selectedCommitteeTeam?.name,
         description: props.selectedCommitteeTeam?.description,
+        sort_order: props.selectedCommitteeTeam?.sort_order,
+        public: props.selectedCommitteeTeam?.public,
       }}
       submitLabel="Update Team"
     >
@@ -71,6 +82,9 @@ export function UpdateCommitteeTeamForm(props: {
         autosize
         minRows={1}
       />
+      <NumberField name="sort_order" label="Sort Order" min={0} step={1} />
+      <Space h={"md"} />
+      <CheckBoxField name="public" label="Publicly Visible" />
     </Form>
   );
 }
