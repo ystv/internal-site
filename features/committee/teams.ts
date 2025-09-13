@@ -74,6 +74,52 @@ export const fetchCommitteeTeams = wrapServerAction(
   },
 );
 
+export const fetchPublicCommittee = wrapServerAction(
+  "fetchPublicCommittee",
+  async function fetchPublicCommittee() {
+    const fetchedCommitteeTeams = await prisma.committeeTeam.findMany({
+      where: {
+        public: true,
+      },
+      select: {
+        name: true,
+        description: true,
+        sort_order: true,
+        position_teams: {
+          select: {
+            ordering: true,
+            committee_position: {
+              select: {
+                name: true,
+                description: true,
+                committee_position_members: {
+                  where: {
+                    current: true,
+                  },
+                  select: {
+                    user: {
+                      select: {
+                        first_name: true,
+                        last_name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            ordering: "asc",
+          },
+        },
+      },
+      orderBy: [{ sort_order: "asc" }, { name: "asc" }],
+    });
+
+    return { ok: true, data: fetchedCommitteeTeams };
+  },
+);
+
 export const createCommitteeTeam = wrapServerAction(
   "createCommitteeTeam",
   async function createCommitteeTeam(

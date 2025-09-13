@@ -5,6 +5,8 @@ export const _CommitteeTeamModel = z.object({
   committee_team_id: z.number().int(),
   name: z.string(),
   description: z.string(),
+  public: z.boolean(),
+  sort_order: z.number().int(),
 })
 
 export interface CompleteCommitteeTeam extends z.infer<typeof _CommitteeTeamModel> {
