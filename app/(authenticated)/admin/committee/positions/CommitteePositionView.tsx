@@ -11,6 +11,7 @@ import {
   Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { type CommitteePosition } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,22 +24,26 @@ import {
   PaginationProvider,
 } from "@/components/navigation/Pagination";
 import { SearchBar } from "@/components/SearchBar";
-import { type RoleWithPermissions } from "@/features/people";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { useValidSearchParams } from "@/lib/searchParams/validateHook";
 
 import {
-  createRoleAction,
-  deleteRoleAction,
-  fetchRolesAction,
-  type TFetchRoles,
-  updateRoleAction,
+  createCommitteePositionAction,
+  deleteCommitteePositionAction,
+  fetchCommitteePositionsAction,
+  type TFetchCommitteePositions,
+  updateCommitteePositionAction,
 } from "./actions";
-import { CreateRoleForm, UpdateRoleForm } from "./form";
-import { RoleCard } from "./RoleCard";
+import { CommitteePositionCard } from "./CommitteePositionCard";
+import {
+  CreateCommitteePositionForm,
+  UpdateCommitteePositionForm,
+} from "./form";
 import { searchParamsSchema } from "./schema";
 
-export function RoleView(props: { initialRoles: TFetchRoles }) {
+export function CommitteePositionView(props: {
+  initialCommitteePositions: TFetchCommitteePositions;
+}) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -49,20 +54,20 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
     rawSearchParams,
   );
 
-  const rolesQuery = useQuery({
-    initialData: props.initialRoles,
-    queryKey: ["admin:roles", validSearchParams],
+  const committeePositionsQuery = useQuery({
+    initialData: props.initialCommitteePositions,
+    queryKey: ["admin:committeePositions", validSearchParams],
     queryFn: async () => {
-      const res = await fetchRolesAction(validSearchParams);
+      const res = await fetchCommitteePositionsAction(validSearchParams);
       if (!res.ok) {
-        throw new Error("An error occurred updating roles.");
+        throw new Error("An error occurred updating committee positions.");
       } else {
         return res;
       }
     },
   });
 
-  const currentRange = useCurrentRange(rolesQuery.data);
+  const currentRange = useCurrentRange(committeePositionsQuery.data);
 
   const [searchParamsState, setSearchParamsState] = useState(validSearchParams);
 
@@ -85,8 +90,8 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
   ] = useDisclosure(false);
   const [editModalOpened, { open: openEditModal, close: closeEditModal }] =
     useDisclosure(false);
-  const [selectedRole, setSelectedRole] = useState<
-    RoleWithPermissions | undefined
+  const [selectedCommitteePosition, setSelectedCommitteePosition] = useState<
+    CommitteePosition | undefined
   >();
 
   function updateState(state: Partial<z.infer<typeof searchParamsSchema>>) {
@@ -96,7 +101,14 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
     });
   }
 
-  if (!rolesQuery.isSuccess) {
+  if (committeePositionsQuery.isError) {
+    console.error(committeePositionsQuery.error);
+    return (
+      <Text>An error occurred, check the browser console for details.</Text>
+    );
+  }
+
+  if (!committeePositionsQuery.isSuccess) {
     return <LoadingOverlay />;
   }
 
@@ -113,23 +125,25 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
           range: currentRange,
         }}
         page={{
-          current: rolesQuery.data.page,
+          current: committeePositionsQuery.data.page,
           set(page) {
             updateState({ page });
           },
-          total: Math.ceil(rolesQuery.data.total / searchParamsState.count),
+          total: Math.ceil(
+            committeePositionsQuery.data.total / searchParamsState.count,
+          ),
         }}
-        totalItems={rolesQuery.data.total}
+        totalItems={committeePositionsQuery.data.total}
       >
         <Modal
           opened={createModalOpened}
           onClose={closeCreateModal}
-          title={"Create Role"}
+          title={"Create Position"}
         >
-          <CreateRoleForm
-            action={createRoleAction}
+          <CreateCommitteePositionForm
+            action={createCommitteePositionAction}
             onSuccess={(): void => {
-              rolesQuery.refetch();
+              committeePositionsQuery.refetch();
               closeCreateModal();
             }}
           />
@@ -137,15 +151,16 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
         <Modal
           opened={editModalOpened}
           onClose={closeEditModal}
-          title={"Edit Role"}
+          title={"Edit Position"}
         >
-          <UpdateRoleForm
-            action={updateRoleAction}
+          <UpdateCommitteePositionForm
+            action={updateCommitteePositionAction}
             onSuccess={(): void => {
-              rolesQuery.refetch();
+              committeePositionsQuery.refetch();
               closeEditModal();
+              setSelectedCommitteePosition(undefined);
             }}
-            selectedRole={selectedRole}
+            selectedCommitteePosition={selectedCommitteePosition}
           />
         </Modal>
         <Stack>
@@ -156,16 +171,15 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
                 query: query !== "" ? query : undefined,
               });
             }}
-            label="Search by Role Name or Permissions"
-            description="Only one permission can be searched at a time."
+            label="Search by Name"
             withClear
           />
           <Group>
             <Button leftSection={<FaPlus />} onClick={openCreateModal}>
-              Create Role
+              Create Position
             </Button>
           </Group>
-          {rolesQuery.data.total > 0 ? (
+          {committeePositionsQuery.data.total > 0 ? (
             <>
               <CountControls />
               <Center w={"max"}>
@@ -175,22 +189,21 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
           ) : (
             <Text>No results</Text>
           )}
-          {rolesQuery.data.roles.map((role) => {
+          {committeePositionsQuery.data.data.map((committeePosition) => {
             return (
-              <RoleCard
-                key={role.role_id}
-                deleteAction={deleteRoleAction}
+              <CommitteePositionCard
+                key={committeePosition.committee_position_id}
+                deleteAction={deleteCommitteePositionAction}
                 editAction={() => {
-                  setSelectedRole(role);
+                  setSelectedCommitteePosition(committeePosition);
                   openEditModal();
                 }}
-                onDeleteSuccess={rolesQuery.refetch}
-                role={role}
-                searchQuery={searchParamsState.query}
+                onDeleteSuccess={committeePositionsQuery.refetch}
+                committeePosition={committeePosition}
               />
             );
           })}
-          {rolesQuery.data.total > 0 && (
+          {committeePositionsQuery.data.total > 0 && (
             <>
               <CountControls />
               <Center w={"max"}>
@@ -207,12 +220,17 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
 /**
  * @returns A string in the format `[start] - [end]` representing the range of currently displayed items
  */
-function useCurrentRange(rolesData: TFetchRoles): `${number} - ${number}` {
+function useCurrentRange(
+  committeePositionsData: TFetchCommitteePositions,
+): `${number} - ${number}` {
   const count = Number(useSearchParams().get("count")) as number;
-  const endIndex = rolesData.page * count;
+  const endIndex = committeePositionsData.page * count;
 
-  const start = (rolesData.page - 1) * count + 1;
-  const end = rolesData.total < endIndex ? rolesData.total : endIndex;
+  const start = (committeePositionsData.page - 1) * count + 1;
+  const end =
+    committeePositionsData.total < endIndex
+      ? committeePositionsData.total
+      : endIndex;
 
   return `${start} - ${end}`;
 }

@@ -9,7 +9,7 @@ import Form, { type FormAction } from "@/components/Form";
 import {
   CheckBoxField,
   ConditionalField,
-  DatePickerField,
+  DateTimePickerField,
   MultiDatePickerField,
   SearchedMemberSelect,
   SegmentedField,
@@ -39,8 +39,8 @@ export function CreateEventForm(props: {
     >
       <TextField name="name" label="Name" required placeholder={"New Event"} />
       <TextAreaField name="description" label="Description" autosize />
-      <DatePickerField name="startDate" label="Start" required />
-      <DatePickerField name="endDate" label="End" required />
+      <DateTimePickerField name="startDate" label="Start" required />
+      <DateTimePickerField name="endDate" label="End" required />
       <TextField name="location" label="Location" />
       <SegmentedField
         name="type"

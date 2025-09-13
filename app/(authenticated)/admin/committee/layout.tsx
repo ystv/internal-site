@@ -6,14 +6,7 @@ export default async function AuthenticatedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  if (
-    await hasPermission(
-      "Admin.Committee",
-      "Admin.Positions",
-      "Admin.Roles",
-      "Admin.Users",
-    )
-  ) {
+  if (await hasPermission("Admin.Committee")) {
     return <>{children}</>;
   } else {
     return <ErrorPage code={403} message="Forbidden" />;

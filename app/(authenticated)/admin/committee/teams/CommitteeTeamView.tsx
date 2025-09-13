@@ -11,6 +11,7 @@ import {
   Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { type CommitteeTeam } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,22 +24,23 @@ import {
   PaginationProvider,
 } from "@/components/navigation/Pagination";
 import { SearchBar } from "@/components/SearchBar";
-import { type RoleWithPermissions } from "@/features/people";
 import { getSearchParamsString } from "@/lib/searchParams/util";
 import { useValidSearchParams } from "@/lib/searchParams/validateHook";
 
 import {
-  createRoleAction,
-  deleteRoleAction,
-  fetchRolesAction,
-  type TFetchRoles,
-  updateRoleAction,
+  createCommitteeTeamAction,
+  deleteCommitteeTeamAction,
+  fetchCommitteeTeamsAction,
+  type TFetchCommitteeTeams,
+  updateCommitteeTeamAction,
 } from "./actions";
-import { CreateRoleForm, UpdateRoleForm } from "./form";
-import { RoleCard } from "./RoleCard";
+import { CommitteeTeamCard } from "./CommitteeTeamCard";
+import { CreateCommitteeTeamForm, UpdateCommitteeTeamForm } from "./form";
 import { searchParamsSchema } from "./schema";
 
-export function RoleView(props: { initialRoles: TFetchRoles }) {
+export function CommitteeTeamView(props: {
+  initialCommitteeTeams: TFetchCommitteeTeams;
+}) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -49,20 +51,20 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
     rawSearchParams,
   );
 
-  const rolesQuery = useQuery({
-    initialData: props.initialRoles,
-    queryKey: ["admin:roles", validSearchParams],
+  const committeeTeamsQuery = useQuery({
+    initialData: props.initialCommitteeTeams,
+    queryKey: ["admin:committeeTeams", validSearchParams],
     queryFn: async () => {
-      const res = await fetchRolesAction(validSearchParams);
+      const res = await fetchCommitteeTeamsAction(validSearchParams);
       if (!res.ok) {
-        throw new Error("An error occurred updating roles.");
+        throw new Error("An error occurred updating committee teams.");
       } else {
         return res;
       }
     },
   });
 
-  const currentRange = useCurrentRange(rolesQuery.data);
+  const currentRange = useCurrentRange(committeeTeamsQuery.data);
 
   const [searchParamsState, setSearchParamsState] = useState(validSearchParams);
 
@@ -85,8 +87,8 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
   ] = useDisclosure(false);
   const [editModalOpened, { open: openEditModal, close: closeEditModal }] =
     useDisclosure(false);
-  const [selectedRole, setSelectedRole] = useState<
-    RoleWithPermissions | undefined
+  const [selectedCommitteeTeam, setSelectedCommitteeTeam] = useState<
+    CommitteeTeam | undefined
   >();
 
   function updateState(state: Partial<z.infer<typeof searchParamsSchema>>) {
@@ -96,7 +98,14 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
     });
   }
 
-  if (!rolesQuery.isSuccess) {
+  if (committeeTeamsQuery.isError) {
+    console.error(committeeTeamsQuery.error);
+    return (
+      <Text>An error occurred, check the browser console for details.</Text>
+    );
+  }
+
+  if (!committeeTeamsQuery.isSuccess) {
     return <LoadingOverlay />;
   }
 
@@ -113,23 +122,25 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
           range: currentRange,
         }}
         page={{
-          current: rolesQuery.data.page,
+          current: committeeTeamsQuery.data.page,
           set(page) {
             updateState({ page });
           },
-          total: Math.ceil(rolesQuery.data.total / searchParamsState.count),
+          total: Math.ceil(
+            committeeTeamsQuery.data.total / searchParamsState.count,
+          ),
         }}
-        totalItems={rolesQuery.data.total}
+        totalItems={committeeTeamsQuery.data.total}
       >
         <Modal
           opened={createModalOpened}
           onClose={closeCreateModal}
-          title={"Create Role"}
+          title={"Create Team"}
         >
-          <CreateRoleForm
-            action={createRoleAction}
+          <CreateCommitteeTeamForm
+            action={createCommitteeTeamAction}
             onSuccess={(): void => {
-              rolesQuery.refetch();
+              committeeTeamsQuery.refetch();
               closeCreateModal();
             }}
           />
@@ -137,15 +148,16 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
         <Modal
           opened={editModalOpened}
           onClose={closeEditModal}
-          title={"Edit Role"}
+          title={"Edit Team"}
         >
-          <UpdateRoleForm
-            action={updateRoleAction}
+          <UpdateCommitteeTeamForm
+            action={updateCommitteeTeamAction}
             onSuccess={(): void => {
-              rolesQuery.refetch();
+              committeeTeamsQuery.refetch();
               closeEditModal();
+              setSelectedCommitteeTeam(undefined);
             }}
-            selectedRole={selectedRole}
+            selectedCommitteeTeam={selectedCommitteeTeam}
           />
         </Modal>
         <Stack>
@@ -156,16 +168,15 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
                 query: query !== "" ? query : undefined,
               });
             }}
-            label="Search by Role Name or Permissions"
-            description="Only one permission can be searched at a time."
+            label="Search by Name"
             withClear
           />
           <Group>
             <Button leftSection={<FaPlus />} onClick={openCreateModal}>
-              Create Role
+              Create Team
             </Button>
           </Group>
-          {rolesQuery.data.total > 0 ? (
+          {committeeTeamsQuery.data.total > 0 ? (
             <>
               <CountControls />
               <Center w={"max"}>
@@ -175,22 +186,21 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
           ) : (
             <Text>No results</Text>
           )}
-          {rolesQuery.data.roles.map((role) => {
+          {committeeTeamsQuery.data.data.map((committeeTeam) => {
             return (
-              <RoleCard
-                key={role.role_id}
-                deleteAction={deleteRoleAction}
+              <CommitteeTeamCard
+                key={committeeTeam.committee_team_id}
+                deleteAction={deleteCommitteeTeamAction}
                 editAction={() => {
-                  setSelectedRole(role);
+                  setSelectedCommitteeTeam(committeeTeam);
                   openEditModal();
                 }}
-                onDeleteSuccess={rolesQuery.refetch}
-                role={role}
-                searchQuery={searchParamsState.query}
+                onDeleteSuccess={committeeTeamsQuery.refetch}
+                committeeTeam={committeeTeam}
               />
             );
           })}
-          {rolesQuery.data.total > 0 && (
+          {committeeTeamsQuery.data.total > 0 && (
             <>
               <CountControls />
               <Center w={"max"}>
@@ -207,12 +217,15 @@ export function RoleView(props: { initialRoles: TFetchRoles }) {
 /**
  * @returns A string in the format `[start] - [end]` representing the range of currently displayed items
  */
-function useCurrentRange(rolesData: TFetchRoles): `${number} - ${number}` {
+function useCurrentRange(
+  committeeTeamsData: TFetchCommitteeTeams,
+): `${number} - ${number}` {
   const count = Number(useSearchParams().get("count")) as number;
-  const endIndex = rolesData.page * count;
+  const endIndex = committeeTeamsData.page * count;
 
-  const start = (rolesData.page - 1) * count + 1;
-  const end = rolesData.total < endIndex ? rolesData.total : endIndex;
+  const start = (committeeTeamsData.page - 1) * count + 1;
+  const end =
+    committeeTeamsData.total < endIndex ? committeeTeamsData.total : endIndex;
 
   return `${start} - ${end}`;
 }

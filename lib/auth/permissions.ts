@@ -31,6 +31,7 @@ export const PermissionEnum = z.enum([
   "Admin.Users",
   "Admin.Roles",
   "Admin.Positions",
+  "Admin.Committee",
   "Webcams.Manage",
   "Webcams.View",
 ]);

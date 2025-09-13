@@ -68,6 +68,7 @@ export function UpdateRoleForm(props: {
       onSuccess={props.onSuccess}
       schema={updateRoleSchema.omit({ role_id: true })}
       initialValues={formSafeRole}
+      submitLabel="Update Role"
     >
       <TextField name="name" label="Name" required />
       <TextAreaField

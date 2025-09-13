@@ -14,7 +14,7 @@ import {
 import {
   ArrayField,
   CheckBoxField,
-  DatePickerField,
+  DateTimePickerField,
   NullableCheckboxField,
   TextAreaField,
   TextField,
@@ -142,25 +142,30 @@ export function AddEditSignUpSheetForm(props: {
         placeholder={"Crew List"}
       />
       <TextAreaField name="description" label="Description" />
-      <DatePickerField
+      <DateTimePickerField
         name="arrival_time"
         label="Arrival Time"
         required
         modal
       />
-      <DatePickerField
+      <DateTimePickerField
         name="start_time"
         label="Broadcast Start"
         required
         modal
       />
-      <DatePickerField name="end_time" label="Broadcast End" required modal />
+      <DateTimePickerField
+        name="end_time"
+        label="Broadcast End"
+        required
+        modal
+      />
       <br />
       <NullableCheckboxField
         name="unlock_date"
         checkboxLabel="Lock signups until a certain date?"
       >
-        <DatePickerField name="unlock_date" label="Unlock Date" />
+        <DateTimePickerField name="unlock_date" label="Unlock Date" />
       </NullableCheckboxField>
       <h2 className="mt-4 text-2xl">Positions</h2>
       <div className="grid grid-cols-2 gap-y-1 md:grid-cols-[2fr_6rem_3fr_auto]">
