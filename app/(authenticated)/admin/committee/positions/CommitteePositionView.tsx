@@ -11,7 +11,7 @@ import {
   Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { CommitteePosition, type Position } from "@prisma/client";
+import { type CommitteePosition } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -31,7 +31,7 @@ import {
   createCommitteePositionAction,
   deleteCommitteePositionAction,
   fetchCommitteePositionsAction,
-  TFetchCommitteePositions,
+  type TFetchCommitteePositions,
   updateCommitteePositionAction,
 } from "./actions";
 import { CommitteePositionCard } from "./CommitteePositionCard";
@@ -39,7 +39,6 @@ import {
   CreateCommitteePositionForm,
   UpdateCommitteePositionForm,
 } from "./form";
-// import { PositionCard } from "./PositionCard";
 import { searchParamsSchema } from "./schema";
 
 export function CommitteePositionView(props: {

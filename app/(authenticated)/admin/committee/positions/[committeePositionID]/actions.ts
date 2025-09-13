@@ -23,7 +23,6 @@ export async function fetchCommitteePositionForAdminAction(
     return zodErrorResponse(safeData.error);
   }
 
-  // Call the actual function to fetch committee position for admin
   return fetchCommitteePositionForAdmin(safeData.data);
 }
 
