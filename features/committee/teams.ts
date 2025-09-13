@@ -132,6 +132,8 @@ export const createCommitteeTeam = wrapServerAction(
       data: {
         name: data.name,
         description: data.description,
+        public: data.public,
+        sort_order: data.sort_order,
       },
     });
 
@@ -176,6 +178,8 @@ export const updateCommitteeTeam = wrapServerAction(
       data: {
         name: data.name,
         description: data.description,
+        public: data.public,
+        sort_order: data.sort_order,
       },
     });
 
