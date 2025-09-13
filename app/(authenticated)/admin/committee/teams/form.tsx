@@ -34,6 +34,7 @@ export function CreateCommitteeTeamForm(props: {
         minRows={1}
       />
       <NumberField name="sort_order" label="Sort Order" min={0} step={1} />
+      <Space h={"md"} />
       <CheckBoxField name="public" label="Publicly Visible" />
     </Form>
   );
