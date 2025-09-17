@@ -19,6 +19,7 @@ import { theme } from "./theme";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
+import "@mantine/dropzone/styles.css";
 
 const inter = Inter({
   subsets: ["latin"],

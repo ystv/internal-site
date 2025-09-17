@@ -102,6 +102,7 @@ export const fetchPublicCommittee = wrapServerAction(
                       select: {
                         first_name: true,
                         last_name: true,
+                        public_avatar: true,
                       },
                     },
                   },

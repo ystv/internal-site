@@ -1,10 +1,12 @@
 import { type App } from "@slack/bolt";
+import * as Minio from "minio";
 import next from "next";
 import { Server } from "socket.io";
 
 import { authenticateSocket } from "./auth";
 import { checkDatabaseConnection, prepareHttpServer } from "./lib";
 import { env, validateEnv } from "../lib/env.js";
+import { isMinioEnabled, minioClient } from "../lib/minio";
 import { setupActionHandlers } from "../lib/slack/actions";
 import {
   createSlackApp,
@@ -34,6 +36,17 @@ app.prepare().then(async () => {
     slackApp = createSlackApp();
 
     await setupActionHandlers(slackApp);
+  }
+
+  if (isMinioEnabled) {
+    const exists = await minioClient.bucketExists(env.MINIO_BUCKET!);
+
+    if (!exists) {
+      console.error(`
+        Failed to connect to bucket ${env.MINIO_BUCKET} at ${
+          env.MINIO_ENDPOINT
+        } ${env.MINIO_USE_SSL === "true" ? "using SSL" : "without SSL"}`);
+    }
   }
 
   io = new Server(httpServer);
