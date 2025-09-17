@@ -18,6 +18,8 @@ import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
 import { FaQuestion, FaTrash } from "react-icons/fa";
 
+import { isMinioEnabledAction } from "@/lib/minio/actions";
+
 import { getPublicProfileAction, setPublicAvatarAction } from "./actions";
 import { AvatarUpload } from "./AvatarUpload";
 
@@ -31,6 +33,13 @@ export function PublicProfile() {
     avatarViewModalOpened,
     { open: openAvatarViewModal, close: closeAvatarViewModal },
   ] = useDisclosure(false);
+
+  const isMinioEnabled = useQuery({
+    queryKey: ["features:minio"],
+    queryFn: async () => {
+      return await isMinioEnabledAction();
+    },
+  });
 
   const publicProfileQuery = useQuery({
     queryKey: ["user:publicProfile"],
@@ -78,47 +87,49 @@ export function PublicProfile() {
             </ActionIcon>
           </Tooltip>
         </Group>
-        <Group>
-          <Text>Avatar</Text>
-          <Button ml={"auto"} onClick={openAvatarEditModal}>
-            Edit
-          </Button>
-          {publicProfileQuery.data?.public_avatar && (
-            <>
-              <Button
-                leftSection={
-                  <Avatar
-                    src={publicProfileQuery.data?.public_avatar}
-                    size={30}
-                  />
-                }
-                onClick={openAvatarViewModal}
-              >
-                View
-              </Button>
-              <Button
-                leftSection={<FaTrash />}
-                onClick={async () => {
-                  const res = await setPublicAvatarAction({
-                    avatar_data_url: null,
-                  });
-
-                  if (res.ok) {
-                    notifications.show({
-                      message: "Deleted Public Avatar",
-                      color: "green",
+        {isMinioEnabled.data && (
+          <Group>
+            <Text>Avatar</Text>
+            <Button ml={"auto"} onClick={openAvatarEditModal}>
+              Edit
+            </Button>
+            {publicProfileQuery.data?.public_avatar && (
+              <>
+                <Button
+                  leftSection={
+                    <Avatar
+                      src={publicProfileQuery.data?.public_avatar}
+                      size={30}
+                    />
+                  }
+                  onClick={openAvatarViewModal}
+                >
+                  View
+                </Button>
+                <Button
+                  leftSection={<FaTrash />}
+                  onClick={async () => {
+                    const res = await setPublicAvatarAction({
+                      avatar_data_url: null,
                     });
 
-                    publicProfileQuery.refetch();
-                  }
-                }}
-                color="red"
-              >
-                Delete
-              </Button>
-            </>
-          )}
-        </Group>
+                    if (res.ok) {
+                      notifications.show({
+                        message: "Deleted Public Avatar",
+                        color: "green",
+                      });
+
+                      publicProfileQuery.refetch();
+                    }
+                  }}
+                  color="red"
+                >
+                  Delete
+                </Button>
+              </>
+            )}
+          </Group>
+        )}
       </Stack>
       <AvatarUpload
         opened={avatarEditModalOpened}
