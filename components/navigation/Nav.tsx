@@ -1,19 +1,10 @@
 "use client";
-import {
-  ActionIcon,
-  AppShell,
-  Burger,
-  Group,
-  NavLink,
-  rem,
-  Stack,
-  Title,
-} from "@mantine/core";
+import { AppShell, Burger, Group, NavLink, rem, Title } from "@mantine/core";
 import { useDisclosure, useHeadroom } from "@mantine/hooks";
-import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { BsChatLeftQuoteFill } from "react-icons/bs";
+import { FaQrcode } from "react-icons/fa";
 import { MdAdminPanelSettings } from "react-icons/md";
 
 import Logo from "@/app/_assets/logo-new.png";
@@ -32,7 +23,10 @@ interface NavProps {
 export default function Nav({ children, user }: NavProps) {
   const pinned = useHeadroom({ fixedAt: 100 });
 
-  const [opened, { toggle }] = useDisclosure();
+  const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] =
+    useDisclosure();
+  const [desktopOpened, { toggle: toggleDesktop, close: closeDesktop }] =
+    useDisclosure();
 
   return (
     <AppShell
@@ -42,12 +36,25 @@ export default function Nav({ children, user }: NavProps) {
       navbar={{
         width: 300,
         breakpoint: "sm",
-        collapsed: { mobile: !opened, desktop: !opened },
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
     >
       <AppShell.Header bg-dark="true">
         <Group h="100%" px="md">
-          <Burger opened={opened} onClick={toggle} size="sm" color="white" />
+          <Burger
+            opened={desktopOpened}
+            onClick={toggleDesktop}
+            size="sm"
+            color="white"
+            visibleFrom="sm"
+          />
+          <Burger
+            opened={mobileOpened}
+            onClick={toggleMobile}
+            size="sm"
+            color="white"
+            hiddenFrom="sm"
+          />
           <Link href="/">
             <Image
               src={Logo}
@@ -65,7 +72,7 @@ export default function Nav({ children, user }: NavProps) {
       </AppShell.Header>
 
       <AppShell.Navbar p={10} zIndex={100}>
-        <Navbar />
+        <Navbar closeMobile={closeMobile} />
       </AppShell.Navbar>
 
       <AppShell.Main pt={`calc(${rem(80)} + var(--mantine-spacing-md))`}>
@@ -82,12 +89,17 @@ interface NavbarLinks {
   leftSection: React.ReactNode;
 }
 
-function Navbar() {
+function Navbar(props: { closeMobile: () => void }) {
   const links: NavbarLinks[] = [
+    {
+      href: "/qr",
+      label: "QR Code Generator",
+      leftSection: <FaQrcode />,
+    },
     {
       permissions: "ManageQuotes",
       href: "/quotes",
-      label: " Quotes Board",
+      label: "Quotes Board",
       leftSection: (
         <BsChatLeftQuoteFill
           style={{ position: "relative", top: 2 }}
@@ -127,6 +139,7 @@ function Navbar() {
             href={link.href}
             label={link.label}
             leftSection={link.leftSection}
+            onClick={props.closeMobile}
           />
         );
         return link.permissions ? (
