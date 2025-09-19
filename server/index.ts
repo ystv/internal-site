@@ -6,7 +6,7 @@ import { Server } from "socket.io";
 import { authenticateSocket } from "./auth";
 import { checkDatabaseConnection, prepareHttpServer } from "./lib";
 import { env, validateEnv } from "../lib/env.js";
-import { isMinioEnabled, minioClient } from "../lib/minio";
+import { isMinioEnabled, getMinioClient } from "../lib/minio";
 import { setupActionHandlers } from "../lib/slack/actions";
 import {
   createSlackApp,
@@ -39,7 +39,7 @@ app.prepare().then(async () => {
   }
 
   if (isMinioEnabled) {
-    const exists = await minioClient.bucketExists(env.MINIO_BUCKET!);
+    const exists = await getMinioClient().bucketExists(env.MINIO_BUCKET!);
 
     if (!exists) {
       console.error(`

@@ -16,7 +16,7 @@ import { prisma } from "@/lib/db";
 import { UserPreferencesSchema } from "@/lib/db/preferences";
 import { env } from "@/lib/env";
 import invariant from "@/lib/invariant";
-import { minioClient } from "@/lib/minio";
+import { getMinioClient } from "@/lib/minio";
 import { getTsQuery } from "@/lib/search";
 
 import { getPublicProfileSchema, type setPublicAvatarSchema } from "./schema";
@@ -315,7 +315,7 @@ export async function setPublicAvatar(
     const [_header, base64Data] = data.avatar_data_url.split(",");
     const buffer = Buffer.from(base64Data, "base64");
 
-    const _image = await minioClient.putObject(
+    const _image = await getMinioClient().putObject(
       env.MINIO_BUCKET!,
       imagePath,
       buffer,
