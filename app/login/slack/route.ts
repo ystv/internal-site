@@ -10,7 +10,9 @@ export async function GET(req: NextRequest) {
     env.SLACK_CLIENT_ID
   }&redirect_uri=${encodeURIComponent(
     env.PUBLIC_URL + "/login/slack/callback",
-  )}&scope=openid profile email`;
+  )}&scope=openid profile email${
+    env.SLACK_TEAM_ID ? "&team=" + env.SLACK_TEAM_ID : ""
+  }`;
 
   const res = NextResponse.redirect(slackLoginURI);
 
