@@ -6,11 +6,11 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { token: string } },
+  { params }: { params: Promise<{ token: string }> },
 ): Promise<NextResponse> {
   let user;
   try {
-    user = await Calendar.decodeUserID(params.token);
+    user = await Calendar.decodeUserID((await params).token);
   } catch (e) {
     return new NextResponse(JSON.stringify({ error: String(e) }), {
       status: 403,

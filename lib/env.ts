@@ -12,6 +12,14 @@ const slackEnvType =
       })
     : z.string().optional();
 
+const minioEnvType =
+  process.env.MINIO_ENABLED == "true"
+    ? z.string({
+        required_error:
+          "This variable must be set if the S3 integration is enabled",
+      })
+    : z.string().optional();
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
@@ -47,6 +55,15 @@ const envSchema = z.object({
   COOKIE_DOMAIN: z
     .string()
     .default(new URL(process.env.PUBLIC_URL ?? "http://localhost").hostname),
+  MINIO_ENABLED: z.enum(["true", "false"]).default("false"),
+  MINIO_ENDPOINT: minioEnvType,
+  MINIO_USE_SSL:
+    process.env.MINIO_ENABLED == "true"
+      ? z.enum(["true", "false"]).default("false")
+      : z.string().optional(),
+  MINIO_BUCKET: minioEnvType,
+  MINIO_ACCESS_KEY: minioEnvType,
+  MINIO_SECRET_KEY: minioEnvType,
 });
 
 export function validateEnv(

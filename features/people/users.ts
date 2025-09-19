@@ -1,12 +1,25 @@
+import {
+  type Identity,
+  Prisma,
+  type Role,
+  type RolePermission,
+  type User,
+} from "@prisma/client";
+import { createHash } from "crypto";
+import { z } from "zod";
+
 import { editUserSchema } from "@/app/(authenticated)/admin/users/[userID]/schema";
-import { FormResponse } from "@/components/Form";
+import { type FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import { mustGetCurrentUser, requirePermission } from "@/lib/auth/server";
 import { prisma } from "@/lib/db";
 import { UserPreferencesSchema } from "@/lib/db/preferences";
+import { env } from "@/lib/env";
+import invariant from "@/lib/invariant";
+import { getMinioClient } from "@/lib/minio";
 import { getTsQuery } from "@/lib/search";
-import { Identity, Prisma, Role, RolePermission, User } from "@prisma/client";
-import { z } from "zod";
+
+import { getPublicProfileSchema, type setPublicAvatarSchema } from "./schema";
 
 /**
  * Fields of a user object that we (usually) want to expose to the world.
@@ -280,6 +293,66 @@ export async function editUserAdmin(data: unknown): Promise<FormResponse> {
   });
 
   return { ok: true };
+}
+
+export async function setPublicAvatar(
+  data: z.infer<typeof setPublicAvatarSchema>,
+) {
+  invariant(env.MINIO_ENABLED, "Minio must be enabled to use this function");
+
+  const user = await mustGetCurrentUser();
+
+  let imageURL: string | null = null;
+
+  if (data.avatar_data_url) {
+    const dataHash = createHash("sha256")
+      .update(data.avatar_data_url)
+      .update((data.user_id ? data.user_id : user.user_id).toString())
+      .digest("hex");
+
+    const imagePath = `public-avatars/${dataHash}.png`;
+
+    const [_header, base64Data] = data.avatar_data_url.split(",");
+    const buffer = Buffer.from(base64Data, "base64");
+
+    const _image = await getMinioClient().putObject(
+      env.MINIO_BUCKET!,
+      imagePath,
+      buffer,
+    );
+
+    imageURL = `http${env.MINIO_USE_SSL === "true" ? "s" : ""}://${
+      env.MINIO_ENDPOINT
+    }/${env.MINIO_BUCKET}/${imagePath}`;
+  }
+
+  await prisma.user.update({
+    where: {
+      user_id: user.user_id,
+    },
+    data: {
+      public_avatar: imageURL,
+    },
+  });
+
+  return { ok: true };
+}
+
+export async function getPublicProfile(
+  data: z.infer<typeof getPublicProfileSchema>,
+) {
+  const user = await mustGetCurrentUser();
+
+  const publicProfile = await prisma.user.findUniqueOrThrow({
+    where: {
+      user_id: user.user_id,
+    },
+    select: {
+      public_avatar: true,
+    },
+  });
+
+  return { ok: true, data: publicProfile };
 }
 
 export const numUsers = prisma.position.count({

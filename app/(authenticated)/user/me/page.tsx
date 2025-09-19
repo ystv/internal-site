@@ -11,6 +11,7 @@ import {
   TableTh,
   TableThead,
   TableTr,
+  Title,
 } from "@mantine/core";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -30,6 +31,7 @@ import { env } from "@/lib/env";
 import invariant from "@/lib/invariant";
 import { isSlackEnabled } from "@/lib/slack/slackApiConnection";
 
+import { PublicProfile } from "./PublicProfile";
 import { UserPreferences } from "./UserPreferences";
 import { hasWrapped } from "../../wrapped/util";
 
@@ -66,10 +68,14 @@ export async function UserPage(props: { id: number }) {
         </Group>
       </Card>
       <Space h={"md"} />
+      <Card withBorder>
+        <PublicProfile />
+      </Card>
+      <Space h={"md"} />
       {isMe && (
         <Card withBorder>
           <Stack gap={0}>
-            <h2 className="mt-0">Preferences</h2>
+            <Title order={3}>Preferences</Title>
             <UserPreferences value={prefs} />
           </Stack>
         </Card>
@@ -78,7 +84,7 @@ export async function UserPage(props: { id: number }) {
       <Card withBorder>
         <Group>
           <Stack gap={0} className="w-full">
-            <h2 className="mt-0">Add Calendar to Google Calendar</h2>
+            <Title order={3}>Add Calendar to Google Calendar</Title>
             <Stack gap={0}>
               <p>Add this URL as a new calendar in Google Calendar:</p>
               {await (async () => {
@@ -106,7 +112,7 @@ export async function UserPage(props: { id: number }) {
         <>
           {!slackUser ? (
             <Card withBorder>
-              <h2 className="mt-0">Link your account to Slack</h2>
+              <Title order={3}>Link your account to Slack</Title>
               <Suspense>
                 <Group>
                   <SlackLoginButton mantineCompat redirect="/user/me" />
@@ -115,7 +121,7 @@ export async function UserPage(props: { id: number }) {
             </Card>
           ) : (
             <Card withBorder>
-              <h2 className="mt-0">Manage Slack link</h2>
+              <Title order={3}>Manage Slack link</Title>
               <Suspense
                 fallback={
                   <>
