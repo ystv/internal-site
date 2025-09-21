@@ -6,13 +6,13 @@ import { env } from "@/lib/env";
 export async function GET(req: NextRequest) {
   const redirect = req.nextUrl.searchParams.get("redirect");
 
-  const slackLoginURI = `https://slack.com/openid/connect/authorize?scope=openid&response_type=code&client_id=${
+  const slackLoginURI = `https://${
+    env.SLACK_TEAM_URL_PREFIX ? env.SLACK_TEAM_URL_PREFIX + "." : ""
+  }slack.com/openid/connect/authorize?scope=openid&response_type=code&client_id=${
     env.SLACK_CLIENT_ID
   }&redirect_uri=${encodeURIComponent(
     env.PUBLIC_URL + "/login/slack/callback",
-  )}&scope=openid profile email${
-    env.SLACK_TEAM_ID ? "&team=" + env.SLACK_TEAM_ID : ""
-  }`;
+  )}&scope=openid profile email`;
 
   const res = NextResponse.redirect(slackLoginURI);
 

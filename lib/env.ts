@@ -46,7 +46,7 @@ const envSchema = z.object({
   SLACK_SIGNING_SECRET: slackEnvType,
   SLACK_CLIENT_ID: slackEnvType,
   SLACK_CLIENT_SECRET: slackEnvType,
-  SLACK_TEAM_ID: z.string().optional(),
+  SLACK_TEAM_URL_PREFIX: z.string().optional(),
   SLACK_CHECK_WITH_TECH_CHANNEL: slackEnvType,
   SLACK_USER_FEEDBACK_CHANNEL: slackEnvType.default("#dev-internal-site"),
   SLACK_DISABLE_SOCKET_MODE: z.enum(["true", "false"]).default("false"), // Used to disable socket mode in dev since it shares an app with prod
