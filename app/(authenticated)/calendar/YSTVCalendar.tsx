@@ -131,7 +131,7 @@ export default function YSTVCalendar() {
 
   if (state.view === undefined && isMobileView !== undefined) {
     setState({
-      view: isMobileView ? "dayGridWeek" : "dayGridMonth",
+      view: isMobileView ? "listMonth" : "dayGridMonth",
     });
   }
 
