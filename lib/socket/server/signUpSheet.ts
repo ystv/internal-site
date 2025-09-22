@@ -1,7 +1,9 @@
 import "server-only";
 
-import { io } from ".";
+import { type Server } from "socket.io";
 
 export async function socketUpdateSignupSheet(signupSheetID: number) {
-  io.in("authenticatedUsers").emit(`signupSheetUpdate:${signupSheetID}`);
+  (globalThis as unknown as { io: Server }).io
+    .in("authenticatedUsers")
+    .emit(`signupSheetUpdate:${signupSheetID}`);
 }
