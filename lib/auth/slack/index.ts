@@ -37,10 +37,16 @@ export async function getSlackUserInfo(code: string) {
   return token;
 }
 
-export async function findOrCreateUserFromSlackToken(userInfo: SlackTokenJson) {
+export async function findOrCreateUserFromSlackToken(
+  userInfo: SlackTokenJson,
+  existingUserID: number | undefined,
+) {
   const user = await prisma.user.findFirst({
     where: {
       OR: [
+        {
+          user_id: existingUserID,
+        },
         {
           identities: {
             some: {

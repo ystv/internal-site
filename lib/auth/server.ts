@@ -1,4 +1,4 @@
-import { type Identity } from "@prisma/client";
+import { type User, type Identity } from "@prisma/client";
 import { type RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { redirect } from "next/navigation";
 import { type NextRequest } from "next/server";
@@ -163,16 +163,26 @@ export async function loginOrCreateUserGoogle(rawGoogleToken: string) {
   return userType;
 }
 
-export async function loginOrCreateUserSlack(rawSlackToken: SlackTokenJson) {
-  const user = await findOrCreateUserFromSlackToken(rawSlackToken);
-  const permissions = await resolvePermissionsForUser(user.user_id);
+export async function loginOrCreateUserSlack(
+  rawSlackToken: SlackTokenJson,
+  user: User | string,
+) {
+  let existingUserID: number | undefined;
+  if (user && typeof user === "object") {
+    existingUserID = user.user_id;
+  }
+  const foundUser = await findOrCreateUserFromSlackToken(
+    rawSlackToken,
+    existingUserID,
+  );
+  const permissions = await resolvePermissionsForUser(foundUser.user_id);
   const userType = {
-    ...user,
+    ...foundUser,
     permissions,
   } satisfies UserType;
   // We don't store the full user object in the session because then it wouldn't
   // pick up user info or permission changes without signing out and back in.
   // It also makes the session token shorter.
-  await setSession({ userID: user.user_id });
+  await setSession({ userID: foundUser.user_id });
   return userType;
 }
