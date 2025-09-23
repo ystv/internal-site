@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.19",
-    "@fullcalendar/daygrid": "^6.1.19",
+    "@fullcalendar/daygrid": "patch:@fullcalendar/daygrid@npm%3A6.1.19#~/.yarn/patches/@fullcalendar-daygrid-npm-6.1.19-7693fff707.patch",
     "@fullcalendar/list": "^6.1.19",
     "@fullcalendar/react": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
@@ -139,7 +139,8 @@
   "packageManager": "yarn@4.9.2",
   "resolutions": {
     "@fullcalendar/daygrid@^6.1.8": "patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch",
-    "@fullcalendar/daygrid@~6.1.8": "patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch"
+    "@fullcalendar/daygrid@~6.1.8": "patch:@fullcalendar/daygrid@npm%3A6.1.8#./.yarn/patches/@fullcalendar-daygrid-npm-6.1.8-3f45184389.patch",
+    "@fullcalendar/daygrid@npm:~6.1.19": "patch:@fullcalendar/daygrid@npm%3A6.1.19#~/.yarn/patches/@fullcalendar-daygrid-npm-6.1.19-7693fff707.patch"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write"

@@ -1,0 +1,63 @@
+diff --git a/internal.js b/internal.js
+index e505d7fa88602503c859a1f3f6f66b17b03e82d1..96f40be8cb195d733526cc01cf7e81cc7d83862d 100644
+--- a/internal.js
++++ b/internal.js
+@@ -221,7 +221,6 @@ class TableCell extends DateComponent {
+                 'fc-daygrid-day',
+                 ...(props.extraClassNames || []),
+             ], elAttrs: Object.assign(Object.assign(Object.assign({}, props.extraDataAttrs), (props.showDayNumber ? { 'aria-labelledby': state.dayNumberId } : {})), { role: 'gridcell' }), defaultGenerator: renderTopInner, date: date, dateProfile: dateProfile, todayRange: props.todayRange, showDayNumber: props.showDayNumber, isMonthStart: isMonthStart, extraRenderProps: props.extraRenderProps }, (InnerContent, renderProps) => (createElement("div", { ref: props.innerElRef, className: "fc-daygrid-day-frame fc-scrollgrid-sync-inner", style: { minHeight: props.minHeight } },
+-            props.showWeekNumber && (createElement(WeekNumberContainer, { elTag: "a", elClasses: ['fc-daygrid-week-number'], elAttrs: buildNavLinkAttrs(context, date, 'week'), date: date, defaultFormat: DEFAULT_WEEK_NUM_FORMAT })),
+             !renderProps.isDisabled &&
+                 (props.showDayNumber || hasCustomDayCellContent(options) || props.forceDayTop) ? (createElement("div", { className: "fc-daygrid-day-top" },
+                 createElement(InnerContent, { elTag: "a", elClasses: [
+@@ -531,20 +530,36 @@ class TableRow extends DateComponent {
+          (props.eventDrag && props.eventDrag.affectedInstances) ||
+             (props.eventResize && props.eventResize.affectedInstances) ||
+             {};
+-        return (createElement("tr", { ref: this.rootElRef, role: "row" },
+-            props.renderIntro && props.renderIntro(),
+-            props.cells.map((cell, col) => {
+-                let normalFgNodes = this.renderFgSegs(col, props.forPrint ? singleColPlacements[col] : multiColPlacements[col], props.todayRange, isForcedInvisible);
+-                let mirrorFgNodes = this.renderFgSegs(col, buildMirrorPlacements(mirrorSegsByCol[col], multiColPlacements), props.todayRange, {}, Boolean(props.eventDrag), Boolean(props.eventResize), false);
+-                return (createElement(TableCell, { key: cell.key, elRef: this.cellElRefs.createRef(cell.key), innerElRef: this.frameElRefs.createRef(cell.key) /* FF <td> problem, but okay to use for left/right. TODO: rename prop */, dateProfile: props.dateProfile, date: cell.date, showDayNumber: props.showDayNumbers, showWeekNumber: props.showWeekNumbers && col === 0, forceDayTop: props.showWeekNumbers /* even displaying weeknum for row, not necessarily day */, todayRange: props.todayRange, eventSelection: props.eventSelection, eventDrag: props.eventDrag, eventResize: props.eventResize, extraRenderProps: cell.extraRenderProps, extraDataAttrs: cell.extraDataAttrs, extraClassNames: cell.extraClassNames, extraDateSpan: cell.extraDateSpan, moreCnt: moreCnts[col], moreMarginTop: moreMarginTops[col], singlePlacements: singleColPlacements[col], fgContentElRef: this.fgElRefs.createRef(cell.key), fgContent: ( // Fragment scopes the keys
+-                    createElement(Fragment, null,
+-                        createElement(Fragment, null, normalFgNodes),
+-                        createElement(Fragment, null, mirrorFgNodes))), bgContent: ( // Fragment scopes the keys
+-                    createElement(Fragment, null,
+-                        this.renderFillSegs(highlightSegsByCol[col], 'highlight'),
+-                        this.renderFillSegs(businessHoursByCol[col], 'non-business'),
+-                        this.renderFillSegs(bgEventSegsByCol[col], 'bg-event'))), minHeight: props.cellMinHeight }));
+-            })));
++        /////////
++        // debugger;
++        let { dateEnv } = context
++        let date  = props.cells[0].date
++        let format = options.weekNumberFormat || props.defaultFormat
++        let num = dateEnv.computeWeekNumber(date) // TODO: somehow use for formatting as well?
++        let text = dateEnv.format(date, format)
++        let renderProps = { num, text, date }
++        /////////
++        return [createElement(options.dayHeaders ? "tr" : "div", { ref: this.rootElRef, role: options.dayHeaders ? "row" : "rowgroup", style: options.dayHeaders ? undefined : { display: "contents", fontSize: "110%" }},
++            (props.showWeekNumbers ? [createElement("td", {elClasses: ['fc-daygrid-day'], role: "gridcell", style: {fontWeight: 700, backgroundColor: !options.dayHeaders && "var(--fc-neutral-bg-color)", verticalAlign: options.dayHeaders && "middle", rotate: options.dayHeaders && "180deg", width: options.dayHeaders && "1.6em"}}, createElement("div", {style: {writingMode: options.dayHeaders && "vertical-rl", margin: options.dayHeaders ? ".6rem .1rem" : ".6rem", height: options.dayHeaders && "max-content"}}, options.weekNumberContent(renderProps)))] : []).concat(
++                props.cells.map((cell, col) => {
++                    let normalFgNodes = this.renderFgSegs(col, props.forPrint ? singleColPlacements[col] : options.dayHeaders ? multiColPlacements[col] : singleColPlacements[col], props.todayRange, isForcedInvisible);
++                    let mirrorFgNodes = this.renderFgSegs(col, buildMirrorPlacements(mirrorSegsByCol[col], multiColPlacements), props.todayRange, {}, Boolean(props.eventDrag), Boolean(props.eventResize), false);
++                    return (createElement(TableCell, { key: cell.key, elRef: this.cellElRefs.createRef(cell.key), innerElRef: this.frameElRefs.createRef(cell.key) /* FF <td> problem, but okay to use for left/right. TODO: rename prop */, dateProfile: props.dateProfile, date: cell.date, showDayNumber: props.showDayNumbers, showWeekNumber: props.showWeekNumbers && col === 0, forceDayTop: props.showWeekNumbers /* even displaying weeknum for row, not necessarily day */, todayRange: props.todayRange, eventSelection: props.eventSelection, eventDrag: props.eventDrag, eventResize: props.eventResize, extraRenderProps: cell.extraRenderProps, extraDataAttrs: cell.extraDataAttrs, extraClassNames: cell.extraClassNames, extraDateSpan: cell.extraDateSpan, moreCnt: moreCnts[col], moreMarginTop: moreMarginTops[col], singlePlacements: singleColPlacements[col], fgContentElRef: this.fgElRefs.createRef(cell.key), fgContent: ( // Fragment scopes the keys
++                            createElement(Fragment, null,
++                                createElement(Fragment, null, normalFgNodes),
++                                createElement(Fragment, null, mirrorFgNodes))), bgContent: ( // Fragment scopes the keys
++                            createElement(Fragment, null,
++                                this.renderFillSegs(highlightSegsByCol[col], 'highlight'),
++                                this.renderFillSegs(businessHoursByCol[col], 'non-business'),
++                                this.renderFillSegs(bgEventSegsByCol[col], 'bg-event'))), minHeight: props.cellMinHeight }));
++                })).reduce(function (rows, key, index, array) {
++                return options.dayHeaders ? array:
++                    (index % 1 == 0 ? rows.push([key])
++                        : rows[rows.length-1].push(key)) && rows;
++            }, []).map((row, index) => {
++                return options.dayHeaders ? row : createElement("tr", { key: index, role: "row" }, row);
++            })
++        ), !options.dayHeaders && createElement("div", {elClasses: ["fc-daygrid-ystv-spacer"]})];
+     }
+     componentDidMount() {
+         this.updateSizing(true);
