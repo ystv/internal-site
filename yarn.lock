@@ -2599,12 +2599,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/daygrid@npm:^6.1.19, @fullcalendar/daygrid@npm:~6.1.19":
+"@fullcalendar/daygrid@npm:6.1.19":
   version: 6.1.19
   resolution: "@fullcalendar/daygrid@npm:6.1.19"
   peerDependencies:
     "@fullcalendar/core": ~6.1.19
   checksum: 10/1d1f15685e53fe73713ed523a497d9d5c8660d20e08c50a0c4bf040902144c9e571f536932a6b5c9ccc60c00fe2127879963bf05fbda736eaced439ddc06a1b3
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/daygrid@patch:@fullcalendar/daygrid@npm%3A6.1.19#~/.yarn/patches/@fullcalendar-daygrid-npm-6.1.19-7693fff707.patch":
+  version: 6.1.19
+  resolution: "@fullcalendar/daygrid@patch:@fullcalendar/daygrid@npm%3A6.1.19#~/.yarn/patches/@fullcalendar-daygrid-npm-6.1.19-7693fff707.patch::version=6.1.19&hash=8cf366"
+  peerDependencies:
+    "@fullcalendar/core": ~6.1.19
+  checksum: 10/d936f65b3f0828be9c7d194b68a63379cc95bc6796dbad71d7020f1a5a12a27cda6c5fe4f4ad50898d9bd7889d7a75f86e6cdd61160d194e8be36ae8589ac3d4
   languageName: node
   linkType: hard
 
@@ -12778,7 +12787,7 @@ __metadata:
   resolution: "hypothetical-new-internal-site@workspace:."
   dependencies:
     "@fullcalendar/core": "npm:^6.1.19"
-    "@fullcalendar/daygrid": "npm:^6.1.19"
+    "@fullcalendar/daygrid": "patch:@fullcalendar/daygrid@npm%3A6.1.19#~/.yarn/patches/@fullcalendar-daygrid-npm-6.1.19-7693fff707.patch"
     "@fullcalendar/list": "npm:^6.1.19"
     "@fullcalendar/react": "npm:^6.1.19"
     "@fullcalendar/timegrid": "npm:^6.1.19"
