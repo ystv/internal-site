@@ -93,6 +93,7 @@ export const fetchPublicCommittee = wrapServerAction(
               select: {
                 name: true,
                 description: true,
+                email: true,
                 committee_position_members: {
                   where: {
                     current: true,

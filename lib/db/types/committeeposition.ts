@@ -5,6 +5,7 @@ export const _CommitteePositionModel = z.object({
   committee_position_id: z.number().int(),
   name: z.string(),
   description: z.string(),
+  email: z.string(),
   seats: z.number().int(),
   sort_order: z.number().int(),
 })

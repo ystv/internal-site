@@ -89,6 +89,7 @@ export const createCommitteePosition = wrapServerAction(
       data: {
         name: data.name,
         description: data.description,
+        email: data.email,
         seats: data.seats ?? 1,
       },
     });
@@ -134,6 +135,7 @@ export const updateCommitteePosition = wrapServerAction(
       data: {
         name: data.name,
         description: data.description,
+        email: data.email,
         seats: data.seats,
       },
     });

@@ -30,6 +30,7 @@ export function CreateCommitteePositionForm(props: {
         autosize
         minRows={1}
       />
+      <TextField name="email" label="Email Address" />
       <NumberField name="seats" label="Seats" min={0} max={100} step={1} />
     </Form>
   );
@@ -78,6 +79,7 @@ export function UpdateCommitteePositionForm(props: {
         autosize
         minRows={1}
       />
+      <TextField name="email" label="Email Address" />
       <NumberField name="seats" label="Seats" min={0} max={100} step={1} />
     </Form>
   );
