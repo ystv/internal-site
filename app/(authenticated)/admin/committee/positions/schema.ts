@@ -1,4 +1,3 @@
-import { de } from "date-fns/locale";
 import { z } from "zod";
 
 export const searchParamsSchema = z.object({
@@ -14,6 +13,7 @@ export const searchParamsSchema = z.object({
 export const createCommitteePositionSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
+  email: z.string().optional(),
   seats: z.number().min(1).optional(),
 });
 
@@ -21,6 +21,7 @@ export const updateCommitteePositionSchema = z.object({
   committee_position_id: z.number(),
   name: z.string(),
   description: z.string().optional(),
+  email: z.string().optional(),
   seats: z.number().min(1).optional(),
 });
 

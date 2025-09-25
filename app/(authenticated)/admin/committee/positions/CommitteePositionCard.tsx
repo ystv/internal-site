@@ -35,6 +35,7 @@ export function CommitteePositionCard(props: {
         <Text>{props.committeePosition.name}</Text>
         <Stack gap={0}>
           <Text size="sm">{props.committeePosition.description}</Text>
+          <Text size="sm">{props.committeePosition.email}</Text>
           <Text size="xs" c={"dimmed"}>
             {props.committeePosition.seats} Seat
             {props.committeePosition.seats === 1 ? "" : "s"}

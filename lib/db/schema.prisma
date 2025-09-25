@@ -258,6 +258,7 @@ model CommitteePosition {
   committee_position_id Int    @id @default(autoincrement())
   name                  String @unique
   description           String @default("")
+  email                 String @default("")
   seats                 Int    @default(1)
   sort_order            Int    @default(0)
 
