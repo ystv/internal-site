@@ -1,11 +1,12 @@
 import { type App } from "@slack/bolt";
 import type { LinkUnfurls, MessageAttachment } from "@slack/types";
-
-import * as CheckWithTech from "@/features/calendar/check_with_tech_actions";
-import { prisma } from "../db";
 import dayjs from "dayjs";
 import dayjsformat from "dayjs/plugin/advancedFormat";
+
+import * as CheckWithTech from "@/features/calendar/check_with_tech_actions";
 import { EventColours } from "@/features/calendar/types";
+
+import { prisma } from "../db";
 
 dayjs.extend(dayjsformat);
 
