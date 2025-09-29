@@ -1,12 +1,13 @@
 "use client";
 
-import { updateRecurringAttendeeStatus } from "@/app/(authenticated)/calendar/[eventID]/actions";
-import { type RecurringEventObjectType } from "@/features/calendar";
-import { UserType } from "@/lib/auth/core";
 import { Button } from "@mantine/core";
 import { notFound } from "next/navigation";
-import { use, useEffect, useState, useTransition } from "react";
+import { use, useEffect, useState } from "react";
 import { TbCalendarMinus, TbCalendarPlus } from "react-icons/tb";
+
+import { updateRecurringAttendeeStatus } from "@/app/(authenticated)/calendar/[eventID]/actions";
+import type { RecurringEventObjectType } from "@/features/calendar";
+import type { UserType } from "@/lib/auth/core";
 
 export default function AddReccuringToCalendar({
   eventPromise,
@@ -15,7 +16,6 @@ export default function AddReccuringToCalendar({
   eventPromise: Promise<RecurringEventObjectType | null>;
   me: UserType;
 }) {
-  // const [isPending, startTransition] = useTransition();
   const recurring_event = use(eventPromise);
   if (!recurring_event) {
     notFound();
@@ -29,7 +29,7 @@ export default function AddReccuringToCalendar({
       recurring_event!.recurring_event_id,
       subscribed ? "invited" : "unknown",
     );
-  }, [subscribed]);
+  }, [subscribed, recurring_event]);
   return (
     <>
       {!subscribed ? (

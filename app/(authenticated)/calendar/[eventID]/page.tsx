@@ -40,12 +40,12 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 
+import AddRecurringToCalendar from "./AddRecurringToCalendar";
 import {
   CheckWithTechAdminBanner,
   CheckWithTechPromptContents,
 } from "./CheckWithTech";
 import { EventActionsUI } from "./EventActionsUI";
-import AddRecurringToCalendar from "./AddRecurringToCalendar";
 
 async function AttendeesView({
   event,
