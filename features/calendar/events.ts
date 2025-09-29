@@ -10,6 +10,7 @@ import {
   Event,
   Position,
   Prisma,
+  RecurringAttendee,
   RecurringEvent,
   SignupSheet,
   User,
@@ -52,6 +53,7 @@ export interface EventObjectType {
 
 export interface RecurringEventObjectType extends RecurringEvent {
   events: Event[];
+  attendees: RecurringAttendee[];
 }
 
 export interface EventCreateUpdateFields {
@@ -158,43 +160,50 @@ export const publicEventSchema = z.object({
 });
 
 export async function listEvents(start: Date, end: Date, me?: number) {
-  return (
-    await prisma.event.findMany({
-      where: {
-        start_date: {
-          gte: start,
-          lt: end,
-        },
-        deleted_at: null,
-        OR: me
-          ? [
-              {
-                signup_sheets: {
-                  some: {
-                    crews: {
-                      some: {
-                        users: {
-                          user_id: me,
-                        },
+  const events = await prisma.event.findMany({
+    where: {
+      start_date: {
+        gte: start,
+        lt: end,
+      },
+      deleted_at: null,
+      OR: me
+        ? [
+            {
+              signup_sheets: {
+                some: {
+                  crews: {
+                    some: {
+                      users: {
+                        user_id: me,
                       },
                     },
                   },
                 },
               },
-              {
-                attendees: {
-                  some: {
-                    user_id: me,
-                    attend_status: { equals: "attending" },
-                  },
+            },
+            {
+              attendees: {
+                some: {
+                  user_id: me,
+                  attend_status: { equals: "attending" },
                 },
               },
-            ]
-          : undefined,
-      },
-      include: EventSelectors,
-    })
-  ).map((e) => sanitize(e));
+            },
+            {
+              recurring_event_id: { not: null },
+              recurring_event: {
+                attendees: {
+                  some: { user_id: me },
+                },
+              },
+            },
+          ]
+        : undefined,
+    },
+    include: EventSelectors,
+  });
+  return events.map((e) => sanitize(e));
 }
 
 export async function listVacantEvents({
@@ -353,6 +362,29 @@ export async function getEvent(id: number): Promise<EventObjectType | null> {
   return sanitize(res);
 }
 
+export async function getRecurringEvent(
+  recurring_event_id: number,
+): Promise<RecurringEventObjectType | null> {
+  const res = await prisma.recurringEvent.findFirst({
+    where: {
+      events: {
+        some: {
+          recurring_event_id: recurring_event_id,
+        },
+      },
+    },
+    include: {
+      events: true,
+      attendees: true,
+    },
+  });
+  if (!res) {
+    return null;
+  }
+
+  return res;
+}
+
 export async function getRecurringEventFromEvent(
   event_id: number,
 ): Promise<RecurringEventObjectType | null> {
@@ -366,6 +398,7 @@ export async function getRecurringEventFromEvent(
     },
     include: {
       events: true,
+      attendees: true,
     },
   });
   if (!res) {
@@ -427,6 +460,7 @@ export async function createRecurringEvent(
         updated_by: currentUserID,
         updated_at: new Date(),
         host: event.host ?? currentUserID,
+        event_type: event.event_type,
       },
     });
   }
@@ -549,6 +583,40 @@ export async function updateEventAttendeeStatus(
       },
       create: {
         event_id: eventID,
+        user_id: userID,
+        attend_status: status,
+      },
+    });
+  }
+}
+
+export async function updateRecurringEventAttendeeStatus(
+  recurringEventID: number,
+  userID: number,
+  status: AttendStatus,
+) {
+  if (status === "unknown") {
+    await prisma.recurringAttendee.delete({
+      where: {
+        recurring_event_id_user_id: {
+          recurring_event_id: recurringEventID,
+          user_id: userID,
+        },
+      },
+    });
+  } else {
+    await prisma.recurringAttendee.upsert({
+      where: {
+        recurring_event_id_user_id: {
+          recurring_event_id: recurringEventID,
+          user_id: userID,
+        },
+      },
+      update: {
+        attend_status: status,
+      },
+      create: {
+        recurring_event_id: recurringEventID,
         user_id: userID,
         attend_status: status,
       },

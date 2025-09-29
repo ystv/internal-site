@@ -60,7 +60,7 @@ model User {
   last_name                       String
   nickname                        String                    @default("")
   avatar                          String                    @default("")
-  public_avatar                   String?                    @default("")
+  public_avatar                   String?                   @default("")
   joined_on                       DateTime                  @default(now())
   identities                      Identity[]
   attendees                       Attendee[]
@@ -73,9 +73,10 @@ model User {
   committee_positions             CommitteePositionMember[]
 
   /// [UserPreferences]
-  preferences               Json            @default("{}")
-  check_with_tech_confirmed CheckWithTech[] @relation("confirmed")
-  check_with_tech_submitted CheckWithTech[] @relation("submitted")
+  preferences               Json                @default("{}")
+  check_with_tech_confirmed CheckWithTech[]     @relation("confirmed")
+  check_with_tech_submitted CheckWithTech[]     @relation("submitted")
+  RecurringAttendee         RecurringAttendee[]
 
   @@map("users")
 }
@@ -101,6 +102,17 @@ model Attendee {
 
   @@id([event_id, user_id])
   @@map("attendees")
+}
+
+model RecurringAttendee {
+  recurring_event_id Int
+  user_id            Int
+  attend_status      String
+  recurring_event    RecurringEvent @relation(fields: [recurring_event_id], references: [recurring_event_id], onDelete: Cascade)
+  users              User           @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@id([recurring_event_id, user_id])
+  @@map("recurring_attendees")
 }
 
 model Crew {
@@ -247,9 +259,10 @@ model WebcamFeed {
 }
 
 model RecurringEvent {
-  recurring_event_id Int @id @default(autoincrement())
-
-  events Event[]
+  recurring_event_id Int                 @id @default(autoincrement())
+  event_type         String              @default("other")
+  events             Event[]
+  attendees          RecurringAttendee[]
 
   @@map("recurring_events")
 }
@@ -269,11 +282,11 @@ model CommitteePosition {
 }
 
 model CommitteeTeam {
-  committee_team_id Int    @id @default(autoincrement())
-  name              String @unique
-  description       String @default("")
+  committee_team_id Int     @id @default(autoincrement())
+  name              String  @unique
+  description       String  @default("")
   public            Boolean @default(false)
-  sort_order        Int    @default(0)
+  sort_order        Int     @default(0)
 
   position_teams CommitteePositionTeam[]
 
