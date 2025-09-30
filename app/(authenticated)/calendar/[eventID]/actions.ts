@@ -9,7 +9,10 @@ import {
 import { type FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";
 import * as Calendar from "@/features/calendar";
-import { updateEventAttendeeStatus } from "@/features/calendar/events";
+import {
+  updateEventAttendeeStatus,
+  updateRecurringEventAttendeeStatus,
+} from "@/features/calendar/events";
 import { canManage } from "@/features/calendar/permissions";
 import {
   type AttendStatus,
@@ -202,6 +205,64 @@ export const updateAttendeeStatus = wrapServerAction(
     await updateEventAttendeeStatus(evt.event_id, me.user_id, status);
 
     revalidatePath(`/calendar/${evt.event_id}`);
+    return { ok: true };
+  },
+);
+
+export const updateRecurringAttendeeStatus = wrapServerAction(
+  "updateRecurringAttendeeStatus",
+  async function updateRecurringAttendeeStatus(
+    recurring_event_id: number,
+    status: AttendStatus,
+    current_event_id?: number,
+  ) {
+    const me = await getCurrentUser();
+    if (!AttendStatuses.includes(status)) {
+      return {
+        ok: false,
+        errors: {
+          root: "Invalid status",
+        },
+      };
+    }
+    const evt = await Calendar.getRecurringEvent(recurring_event_id);
+    if (!evt) {
+      return {
+        ok: false,
+        errors: {
+          root: "Event not found",
+        },
+      };
+    }
+    let single_event;
+    if (!!current_event_id) {
+      single_event = await Calendar.getEvent(current_event_id!);
+      if (!single_event) {
+        return {
+          ok: false,
+          errors: {
+            root: "Event not found",
+          },
+        };
+      }
+    }
+    if (!hasRSVP(evt!.event_type as unknown as EventType)) {
+      return {
+        ok: false,
+        errors: {
+          root: "This event cannot be RSVP'd to",
+        },
+      };
+    }
+
+    await updateRecurringEventAttendeeStatus(
+      recurring_event_id,
+      me.user_id,
+      status,
+    );
+    if (!!current_event_id) {
+      revalidatePath(`/calendar/${single_event!.event_id}`);
+    }
     return { ok: true };
   },
 );

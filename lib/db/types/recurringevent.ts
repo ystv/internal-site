@@ -1,12 +1,14 @@
 import * as z from "zod"
-import { CompleteEvent, EventModel } from "./index"
+import { CompleteEvent, EventModel, CompleteRecurringAttendee, RecurringAttendeeModel } from "./index"
 
 export const _RecurringEventModel = z.object({
   recurring_event_id: z.number().int(),
+  event_type: z.string(),
 })
 
 export interface CompleteRecurringEvent extends z.infer<typeof _RecurringEventModel> {
   events: CompleteEvent[]
+  attendees: CompleteRecurringAttendee[]
 }
 
 /**
@@ -16,4 +18,5 @@ export interface CompleteRecurringEvent extends z.infer<typeof _RecurringEventMo
  */
 export const RecurringEventModel: z.ZodSchema<CompleteRecurringEvent> = z.lazy(() => _RecurringEventModel.extend({
   events: EventModel.array(),
+  attendees: RecurringAttendeeModel.array(),
 }))
