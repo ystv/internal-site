@@ -236,7 +236,7 @@ export const updateRecurringAttendeeStatus = wrapServerAction(
     }
     let single_event;
     if (!!current_event_id) {
-      single_event = await Calendar.getEvent(current_event_id);
+      single_event = await Calendar.getEvent(current_event_id!);
       if (!single_event) {
         return {
           ok: false,
@@ -246,7 +246,7 @@ export const updateRecurringAttendeeStatus = wrapServerAction(
         };
       }
     }
-    if (!hasRSVP(evt.event_type as unknown as EventType)) {
+    if (!hasRSVP(evt!.event_type as unknown as EventType)) {
       return {
         ok: false,
         errors: {

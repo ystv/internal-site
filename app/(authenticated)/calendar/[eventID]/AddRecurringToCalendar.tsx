@@ -2,14 +2,14 @@
 
 import { Button } from "@mantine/core";
 import { notFound } from "next/navigation";
-import { use, useEffect, useState } from "react";
-import { TbCalendarMinus, TbCalendarPlus } from "react-icons/tb";
+import { use, useState } from "react";
+import { TbCalendarMinus, TbCalendarPlus, TbCalendarX } from "react-icons/tb";
 
 import { updateRecurringAttendeeStatus } from "@/app/(authenticated)/calendar/[eventID]/actions";
 import type { RecurringEventObjectType } from "@/features/calendar";
 import type { UserType } from "@/lib/auth/core";
 
-export default function AddReccuringToCalendar({
+export function AddRecurringToCalendar({
   eventPromise,
   me,
 }: {
@@ -20,27 +20,49 @@ export default function AddReccuringToCalendar({
   if (!recurring_event) {
     notFound();
   }
-  const [subscribed, setSubscribed] = useState<boolean>(
+  const [[subscribed, brownout], setSubscribed] = useState<[boolean, boolean]>([
     recurring_event.attendees.some((u) => u.user_id === me.user_id),
-  );
+    false,
+  ]);
 
-  useEffect(() => {
+  if (brownout) {
+    setTimeout(() => setSubscribed([subscribed, false]), 3 * 1000);
+  }
+
+  function handleClick(new_state: boolean) {
     updateRecurringAttendeeStatus(
       recurring_event!.recurring_event_id,
-      subscribed ? "invited" : "unknown",
-    );
-  }, [subscribed, recurring_event]);
+      new_state ? "invited" : "unknown",
+    ).then((result) => {
+      if (!result.ok) {
+        setSubscribed([!new_state, true]);
+      } else {
+        setSubscribed([new_state, false]);
+      }
+    });
+  }
+
   return (
     <>
-      {!subscribed ? (
+      {brownout ? (
+        <Button
+          className={"float-right"}
+          variant={"light"}
+          color={"orange"}
+          leftSection={<TbCalendarX />}
+          onClick={() => handleClick(!subscribed)}
+        >
+          Failed to add to calendar
+        </Button>
+      ) : !subscribed ? (
         <Button
           className={"float-right"}
           variant={"filled"}
           color={"blue"}
           leftSection={<TbCalendarPlus />}
-          onClick={() => setSubscribed(!subscribed)}
+          onClick={() => handleClick(!subscribed)}
         >
-          Add all to Calendar
+          Add all to Personal Calendar
         </Button>
       ) : (
         <Button
@@ -48,9 +70,9 @@ export default function AddReccuringToCalendar({
           variant={"outline"}
           color={"red"}
           leftSection={<TbCalendarMinus />}
-          onClick={() => setSubscribed(!subscribed)}
+          onClick={() => handleClick(!subscribed)}
         >
-          Remove all from Calendar
+          Remove all from Personal Calendar
         </Button>
       )}
     </>

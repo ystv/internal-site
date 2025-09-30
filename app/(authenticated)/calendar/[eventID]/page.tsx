@@ -25,6 +25,7 @@ import {
 } from "@/features/calendar";
 import {
   type EventObjectType,
+  type RecurringEventObjectType,
   getEvent,
   getRecurringEventFromEvent,
 } from "@/features/calendar/events";
@@ -40,7 +41,7 @@ import slackApiConnection, {
   isSlackEnabled,
 } from "@/lib/slack/slackApiConnection";
 
-import AddRecurringToCalendar from "./AddRecurringToCalendar";
+import { AddRecurringToCalendar } from "./AddRecurringToCalendar";
 import {
   CheckWithTechAdminBanner,
   CheckWithTechPromptContents,
@@ -247,7 +248,7 @@ export default async function EventPage({
     allMembers = await getAllUsers();
   }
 
-  let recurring_event;
+  let recurring_event: Promise<RecurringEventObjectType | null> | undefined;
   if (!!event.recurring_event_id) {
     recurring_event = getRecurringEventFromEvent(event.event_id);
   }
