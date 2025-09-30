@@ -254,7 +254,6 @@ export const updateRecurringAttendeeStatus = wrapServerAction(
         },
       };
     }
-    //TODO: Decide slack integration (needs channel, depends on how strongly you feel about ACID)
 
     await updateRecurringEventAttendeeStatus(
       recurring_event_id,
