@@ -11,28 +11,29 @@ import {
   Avatar,
   Modal,
   Center,
+  TextInput,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { FaQuestion, FaTrash } from "react-icons/fa";
 
+import { setPronounsSchema } from "@/features/people/schema";
 import { isMinioEnabledAction } from "@/lib/minio/actions";
 
-import { getPublicProfileAction, setPublicAvatarAction } from "./actions";
+import {
+  getPublicProfileAction,
+  setPronounsAction,
+  setPublicAvatarAction,
+} from "./actions";
 import { AvatarUpload } from "./AvatarUpload";
 
 export function PublicProfile() {
-  const [
-    avatarEditModalOpened,
-    { open: openAvatarEditModal, close: closeAvatarEditModal },
-  ] = useDisclosure(false);
-
-  const [
-    avatarViewModalOpened,
-    { open: openAvatarViewModal, close: closeAvatarViewModal },
-  ] = useDisclosure(false);
+  const [modalOpened, setModalOpened] = useState(
+    null as null | "avatar:edit" | "avatar:view" | "pronouns:edit",
+  );
 
   const isMinioEnabled = useQuery({
     queryKey: ["features:minio"],
@@ -52,6 +53,10 @@ export function PublicProfile() {
       }
     },
   });
+
+  const [pronouns, setPronouns] = useState<string | null>(
+    publicProfileQuery.data?.pronouns ?? null,
+  );
 
   return (
     <>
@@ -87,10 +92,36 @@ export function PublicProfile() {
             </ActionIcon>
           </Tooltip>
         </Group>
+        <Group>
+          <Text>Pronouns</Text>
+          <Text ml={"auto"}>
+            {publicProfileQuery.data?.pronouns ?? "Not specified"}
+          </Text>
+          <Button onClick={() => setModalOpened("pronouns:edit")}>Edit</Button>
+          <Tooltip label="Delete Pronouns">
+            <ActionIcon
+              onClick={async () => {
+                const res = await setPronounsAction({ pronouns: null });
+                if (res.ok) {
+                  notifications.show({
+                    message: "Deleted Pronouns",
+                    color: "green",
+                  });
+                  publicProfileQuery.refetch();
+                }
+                return res;
+              }}
+              size={"lg"}
+              color="red"
+            >
+              <FaTrash />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
         {isMinioEnabled.data && (
           <Group>
             <Text>Avatar</Text>
-            <Button ml={"auto"} onClick={openAvatarEditModal}>
+            <Button ml={"auto"} onClick={() => setModalOpened("avatar:edit")}>
               Edit
             </Button>
             {publicProfileQuery.data?.public_avatar && (
@@ -102,7 +133,7 @@ export function PublicProfile() {
                       size={30}
                     />
                   }
-                  onClick={openAvatarViewModal}
+                  onClick={() => setModalOpened("avatar:view")}
                 >
                   View
                 </Button>
@@ -132,19 +163,60 @@ export function PublicProfile() {
         )}
       </Stack>
       <AvatarUpload
-        opened={avatarEditModalOpened}
+        opened={modalOpened === "avatar:edit"}
         onClose={() => {
-          closeAvatarEditModal();
+          setModalOpened(null);
           publicProfileQuery.refetch();
         }}
       />
-      <Modal opened={avatarViewModalOpened} onClose={closeAvatarViewModal}>
+      <Modal
+        opened={modalOpened === "avatar:view"}
+        onClose={() => setModalOpened(null)}
+      >
         <Center>
           <Avatar
             src={publicProfileQuery.data?.public_avatar}
             style={{ width: "100%", maxWidth: 512, height: "auto" }}
           />
         </Center>
+      </Modal>
+      <Modal
+        title="Edit Pronouns"
+        opened={modalOpened === "pronouns:edit"}
+        onClose={() => setModalOpened(null)}
+      >
+        <Stack>
+          <TextInput
+            label="Pronouns"
+            placeholder="Enter your pronouns"
+            value={pronouns ?? ""}
+            onChange={(event) => setPronouns(event.currentTarget.value)}
+            error={
+              pronouns &&
+              !setPronounsSchema.shape.pronouns.safeParse(pronouns).success
+                ? "Pronouns must be lowercase words separated by slashes"
+                : null
+            }
+          />
+          <Button
+            onClick={async () => {
+              const res = await setPronounsAction({
+                pronouns: pronouns ?? null,
+              });
+              if (res.ok) {
+                notifications.show({
+                  message: "Updated Pronouns",
+                  color: "green",
+                });
+                setModalOpened(null);
+                publicProfileQuery.refetch();
+              }
+              return res;
+            }}
+          >
+            Submit
+          </Button>
+        </Stack>
       </Modal>
     </>
   );

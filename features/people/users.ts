@@ -19,7 +19,11 @@ import invariant from "@/lib/invariant";
 import { getMinioClient } from "@/lib/minio";
 import { getTsQuery } from "@/lib/search";
 
-import { getPublicProfileSchema, type setPublicAvatarSchema } from "./schema";
+import {
+  getPublicProfileSchema,
+  setPronounsSchema,
+  type setPublicAvatarSchema,
+} from "./schema";
 
 /**
  * Fields of a user object that we (usually) want to expose to the world.
@@ -338,17 +342,41 @@ export async function setPublicAvatar(
   return { ok: true };
 }
 
+export async function setPronouns(data: z.infer<typeof setPronounsSchema>) {
+  const user = await mustGetCurrentUser();
+
+  if (data.user_id && data.user_id !== user.user_id) {
+    await requirePermission("Admin.Users");
+  }
+
+  await prisma.user.update({
+    where: {
+      user_id: data.user_id ?? user.user_id,
+    },
+    data: {
+      pronouns: data.pronouns,
+    },
+  });
+
+  return { ok: true };
+}
+
 export async function getPublicProfile(
   data: z.infer<typeof getPublicProfileSchema>,
 ) {
   const user = await mustGetCurrentUser();
 
+  if (data.user_id && data.user_id !== user.user_id) {
+    await requirePermission("People.ViewProfile.All");
+  }
+
   const publicProfile = await prisma.user.findUniqueOrThrow({
     where: {
-      user_id: user.user_id,
+      user_id: data.user_id ?? user.user_id,
     },
     select: {
       public_avatar: true,
+      pronouns: true,
     },
   });
 

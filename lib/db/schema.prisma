@@ -61,6 +61,7 @@ model User {
   nickname                        String                    @default("")
   avatar                          String                    @default("")
   public_avatar                   String?                   @default("")
+  pronouns                        String?
   joined_on                       DateTime                  @default(now())
   identities                      Identity[]
   attendees                       Attendee[]
