@@ -8,6 +8,7 @@ import { zodErrorResponse } from "@/components/FormServerHelpers";
 import * as People from "@/features/people";
 import {
   getPublicProfileSchema,
+  setPronounsSchema,
   setPublicAvatarSchema,
 } from "@/features/people/schema";
 import { wrapServerAction } from "@/lib/actions";
@@ -39,6 +40,19 @@ export const setPublicAvatarAction = wrapServerAction(
     }
 
     return People.setPublicAvatar(safeData.data);
+  },
+);
+
+export const setPronounsAction = wrapServerAction(
+  "setPronouns",
+  async function setPronounsAction(data: z.infer<typeof setPronounsSchema>) {
+    const safeData = setPronounsSchema.safeParse(data);
+
+    if (!safeData.success) {
+      return zodErrorResponse(safeData.error);
+    }
+
+    return People.setPronouns(safeData.data);
   },
 );
 
