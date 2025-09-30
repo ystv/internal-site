@@ -118,11 +118,15 @@ async function getUnfurl({
             fields: [
               {
                 type: "mrkdwn",
-                text: `*Start Time*: ${dayjs(event.start_date).format(
+                text: `*Start Time*: <!date^${dayjs(
+                  event.start_date,
+                ).unix()}^{time} {date}|${dayjs(event.start_date).format(
                   "HH:mm dddd Do MMM",
-                )}\n*End Time*: ${dayjs(event.end_date).format(
+                )}>\n*End Time*: <!date^${dayjs(
+                  event.end_date,
+                ).unix()}^{time} {date}|${dayjs(event.end_date).format(
                   "HH:mm dddd Do MMM",
-                )}`,
+                )}>`,
               },
             ],
           },
