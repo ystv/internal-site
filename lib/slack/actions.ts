@@ -24,7 +24,7 @@ export async function setupActionHandlers(app: App) {
   });
 
   // Link Unfurling
-  app.event("link_shared", async ({ event, client, logger }) => {
+  app.event("link_shared", async ({ event, client }) => {
     // Proudly stolen from Expedia
     // https://github.com/ExpediaGroup/insights-explorer/blob/0ec611f903e15857d29993543b61e3618c416b5e/packages/slackbot/src/app.ts#L43C3-L58C4
     const tuples = await Promise.all(

@@ -52,6 +52,7 @@ export default function QRCodeGeneratorPage() {
 
   useEffect(() => {
     setQrCode(new QRCodeStyling(options));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

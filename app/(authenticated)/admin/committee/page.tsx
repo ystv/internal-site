@@ -1,4 +1,4 @@
-import { Button, Card, Group, Stack } from "@mantine/core";
+import { Button, Card, Group } from "@mantine/core";
 import Link from "next/link";
 
 import { PageInfo } from "@/components/PageInfo";

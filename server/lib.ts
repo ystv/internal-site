@@ -1,16 +1,17 @@
 import { Prisma } from "@prisma/client";
 import { readFileSync } from "fs";
-import { RequestHandler } from "next/dist/server/next";
+import { type RequestHandler } from "next/dist/server/next";
 import {
   createServer as createHttpServer,
-  Server as HttpServer,
+  type Server as HttpServer,
 } from "node:http";
 import { createServer as createHttpsServer } from "node:https";
 import { exit } from "process";
+
 import { prisma } from "../lib/db";
 
 export async function checkDatabaseConnection() {
-  return new Promise<void>(async (resolve, reject) => {
+  return new Promise<void>(async (resolve) => {
     let connectionAttempts = 1;
 
     while (connectionAttempts <= 3) {

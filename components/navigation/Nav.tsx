@@ -25,8 +25,7 @@ export default function Nav({ children, user }: NavProps) {
 
   const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] =
     useDisclosure();
-  const [desktopOpened, { toggle: toggleDesktop, close: closeDesktop }] =
-    useDisclosure();
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure();
 
   return (
     <AppShell

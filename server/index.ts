@@ -1,5 +1,4 @@
 import { type App } from "@slack/bolt";
-import * as Minio from "minio";
 import next from "next";
 import { Server } from "socket.io";
 

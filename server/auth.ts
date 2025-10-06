@@ -1,6 +1,7 @@
-import { Socket } from "socket.io";
-import { ExtendedError } from "socket.io/dist/namespace";
+import { type Socket } from "socket.io";
+import { type ExtendedError } from "socket.io/dist/namespace";
 import { z } from "zod";
+
 import { prisma } from "../lib/db";
 import { env } from "../lib/env";
 import { decode } from "../lib/sessionSecrets";
