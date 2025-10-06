@@ -1,24 +1,31 @@
-import { SignUpSheetType } from "@/features/calendar/signup_sheets";
-import { AttendStatus } from "@/features/calendar/statuses";
-import { EventType } from "@/features/calendar/types";
-import { ExposedUser, ExposedUserModel } from "@/features/people";
-import * as AdamRMS from "@/lib/adamrms";
-import { prisma } from "@/lib/db";
 import {
-  Attendee,
-  Crew,
-  Event,
-  Position,
-  Prisma,
-  RecurringAttendee,
-  RecurringEvent,
-  SignupSheet,
-  User,
+  type Attendee,
+  type Crew,
+  type Event,
+  type Position,
+  type Prisma,
+  type RecurringAttendee,
+  type RecurringEvent,
+  type SignupSheet,
+  type User,
 } from "@prisma/client";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { produce } from "immer";
-import "server-only";
 import { z } from "zod";
+
+import { type SignUpSheetType } from "@/features/calendar/signup_sheets";
+import { type AttendStatus } from "@/features/calendar/statuses";
+import { type EventType } from "@/features/calendar/types";
+import { type ExposedUser, ExposedUserModel } from "@/features/people";
+import * as AdamRMS from "@/lib/adamrms";
+import { prisma } from "@/lib/db";
+import "server-only";
+import { env } from "@/lib/env";
+
+dayjs.extend(timezone);
+dayjs.extend(utc);
 
 export interface EventAttendee {
   event_id: number;
@@ -434,19 +441,27 @@ export async function createRecurringEvent(
 ): Promise<EventObjectType> {
   const recurringEvent = await prisma.recurringEvent.create();
 
-  const eventStartDate = dayjs(event.start_date).utc(true);
+  const hourDiff = dayjs(event.start_date).diff(
+    dayjs(event.start_date).tz(env.TZ_OVERRIDE, true),
+    "hours",
+  );
+
+  console.log(hourDiff);
+
+  const eventStartDate = dayjs(event.start_date).utc();
 
   for (const recurring_date of recurringDates) {
     const recurDate = dayjs(recurring_date);
-    const recurStartDate = dayjs(event.start_date).add(
-      Math.ceil(recurDate.diff(eventStartDate, "days", true)),
-      "days",
-    );
+    const recurStartDate = dayjs(event.start_date)
+      .add(Math.ceil(recurDate.diff(eventStartDate, "days", true)), "days")
+      .add(hourDiff, "hours")
+      .tz(env.TZ_OVERRIDE, true);
 
-    const recurEndDate = dayjs(event.end_date).add(
-      Math.ceil(recurDate.diff(eventStartDate, "days", true)),
-      "days",
-    );
+    console.log(recurStartDate.toISOString());
+
+    const recurEndDate = dayjs(event.end_date)
+      .add(Math.ceil(recurDate.diff(eventStartDate, "days", true)), "days")
+      .add(hourDiff, "hours");
 
     await prisma.event.create({
       data: {
