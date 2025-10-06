@@ -40,6 +40,7 @@ const envSchema = z.object({
     required_error:
       "Try generating a random secret with `openssl rand -base64 32`",
   }),
+  TZ_OVERRIDE: z.string().default("Europe/London"),
   SLACK_ENABLED: z.enum(["true", "false"]).default("false"),
   SLACK_BOT_TOKEN: slackEnvType,
   SLACK_APP_TOKEN: slackEnvType,
