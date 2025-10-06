@@ -57,7 +57,7 @@ async function getUnfurl({
 }: {
   url: string;
   domain: string;
-}): Promise<MessageAttachment> {
+}): Promise<MessageAttachment | undefined> {
   const trailingPath = url.substring(
     url.indexOf(domain) + domain.length,
     url.length,
@@ -133,17 +133,17 @@ async function getUnfurl({
         ],
       };
     }
-  }
 
-  return {
-    blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: "Event not found",
+    return {
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "Event not found",
+          },
         },
-      },
-    ],
-  };
+      ],
+    };
+  }
 }
