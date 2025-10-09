@@ -446,8 +446,6 @@ export async function createRecurringEvent(
     "hours",
   );
 
-  console.log(hourDiff);
-
   const eventStartDate = dayjs(event.start_date).utc();
 
   for (const recurring_date of recurringDates) {
@@ -457,11 +455,10 @@ export async function createRecurringEvent(
       .add(hourDiff, "hours")
       .tz(env.TZ_OVERRIDE, true);
 
-    console.log(recurStartDate.toISOString());
-
     const recurEndDate = dayjs(event.end_date)
       .add(Math.ceil(recurDate.diff(eventStartDate, "days", true)), "days")
-      .add(hourDiff, "hours");
+      .add(hourDiff, "hours")
+      .tz(env.TZ_OVERRIDE, true);
 
     await prisma.event.create({
       data: {
