@@ -78,7 +78,7 @@
     "lodash": "^4.17.21",
     "lru-cache": "^10.0.0",
     "minio": "^8.0.6",
-    "next": "^15.4.3",
+    "next": "^15.4.8",
     "qr-code-styling": "^1.9.2",
     "querystring": "^0.2.1",
     "react": "^19.1.1",
