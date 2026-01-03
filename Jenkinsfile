@@ -59,7 +59,7 @@ pipeline {
         changeRequest target: 'main'
       }
       steps {
-        deployPreview action: 'deploy', job: 'internal-site-preview', urlSuffix: 'internal.dev.ystv.co.uk'
+        deployPreview action: 'deploy', job: 'internal-site/preview', jobName: 'internal-site-preview', urlSuffix: 'internal.dev.ystv.co.uk'
       }
     }
 
@@ -69,7 +69,7 @@ pipeline {
       }
       steps {
         build job: 'Deploy Nomad Job', parameters: [
-          string(name: 'JOB_FILE', value: 'internal-site-dev.nomad'),
+          string(name: 'JOB_FILE', value: 'internal-site/dev'),
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/internal-site:${imageTag}")
         ], wait: true
         deployPreview action: 'cleanup'
@@ -85,7 +85,7 @@ pipeline {
       }
       steps {
         build job: 'Deploy Nomad Job', parameters: [
-          string(name: 'JOB_FILE', value: 'internal-site-prod.nomad'),
+          string(name: 'JOB_FILE', value: 'internal-site/prod'),
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/internal-site:${imageTag}")
         ], wait: true
         sh "nomad alloc exec -task internal-site-prod -job internal-site-prod npx -y prisma migrate deploy --schema lib/db/schema.prisma"
