@@ -96,23 +96,23 @@ function Navbar(props: { closeMobile: () => void }) {
       label: "QR Code Generator",
       leftSection: <FaQrcode />,
     },
-    {
-      permissions: "ManageQuotes",
-      href: "/quotes",
-      label: "Quotes Board",
-      leftSection: (
-        <BsChatLeftQuoteFill
-          style={{ position: "relative", top: 2 }}
-          size={20}
-        />
-      ),
-    },
-    {
-      permissions: ["Admin.Positions", "Admin.Roles", "Admin.Users"],
-      href: "/admin",
-      label: "Admin Pages",
-      leftSection: <MdAdminPanelSettings size={24} />,
-    },
+    // {
+    //   permissions: "ManageQuotes",
+    //   href: "/quotes",
+    //   label: "Quotes Board",
+    //   leftSection: (
+    //     <BsChatLeftQuoteFill
+    //       style={{ position: "relative", top: 2 }}
+    //       size={20}
+    //     />
+    //   ),
+    // },
+    // {
+    //   permissions: ["Admin.Positions", "Admin.Roles", "Admin.Users"],
+    //   href: "/admin",
+    //   label: "Admin Pages",
+    //   leftSection: <MdAdminPanelSettings size={24} />,
+    // },
   ];
 
   const allPermissions = links
