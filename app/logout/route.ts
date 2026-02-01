@@ -1,5 +1,4 @@
-import { randomUUID } from "crypto";
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { COOKIE_NAME } from "@/lib/auth/core";
 import { env } from "@/lib/env";
