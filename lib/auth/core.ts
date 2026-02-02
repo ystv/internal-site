@@ -51,7 +51,11 @@ async function _resolvePermissionsForUser(userID: number) {
       permission: true,
     },
   });
-  return result.map((r) => r.permission as Permission);
+
+  const perms = result.map((r) => r.permission as Permission);
+  perms.push("MEMBER"); // Include special MEMBER permission
+
+  return perms;
 }
 
 // Since this file may be imported from the "standalone server" context, not Next,
