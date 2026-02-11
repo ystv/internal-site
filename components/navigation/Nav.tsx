@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { BsChatLeftQuoteFill } from "react-icons/bs";
 import { FaQrcode } from "react-icons/fa";
-import { MdAdminPanelSettings } from "react-icons/md";
+import { GoLinkExternal } from "react-icons/go";
+import { MdAdminPanelSettings, MdMenu } from "react-icons/md";
 
 import Logo from "@/app/_assets/logo-new.png";
 import YSTVBreadcrumbs from "@/components/Breadcrumbs";
@@ -86,6 +87,7 @@ interface NavbarLinks {
   href: string;
   label: string;
   leftSection: React.ReactNode;
+  external?: boolean;
 }
 
 function Navbar(props: { closeMobile: () => void }) {
@@ -94,6 +96,13 @@ function Navbar(props: { closeMobile: () => void }) {
       href: "/qr",
       label: "QR Code Generator",
       leftSection: <FaQrcode />,
+    },
+    // TODO: Admin page for sidebar links
+    {
+      href: "https://credit.ystv.co.uk",
+      label: "Credits Generator",
+      leftSection: <MdMenu />,
+      external: true,
     },
     {
       permissions: "ManageQuotes",
@@ -120,7 +129,7 @@ function Navbar(props: { closeMobile: () => void }) {
         ? link.permissions
         : link.permissions
         ? [link.permissions]
-        : [],
+        : ["MEMBER" as Permission],
     )
     .flat();
 
@@ -134,10 +143,13 @@ function Navbar(props: { closeMobile: () => void }) {
       {links.map((link) => {
         const navLink = (
           <NavLink
+            key={link.href}
             component={Link}
             href={link.href}
             label={link.label}
             leftSection={link.leftSection}
+            target={link.external ? "_blank" : undefined}
+            rightSection={link.external && <GoLinkExternal opacity={0.4} />}
             onClick={props.closeMobile}
           />
         );
