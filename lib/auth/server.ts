@@ -133,6 +133,11 @@ export async function ensureNoActiveSession(
 ): Promise<void> {
   const session = await getSession();
   if (session) {
+    const user = await getUser(session.userID);
+    if (typeof user === "string") {
+      var url = new URL("/logout", env.PUBLIC_URL!);
+      return redirect(url.href);
+    }
     var url = new URL(loginRedirect ?? "/", env.PUBLIC_URL!);
 
     if (!url.href.startsWith(env.PUBLIC_URL!)) url = new URL(env.PUBLIC_URL!);
