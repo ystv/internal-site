@@ -10,7 +10,7 @@ const config = {
     "prettier.config.js",
     "lib/db/types/**/*",
   ],
-  extends: ["next/core-web-vitals", "prettier", "plugin:storybook/recommended"],
+  extends: ["next/core-web-vitals", "prettier"],
   settings: {
     react: {
       version: "detect",
