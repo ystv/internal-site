@@ -9,6 +9,7 @@ WORKDIR /app
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY server/package.json ./server/package.json
 COPY lib/db/schema.prisma ./lib/db/schema.prisma
+COPY prisma.config.ts ./prisma.config.ts
 COPY ./.yarn/ .yarn/
 RUN --mount=type=cache,id=internal-site-yarn,target=.yarn/cache \
   yarn install --immutable --inline-builds
@@ -40,6 +41,7 @@ COPY --from=build /app/next.config.build.js /app/next.config.js
 # Copy these in so that we can still run Prisma migrations in prod
 COPY --from=build /app/lib/db/schema.prisma /app/lib/db/schema.prisma
 COPY --from=build /app/lib/db/migrations /app/lib/db/migrations
+COPY --from=build /app/prisma.config.ts /app/prisma.config.ts
 # And so we can run the scripts
 COPY --from=build /app/scripts /app/scripts
 WORKDIR /app

@@ -5,4 +5,7 @@ export default defineConfig({
   migrations: {
     seed: "tsx scripts/seed.mts",
   },
+  datasource: {
+    url: process.env.DATABASE_URL,
+  },
 });
