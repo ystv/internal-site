@@ -1,6 +1,6 @@
 "use server";
 
-import { type CommitteePosition, type Position } from "@prisma/client";
+import { type CommitteePosition } from "@prisma/client";
 
 import { type FormResponse } from "@/components/Form";
 import { zodErrorResponse } from "@/components/FormServerHelpers";

@@ -52,7 +52,7 @@ export default function QRCodeGeneratorPage() {
 
   useEffect(() => {
     setQrCode(new QRCodeStyling(options));
-  }, []);
+  }, [options]);
 
   useEffect(() => {
     if (ref.current) {

@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { type CommitteePosition, type Position } from "@prisma/client";
+import { type CommitteePosition } from "@prisma/client";
 import Link from "next/link";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDeleteForever, MdMoreHoriz } from "react-icons/md";
