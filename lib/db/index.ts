@@ -1,7 +1,12 @@
 // import "server-only";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 import { env } from "../env";
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
 
 // Work around for hot reloading in development
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
@@ -9,6 +14,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const rawPrisma =
   globalForPrisma.prisma ||
   new PrismaClient({
+    adapter,
     log:
       env.NODE_ENV === "production"
         ? ["warn", "error"]
