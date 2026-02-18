@@ -1,6 +1,6 @@
-import { defineConfig } from "prisma/config";
+import type { PrismaConfig } from "prisma/config";
 
-export default defineConfig({
+export default {
   schema: "lib/db/schema.prisma",
   migrations: {
     seed: "tsx scripts/seed.mts",
@@ -8,4 +8,4 @@ export default defineConfig({
   datasource: {
     url: process.env.DATABASE_URL,
   },
-});
+} satisfies PrismaConfig;
