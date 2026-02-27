@@ -236,7 +236,7 @@ function SignupSheet({
             <br />
             <div className={"flex justify-end gap-1"}>
               <Button
-                variant="danger"
+                color="red"
                 size="small"
                 onClick={async () => {
                   if (
@@ -326,7 +326,7 @@ export function MyRoleSignUpModal({
           {crew.user_id === me.user_id ? (
             <Button
               size="large"
-              variant="danger"
+              color="red"
               loading={isPending}
               onClick={() => {
                 startTransition(async () => {

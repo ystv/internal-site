@@ -65,7 +65,7 @@ export function QuoteView(props: { data: Quote }) {
             Edit
           </Button>
           <Button
-            variant="danger"
+            color="red"
             disabled={isPending}
             onClick={() => {
               if (confirm("You sure boss?")) {
@@ -80,40 +80,6 @@ export function QuoteView(props: { data: Quote }) {
           </Button>
         </Group>
       </Card>
-      {/* <div className="my-1 border-solid border-gray-400 px-4 py-2">
-        <p>
-          {props.data.text.split("\n").map((line) => (
-            <>
-              {line}
-              <br />
-            </>
-          ))}
-        </p>
-        {props.data.context.length > 0 && (
-          <p className="text-sm">— {props.data.context}</p>
-        )}
-        <Button
-          onClick={() => setIsEditing(true)}
-          disabled={isPending}
-          size="compact-xs"
-        >
-          Edit
-        </Button>
-        <Button
-          variant="danger"
-          disabled={isPending}
-          onClick={() => {
-            if (confirm("You sure boss?")) {
-              startTransition(async () => {
-                await deletQuote(props.data.quote_id);
-              });
-            }
-          }}
-          size="compact-xs"
-        >
-          Delet
-        </Button>
-      </div> */}
     </>
   );
 }
@@ -123,7 +89,7 @@ export function AddQuote() {
   return visible ? (
     <>
       <AddEditQuoteForm onSuccess={() => setVisible(false)} />
-      <Button onClick={() => setVisible(false)} color="warning">
+      <Button onClick={() => setVisible(false)} color="orange">
         Cancel
       </Button>
     </>
