@@ -173,7 +173,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         ),
         labels: { confirm: "Cancel Event", cancel: "Go Back" },
         confirmProps: {
-          variant: "warning",
+          color: "orange",
         },
         onConfirm() {
           startTransition(async () => {
@@ -196,7 +196,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         ),
         labels: { confirm: "Reinstate Event", cancel: "Go Back" },
         confirmProps: {
-          variant: "warning",
+          color: "orange",
         },
         onConfirm() {
           startTransition(async () => {
@@ -220,7 +220,7 @@ export function EventActionsUI(props: { event: EventObjectType }) {
         ),
         labels: { confirm: "Delete", cancel: "Cancel" },
         confirmProps: {
-          variant: "danger",
+          color: "red",
         },
         onConfirm() {
           startTransition(async () => {
@@ -256,15 +256,15 @@ export function EventActionsUI(props: { event: EventObjectType }) {
 
   return (
     <div className="mb-4 flex h-min w-auto flex-shrink flex-wrap justify-center gap-1 sm:mb-0 sm:justify-end sm:max-md:w-1/3">
-      <Button variant="danger" className="block" onClick={doDelete}>
+      <Button color="red" className="block" onClick={doDelete}>
         Delete Event
       </Button>
       {props.event.is_cancelled ? (
-        <Button variant="warning" className="block" onClick={doReinstate}>
+        <Button color="orange" className="block" onClick={doReinstate}>
           Reinstate Event
         </Button>
       ) : (
-        <Button variant="warning" className="block" onClick={doCancel}>
+        <Button color="orange" className="block" onClick={doCancel}>
           Cancel Event
         </Button>
       )}

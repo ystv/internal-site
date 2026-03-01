@@ -323,7 +323,7 @@ export function ArrayField<
             <Button
               className="h-full min-w-[2rem] align-middle text-2xl font-black [&_.mantine-Button-inner]:text-xl"
               onClick={() => remove(idx)}
-              variant="danger"
+              color="red"
               size="sm"
             >
               x
