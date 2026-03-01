@@ -26,7 +26,7 @@ export function DebugOnly({ children }: { children: React.ReactNode }) {
 export function DebugIndicator() {
   return (
     <DebugOnly>
-      <div className="fixed bottom-0 right-0 rounded-tl bg-danger-4/50 p-2 text-white">
+      <div className="bg-danger-4/50 fixed bottom-0 right-0 rounded-tl p-2 text-white">
         Debug mode active (
         <Link href="/enableDebugMode?value=false" className="underline">
           disable
