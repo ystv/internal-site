@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 
 import { PageInfo } from "@/components/PageInfo";
 import { mustGetCurrentUser } from "@/lib/auth/server";
+import { env } from "@/lib/env";
 
 import { hasWrapped } from "./util";
 
@@ -24,7 +25,7 @@ export default async function WrappedPage({
     notFound();
   }
   const emailHash = createHash("sha256").update(user.email).digest("hex");
-  const fileURL = `https://cdn.ystv.co.uk/wrapped2024/${emailHash}.mp4`;
+  const fileURL = `${env.MINIO_ANON_URL_BASE}/wrapped/2024/${emailHash}.mp4`;
   return (
     <div>
       <PageInfo title="YSTV Wrapped" />

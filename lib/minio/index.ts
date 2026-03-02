@@ -13,5 +13,6 @@ export const getMinioClient = () => {
     useSSL: env.MINIO_USE_SSL == "true" ? true : false,
     accessKey: env.MINIO_ACCESS_KEY!,
     secretKey: env.MINIO_SECRET_KEY!,
+    region: env.MINIO_REGION,
   });
 };

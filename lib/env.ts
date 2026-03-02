@@ -66,6 +66,14 @@ const envSchema = z.object({
   MINIO_BUCKET: minioEnvType,
   MINIO_ACCESS_KEY: minioEnvType,
   MINIO_SECRET_KEY: minioEnvType,
+  MINIO_REGION: z.string().optional(),
+  MINIO_ANON_URL_BASE: z
+    .string()
+    .refine(
+      (v) => !v.endsWith("/"),
+      "MINIO_ANON_URL_BASE should not end with a '/'",
+    )
+    .optional(),
 });
 
 export function validateEnv(
