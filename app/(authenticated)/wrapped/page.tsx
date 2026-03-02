@@ -24,7 +24,7 @@ export default async function WrappedPage({
     notFound();
   }
   const emailHash = createHash("sha256").update(user.email).digest("hex");
-  const fileURL = `https://cdn.ystv.co.uk/wrapped2024/${emailHash}.mp4`;
+  const fileURL = `https://wrapped2024.static.ystv.co.uk/${emailHash}.mp4`;
   return (
     <div>
       <PageInfo title="YSTV Wrapped" />

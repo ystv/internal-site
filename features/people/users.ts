@@ -325,9 +325,11 @@ export async function setPublicAvatar(
       buffer,
     );
 
-    imageURL = `http${env.MINIO_USE_SSL === "true" ? "s" : ""}://${
-      env.MINIO_ENDPOINT
-    }/${env.MINIO_BUCKET}/${imagePath}`;
+    imageURL = env.MINIO_ANON_URL_BASE
+      ? `${env.MINIO_ANON_URL_BASE}/${imagePath}`
+      : `http${env.MINIO_USE_SSL === "true" ? "s" : ""}://${
+          env.MINIO_ENDPOINT
+        }/${env.MINIO_BUCKET}/${imagePath}`;
   }
 
   await prisma.user.update({
