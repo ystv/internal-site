@@ -3,9 +3,9 @@ import { createHash } from "node:crypto";
 
 import { PageInfo } from "@/components/PageInfo";
 import { mustGetCurrentUser } from "@/lib/auth/server";
+import { env } from "@/lib/env";
 
 import { hasWrapped } from "./util";
-import { env } from "@/lib/env";
 
 export default async function WrappedPage({
   searchParams,
