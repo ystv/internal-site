@@ -30,7 +30,7 @@ import {
 } from "./actions";
 import { AvatarUpload } from "./AvatarUpload";
 
-export function PublicProfile() {
+export function PublicProfile(props: { user_id?: number }) {
   const [modalOpened, setModalOpened] = useState(
     null as null | "avatar:edit" | "avatar:view" | "pronouns:edit",
   );
@@ -45,9 +45,9 @@ export function PublicProfile() {
   const publicProfileQuery = useQuery({
     queryKey: ["user:publicProfile"],
     queryFn: async () => {
-      const res = await getPublicProfileAction({});
+      const res = await getPublicProfileAction({ user_id: props.user_id });
       if (!res.ok) {
-        throw new Error("An error occurred updating committee positions.");
+        throw new Error("An error occurred getting user's public profile.");
       } else {
         return res.data;
       }
@@ -101,7 +101,10 @@ export function PublicProfile() {
           <Tooltip label="Delete Pronouns">
             <ActionIcon
               onClick={async () => {
-                const res = await setPronounsAction({ pronouns: null });
+                const res = await setPronounsAction({
+                  user_id: props.user_id,
+                  pronouns: null,
+                });
                 if (res.ok) {
                   notifications.show({
                     message: "Deleted Pronouns",
@@ -141,6 +144,7 @@ export function PublicProfile() {
                   leftSection={<FaTrash />}
                   onClick={async () => {
                     const res = await setPublicAvatarAction({
+                      user_id: props.user_id,
                       avatar_data_url: null,
                     });
 
@@ -201,6 +205,7 @@ export function PublicProfile() {
           <Button
             onClick={async () => {
               const res = await setPronounsAction({
+                user_id: props.user_id,
                 pronouns: pronouns ?? null,
               });
               if (res.ok) {

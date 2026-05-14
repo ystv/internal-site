@@ -32,7 +32,11 @@ import { LuX } from "react-icons/lu";
 
 import { setPublicAvatarAction } from "./actions";
 
-export function AvatarUpload(props: { opened: boolean; onClose: () => void }) {
+export function AvatarUpload(props: {
+  opened: boolean;
+  onClose: () => void;
+  user_id?: number;
+}) {
   const [activeStep, setActiveStep] = useState(0);
 
   const [selectedFile, setSelectedFile] = useState<FileWithPath | null>(null);
@@ -180,6 +184,7 @@ export function AvatarUpload(props: { opened: boolean; onClose: () => void }) {
               color="green"
               onClick={async () => {
                 const res = await setPublicAvatarAction({
+                  user_id: props.user_id,
                   avatar_data_url: finalImage!,
                 });
 
