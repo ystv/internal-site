@@ -16,9 +16,10 @@ import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { type Role } from "@prisma/client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense } from "react";
-import { FaEdit, FaMinus } from "react-icons/fa";
+import { FaEdit, FaExternalLinkAlt, FaMinus } from "react-icons/fa";
 import { type z } from "zod";
 
 import { type FormResponse } from "@/components/Form";
@@ -102,6 +103,11 @@ export function AdminUserView(props: {
             <Tooltip label={"Edit User Info"}>
               <ActionIcon onClick={openEditModal} ml={"auto"}>
                 <FaEdit />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label={"View User Page"}>
+              <ActionIcon component={Link} href={`/user/${props.user.user_id}`}>
+                <FaExternalLinkAlt />
               </ActionIcon>
             </Tooltip>
           </Group>
