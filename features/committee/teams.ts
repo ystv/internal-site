@@ -104,6 +104,7 @@ export const fetchPublicCommittee = wrapServerAction(
                         first_name: true,
                         last_name: true,
                         public_avatar: true,
+                        pronouns: true,
                       },
                     },
                   },
