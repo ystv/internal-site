@@ -94,6 +94,15 @@ export const fetchPublicCommittee = wrapServerAction(
                 name: true,
                 description: true,
                 email: true,
+                position_teams: {
+                  select: {
+                    committee_team: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                  },
+                },
                 committee_position_members: {
                   where: {
                     current: true,
@@ -120,7 +129,39 @@ export const fetchPublicCommittee = wrapServerAction(
       orderBy: [{ sort_order: "asc" }, { name: "asc" }],
     });
 
-    return { ok: true, data: fetchedCommitteeTeams };
+    return {
+      ok: true,
+      data: fetchedCommitteeTeams.map(({ position_teams, ...teamFields }) => {
+        const new_position_teams = position_teams.map(
+          ({ committee_position, ...positionFields }) => {
+            const {
+              position_teams,
+              committee_position_members,
+              ...innerFields
+            } = committee_position;
+            const new_committee_position = {
+              ...innerFields,
+              position_teams: position_teams.map(
+                (otherTeams) => otherTeams.committee_team.name,
+              ),
+              committee_position_members: committee_position_members.map(
+                ({ user }) => user,
+              ),
+            };
+            const new_position_teams = {
+              ...positionFields,
+              committee_position: new_committee_position,
+            };
+            return new_position_teams;
+          },
+        );
+        const team = {
+          ...teamFields,
+          position_teams: new_position_teams,
+        };
+        return team;
+      }),
+    };
   },
 );
 
