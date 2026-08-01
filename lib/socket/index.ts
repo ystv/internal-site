@@ -1,8 +1,8 @@
 "use client";
 
+import { type DefaultEventsMap } from "@socket.io/component-emitter";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { type DefaultEventsMap } from "socket.io/dist/typed-events";
 import { type Socket, io } from "socket.io-client";
 
 export const socket = io();

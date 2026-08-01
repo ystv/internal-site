@@ -1,6 +1,5 @@
 "use client";
 
-import { C } from "@fullcalendar/core/internal-common";
 import {
   ActionIcon,
   Button,
@@ -15,7 +14,6 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { type CommitteePositionMember } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";

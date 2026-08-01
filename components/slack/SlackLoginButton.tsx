@@ -5,7 +5,7 @@ import {
   type ButtonProps,
   type MantineStyleProps,
 } from "@mantine/core";
-import { type PolymorphicComponentProps } from "@mantine/core/lib/core/factory/create-polymorphic-component";
+import { type PolymorphicComponentProps } from "@mantine/core";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 

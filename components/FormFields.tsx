@@ -31,7 +31,7 @@ import {
   useFieldArray,
   useFormContext,
 } from "react-hook-form";
-import { type FieldPath } from "react-hook-form/dist/types/path";
+import { type FieldPath } from "react-hook-form";
 import { IoClose } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 
