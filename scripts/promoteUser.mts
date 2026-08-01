@@ -1,3 +1,4 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 if (process.env.SCRIPT !== "true") {
@@ -11,6 +12,9 @@ if (!email) {
 const roleName = process.argv[4] ?? "SuperUser";
 
 (async function () {
+  const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+  });
   const prisma = new PrismaClient();
   const role = await prisma.role.findFirstOrThrow({
     where: {
