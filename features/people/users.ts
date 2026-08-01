@@ -5,7 +5,7 @@ import {
   type RolePermission,
   type User,
 } from "@prisma/client";
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 
 import { editUserSchema } from "@/app/(authenticated)/admin/users/[userID]/schema";

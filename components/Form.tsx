@@ -8,7 +8,7 @@ import {
   FormProvider,
   useForm,
 } from "react-hook-form";
-import { type FieldPath } from "react-hook-form/dist/types/path";
+import { type FieldPath } from "react-hook-form";
 import { type z, type ZodEffects, type ZodTypeAny } from "zod";
 
 import { DebugOnly } from "@/components/DebugMode";
