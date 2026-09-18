@@ -77,9 +77,9 @@ export default async function CalendarPage() {
       <div className={"flex items-end justify-between"}>
         <h1 className={"text-4xl font-bold"}>YSTV Calendar</h1>
         <PermissionGate required={calendarEditPermissions}>
-          <Button component={Link} href="/calendar/new" fz="md">
-            Add Event
-          </Button>
+          <Link href="/calendar/new">
+            <Button fz="md">Add Event</Button>
+          </Link>
         </PermissionGate>
       </div>
       <PermissionGate required={calendarEditPermissions}>

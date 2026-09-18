@@ -235,9 +235,10 @@ async function SlackBanner(props: { event: EventObjectType }) {
 export default async function EventPage({
   params,
 }: {
-  params: { eventID: string };
+  params: Promise<{ eventID: string }>;
 }) {
-  const event = await getEvent(parseInt(params.eventID, 10));
+  const eventID = (await params).eventID;
+  const event = await getEvent(parseInt(eventID, 10));
   if (!event) {
     notFound();
   }

@@ -15,7 +15,7 @@ const roleName = process.argv[4] ?? "SuperUser";
   const adapter = new PrismaPg({
     connectionString: process.env.DATABASE_URL,
   });
-  const prisma = new PrismaClient();
+  const prisma = new PrismaClient({ adapter });
   const role = await prisma.role.findFirstOrThrow({
     where: {
       name: roleName,

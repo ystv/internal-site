@@ -5,8 +5,9 @@ import { UserPage } from "../me/page";
 export default async function ArbitraryUserPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const Id = (await params).id;
   await requirePermission("People.ViewProfile.All");
-  return <UserPage id={parseInt(params.id, 10)} />;
+  return <UserPage id={parseInt(Id, 10)} />;
 }
