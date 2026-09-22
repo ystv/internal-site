@@ -37,6 +37,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=ref,event=branch,suffix=-${{ github.run_number }}
+            type=ref,event=pr
             type=ref,event=pr,suffix=-${{ github.run_number }}
             type=sha,format=long,prefix=
       - uses: docker/build-push-action@v7
