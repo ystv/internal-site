@@ -18,7 +18,7 @@ enum Colours {
   Orange = "#DB6F0A",
   Pink = "#D82C7F",
   Purple = "#800080",
-  Aquamarine = "#A6D49F",
+  Brown = "#522B29",
 }
 
 export const EventColours: Record<EventType, string> = {
@@ -26,6 +26,6 @@ export const EventColours: Record<EventType, string> = {
   meeting: Colours.Green,
   workshop: Colours.Orange,
   social: Colours.Purple,
-  public: Colours.Aquamarine,
+  public: Colours.Brown,
   other: Colours.Pink,
 };
