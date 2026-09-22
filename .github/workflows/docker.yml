@@ -15,7 +15,7 @@ permissions:
   packages: write
 
 env:
-  REGISTRY: registry.comp.ystv.co.uk
+  REGISTRY: ghcr.io
 
 jobs:
   build:
