@@ -36,13 +36,17 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=ref,event=branch
-            type=ref,event=pr
+            type=ref,event=branch,suffix=${{ github.run_number }}
+            type=ref,event=pr,suffix=${{ github.run_number }}
             type=sha,format=long,prefix=
       - uses: docker/build-push-action@v7
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
           context: .
-          push: false
+          secrets: |
+            "sentry-auth-token=SENTRY_AUTH_TOKEN"
+          push: true
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha
