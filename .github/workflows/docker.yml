@@ -40,12 +40,10 @@ jobs:
             type=ref,event=pr,suffix=-${{ github.run_number }}
             type=sha,format=long,prefix=
       - uses: docker/build-push-action@v7
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
           context: .
           secrets: |
-            "sentry_auth_token=SENTRY_AUTH_TOKEN"
+            "sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}"
           build-args: |
             GIT_REV=${{ github.sha }}
             VERSION=${{ github.ref_type == 'tag' && github.ref_name || 'v0.0.0' }}
