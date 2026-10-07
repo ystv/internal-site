@@ -201,7 +201,10 @@ export async function listEvents(start: Date, end: Date, me?: number) {
               recurring_event_id: { not: null },
               recurring_event: {
                 attendees: {
-                  some: { user_id: me },
+                  some: {
+                    user_id: me,
+                    attend_status: { not: "not_attending" },
+                  },
                 },
               },
             },
