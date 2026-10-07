@@ -3,7 +3,7 @@ const { execFileSync } = require("child_process");
 
 const gitCommit =
   process.env.GIT_REV ??
-  execFileSync("/usr/bin/git", ["rev-parse", "HEAD"]).toString().trim();
+  execFileSync("/usr/bin/env", ["git", "rev-parse", "HEAD"]).toString().trim();
 const version = process.env.VERSION ?? "v0.0.0";
 
 const sentryRelease = `${version}-${gitCommit.slice(0, 7)}`;
