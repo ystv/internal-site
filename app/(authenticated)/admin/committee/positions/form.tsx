@@ -68,6 +68,7 @@ export function UpdateCommitteePositionForm(props: {
       initialValues={{
         name: props.selectedCommitteePosition?.name,
         description: props.selectedCommitteePosition?.description,
+        email: props.selectedCommitteePosition?.email,
         seats: props.selectedCommitteePosition?.seats,
       }}
       submitLabel="Update Position"
