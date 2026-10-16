@@ -18,7 +18,7 @@ export async function decodeUserID(token: string) {
   return userID;
 }
 
-export async function generateICalFeedForUser(userID: number) {
+export async function generateICalFeedForUser(userID: number, isGcal: boolean) {
   const user = await prisma.user.findFirstOrThrow({
     where: { user_id: userID },
     select: {
@@ -50,7 +50,9 @@ export async function generateICalFeedForUser(userID: number) {
       start: evt.start_date,
       end: evt.end_date,
       description: evt.description,
-      location: evt.location,
+      location: isGcal
+        ? `${evt.location}; ${env.PUBLIC_URL}/calendar/${evt.event_id}`
+        : evt.location,
       url: `${env.PUBLIC_URL}/calendar/${evt.event_id}`,
       status: evt.is_cancelled
         ? ICalEventStatus.CANCELLED
