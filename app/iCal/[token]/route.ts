@@ -16,7 +16,11 @@ export async function GET(
       status: 403,
     });
   }
-  const ical = await Calendar.generateICalFeedForUser(user);
+  const ical = await Calendar.generateICalFeedForUser(
+    user,
+    req.headers.get("User-Agent")?.includes("Google-Calendar-Importer") ||
+      false,
+  );
   return new NextResponse(ical, {
     headers: {
       "Content-Type": "text/calendar",
