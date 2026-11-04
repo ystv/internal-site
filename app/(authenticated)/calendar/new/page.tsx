@@ -27,8 +27,6 @@ async function getSlackChannels(): Promise<Channel[]> {
 
     let cursor = undefined;
 
-    let archived = 0;
-
     while (true) {
       const slackChannels = await slackApp.client.conversations.list({
         team_id: env.SLACK_TEAM_ID,
@@ -38,10 +36,7 @@ async function getSlackChannels(): Promise<Channel[]> {
         cursor,
       });
 
-      console.log("Receiving total channels: ", slackChannels.channels?.length);
-
       slackChannels.channels?.map((channel) => {
-        if (channel.is_archived) archived++;
         if (!(channel.is_private || channel.is_archived)) {
           fetchedSlackChannels.push(channel);
         }
@@ -52,8 +47,6 @@ async function getSlackChannels(): Promise<Channel[]> {
       }
       cursor = slackChannels.response_metadata.next_cursor;
     }
-
-    console.log("Archived: ", archived);
 
     fetchedSlackChannels.sort((a, b) => {
       if (a.name! > b.name!) {
