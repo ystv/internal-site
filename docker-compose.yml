@@ -11,7 +11,7 @@ services:
     # but take into consideration that it will change the way
     # you are connecting to your database.
     ports:
-      - 5432:5432
+      - ${DOCKER_POSTGRES_PORT:-5432}:5432
 
     environment:
       POSTGRES_USER: postgres
