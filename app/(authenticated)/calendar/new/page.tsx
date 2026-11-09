@@ -24,18 +24,29 @@ async function getSlackChannels(): Promise<Channel[]> {
 
   if (isSlackEnabled) {
     slackApp = slackApiConnection();
-    const slackChannels = await slackApp.client.conversations.list({
-      team_id: env.SLACK_TEAM_ID,
-      types: "public_channel",
-      exclude_archived: true,
-      limit: 1000,
-    });
 
-    slackChannels.channels?.map((channel) => {
-      if (!(channel.is_private || channel.is_archived)) {
-        fetchedSlackChannels.push(channel);
+    let cursor = undefined;
+
+    while (true) {
+      const slackChannels = await slackApp.client.conversations.list({
+        team_id: env.SLACK_TEAM_ID,
+        types: "public_channel",
+        exclude_archived: true,
+        limit: 1000,
+        cursor,
+      });
+
+      slackChannels.channels?.map((channel) => {
+        if (!(channel.is_private || channel.is_archived)) {
+          fetchedSlackChannels.push(channel);
+        }
+      });
+
+      if (!slackChannels.response_metadata?.next_cursor) {
+        break;
       }
-    });
+      cursor = slackChannels.response_metadata.next_cursor;
+    }
 
     fetchedSlackChannels.sort((a, b) => {
       if (a.name! > b.name!) {
