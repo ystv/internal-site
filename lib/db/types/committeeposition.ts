@@ -1,18 +1,18 @@
 import * as z from "zod"
-import { CompleteCommitteePositionTeam, CommitteePositionTeamModel, CompleteCommitteePositionMember, CommitteePositionMemberModel } from "./index"
+import { CompleteCommitteePositionMember, CommitteePositionMemberModel, CompleteCommitteePositionTeam, CommitteePositionTeamModel } from "./index"
 
 export const _CommitteePositionModel = z.object({
   committee_position_id: z.number().int(),
   name: z.string(),
   description: z.string(),
-  email: z.string(),
   seats: z.number().int(),
   sort_order: z.number().int(),
+  email: z.string(),
 })
 
 export interface CompleteCommitteePosition extends z.infer<typeof _CommitteePositionModel> {
-  position_teams: CompleteCommitteePositionTeam[]
   committee_position_members: CompleteCommitteePositionMember[]
+  position_teams: CompleteCommitteePositionTeam[]
 }
 
 /**
@@ -21,6 +21,6 @@ export interface CompleteCommitteePosition extends z.infer<typeof _CommitteePosi
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const CommitteePositionModel: z.ZodSchema<CompleteCommitteePosition> = z.lazy(() => _CommitteePositionModel.extend({
-  position_teams: CommitteePositionTeamModel.array(),
   committee_position_members: CommitteePositionMemberModel.array(),
+  position_teams: CommitteePositionTeamModel.array(),
 }))

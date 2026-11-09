@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { CompleteAttendee, AttendeeModel, CompleteUser, UserModel, CompleteRecurringEvent, RecurringEventModel, CompleteSignupSheet, SignupSheetModel, CompleteCheckWithTech, CheckWithTechModel } from "./index"
+import { CompleteAttendee, AttendeeModel, CompleteCheckWithTech, CheckWithTechModel, CompleteUser, UserModel, CompleteRecurringEvent, RecurringEventModel, CompleteSignupSheet, SignupSheetModel } from "./index"
 
 export const _EventModel = z.object({
   event_id: z.number().int(),
@@ -18,21 +18,21 @@ export const _EventModel = z.object({
   updated_by: z.number().int().nullish(),
   deleted_at: z.date().nullish(),
   deleted_by: z.number().int().nullish(),
-  host: z.number().int(),
   adam_rms_project_id: z.number().int().nullish(),
+  host: z.number().int(),
   slack_channel_id: z.string(),
   recurring_event_id: z.number().int().nullish(),
 })
 
 export interface CompleteEvent extends z.infer<typeof _EventModel> {
   attendees: CompleteAttendee[]
+  check_with_tech: CompleteCheckWithTech[]
   created_by_user: CompleteUser
   deleted_by_user?: CompleteUser | null
-  updated_by_user?: CompleteUser | null
   host_user: CompleteUser
   recurring_event?: CompleteRecurringEvent | null
+  updated_by_user?: CompleteUser | null
   signup_sheets: CompleteSignupSheet[]
-  check_with_tech: CompleteCheckWithTech[]
 }
 
 /**
@@ -42,11 +42,11 @@ export interface CompleteEvent extends z.infer<typeof _EventModel> {
  */
 export const EventModel: z.ZodSchema<CompleteEvent> = z.lazy(() => _EventModel.extend({
   attendees: AttendeeModel.array(),
+  check_with_tech: CheckWithTechModel.array(),
   created_by_user: UserModel,
   deleted_by_user: UserModel.nullish(),
-  updated_by_user: UserModel.nullish(),
   host_user: UserModel,
   recurring_event: RecurringEventModel.nullish(),
+  updated_by_user: UserModel.nullish(),
   signup_sheets: SignupSheetModel.array(),
-  check_with_tech: CheckWithTechModel.array(),
 }))
