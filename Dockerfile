@@ -22,8 +22,7 @@ ENV GIT_REV=$GIT_REV
 ARG VERSION
 ENV VERSION=$VERSION
 RUN --mount=type=cache,target=/app/.next/cache \
-  --mount=type=secret,id=sentry-auth-token \
-  SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry-auth-token) \
+  --mount=type=secret,id=sentry_auth_token,env=SENTRY_AUTH_TOKEN \
   SKIP_ENV_VALIDATION=1 \
   PUBLIC_URL="http://localhost:3000" \
   yarn run build
