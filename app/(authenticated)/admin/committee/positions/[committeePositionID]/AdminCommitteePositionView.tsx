@@ -24,7 +24,10 @@ import { FaMinus } from "react-icons/fa";
 import Form from "@/components/Form";
 import { DatePickerField, SearchedMemberSelect } from "@/components/FormFields";
 import { getUserName } from "@/components/UserHelpers";
-import { type TCommitteePositionForAdmin } from "@/features/committee";
+import {
+  TCommitteePositionForAdmin,
+  TPromoteUserToCommitteePosition,
+} from "@/features/committee";
 
 import {
   fetchCommitteePositionForAdminAction,
@@ -254,7 +257,7 @@ function PromoteUserModal(props: {
             ...data,
           });
         }}
-        onSuccess={(data) => {
+        onSuccess={(data: { member: TPromoteUserToCommitteePosition }) => {
           notifications.show({
             message: `Successfully promoted ${getUserName(
               data.member.user,

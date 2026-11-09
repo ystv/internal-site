@@ -1,7 +1,7 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { z } from "zod";
 
-export function validateSearchParams<Schema extends z.AnyZodObject>(
+export function validateSearchParams<Schema extends z.ZodObject>(
   schema: Schema,
   searchParams: Object | ReadonlyURLSearchParams,
 ): z.infer<Schema> {
@@ -30,7 +30,7 @@ export function validateSearchParams<Schema extends z.AnyZodObject>(
                 if (value.safeParse(searchParamValue).success) {
                   return [key, searchParamValue];
                 }
-                return [key, value._def.defaultValue()];
+                return [key, value.def.defaultValue];
               } else if (value instanceof z.ZodOptional) {
                 if (value.safeParse(searchParamValue).success) {
                   return [key, searchParamValue];

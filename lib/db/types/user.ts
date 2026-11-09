@@ -1,11 +1,7 @@
 import * as z from "zod"
 import { CompleteIdentity, IdentityModel, CompleteAttendee, AttendeeModel, CompleteCrew, CrewModel, CompleteEvent, EventModel, CompleteRoleMember, RoleMemberModel, CompleteCommitteePositionMember, CommitteePositionMemberModel, CompleteCheckWithTech, CheckWithTechModel, CompleteRecurringAttendee, RecurringAttendeeModel } from "./index"
 
-// Helper schema for JSON fields
-type Literal = boolean | number | string
-type Json = Literal | { [key: string]: Json } | Json[]
-const literalSchema = z.union([z.string(), z.number(), z.boolean()])
-const jsonSchema: z.ZodSchema<Json> = z.lazy(() => z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)]))
+const jsonSchema = z.json()
 
 export const _UserModel = z.object({
   user_id: z.number().int(),

@@ -549,7 +549,7 @@ export function PermissionSelectField(props: {
           }}
         >
           <Stack gap={4}>
-            {(Object.keys(PermissionEnum.Values) as Permission[])
+            {(Object.keys(PermissionEnum.enum) as Permission[])
               .filter(
                 (v) =>
                   v.toLowerCase().includes(filter.toLowerCase()) ||

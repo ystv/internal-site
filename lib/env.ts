@@ -7,16 +7,14 @@ dotenv.config({ quiet: true });
 const slackEnvType =
   process.env.SLACK_ENABLED == "true"
     ? z.string({
-        required_error:
-          "This variable must be set if the slack integration is enabled",
+        error: "This variable must be set if the slack integration is enabled",
       })
     : z.string().optional();
 
 const minioEnvType =
   process.env.MINIO_ENABLED == "true"
     ? z.string({
-        required_error:
-          "This variable must be set if the S3 integration is enabled",
+        error: "This variable must be set if the S3 integration is enabled",
       })
     : z.string().optional();
 
@@ -29,16 +27,15 @@ const envSchema = z.object({
     .string()
     .refine((str) => !str.endsWith("/"), "PUBLIC_URL must not end with a '/'"),
   GOOGLE_CLIENT_ID: z.string(),
-  GOOGLE_PERMITTED_DOMAINS: z.string({
-    description: "A comma separated list of domains to allow google login from",
-  }),
+  GOOGLE_PERMITTED_DOMAINS: z
+    .string()
+    .describe("A comma separated list of domains to allow google login from"),
   ADAMRMS_EMAIL: z.string().optional(),
   ADAMRMS_PASSWORD: z.string().optional(),
   ADAMRMS_BASE: z.string().optional(),
   ADAMRMS_PROJECT_TYPE_ID: z.string().optional(),
   SESSION_SECRET: z.string({
-    required_error:
-      "Try generating a random secret with `openssl rand -base64 32`",
+    error: "Try generating a random secret with `openssl rand -base64 32`",
   }),
   TZ_OVERRIDE: z.string().default("Europe/London"),
   SLACK_ENABLED: z.enum(["true", "false"]).default("false"),

@@ -9,7 +9,7 @@ import {
   useForm,
 } from "react-hook-form";
 import { type FieldPath } from "react-hook-form";
-import { type z, type ZodEffects, type ZodTypeAny } from "zod";
+import { z } from "zod";
 
 import { DebugOnly } from "@/components/DebugMode";
 
@@ -35,8 +35,8 @@ const useForceUpdate = () => {
 };
 
 export default function Form<
-  Schema extends ZodTypeAny | ZodEffects<ZodTypeAny>,
-  SuccessfulResponse extends Record<string, unknown> = {},
+  Schema extends z.ZodAny | z.ZodType,
+  SuccessfulResponse extends Record<string, unknown>,
 >(props: {
   action: FormAction<SuccessfulResponse, z.infer<Schema>>;
   schema: Schema;
