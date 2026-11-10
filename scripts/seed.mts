@@ -1,3 +1,4 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { Prisma, PrismaClient } from "@prisma/client";
 
 if (process.env.NEXT_RUNTIME) {
@@ -14,7 +15,12 @@ const seedPositions: Prisma.PositionCreateInput[] = [
 ];
 
 (async function () {
-  const prisma = new PrismaClient();
+  const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+  });
+  const prisma = new PrismaClient({
+    adapter,
+  });
   for (const pos of seedPositions) {
     const c = await prisma.position.count({
       where: {

@@ -104,9 +104,10 @@ export async function UserPage(props: { id: number }) {
         </Group>
       </Card>
       <Space h={"md"} />
-      <Suspense fallback={<Skeleton height={38} animate />}>
-        <Wrapped userID={user.user_id} />
-      </Suspense>
+      {/*
+        <Suspense fallback={<Skeleton height={38} animate />}>
+          <Wrapped userID={user.user_id} />
+        </Suspense> */}
       <Space h={"md"} />
       {isSlackEnabled && isMe && (
         <>

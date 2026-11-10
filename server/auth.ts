@@ -1,13 +1,17 @@
-import { Socket } from "socket.io";
-import { ExtendedError } from "socket.io/dist/namespace";
+import type { Socket } from "socket.io";
 import { z } from "zod";
+
 import { prisma } from "../lib/db";
 import { env } from "../lib/env";
 import { decode } from "../lib/sessionSecrets";
 
+interface SocketIOExtendedError extends Error {
+  data?: any;
+}
+
 export async function authenticateSocket(
   socket: Socket,
-  next: (err?: ExtendedError | undefined) => void,
+  next: (err?: SocketIOExtendedError | undefined) => void,
 ) {
   if (Object.hasOwn(socket.data, "auth")) {
     return next();

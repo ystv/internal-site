@@ -361,7 +361,9 @@ export async function listPublicEvents() {
 export async function getEvent(id: number): Promise<EventObjectType | null> {
   const res = await prisma.event.findFirst({
     where: {
-      event_id: id,
+      event_id: {
+        equals: id,
+      },
     },
     include: EventSelectors,
   });

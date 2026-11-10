@@ -31,7 +31,7 @@ import {
   useFieldArray,
   useFormContext,
 } from "react-hook-form";
-import { type FieldPath } from "react-hook-form/dist/types/path";
+import { type FieldPath } from "react-hook-form";
 import { IoClose } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 
@@ -549,7 +549,7 @@ export function PermissionSelectField(props: {
           }}
         >
           <Stack gap={4}>
-            {(Object.keys(PermissionEnum.Values) as Permission[])
+            {(Object.keys(PermissionEnum.enum) as Permission[])
               .filter(
                 (v) =>
                   v.toLowerCase().includes(filter.toLowerCase()) ||

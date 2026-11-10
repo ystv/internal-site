@@ -74,7 +74,7 @@ pipeline {
         ], wait: true
         deployPreview action: 'cleanup'
         deployPreview action: 'cleanupMerge'
-        sh "nomad alloc exec -task internal-site-dev -job internal-site-dev npx -y prisma migrate deploy --schema lib/db/schema.prisma"
+        sh "nomad alloc exec -task internal-site-dev -job internal-site-dev npx -y prisma@v7 migrate deploy --schema lib/db/schema.prisma"
       }
     }
 
@@ -88,7 +88,7 @@ pipeline {
           string(name: 'JOB_FILE', value: 'internal-site/prod'),
           text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/internal-site:${imageTag}")
         ], wait: true
-        sh "nomad alloc exec -task internal-site-prod -job internal-site-prod npx -y prisma migrate deploy --schema lib/db/schema.prisma"
+        sh "nomad alloc exec -task internal-site-prod -job internal-site-prod npx -y prisma@v7 migrate deploy --schema lib/db/schema.prisma"
       }
     }
   }

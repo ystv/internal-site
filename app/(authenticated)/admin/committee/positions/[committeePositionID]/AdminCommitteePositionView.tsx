@@ -1,6 +1,5 @@
 "use client";
 
-import { C } from "@fullcalendar/core/internal-common";
 import {
   ActionIcon,
   Button,
@@ -15,7 +14,6 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { type CommitteePositionMember } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
@@ -26,7 +24,10 @@ import { FaMinus } from "react-icons/fa";
 import Form from "@/components/Form";
 import { DatePickerField, SearchedMemberSelect } from "@/components/FormFields";
 import { getUserName } from "@/components/UserHelpers";
-import { type TCommitteePositionForAdmin } from "@/features/committee";
+import {
+  TCommitteePositionForAdmin,
+  TPromoteUserToCommitteePosition,
+} from "@/features/committee";
 
 import {
   fetchCommitteePositionForAdminAction,
@@ -256,7 +257,7 @@ function PromoteUserModal(props: {
             ...data,
           });
         }}
-        onSuccess={(data) => {
+        onSuccess={(data: { member: TPromoteUserToCommitteePosition }) => {
           notifications.show({
             message: `Successfully promoted ${getUserName(
               data.member.user,

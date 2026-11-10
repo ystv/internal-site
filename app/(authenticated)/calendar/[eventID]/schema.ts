@@ -26,15 +26,15 @@ export const CrewSchema = z.object({
   locked: z.boolean().default(false),
   user_id: z
     .string()
-    .or(z.number())
-    .nullable()
     .transform((v) => (v === "" ? null : v))
-    .pipe(z.coerce.number().nullable().default(null))
+    .nullable()
+    .pipe(z.coerce.number())
+    .transform((v) => (v === 0 ? null : v))
+    .or(z.number())
     .nullable(),
   custom_crew_member_name: z
     .string()
-    .optional()
-    .nullable()
+    .nullish()
     .transform((v) => (v === "" ? null : v))
     .default(null),
 });

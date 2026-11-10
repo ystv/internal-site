@@ -22,7 +22,7 @@ import { validateSearchParams } from "./validate";
  * @param data data.server must be set if running on the server, otherwise shit breaks
  * @returns Validated search params as an object
  */
-export function useValidSearchParams<Schema extends z.AnyZodObject>(
+export function useValidSearchParams<Schema extends z.ZodObject>(
   schema: Schema,
   searchParams: ReadonlyURLSearchParams | Object,
 ): z.infer<Schema> {

@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions", "fullTextSearchPostgres"]
+  previewFeatures = ["fullTextSearchPostgres", "postgresqlExtensions"]
 }
 
 generator json {
@@ -59,24 +59,23 @@ model User {
   last_name                       String
   nickname                        String                    @default("")
   avatar                          String                    @default("")
+  /// [UserPreferences]
+  preferences                     Json                      @default("{}")
+  joined_on                       DateTime                  @default(now())
   public_avatar                   String?                   @default("")
   pronouns                        String?
-  joined_on                       DateTime                  @default(now())
-  identities                      Identity[]
   attendees                       Attendee[]
+  check_with_tech_confirmed       CheckWithTech[]           @relation("confirmed")
+  check_with_tech_submitted       CheckWithTech[]           @relation("submitted")
+  committee_positions             CommitteePositionMember[]
   crews                           Crew[]
   events_events_created_byTousers Event[]                   @relation("events_created_byTousers")
   events_events_deleted_byTousers Event[]                   @relation("events_deleted_byTousers")
-  events_events_updated_byTousers Event[]                   @relation("events_updated_byTousers")
-  role_members                    RoleMember[]
   hosted_events                   Event[]                   @relation("event_host_user")
-  committee_positions             CommitteePositionMember[]
-
-  /// [UserPreferences]
-  preferences               Json                @default("{}")
-  check_with_tech_confirmed CheckWithTech[]     @relation("confirmed")
-  check_with_tech_submitted CheckWithTech[]     @relation("submitted")
-  RecurringAttendee         RecurringAttendee[]
+  events_events_updated_byTousers Event[]                   @relation("events_updated_byTousers")
+  identities                      Identity[]
+  RecurringAttendee               RecurringAttendee[]
+  role_members                    RoleMember[]
 
   @@map("users")
 }
@@ -84,9 +83,9 @@ model User {
 model Identity {
   identity_id  Int    @id @default(autoincrement())
   user_id      Int
-  user         User   @relation(fields: [user_id], references: [user_id])
   provider     String
   provider_key String
+  user         User   @relation(fields: [user_id], references: [user_id])
 
   @@unique([provider, provider_key])
   @@unique([user_id, provider])
@@ -120,10 +119,10 @@ model Crew {
   signup_id               Int
   position_id             Int
   user_id                 Int?
-  custom_crew_member_name String?
   credited                Boolean     @default(true)
   locked                  Boolean     @default(false)
   ordering                Int
+  custom_crew_member_name String?
   positions               Position    @relation(fields: [position_id], references: [position_id], onDelete: Cascade)
   signup_sheets           SignupSheet @relation(fields: [signup_id], references: [signup_id], onDelete: Cascade)
   users                   User?       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
@@ -134,66 +133,55 @@ model Crew {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Event {
-  event_id            Int       @id @default(autoincrement())
-  event_type          String    @default("other")
+  event_id            Int             @id @default(autoincrement())
+  event_type          String          @default("other")
   name                String
-  start_date          DateTime  @db.Timestamptz(6)
-  end_date            DateTime  @db.Timestamptz(6)
-  description         String    @default("")
-  location            String    @default("")
-  is_private          Boolean   @default(false)
-  is_cancelled        Boolean   @default(false)
-  is_tentative        Boolean   @default(false)
-  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  start_date          DateTime        @db.Timestamptz(6)
+  end_date            DateTime        @db.Timestamptz(6)
+  description         String          @default("")
+  location            String          @default("")
+  is_private          Boolean         @default(false)
+  is_cancelled        Boolean         @default(false)
+  is_tentative        Boolean         @default(false)
+  created_at          DateTime        @default(now()) @db.Timestamptz(6)
   created_by          Int
-  updated_at          DateTime? @db.Timestamptz(6)
+  updated_at          DateTime?       @db.Timestamptz(6)
   updated_by          Int?
-  deleted_at          DateTime? @db.Timestamptz(6)
+  deleted_at          DateTime?       @db.Timestamptz(6)
   deleted_by          Int?
-  host                Int
   adam_rms_project_id Int?
-  slack_channel_id    String    @default("")
+  host                Int
+  slack_channel_id    String          @default("")
   recurring_event_id  Int?
-
-  attendees       Attendee[]
-  created_by_user User            @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  deleted_by_user User?           @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  updated_by_user User?           @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  host_user       User            @relation("event_host_user", fields: [host], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  recurring_event RecurringEvent? @relation(references: [recurring_event_id], fields: [recurring_event_id], onDelete: NoAction, onUpdate: NoAction)
-  signup_sheets   SignupSheet[]
-  check_with_tech CheckWithTech[]
+  attendees           Attendee[]
+  check_with_tech     CheckWithTech[]
+  created_by_user     User            @relation("events_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  deleted_by_user     User?           @relation("events_deleted_byTousers", fields: [deleted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  host_user           User            @relation("event_host_user", fields: [host], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  recurring_event     RecurringEvent? @relation(fields: [recurring_event_id], references: [recurring_event_id], onDelete: NoAction, onUpdate: NoAction)
+  updated_by_user     User?           @relation("events_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  signup_sheets       SignupSheet[]
 
   @@map("events")
 }
 
 model CheckWithTech {
-  cwt_id   Int   @id @default(autoincrement())
-  event_id Int
-  event    Event @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
-
+  cwt_id            Int                 @id @default(autoincrement())
+  event_id          Int
   submitted_by      Int
-  submitted_by_user User     @relation("submitted", fields: [submitted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  submitted_at      DateTime @default(now()) @db.Timestamptz(6)
-
-  status  CheckWithTechStatus @default(Requested)
-  request String
-  notes   String              @default("")
-  unsure  Boolean             @default(false)
-
-  slack_message_ts String?
-
+  status            CheckWithTechStatus @default(Requested)
+  request           String
+  notes             String              @default("")
   confirmed_by      Int?
-  confirmed_by_user User?     @relation("confirmed", fields: [confirmed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  confirmed_at      DateTime? @db.Timestamptz(6)
+  confirmed_at      DateTime?           @db.Timestamptz(6)
+  submitted_at      DateTime            @default(now()) @db.Timestamptz(6)
+  slack_message_ts  String?
+  unsure            Boolean             @default(false)
+  confirmed_by_user User?               @relation("confirmed", fields: [confirmed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  event             Event               @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
+  submitted_by_user User                @relation("submitted", fields: [submitted_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("check_with_techs")
-}
-
-enum CheckWithTechStatus {
-  Requested
-  Confirmed
-  Rejected
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -201,14 +189,13 @@ enum CheckWithTechStatus {
 model Position {
   position_id       Int     @id @default(autoincrement())
   permission_id     Int?
-  name              String
+  name              String  @unique
   admin             Boolean @default(false)
   brief_description String  @default("")
   full_description  String
-  crews             Crew[]
   is_custom         Boolean @default(false)
+  crews             Crew[]
 
-  @@unique([name])
   @@map("positions")
 }
 
@@ -223,7 +210,7 @@ model SignupSheet {
   start_time   DateTime  @db.Timestamptz(6)
   end_time     DateTime  @db.Timestamptz(6)
   crews        Crew[]
-  events       Event     @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction) // TODO singular
+  events       Event     @relation(fields: [event_id], references: [event_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("signup_sheets")
 }
@@ -268,39 +255,36 @@ model RecurringEvent {
 }
 
 model CommitteePosition {
-  committee_position_id Int    @id @default(autoincrement())
-  name                  String @unique
-  description           String @default("")
-  email                 String @default("")
-  seats                 Int    @default(1)
-  sort_order            Int    @default(0)
-
-  position_teams             CommitteePositionTeam[]
+  committee_position_id      Int                       @id @default(autoincrement())
+  name                       String                    @unique
+  description                String                    @default("")
+  seats                      Int                       @default(1)
+  sort_order                 Int                       @default(0)
+  email                      String                    @default("")
   committee_position_members CommitteePositionMember[]
+  position_teams             CommitteePositionTeam[]
 
   @@map("committee_positions")
 }
 
 model CommitteeTeam {
-  committee_team_id Int     @id @default(autoincrement())
-  name              String  @unique
-  description       String  @default("")
-  public            Boolean @default(false)
-  sort_order        Int     @default(0)
-
-  position_teams CommitteePositionTeam[]
+  committee_team_id Int                     @id @default(autoincrement())
+  name              String                  @unique
+  description       String                  @default("")
+  public            Boolean                 @default(false)
+  sort_order        Int                     @default(0)
+  position_teams    CommitteePositionTeam[]
 
   @@map("committee_teams")
 }
 
 model CommitteePositionTeam {
-  committee_position_team_id Int @id @default(autoincrement())
+  committee_position_team_id Int               @id @default(autoincrement())
   committee_position_id      Int
   committee_team_id          Int
   ordering                   Int
-
-  committee_position CommitteePosition @relation(fields: [committee_position_id], references: [committee_position_id])
-  committee_team     CommitteeTeam     @relation(fields: [committee_team_id], references: [committee_team_id])
+  committee_position         CommitteePosition @relation(fields: [committee_position_id], references: [committee_position_id])
+  committee_team             CommitteeTeam     @relation(fields: [committee_team_id], references: [committee_team_id])
 
   @@unique([committee_position_id, committee_team_id])
   @@map("committee_position_teams")
@@ -318,4 +302,16 @@ model CommitteePositionMember {
 
   @@unique([committee_position_id, user_id, start_date])
   @@map("committee_position_members")
+}
+
+model permissions {
+  permission_id Int     @id(map: "permissions_pk") @unique(map: "permissions_permission_id_uindex") @default(autoincrement())
+  name          String  @db.VarChar
+  description   String? @db.VarChar
+}
+
+enum CheckWithTechStatus {
+  Requested
+  Confirmed
+  Rejected
 }
